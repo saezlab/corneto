@@ -1,12 +1,6 @@
 from corneto.core import ReNet
 from corneto._typing import StrOrInt
-from typing import (
-    Any,
-    Dict,
-    Optional, 
-    Iterable, 
-    Union
-)
+from typing import Any, Dict, List, Optional, Iterable, Union
 import warnings
 
 # TODO: Pass default style to plotting methods
@@ -20,19 +14,11 @@ _default_style = {
         "width": 1.0,
         "connectionstyle": "arc3, rad = 0.1",
     },
-    "nodes": {
-        "size": 800, 
-        "color": "white", 
-        "edgecolor": "black"
-    },
+    "nodes": {"size": 800, "color": "white", "edgecolor": "black"},
 }
 
-def style(
-    edge_rad=0.1, 
-    node_size=800,
-    node_margin_factor=0.80,
-    edge_alpha=1.0
-):
+
+def style(edge_rad=0.1, node_size=800, node_margin_factor=0.80, edge_alpha=1.0):
     st = _default_style
     # TODO: config more styles
     n_size = int(node_size * (1 + node_margin_factor))
@@ -105,8 +91,10 @@ def plot(
     if pos is None:
         try:
             pos = nx.nx_pydot.graphviz_layout(G, prog="dot")
-        except:
-            warnings.warn("Graphviz not available")
+        except Exception as err:
+            warnings.warn(
+                f"Failed to use graphviz with dot layout: {str(err)}. Using spring_layout instead."
+            )
             pos = nx.spring_layout(G)
 
     inhibitor_style = ArrowStyle("-[", widthB=1.0, lengthB=0.0, angleB=None)
@@ -115,7 +103,12 @@ def plot(
     # Collect the properties for edges/nodes before drawing
     node_props, edge_props = {}, {}
     for n, d in G.nodes(data=True):
-        node_props[n] = {"size": node_size, "color": "white", "edgecolor": get_color(d), "node_shape": "o"}
+        node_props[n] = {
+            "size": node_size,
+            "color": "white",
+            "edgecolor": get_color(d),
+            "node_shape": "o",
+        }
         if "type" in d and d["type"] == "reaction":
             node_props[n]["node_shape"] = "s"
     for s, t, d in G.edges(data=True):
@@ -186,16 +179,12 @@ def plot(
 
 
 def to_nxgraph(
-    renet: ReNet, 
-    #reactions: Optional[Union[Iterable[str], Iterable[int]]] = None
-    reactions: Optional[Iterable[StrOrInt]] = None
+    renet: ReNet,
+    # reactions: Optional[Union[Iterable[str], Iterable[int]]] = None
+    reactions: Optional[Iterable[StrOrInt]] = None,
 ):
     try:
-        from networkx import (
-            DiGraph, 
-            set_node_attributes, 
-            set_edge_attributes
-        )
+        from networkx import DiGraph, set_node_attributes, set_edge_attributes
     except ImportError:
         raise ImportError(
             "NetworkX is required to convert a Reaction Network to a networkx graph."
@@ -204,14 +193,15 @@ def to_nxgraph(
     edges = []
     edge_attributes = dict()
     if reactions is None:
-        reactions = list(range(len(renet.reactions)))
+        rxns = list(range(len(renet.reactions)))
     else:
-        if isinstance(reactions[0], str):
-            reactions = [renet.get_reaction_id(r) for r in reactions]
-    for rid in reactions:
+        rxns = [
+            renet.get_reaction_id(r) if isinstance(r, str) else r for r in reactions
+        ]
+    for rid in rxns:
         reactants, products = (
-            renet.get_reactants_of_reaction(rid), 
-            renet.get_products_of_reaction(rid)
+            renet.get_reactants_of_reaction(rid),
+            renet.get_products_of_reaction(rid),
         )
         if len(reactants) == 0 or len(products) == 0:
             # ignore import/export reactions? (with no reactant or product?)
@@ -219,12 +209,22 @@ def to_nxgraph(
         elif len(reactants) == len(products) == 1:
             (r,) = reactants
             (p,) = products
-            edges.append((renet.species[r], renet.species[p], renet.properties.reaction_value(rid)))
+            edges.append(
+                (
+                    renet.species[r],
+                    renet.species[p],
+                    renet.properties.reaction_value(rid),
+                )
+            )
             # TODO: Change this attribute name
-            edge_attributes[(renet.species[r], renet.species[p])] = {"type": "simple", "id": rid, "name": renet.reactions[rid]}
+            edge_attributes[(renet.species[r], renet.species[p])] = {
+                "type": "simple",
+                "id": rid,
+                "name": renet.reactions[rid],
+            }
         else:
             # Hyperedge (reactants and products are connected through an intermediate node)
-            #print(reactants, products)
+            # print(reactants, products)
             prop = {"type": "complex", "id": rid, "name": renet.reactions[rid]}
             for r in reactants:
                 coeff = renet.stoichiometry()[r, rid]
