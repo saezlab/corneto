@@ -1,34 +1,48 @@
 import numpy as np
-from typing import Callable, Union, Dict, List, Optional, Tuple 
+from typing import Callable, Union, Dict, List, Optional, Tuple
 from corneto.core import ReNet
-from corneto.backend import Backend, CvxpyBackend
+from corneto.backend import CvxpyBackend
 from corneto.backend._base import ProblemDef
 from corneto._constants import *
 
+
 def carnival_renet(
-    rn: ReNet, 
+    rn: ReNet,
     conditions: Dict[str, Dict[str, Tuple[str, float]]],
-    pert_id: str = 'P',
-    meas_id: str = 'M',
+    pert_id: str = "P",
+    meas_id: str = "M",
 ) -> ReNet:
     # Create dummy nodes from _s (source node) to dummy condition nodes
     rnc = rn.copy()
     for c, v in conditions.items():
-        dummy_cond_pert = f'_pert_{c}'
-        dummy_cond_meas = f'_meas_{c}'
-        rnc.add_reaction(f'_s-(1)-{dummy_cond_pert}', {'_s': -1, dummy_cond_pert: 1}, value=1)
+        dummy_cond_pert = f"_pert_{c}"
+        dummy_cond_meas = f"_meas_{c}"
+        rnc.add_reaction(
+            f"_s-(1)-{dummy_cond_pert}", {"_s": -1, dummy_cond_pert: 1}, value=1
+        )
         for species, (type, value) in v.items():
             direction = 1 if value >= 0 else -1
             # Perturbations
             if type.casefold() == pert_id.casefold():
-                rnc.add_reaction(f'{dummy_cond_pert}-({direction})-{species}', {dummy_cond_pert: -1, species: 1}, value=direction)
+                rnc.add_reaction(
+                    f"{dummy_cond_pert}-({direction})-{species}",
+                    {dummy_cond_pert: -1, species: 1},
+                    value=direction,
+                )
             # Measurements
             elif type.casefold() == meas_id.casefold():
-                rnc.add_reaction(f'{species}-({direction})-{dummy_cond_meas}', {species: -1, dummy_cond_meas: 1}, value=direction)
-        rnc.add_reaction(f'{dummy_cond_pert}-(1)-_t', {dummy_cond_meas: -1, '_t': 1}, value=1)
-    rnc.add_reaction('_inflow',  {'_s':  1})
-    rnc.add_reaction('_outflow', {'_t': -1})
+                rnc.add_reaction(
+                    f"{species}-({direction})-{dummy_cond_meas}",
+                    {species: -1, dummy_cond_meas: 1},
+                    value=direction,
+                )
+        rnc.add_reaction(
+            f"{dummy_cond_pert}-(1)-_t", {dummy_cond_meas: -1, "_t": 1}, value=1
+        )
+    rnc.add_reaction("_inflow", {"_s": 1})
+    rnc.add_reaction("_outflow", {"_t": -1})
     return rnc
+
 
 def nx_style(rne: ReNet, carnival_problem: ProblemDef, condition=None) -> Dict:
     pc = carnival_problem
@@ -38,42 +52,42 @@ def nx_style(rne: ReNet, carnival_problem: ProblemDef, condition=None) -> Dict:
     product_ids = [rne.get_products_of_reaction(i) for i in range(rne.num_reactions)]
     p = [rne.species[i.pop()] if len(i) > 0 else None for i in product_ids]
     reactions = list(zip(r, p))
-    r_a = 'reaction_activates'
-    r_i = 'reaction_inhibits'
-    s_a = 'species_activated'
-    s_i = 'species_inhibited'
+    r_a = "reaction_activates"
+    r_i = "reaction_inhibits"
+    s_a = "species_activated"
+    s_i = "species_inhibited"
     if condition is not None:
-        r_a = f'{r_a}_{condition}'
-        r_i = f'{r_i}_{condition}'
-        s_a = f'{s_a}_{condition}'
-        s_i = f'{s_i}_{condition}'
+        r_a = f"{r_a}_{condition}"
+        r_i = f"{r_i}_{condition}"
+        s_a = f"{s_a}_{condition}"
+        s_i = f"{s_i}_{condition}"
     up_edges = [r for r, n in zip(reactions, pc.get_symbol(r_a).value) if n > 0.5]
     down_edges = [r for r, n in zip(reactions, pc.get_symbol(r_i).value) if n > 0.5]
     up_nodes = [s for s, n in zip(rne.species, pc.get_symbol(s_a).value) if n > 0.5]
-    down_nodes =  [s for s, n in zip(rne.species, pc.get_symbol(s_i).value) if n > 0.5]
+    down_nodes = [s for s, n in zip(rne.species, pc.get_symbol(s_i).value) if n > 0.5]
     for e in up_edges:
-        edge_props[e] = {'edge_color': 'tab:red', 'width': 2.0}
+        edge_props[e] = {"edge_color": "tab:red", "width": 2.0}
     for e in down_edges:
-        edge_props[e] = {'edge_color': 'tab:blue', 'width': 2.0}
+        edge_props[e] = {"edge_color": "tab:blue", "width": 2.0}
     for n in up_nodes:
-        node_props[n] = {'color': 'tab:red'}
+        node_props[n] = {"color": "tab:red"}
     for n in down_nodes:
-        node_props[n] = {'color': 'tab:blue'}
-    return {'nodes': node_props, 'edges': edge_props}
+        node_props[n] = {"color": "tab:blue"}
+    return {"nodes": node_props, "edges": edge_props}
 
 
 def carnival(
     rn: ReNet,
     conditions: Dict,
     signal_implies_flow: bool = True,
-    flow_implies_signal: bool = False, # not supported in multi-conditions
+    flow_implies_signal: bool = False,  # not supported in multi-conditions
     dag: bool = True,
-    suboptimal_dag: bool = False,
+    dag_flexibility: float = 1.0,
     l0_penalty_reaction: float = 0.0,
     l1_penalty_reaction: float = 0.0,
     ub_loss: Optional[Union[float, List[float]]] = None,
     eps: float = 1e-3,
-    backend: Callable = CvxpyBackend
+    backend: Callable = CvxpyBackend,
 ):
     n_conditions = len(conditions.keys())
     m = backend()
@@ -86,49 +100,85 @@ def carnival(
         # and then add regularization on the reactions that are active in at least 1 condition.
         # This extra overhead is not required, and the flow_implies_signal option is not the
         # standard carnival anyways.
-        raise ValueError('flow_implies_signal is not supported in multi-conditions')
+        raise ValueError("flow_implies_signal is not supported in multi-conditions")
     # TODO: improve API for this
     # E.g: m.Flow(rn) + m.Indicators() or at least m.Indicators(m.Flow(rn))
     p: ProblemDef = m.Flow(rn)
     p += m.Indicators(p.get_symbol(VAR_FLOW), negative=False, absolute=False)
     F, Fi = p.get_symbols(VAR_FLOW, VAR_FLOW_INDICATOR_POS)
-    p += F[rn.get_reaction_id('_inflow')] >= 1.01*eps
-    p += F[rn.get_reaction_id('_outflow')] >= 1.01*eps
-    
+    p += F[rn.get_reaction_id("_inflow")] >= 1.01 * eps
+    p += F[rn.get_reaction_id("_outflow")] >= 1.01 * eps
     dist = dict()
+
     if dag:
-        dist = rn.bfs(['_s'])
+        dist = rn.bfs(["_s"])
+        node_maxdist = rn.num_species - 1
+        dist_lbound = np.array([dist.get(i, 0) for i in range(rn.num_species)])
+        # compute upper bounds (max allowable distance in DAG for nodes)
+        dist_ubound = (
+            np.floor(
+                dag_flexibility
+                * (np.full(dist_lbound.shape, node_maxdist) - dist_lbound)
+            )
+            + dist_lbound
+        ).astype(int)
+
     losses = []
     for j, k in enumerate(conditions.keys()):
-        N_act = m.Variable(f'species_activated_{k}', (rn.num_species,), vartype=VarType.BINARY) 
-        N_inh = m.Variable(f'species_inhibited_{k}', (rn.num_species,), vartype=VarType.BINARY)
-        R_act = m.Variable(f'reaction_activates_{k}', (rn.num_reactions,), vartype=VarType.BINARY)
-        R_inh = m.Variable(f'reaction_inhibits_{k}', (rn.num_reactions,), vartype=VarType.BINARY)
+        reachable = list(range(rn.num_species))
+        non_reachable = []
+        if n_conditions > 1:
+            # If there is more than one condition, just check which nodes are reachable
+            # from this condition, we don't care for the rest of them
+            fwd = set(rn.bfs([f"_pert_{k}"]).keys())
+            bck = set(rn.bfs([f"_meas_{k}"], rev=True).keys())
+            reachable = list(fwd.intersection(bck) | {rn.species.index("_s"), rn.species.index("_t")})
+            non_reachable = list(set(range(rn.num_species)) - set(reachable))
+        
+        # Create required variables for the state
+        N_act = m.Variable(
+            f"species_activated_{k}", (rn.num_species,), vartype=VarType.BINARY
+        )
+        N_inh = m.Variable(
+            f"species_inhibited_{k}", (rn.num_species,), vartype=VarType.BINARY
+        )
+        R_act = m.Variable(
+            f"reaction_activates_{k}", (rn.num_reactions,), vartype=VarType.BINARY
+        )
+        R_inh = m.Variable(
+            f"reaction_inhibits_{k}", (rn.num_reactions,), vartype=VarType.BINARY
+        )
         p += [N_act, N_inh, R_act, R_inh]
+
+        if len(non_reachable) > 0:
+            p += N_act[non_reachable] == 0
+            p += N_inh[non_reachable] == 0
+
         # Just for convenience, force the dummy measurement node to be active. Not required
-        p += N_act[rn.species.index(f'_meas_{k}')] == 1
+        p += N_act[rn.species.index(f"_meas_{k}")] == 1
         # Same for source and target nodes. Assume they are active as a convention. Note that
         # dummy source _s connects to perturbations with activatory edges if perturbation is up
         # and inhibitory edges if perturbation is down. Dummy _s could be also down and propagate
         # the inverse signal instead. Same for dummy target _t. As a convention, they are forced
         # to be always activated instead to avoid these alternative options.
-        p += N_act[rn.species.index('_s')] == 1
-        p += N_act[rn.species.index('_t')] == 1
-        # Make sure that dummy species for the other conditions are not used
-        if n_conditions > 1:
-            dummy_pert = [rn.species.index(f'_pert_{kc}') for kc in conditions.keys() if kc != k]
-            dummy_meas = [rn.species.index(f'_meas_{kc}') for kc in conditions.keys() if kc != k]
-            p += N_act[dummy_pert] + N_inh[dummy_pert] == 0
-            p += N_act[dummy_meas] + N_inh[dummy_meas] == 0
+        p += N_act[rn.species.index("_s")] == 1
+        p += N_act[rn.species.index("_t")] == 1
         # Dont define activation/inhibition for reactions with no reactants or no products
         # rids = np.flatnonzero(np.logical_and(rn.has_reactant(), rn.has_product()))
         # TODO: Simplify this by adding methods to ReNet
+        # TODO: Filter out reactions that has reactant or product in the non reachable set
+        valid = np.zeros(rn.num_reactions, dtype=bool)
+        valid[reachable] = True
         has_reactant = np.sum(rn.stoichiometry < 0, axis=0) > 0
         has_product = np.sum(rn.stoichiometry > 0, axis=0) > 0
+        #has_reactant = np.sum(np.logical_and(rn.stoichiometry < 0, valid), axis=0) > 0
+        #has_product = np.sum(np.logical_and(rn.stoichiometry > 0, valid), axis=0) > 0
         rids = np.flatnonzero(np.logical_and(has_reactant, has_product))
         # TODO: Throw error if reactions have more than one reactant or product
         # Get reactants and products: note that reactions should have
         # only 1 reactant 1 product at most for CARNIVAL
+        #ix_react = np.array(list({rn.get_reactants([i]).pop() for i in rids}.intersection(reachable)))
+        #ix_prod = np.array(list({rn.get_products([i]).pop() for i in rids}.intersection(reachable)))
         ix_react = np.array([rn.get_reactants([i]).pop() for i in rids])
         ix_prod = np.array([rn.get_products([i]).pop() for i in rids])
         signs = np.array(rn.properties.reaction_values())[rids]
@@ -141,16 +191,19 @@ def carnival(
         S_ai = (N_act[ix_react] + N_inh[ix_react]).multiply(signs)
         p += Ra <= (D_ai + S_ai).multiply(signs)
         p += Ri <= (D_ia + S_ai).multiply(signs)
-        
         if dag:
-            L = m.Variable(f'dag_layer_position_{k}', (rn.num_species,), vartype=VarType.CONTINUOUS, lb=0, ub=rn.num_species - 1)
+            L = m.Variable(
+                f"dag_layer_position_{k}",
+                (rn.num_species,),
+                vartype=VarType.CONTINUOUS,
+                lb=dist_lbound,
+                ub=dist_ubound,
+            )
             p += L
-            p += L[ix_prod] - L[ix_react] >= Ra + Ri + (1 - rn.num_species) * (1 - (Ra + Ri))
-            dist_lbound = np.array([dist.get(i, 0) for i in range(rn.num_species)])
-            if suboptimal_dag:
-                p += L == dist_lbound
-            else:
-                p += L >= dist_lbound
+            p += L[ix_prod] - L[ix_react] >= Ra + Ri + (1 - rn.num_species) * (
+                1 - (Ra + Ri)
+            )
+        # Link flow with signal
         if signal_implies_flow and flow_implies_signal:
             # Bi-directional implication
             p += R_act + R_inh == Fi
@@ -168,9 +221,13 @@ def carnival(
         p += N_act <= rn.stoichiometry.clip(0, 1) @ R_act
         p += N_inh <= rn.stoichiometry.clip(0, 1) @ R_inh
         # Get the values of the species for the given condition
-        species_values = np.array([conditions[k][s][1] if s in conditions[k] else 0 for s in rn.species])
+        species_values = np.array(
+            [conditions[k][s][1] if s in conditions[k] else 0 for s in rn.species]
+        )
         pos = species_values.clip(0, np.inf).reshape(1, -1) @ (1 - (N_act - N_inh))
-        neg = np.abs(species_values.clip(-np.inf, 0)).reshape(1, -1) @ ((N_act - N_inh) + 1)
+        neg = np.abs(species_values.clip(-np.inf, 0)).reshape(1, -1) @ (
+            (N_act - N_inh) + 1
+        )
         loss = pos + neg
         losses.append(loss)
         if ub_loss is not None:
@@ -182,13 +239,12 @@ def carnival(
     # Add regularization
     weights = [1.0] * len(losses)
     if l0_penalty_reaction > 0:
-        losses.append(np.array([l0_penalty_reaction] * rn.num_reactions) @ Fi)
+        losses.append(sum(Fi))  # type: ignore
         weights.append(l0_penalty_reaction)
     if l1_penalty_reaction > 0:
-        losses.append(np.array([l1_penalty_reaction] * rn.num_reactions) @ F)
+        losses.append(sum(F))  # type: ignore
         weights.append(l1_penalty_reaction)
 
     # Add objective and weights to p
     p.add_objectives(losses, weights, inplace=True)
     return p
-    

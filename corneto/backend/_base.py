@@ -19,6 +19,14 @@ def _proxy(func):
         return self._create(func(self, *args, **kwargs))
     return _wrapper_func
 
+def _eq_shape(a: np.ndarray, b: np.ndarray) -> bool:
+    if a.shape != b.shape:
+        if len(a.shape) == 1 and len(b.shape) == 2:
+            return a.shape[0] == b.shape[0] and b.shape[1] == 1
+        if len(a.shape) == 2 and len(b.shape) == 1:
+            return a.shape[0] == b.shape[0] and a.shape[1] == 1
+    return a.shape == b.shape
+
 
 class CtProxyExpression(abc.ABC):
     # Arithmetic operator overloading with Numpy
@@ -185,28 +193,35 @@ class CtProxySymbol(CtProxyExpression):
         if lb is None:
             if vartype == VarType.CONTINUOUS:
                 lb_r = np.full(expr.shape, -np.inf)
-            elif (vartype == VarType.INTEGER or
-                  vartype == VarType.BINARY):
+            elif vartype == VarType.INTEGER:
+                lb_r = np.full(expr.shape, np.iinfo(int).min)
+            elif vartype == VarType.BINARY:
                 lb_r = np.zeros(expr.shape)
         if ub is None:
             if vartype == VarType.CONTINUOUS:
                 ub_r = np.full(expr.shape, np.inf)
-            elif (vartype == VarType.INTEGER or
-                  vartype == VarType.BINARY):
+            elif vartype == VarType.INTEGER:
+                ub_r = np.full(expr.shape, np.iinfo(int).max)
+            elif vartype == VarType.BINARY:
                 ub_r = np.ones(expr.shape)
         if isinstance(lb, np.ndarray):
-            print(expr.shape, lb.shape)
-            if expr.shape != lb.shape:
-                raise ValueError('Shape of lb does not match shape of symbol')
+            if not _eq_shape(lb, expr):
+                raise ValueError(f'Shape of lb is {lb.shape}, whereas symbol has a shape of {expr.shape}')
+            lb_r = lb
+        elif isinstance(lb, numbers.Number):
+            lb_r = np.full(expr.shape, lb)
         else:
-            if isinstance(lb, numbers.Number):
-                lb_r = np.full(expr.shape, lb)
+            if lb is not None:
+                raise ValueError(f'lb has an invalid type ({type(lb)}). It must be a number or numpy array')
         if isinstance(ub, np.ndarray):
-            if expr.shape != ub.shape:
-                raise ValueError('Shape of ub does not match shape of symbol')
+            if not _eq_shape(ub, expr):
+                raise ValueError(f'Shape of ub is {ub.shape}, whereas symbol has a shape of {expr.shape}')
+            ub_r = ub
+        elif isinstance(ub, numbers.Number):
+            ub_r = np.full(expr.shape, ub)
         else:
-            if isinstance(ub, numbers.Number):
-                ub_r = np.full(expr.shape, ub)
+            if ub is not None:
+                raise ValueError(f'ub has an invalid type ({type(ub)}). It must be a number or numpy array')
         self._lb = lb_r
         self._ub = ub_r
         self._name = name
@@ -347,7 +362,8 @@ class ProblemDef(abc.ABC):
     def solve(
         self,
         solver: Solver = Solver.COIN_OR_CBC,
-        max_seconds: int = None,  
+        max_seconds: int = None,
+        warm_start: bool = False,  
         verbosity: int = 0,
         **options
     ) -> Any:
@@ -468,10 +484,10 @@ class Backend(abc.ABC):
         pass
 
     def Constant(self) -> CtProxySymbol:
-        pass
+        raise NotImplementedError()
 
     def Parameter(self) -> CtProxySymbol:
-        pass
+        raise NotImplementedError()
 
     def Flow(
         self, 
