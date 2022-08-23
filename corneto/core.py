@@ -1,6 +1,6 @@
 import abc
 import numpy as np
-from corneto._io import load_sif, load_sif_from_tuples
+from corneto._io import load_sif
 from typing import Optional, Iterable, Set, Union, Dict, List
 from corneto._typing import StrOrInt, TupleSIF
 from corneto._constants import *
@@ -506,20 +506,25 @@ class DenseReNet(ReNet):
         return renet
 
     def _add_species(self, names: List[str]) -> None:
-        rows = np.zeros((len(names), self._stoichiometry.shape[1]))
+        v = self._stoichiometry.shape[1] if len(self._stoichiometry.shape) >= 2 else 1
+        rows = np.zeros((len(names), v))
         self._stoichiometry = (
             np.vstack((self._stoichiometry, rows)) if self._stoichiometry.size else rows
         )
 
     def _add_reaction(self, coeffs: Dict[str, int]):
         new_species = list(set(coeffs.keys()) - set(self.species))
+        st_sz = self._stoichiometry.size
         if len(new_species) > 0:
             self.add_species(new_species)
-        # Add new column to _stoichiometry
-        col = np.zeros((self._stoichiometry.shape[0], 1))
-        self._stoichiometry = (
-            np.hstack((self._stoichiometry, col)) if self._stoichiometry.size else col
-        )
+        # Add new column to the stoichiometric matrix if it was non-empty
+        if st_sz > 0:
+            col = np.zeros((self._stoichiometry.shape[0], 1))
+            self._stoichiometry = np.hstack((self._stoichiometry, col))
         # Add the coefficients
         for s, coeff in coeffs.items():
             self._stoichiometry[self.get_species_id(s), -1] = coeff
+
+    @staticmethod
+    def empty():
+        return DenseReNet(np.array([]), [], [])
