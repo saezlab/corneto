@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "corneto"
-version = "0.9.0-alpha.2"
+version = "0.9.0-alpha.3"
 description = "CORNETO: CORe NETwork Optimizer, a MILP optimization library for Biochemical Networks"
 authors = ["Pablo Rordriguez-Mier <pablo.rodriguez-mier@uni-heidelberg.de>"]
 classifiers = [
@@ -19,7 +19,7 @@ include = ["LICENSE"]
 [tool.poetry.dependencies]
 python = ">=3.8 <3.11"
 numpy = "^1.22.3"
-cvxpy = "^1.2.1"
+cvxpy = {version = "^1.2.1", optional = true}
 cylp = {version = "^0.91.5", optional = true}
 networkx = {version = "~2.7.1", optional = true}
 PICOS = {version = "^2.4.1", optional = true}
@@ -37,8 +37,12 @@ mkdocs-material = "^7.2.1"
 mkdocstrings = "^0.15.2"
 
 [tool.poetry.extras]
-cbc = ["cylp"]
-extras = ["PICOS", "matplotlib", "networkx"]
+cvxpy = ["cvxpy"]
+picos = ["PICOS"]
+all_backends = ["cvxpy", "PICOS"]
+gurobi = ["gurobipy", "PICOS"]
+cbc = ["cvxpy", "cylp"]
+full = ["cvxpy", "PICOS", "matplotlib", "networkx"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
