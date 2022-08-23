@@ -1,7 +1,8 @@
 import numpy as np
 from typing import Callable, Union, Dict, List, Optional, Tuple
+from corneto import backend
 from corneto.core import ReNet
-from corneto.backend import CvxpyBackend
+from corneto.backend import Backend, CvxpyBackend
 from corneto.backend._base import ProblemDef
 from corneto._constants import *
 
@@ -76,6 +77,19 @@ def nx_style(rne: ReNet, carnival_problem: ProblemDef, condition=None) -> Dict:
     return {"nodes": node_props, "edges": edge_props}
 
 
+def carnival_constraints(
+    rn: ReNet,
+    backend: Backend,
+    conditions: Dict,
+    signal_implies_flow: bool = True,
+    flow_implies_signal: bool = False,  # not supported in multi-conditions
+    dag: bool = True,
+    dag_flexibility: float = 1.0,
+    eps: float = 1e-3,
+) -> ProblemDef:
+    pass
+
+
 def carnival(
     rn: ReNet,
     conditions: Dict,
@@ -85,7 +99,10 @@ def carnival(
     dag_flexibility: float = 1.0,
     l0_penalty_reaction: float = 0.0,
     l1_penalty_reaction: float = 0.0,
+    l0_penalty_species: float = 0.0,
     ub_loss: Optional[Union[float, List[float]]] = None,
+    lb_loss: Optional[Union[float, List[float]]] = None,
+    use_flow_indicators: bool = True,
     eps: float = 1e-3,
     backend: Callable = CvxpyBackend,
 ):
@@ -104,12 +121,13 @@ def carnival(
     # TODO: improve API for this
     # E.g: m.Flow(rn) + m.Indicators() or at least m.Indicators(m.Flow(rn))
     p: ProblemDef = m.Flow(rn)
-    p += m.Indicators(p.get_symbol(VAR_FLOW), negative=False, absolute=False)
-    F, Fi = p.get_symbols(VAR_FLOW, VAR_FLOW_INDICATOR_POS)
+    F, Fi = p.get_symbol(VAR_FLOW), None
+    if use_flow_indicators and (flow_implies_signal or signal_implies_flow):
+        p += m.Indicators(p.get_symbol(VAR_FLOW), negative=False, absolute=False)
+        Fi = p.get_symbol(VAR_FLOW_INDICATOR_POS)
     p += F[rn.get_reaction_id("_inflow")] >= 1.01 * eps
     p += F[rn.get_reaction_id("_outflow")] >= 1.01 * eps
     dist = dict()
-
     if dag:
         dist = rn.bfs(["_s"])
         node_maxdist = rn.num_species - 1
@@ -132,9 +150,11 @@ def carnival(
             # from this condition, we don't care for the rest of them
             fwd = set(rn.bfs([f"_pert_{k}"]).keys())
             bck = set(rn.bfs([f"_meas_{k}"], rev=True).keys())
-            reachable = list(fwd.intersection(bck) | {rn.species.index("_s"), rn.species.index("_t")})
+            reachable = list(
+                fwd.intersection(bck) | {rn.species.index("_s"), rn.species.index("_t")}
+            )
             non_reachable = list(set(range(rn.num_species)) - set(reachable))
-        
+
         # Create required variables for the state
         N_act = m.Variable(
             f"species_activated_{k}", (rn.num_species,), vartype=VarType.BINARY
@@ -171,14 +191,14 @@ def carnival(
         valid[reachable] = True
         has_reactant = np.sum(rn.stoichiometry < 0, axis=0) > 0
         has_product = np.sum(rn.stoichiometry > 0, axis=0) > 0
-        #has_reactant = np.sum(np.logical_and(rn.stoichiometry < 0, valid), axis=0) > 0
-        #has_product = np.sum(np.logical_and(rn.stoichiometry > 0, valid), axis=0) > 0
+        # has_reactant = np.sum(np.logical_and(rn.stoichiometry < 0, valid), axis=0) > 0
+        # has_product = np.sum(np.logical_and(rn.stoichiometry > 0, valid), axis=0) > 0
         rids = np.flatnonzero(np.logical_and(has_reactant, has_product))
         # TODO: Throw error if reactions have more than one reactant or product
         # Get reactants and products: note that reactions should have
         # only 1 reactant 1 product at most for CARNIVAL
-        #ix_react = np.array(list({rn.get_reactants([i]).pop() for i in rids}.intersection(reachable)))
-        #ix_prod = np.array(list({rn.get_products([i]).pop() for i in rids}.intersection(reachable)))
+        # ix_react = np.array(list({rn.get_reactants([i]).pop() for i in rids}.intersection(reachable)))
+        # ix_prod = np.array(list({rn.get_products([i]).pop() for i in rids}.intersection(reachable)))
         ix_react = np.array([rn.get_reactants([i]).pop() for i in rids])
         ix_prod = np.array([rn.get_products([i]).pop() for i in rids])
         signs = np.array(rn.properties.reaction_values())[rids]
@@ -206,15 +226,34 @@ def carnival(
         # Link flow with signal
         if signal_implies_flow and flow_implies_signal:
             # Bi-directional implication
-            p += R_act + R_inh == Fi
+            if Fi is None:
+                raise NotImplementedError(
+                    "flow <=> signal implication supported only with indicators"
+                )
+            else:
+                p += R_act + R_inh == Fi
         elif signal_implies_flow:
             # If signal then flow (if no flow then no signal)
             # but a reaction with non-zero flow may not carry any signal
-            p += R_act + R_inh <= Fi
+            if Fi is None:
+                # If reaction has signal (r_act+r_inh == 1) then the flow on
+                # that reaction has to be >= eps value (active)
+                # If reaction has no signal (r_act+r_inh == 0) then the flow
+                # can have any value
+                p += F >= eps * (R_act + R_inh)
+            else:
+                p += R_act + R_inh <= Fi
         elif flow_implies_signal:
-            # If flow then signal (if no signal then no flow)
-            # but a reaction with non-zero signal may not carry any flow
-            p += Fi <= R_act + R_inh
+            if Fi is None:
+                # If reaction has a non-zero flow (f > eps)
+                # then the reaction has to transmit signal.
+                # If reaction has no flow, the signal can have
+                # any value. Note that this option by itself
+                # does not make sense for carnival, use only
+                # for experimentation.
+                p += eps * (R_act + R_inh) <= F
+            else:
+                p += Fi <= R_act + R_inh
         # Constrain the product species of the reactions. They can be only up or
         # down if at least one of the reactions that have the node as product
         # carry some signal.
@@ -235,15 +274,29 @@ def carnival(
                 p += loss <= ub_loss[j]
             else:
                 p += loss <= ub_loss
+        if lb_loss is not None:
+            if isinstance(lb_loss, list):
+                p += loss >= lb_loss[j]
+            else:
+                p += loss >= lb_loss
 
     # Add regularization
     weights = [1.0] * len(losses)
     if l0_penalty_reaction > 0:
+        if Fi is None:
+            raise ValueError(
+                "L0 regularization on flow cannot be used if signal is not connected to flow."
+            )
+        # TODO: Issues with sum and PICOS (https://gitlab.com/picos-api/picos/-/issues/330)
+        # override sum with picos.sum method
         losses.append(sum(Fi))  # type: ignore
         weights.append(l0_penalty_reaction)
     if l1_penalty_reaction > 0:
         losses.append(sum(F))  # type: ignore
         weights.append(l1_penalty_reaction)
+    if l0_penalty_species > 0:
+        losses.append(sum(N_act + N_inh))
+        weights.append(l0_penalty_species)
 
     # Add objective and weights to p
     p.add_objectives(losses, weights, inplace=True)

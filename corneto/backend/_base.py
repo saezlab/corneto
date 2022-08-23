@@ -347,11 +347,12 @@ class ProblemDef(abc.ABC):
             # auto-convert to a weighted sum
             obj = sum(
                 self._weights[i] * self._objectives[i]
+                if self._weights[i] != 0.0 else 0.0
                 for i in range(len(self._objectives))
             )
             return self._build(obj) # type: ignore
         else:
-            o = self._objectives[0] if self._objectives else None
+            o = self._objectives[0] if self._objectives and self._weights[0] != 0 else None
             return self._build(o)
 
     @abc.abstractmethod

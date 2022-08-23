@@ -87,7 +87,7 @@ class PicosProblemDef(ProblemDef):
         if warm_start:
             warnings.warn("warm_start is not supported yet, ignoring")
         P = self.build()
-        P.solve(timelimit=max_seconds, solver=solver, verbosity=verbosity, **options)
+        P.solve(timelimit=max_seconds, solver=solver, verbosity=verbosity, hotstart=warm_start, **options)
         return P
 
 
