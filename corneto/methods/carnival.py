@@ -1,6 +1,6 @@
 import numpy as np
 from typing import Callable, Union, Dict, List, Optional, Tuple
-from corneto import backend
+from corneto import DEFAULT_BACKEND
 from corneto.core import ReNet
 from corneto.backend import Backend, CvxpyBackend
 from corneto.backend._base import ProblemDef
@@ -104,10 +104,10 @@ def carnival(
     lb_loss: Optional[Union[float, List[float]]] = None,
     use_flow_indicators: bool = True,
     eps: float = 1e-3,
-    backend: Callable = CvxpyBackend,
+    backend: Backend = DEFAULT_BACKEND
 ):
+    m = backend
     n_conditions = len(conditions.keys())
-    m = backend()
     # Better usage:
     # bck.Variable(name='x', shape=(1,), lb, ub) # var class backed by cp.Variable
     # bck.flow_problem() -> vars

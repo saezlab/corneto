@@ -1,17 +1,20 @@
 import warnings
 import numpy as np
-import picos as pc
-from picos.expressions.exp_affine import AffineExpression
 from typing import Any, List, Optional, Tuple, Union
 from corneto.backend._base import CtProxyExpression, CtProxySymbol, Backend, ProblemDef
 from corneto._constants import *
+
+try:
+    import picos as pc
+except ImportError:
+    pc = None
 
 
 class PicosExpression(CtProxyExpression):
     def __init__(self, expr, parent: Optional[CtProxyExpression] = None) -> None:
         super().__init__(expr, parent)
 
-    def _create(self, expr: AffineExpression) -> "PicosExpression":
+    def _create(self, expr: Any) -> "PicosExpression":
         return PicosExpression(expr, self)
 
     def _elementwise_mul(self, other: Any) -> Any:
@@ -83,17 +86,25 @@ class PicosProblemDef(ProblemDef):
         warm_start: bool = False,
         verbosity: int = 0,
         **options,
-    ) -> pc.Problem:
+    ) -> Any:
         if warm_start:
             warnings.warn("warm_start is not supported yet, ignoring")
         P = self.build()
-        P.solve(timelimit=max_seconds, solver=solver, verbosity=verbosity, hotstart=warm_start, **options)
+        P.solve(
+            timelimit=max_seconds,
+            solver=solver,
+            verbosity=verbosity,
+            hotstart=warm_start,
+            **options,
+        )
         return P
 
 
 class PicosBackend(Backend):
-    def __init__(self) -> None:
-        pass
+    def load(self):
+        import picos
+
+        picos
 
     def Variable(
         self,

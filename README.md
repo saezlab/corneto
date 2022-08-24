@@ -45,6 +45,20 @@ pip install PICOS
 
 Check `PICOS` requirements for different solvers here: https://picos-api.gitlab.io/picos/introduction.html#features
 
+#### Apple M1
+
+CORNETO can be installed on M1 architecture but may need few extra steps. Suggested configuration is to use `PICOS` backend with `gurobipy`. Installing `PICOS` with pip requires `CVXOPT`, that can be compiled for `M1`, see https://cvxopt.org/install/:
+
+```bash
+brew install cmake
+brew install suite-sparse
+CVXOPT_SUITESPARSE_LIB_DIR=/opt/homebrew/Cellar/suite-sparse/VERSION/lib/ CVXOPT_SUITESPARSE_INC_DIR=/opt/homebrew/Cellar/suite-sparse/VERSION/include/ pip install cvxopt
+pip install PICOS
+pip install corneto-0.9.0a3-py3-none-any.whl
+```
+
+In future releases, this will be automatized through `setup.py`.
+
 ### Complete setup
 
 A recommended setup for testing and generating plots with corneto requires additional dependencies. A recommended environment is created with the following command:

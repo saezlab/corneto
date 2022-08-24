@@ -7,16 +7,20 @@ from corneto.backend._base import (
     _proxy,
 )
 import numpy as np
-import cvxpy as cp
 from corneto._constants import *
 import warnings
+
+try:
+    import cvxpy as cp
+except ImportError:
+    cp = None # type: ignore
 
 
 class CvxpyExpression(CtProxyExpression):
     def __init__(self, expr, parent: Optional[CtProxyExpression] = None) -> None:
         super().__init__(expr, parent)
 
-    def _create(self, expr: cp.Expression) -> "CvxpyExpression":
+    def _create(self, expr: Any) -> "CvxpyExpression":
         return CvxpyExpression(expr, self)
 
     def _elementwise_mul(self, other: Any) -> Any:
@@ -86,7 +90,7 @@ class CvxpyProblemDef(ProblemDef):
         warm_start: bool = False,
         verbosity: int = 0,
         **options,
-    ) -> cp.Problem:
+    ) -> Any:
         P = self.build()
         s = solver.upper()
         solvers = cp.installed_solvers()
@@ -118,6 +122,11 @@ class CvxpyProblemDef(ProblemDef):
 
 
 class CvxpyBackend(Backend):
+    def load(self):
+        import cvxpy
+
+        cvxpy
+
     def Variable(
         self,
         name: Optional[str] = None,

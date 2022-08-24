@@ -441,6 +441,17 @@ class Backend(abc.ABC):
     def __init__(self) -> None:
         pass
 
+    def is_available(self) -> bool:
+        try:
+            self.load()
+            return True
+        except Exception as e:
+            return False
+
+    @abc.abstractmethod
+    def load(self):
+        raise NotImplementedError()
+
     @abc.abstractmethod
     def Variable(
         self, 
