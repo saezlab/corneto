@@ -1,7 +1,7 @@
 import numpy as np
 from typing import Callable, Union, Dict, List, Optional, Tuple
 from corneto import DEFAULT_BACKEND
-from corneto.core import ReNet
+from corneto._core import ReNet
 from corneto.backend import Backend, CvxpyBackend
 from corneto.backend._base import ProblemDef
 from corneto._constants import *

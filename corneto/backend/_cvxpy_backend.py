@@ -13,7 +13,7 @@ import warnings
 try:
     import cvxpy as cp
 except ImportError:
-    cp = None # type: ignore
+    cp = None  # type: ignore
 
 
 class CvxpyExpression(CtProxyExpression):

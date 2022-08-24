@@ -3,7 +3,7 @@ import pathlib
 
 
 def test_add_reaction_to_empty_renet_inplace():
-    from corneto.core import DenseReNet
+    from corneto._core import DenseReNet
 
     rn = DenseReNet.empty()
     rn.add_reaction("r1", {"A": -1, "B": 1}, value=1.0, inplace=True)

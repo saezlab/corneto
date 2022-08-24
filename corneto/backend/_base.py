@@ -4,7 +4,7 @@ import numbers
 from typing import Any, Dict, Iterable, Optional, Set, Tuple, Union, List
 from corneto._constants import *
 from functools import wraps
-from corneto.core import ReNet
+from corneto._core import ReNet
 
 
 def _proxy(func):
