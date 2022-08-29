@@ -1,23 +1,12 @@
 import abc
+from turtle import pos
 import numpy as np
 import numbers
 from typing import Any, Dict, Iterable, Optional, Set, Tuple, Union, List
 from corneto._constants import *
-from functools import wraps
 from corneto._core import ReNet
+from corneto._decorators import _proxy
 
-
-def _proxy(func):
-    @wraps(func)
-    def _wrapper_func(self, *args, **kwargs):
-        if len(args) > 0:
-            if hasattr(args[0], '_expr'):
-                args = list(args)
-                args[0] = args[0]._expr
-        if hasattr(self._expr, func.__name__):
-            return self._create(getattr(self._expr, func.__name__)(*args, **kwargs))
-        return self._create(func(self, *args, **kwargs))
-    return _wrapper_func
 
 def _eq_shape(a: np.ndarray, b: np.ndarray) -> bool:
     if a.shape != b.shape:
@@ -33,7 +22,7 @@ class CtProxyExpression(abc.ABC):
     # See: https://www.cvxpy.org/_modules/cvxpy/expressions/expression.html#Expression
     __array_priority__ = 100
 
-    def __init__(self, expr: Any, parent: Optional['CtProxyExpression'] = None) -> None:
+    def __init__(self, expr: Any, parent: Optional["CtProxyExpression"] = None) -> None:
         super().__init__()
         self._expr = expr
         self._parent = parent
@@ -42,7 +31,7 @@ class CtProxyExpression(abc.ABC):
     #    return getattr(self._expr, name)
 
     @abc.abstractmethod
-    def _create(self, expr: Any) -> 'CtProxyExpression':
+    def _create(self, expr: Any) -> "CtProxyExpression":
         pass
 
     @property
@@ -58,20 +47,10 @@ class CtProxyExpression(abc.ABC):
     def shape(self) -> Tuple[int, ...]:
         return self._expr.shape
 
-    '''
-    def expressions(self) -> List['CtProxyExpression']:
-        c = self
-        l = [c]
-        while c:
-            c = c._parent
-            if c:
-                l.append(c)
-        return l'''
-
     def __hash__(self) -> int:
         return self._expr.__hash__()
 
-    def apply(self, fun, *args, **kwargs) -> 'CtProxyExpression':
+    def apply(self, fun, *args, **kwargs) -> "CtProxyExpression":
         return self._create(fun(self._expr, *args, **kwargs))
 
     @property
@@ -83,91 +62,95 @@ class CtProxyExpression(abc.ABC):
         pass
 
     @_proxy
-    def multiply(self, other: Any) -> 'CtProxyExpression':
+    def multiply(self, other: Any) -> "CtProxyExpression":
         return self._elementwise_mul(other)
 
     @_proxy
-    def __getitem__(self, item) -> 'CtProxyExpression':
+    def __getitem__(self, item) -> "CtProxyExpression":
         pass
 
     @_proxy
-    def __pow__(self, power: float) -> 'CtProxyExpression':
+    def __abs__(self, other: Any) -> "CtProxyExpression":
         pass
 
     @_proxy
-    def __rpow__(self, base: float) -> 'CtProxyExpression':
+    def __pow__(self, power: float) -> "CtProxyExpression":
         pass
 
     @_proxy
-    def __add__(self, other: Any) -> 'CtProxyExpression':
+    def __rpow__(self, base: float) -> "CtProxyExpression":
         pass
 
     @_proxy
-    def __radd__(self, other: Any) -> 'CtProxyExpression':
+    def __add__(self, other: Any) -> "CtProxyExpression":
         pass
 
     @_proxy
-    def __sub__(self, other: Any) -> 'CtProxyExpression':
+    def __radd__(self, other: Any) -> "CtProxyExpression":
         pass
 
     @_proxy
-    def __rsub__(self, other: Any) -> 'CtProxyExpression':
+    def __sub__(self, other: Any) -> "CtProxyExpression":
         pass
 
     @_proxy
-    def __mul__(self, other: Any) -> 'CtProxyExpression':
+    def __rsub__(self, other: Any) -> "CtProxyExpression":
         pass
 
     @_proxy
-    def __matmul__(self, other: Any) -> 'CtProxyExpression':
+    def __mul__(self, other: Any) -> "CtProxyExpression":
         pass
 
     @_proxy
-    def __truediv__(self, other: 'CtProxyExpression') -> 'CtProxyExpression':
+    def __matmul__(self, other: Any) -> "CtProxyExpression":
         pass
 
     @_proxy
-    def __div__(self, other: Any) -> 'CtProxyExpression':
+    def __truediv__(self, other: "CtProxyExpression") -> "CtProxyExpression":
         pass
 
     @_proxy
-    def __rdiv__(self, other: Any) -> 'CtProxyExpression':
+    def __div__(self, other: Any) -> "CtProxyExpression":
         pass
 
     @_proxy
-    def __rtruediv__(self, other: Any) -> 'CtProxyExpression':
+    def __rdiv__(self, other: Any) -> "CtProxyExpression":
         pass
 
     @_proxy
-    def __rmul__(self, other: Any) -> 'CtProxyExpression':
+    def __rtruediv__(self, other: Any) -> "CtProxyExpression":
         pass
 
     @_proxy
-    def __rmatmul__(self, other: Any) -> 'CtProxyExpression':
+    def __rmul__(self, other: Any) -> "CtProxyExpression":
         pass
 
     @_proxy
-    def __neg__(self) -> 'CtProxyExpression':
+    def __rmatmul__(self, other: Any) -> "CtProxyExpression":
         pass
 
     @_proxy
-    def __eq__(self, other: Any) -> 'CtProxyExpression':
+    def __neg__(self) -> "CtProxyExpression":
         pass
 
     @_proxy
-    def __le__(self, other: Any) -> 'CtProxyExpression':
+    def __eq__(self, other: Any) -> "CtProxyExpression":
         pass
 
     @_proxy
-    def __lt__(self, other: Any) -> 'CtProxyExpression':
+    def __le__(self, other: Any) -> "CtProxyExpression":
         pass
 
     @_proxy
-    def __ge__(self, other: Any) -> 'CtProxyExpression':
+    def __lt__(self, other: Any) -> "CtProxyExpression":
         pass
 
     @_proxy
-    def __gt__(self, other: Any) -> 'CtProxyExpression':
+    def __ge__(self, other: Any) -> "CtProxyExpression":
+        pass
+
+    @_proxy
+    def __gt__(self, other: Any) -> "CtProxyExpression":
         pass
 
     def __str__(self) -> str:
@@ -184,10 +167,10 @@ class CtProxySymbol(CtProxyExpression):
         name: str,
         lb: Optional[Union[float, np.ndarray]] = None,
         ub: Optional[Union[float, np.ndarray]] = None,
-        vartype: VarType = VarType.CONTINUOUS
+        vartype: VarType = VarType.CONTINUOUS,
     ) -> None:
         super().__init__(expr)
-        lb_r: np.ndarray 
+        lb_r: np.ndarray
         ub_r: np.ndarray
 
         if lb is None:
@@ -206,22 +189,30 @@ class CtProxySymbol(CtProxyExpression):
                 ub_r = np.ones(expr.shape)
         if isinstance(lb, np.ndarray):
             if not _eq_shape(lb, expr):
-                raise ValueError(f'Shape of lb is {lb.shape}, whereas symbol has a shape of {expr.shape}')
+                raise ValueError(
+                    f"Shape of lb is {lb.shape}, whereas symbol has a shape of {expr.shape}"
+                )
             lb_r = lb
         elif isinstance(lb, numbers.Number):
             lb_r = np.full(expr.shape, lb)
         else:
             if lb is not None:
-                raise ValueError(f'lb has an invalid type ({type(lb)}). It must be a number or numpy array')
+                raise ValueError(
+                    f"lb has an invalid type ({type(lb)}). It must be a number or numpy array"
+                )
         if isinstance(ub, np.ndarray):
             if not _eq_shape(ub, expr):
-                raise ValueError(f'Shape of ub is {ub.shape}, whereas symbol has a shape of {expr.shape}')
+                raise ValueError(
+                    f"Shape of ub is {ub.shape}, whereas symbol has a shape of {expr.shape}"
+                )
             ub_r = ub
         elif isinstance(ub, numbers.Number):
             ub_r = np.full(expr.shape, ub)
         else:
             if ub is not None:
-                raise ValueError(f'ub has an invalid type ({type(ub)}). It must be a number or numpy array')
+                raise ValueError(
+                    f"ub has an invalid type ({type(ub)}). It must be a number or numpy array"
+                )
         self._lb = lb_r
         self._ub = ub_r
         self._name = name
@@ -240,69 +231,67 @@ class CtProxySymbol(CtProxyExpression):
         return self._name
 
 
-class ProblemDef(abc.ABC):
+class ProblemDef:
     def __init__(
         self,
-        symbols: List[CtProxySymbol],
-        constraints: List[CtProxyExpression],
-        objectives: Optional[List[CtProxyExpression]],
-        weights: Optional[List[float]],
-        direction: Direction = Direction.MIN
+        backend: Optional["Backend"] = None,
+        symbols: Optional[List[CtProxySymbol]] = None,
+        constraints: Optional[List[CtProxyExpression]] = None,
+        objectives: Optional[List[CtProxyExpression]] = None,
+        weights: Optional[List[float]] = None,
+        direction: Direction = Direction.MIN,
     ) -> None:
+        if symbols is None:
+            symbols = []
         if objectives is None:
             objectives = []
         if weights is None:
             weights = [1.0] * len(objectives)
-        self._weights = weights
-        self._symbols = symbols
-        self._constraints = constraints
-        self._objectives = objectives
-        self._direction = direction
+        else:
+            if len(weights) != len(objectives):
+                raise ValueError(
+                    f"The number of weights ({len(weights)}) should match the number of objectives ({len(objectives)})"
+                )
+        self._backend = backend
+        self._constraints = constraints if constraints else []
+        self._objectives = objectives if objectives else []
         self._index: Dict[str, CtProxySymbol] = dict()
+        self._weights = weights if weights else []
+        self._symbols = symbols if symbols else []
+        self._direction = direction
         for s in symbols:
             if s in self._index:
-                raise ValueError(f'Duplicate symbol name {s}')
+                raise ValueError(f"Duplicate symbol name {s}")
             self._index[s._name] = s
 
-    @abc.abstractmethod
-    def _create(
-        self, 
-        symbols: List[CtProxySymbol], 
-        constraints: List[CtProxyExpression], 
-        objectives: List[CtProxyExpression], 
-        weights: List[float],
-        direction: Direction = Direction.MIN
-    ) -> 'ProblemDef':
-        pass
-
+    @property
+    def symbols(self) -> Dict[str, CtProxySymbol]:
+        return self._index
 
     @property
-    def symbols(self):
-        return self._symbols
-
-    @property
-    def constraints(self):
+    def constraints(self) -> List[CtProxyExpression]:
         return self._constraints
 
     @property
-    def objectives(self):
+    def objectives(self) -> List[CtProxyExpression]:
         return self._objectives
 
     @property
-    def weights(self):
+    def weights(self) -> List[float]:
         return self._weights
 
     @property
-    def direction(self):
+    def direction(self) -> Direction:
         return self._direction
 
-    def copy(self) -> 'ProblemDef':
-        return self._create(
+    def copy(self) -> "ProblemDef":
+        return ProblemDef(
+            self._backend,
             self._symbols,
             self._constraints,
             self._objectives,
             self._weights,
-            self._direction
+            self._direction,
         )
 
     def _add(self, other: Any, inplace: bool = False):
@@ -322,15 +311,15 @@ class ProblemDef(abc.ABC):
                 elif isinstance(e, CtProxyExpression):
                     o.add_constraints([e], inplace=True)
                 else:
-                    raise ValueError(f'Unsupported type {type(e)}')
+                    raise ValueError(f"Unsupported type {type(e)}")
             return o
         else:
-            raise ValueError(f'Cannot add {type(other)} to ProblemDef')
+            raise ValueError(f"Cannot add {type(other)} to ProblemDef")
 
-    def __add__(self, other: Any) -> 'ProblemDef':
+    def __add__(self, other: Any) -> "ProblemDef":
         return self._add(other, inplace=False)
 
-    def __iadd__(self, other: Any) -> 'ProblemDef':
+    def __iadd__(self, other: Any) -> "ProblemDef":
         return self._add(other, inplace=True)
 
     def get_symbol(self, name: str) -> CtProxySymbol:
@@ -339,38 +328,37 @@ class ProblemDef(abc.ABC):
     def get_symbols(self, *args) -> List[CtProxySymbol]:
         return [self.get_symbol(n) for n in args]
 
-    def build(self) -> Any:
-        # Do a weighted sum of the objectives if there is more than one
-        if self._objectives is not None and len(self._objectives) > 1:
-            if len(self._weights) != len(self._objectives):
-                raise ValueError('Number of weights must match number of objectives')
-            # auto-convert to a weighted sum
-            obj = sum(
-                self._weights[i] * self._objectives[i]
-                if self._weights[i] != 0.0 else 0.0
-                for i in range(len(self._objectives))
-            )
-            return self._build(obj) # type: ignore
-        else:
-            o = self._objectives[0] if self._objectives and self._weights[0] != 0 else None
-            return self._build(o)
-
-    @abc.abstractmethod
-    def _build(self, obj: Optional[CtProxyExpression]) -> Any:
-        pass
-
-    @abc.abstractmethod
     def solve(
         self,
         solver: Solver = Solver.COIN_OR_CBC,
         max_seconds: int = None,
-        warm_start: bool = False,  
+        warm_start: bool = False,
         verbosity: int = 0,
-        **options
+        **options,
     ) -> Any:
-        pass
+        if self._backend is None:
+            raise ValueError("No backend assigned.")
+        return self._backend.solve(
+            self,
+            solver=solver,
+            max_seconds=max_seconds,
+            warm_start=warm_start,
+            verbosity=verbosity,
+            **options,
+        )
 
-    def merge(self, other: 'ProblemDef', obj_merge='first', inplace=False) -> 'ProblemDef':
+    def merge(self, other: "ProblemDef", inplace=False) -> "ProblemDef":
+        # TODO: If the other is empty (or instance of grammar?) build the problem before merging
+        if isinstance(other, ProblemDef) and hasattr(other, "_build_problem"):
+            f = getattr(other, "_build_problem")
+            other = f(self)
+        b = self._backend if not None else other._backend
+        if not b:
+            raise ValueError("Problems have no backend associated.")
+        if self._backend and other._backend and (self._backend != other._backend):
+            raise ValueError(
+                "The two problems have different instantiations of the backend."
+            )
         if inplace:
             self.add_constraints(other._constraints, inplace=True)
             self.add_objectives(other._objectives, other._weights, inplace=True)
@@ -378,37 +366,31 @@ class ProblemDef(abc.ABC):
             return self
         s = self._symbols + other._symbols
         c = self._constraints + other._constraints
-        w, o = None, None
-        if obj_merge == 'first':
-            w = self._weights
-            o = self._objectives
-        elif obj_merge == 'second':
-            w = other._weights
-            o = other._objectives
-        elif obj_merge == 'merge':
-            w = self._weights + other._weights
-            o = self._objectives + other._objectives
-        else:
-            raise ValueError(f"Valid merge options for objective are: 'first', 'second' and 'merge'")
-        return self._create(s, c, o, w)
+        w = self._weights + other._weights
+        o = self._objectives + other._objectives
+        return ProblemDef(b, s, c, o, w)
 
     def add_constraints(
-        self, 
-        constraints: Union[CtProxyExpression, List[CtProxyExpression]], 
-        inplace: bool = False
-    ) -> 'ProblemDef':
+        self,
+        constraints: Union[CtProxyExpression, List[CtProxyExpression]],
+        inplace: bool = True,
+    ) -> "ProblemDef":
         if not isinstance(constraints, list):
             constraints = [constraints]
         if inplace:
             self._constraints.extend(constraints)
             return self
-        return self._create(self._symbols, self._constraints + constraints, self._objectives, self._weights)
+        return ProblemDef(
+            self._backend,
+            self._symbols,
+            self._constraints + constraints,
+            self._objectives,
+            self._weights,
+        )
 
     def add_symbols(
-        self, 
-        symbols: Union[CtProxySymbol, List[CtProxySymbol]], 
-        inplace: bool = False
-    ) -> 'ProblemDef':
+        self, symbols: Union[CtProxySymbol, List[CtProxySymbol]], inplace: bool = True
+    ) -> "ProblemDef":
         if not isinstance(symbols, list):
             symbols = [symbols]
         if inplace:
@@ -416,25 +398,48 @@ class ProblemDef(abc.ABC):
             for s in symbols:
                 self._index[s.name] = s
             return self
-        return self._create(self._symbols + symbols, self._constraints, self._objectives, self._weights)
+        return ProblemDef(
+            self._backend,
+            self._symbols + symbols,
+            self._constraints,
+            self._objectives,
+            self._weights,
+        )
 
     def add_objectives(
-        self, 
-        objectives: Union[CtProxyExpression, List[CtProxyExpression]], 
+        self,
+        objectives: Union[CtProxyExpression, List[CtProxyExpression]],
         weights: Union[float, List[float]] = 1.0,
-        inplace: bool = False
-    ) -> 'ProblemDef':
+        inplace: bool = True,
+    ) -> "ProblemDef":
         if not isinstance(objectives, list):
             objectives = [objectives]
         if not isinstance(weights, list):
             weights = [weights] * len(objectives)
         if len(weights) != len(objectives):
-            raise ValueError('Number of weights must match number of objectives')
+            raise ValueError("Number of weights must match number of objectives")
         if inplace:
             self._objectives.extend(objectives)
             self._weights.extend(weights)
             return self
-        return self._create(self._symbols, self._constraints, self._objectives + objectives, self._weights + weights)
+        return ProblemDef(
+            self._backend,
+            self._symbols,
+            self._constraints,
+            self._objectives + objectives,
+            self._weights + weights,
+        )
+
+
+class Grammar(ProblemDef):
+    def __init__(self) -> None:
+        super().__init__(None, None, None, None, None, Direction.MIN)
+
+    def _build_problem(self, other: ProblemDef) -> ProblemDef:
+        raise NotImplementedError()
+
+    def merge(self, other: ProblemDef, inplace=False) -> ProblemDef:
+        return other.merge(self._build_problem(other), inplace)
 
 
 class Backend(abc.ABC):
@@ -443,57 +448,91 @@ class Backend(abc.ABC):
 
     def is_available(self) -> bool:
         try:
-            self.load()
+            self._load()
             return True
         except Exception as e:
             return False
 
     @abc.abstractmethod
-    def load(self):
+    def _load(self):
         raise NotImplementedError()
 
     @abc.abstractmethod
     def Variable(
-        self, 
-        name: Optional[str] = None, 
-        shape: Optional[Tuple[int, ...]] = None, 
+        self,
+        name: Optional[str] = None,
+        shape: Optional[Tuple[int, ...]] = None,
         lb: Optional[Union[float, np.ndarray]] = None,
-        ub: Optional[Union[float, np.ndarray]] = None, 
-        vartype: VarType = VarType.CONTINUOUS
+        ub: Optional[Union[float, np.ndarray]] = None,
+        vartype: VarType = VarType.CONTINUOUS,
     ) -> CtProxySymbol:
         pass
 
     def Problem(
-        self, 
-        # TODO: extract leafs from obj/constraints
-        symbols: Union[CtProxySymbol, List[CtProxySymbol]], 
-        constraints: Union[CtProxySymbol, List[CtProxyExpression]], 
-        objectives: Optional[Union[CtProxyExpression, List[CtProxyExpression]]] = None, 
-        weights: Optional[List[float]] = None,
-        direction: Direction = Direction.MIN
+        self,
+        # TODO: extract symbols from obj/constraints (like PICOS/CVXPY)
+        symbols: Optional[Union[CtProxySymbol, List[CtProxySymbol]]] = None,
+        constraints: Optional[Union[CtProxySymbol, List[CtProxyExpression]]] = None,
+        objectives: Optional[Union[CtProxyExpression, List[CtProxyExpression]]] = None,
+        weights: Optional[Union[float, List[float]]] = None,
+        direction: Direction = Direction.MIN,
     ) -> ProblemDef:
-        if not isinstance(symbols, list):
+        if isinstance(symbols, CtProxySymbol):
             symbols = [symbols]
-        if not isinstance(constraints, list):
+        if isinstance(constraints, CtProxyExpression):
             constraints = [constraints]
-        if objectives is None:
-            objectives = []
-        if not isinstance(objectives, list):
+        if isinstance(objectives, CtProxyExpression):
             objectives = [objectives]
-        if weights is None:
-            weights = []
-        return self._create_problem(symbols, constraints, objectives, weights, direction)
+        if isinstance(weights, float):
+            weights = [weights]
+        elif isinstance(weights, numbers.Number):
+            weights = [float(weights)]
+        return ProblemDef(self, symbols, constraints, objectives, weights, direction)
+
+    def solve(
+        self,
+        p: ProblemDef,
+        solver: Solver = Solver.COIN_OR_CBC,
+        max_seconds: int = None,
+        warm_start: bool = False,
+        verbosity: int = 0,
+        **options,
+    ):
+        o: Optional[CtProxyExpression]
+        if p.objectives is not None and len(p.objectives) > 1:
+            if len(p.weights) != len(p.objectives):
+                raise ValueError("Number of weights must match number of objectives")
+            # auto-convert to a weighted sum
+            # TODO: PICOS has issues with sum, change to matrix notation?
+            # type: ignore
+            o = sum(
+                p.weights[i] * p.objectives[i] if p.weights[i] != 0.0 else 0.0  # type: ignore
+                for i in range(len(p.objectives))
+            )
+        else:
+            o = p.objectives[0] if p.objectives and p.weights[0] != 0 else None
+        return self._solve(
+            p,
+            objective=o,
+            solver=solver,
+            max_seconds=max_seconds,
+            warm_start=warm_start,
+            verbosity=verbosity,
+            **options,
+        )
 
     @abc.abstractmethod
-    def _create_problem(
-        self, 
-        symbols: List[CtProxySymbol], 
-        constraints: List[CtProxyExpression], 
-        objectives: List[CtProxyExpression] = None, 
-        weights: Optional[List[float]] = None,
-        direction: Direction = Direction.MIN
-    ) -> ProblemDef:
-        pass
+    def _solve(
+        self,
+        p: ProblemDef,
+        objective: Optional[CtProxyExpression] = None,
+        solver: Solver = Solver.COIN_OR_CBC,
+        max_seconds: int = None,
+        warm_start: bool = False,
+        verbosity: int = 0,
+        **options,
+    ):
+        raise NotImplementedError()
 
     def Constant(self) -> CtProxySymbol:
         raise NotImplementedError()
@@ -502,42 +541,39 @@ class Backend(abc.ABC):
         raise NotImplementedError()
 
     def Flow(
-        self, 
-        rn: ReNet, 
-        lb: Union[float, np.ndarray] = 0, 
+        self,
+        rn: ReNet,
+        lb: Union[float, np.ndarray] = 0,
         ub: Union[float, np.ndarray] = 10,
-        varname: Optional[str] = VAR_FLOW
+        varname: Optional[str] = VAR_FLOW,
     ) -> ProblemDef:
         V = self.Variable(varname, (rn.num_reactions,), lb, ub)
         return self.Problem(V, rn.stoichiometry @ V == 0)
 
     def Indicators(
-        self, 
-        V: CtProxySymbol, 
+        self,
+        V: CtProxySymbol,
         tolerance=1e-3,
-        positive=True, 
-        negative=True, 
+        positive=True,
+        negative=True,
         absolute=True,
-        varname_pos: Optional[str] = VAR_FLOW_INDICATOR_POS,
-        varname_neg: Optional[str] = VAR_FLOW_INDICATOR_NEG,
-        varname_abs: Optional[str] = VAR_FLOW_INDICATOR
     ) -> ProblemDef:
         # Get upper/lower bounds for flow variables
         variables, constraints = [], []
         if not (positive or negative):
             raise ValueError("At least one of positive or negative must be True.")
         if positive:
-            I_pos = self.Variable(varname_pos, V.shape, 0, 1, VarType.BINARY)
+            I_pos = self.Variable(V.name + "_ipos", V.shape, 0, 1, VarType.BINARY)
             variables.append(I_pos)
             if sum(V.ub <= 0) > 0:
                 constraints.append(I_pos[np.where(V.ub <= 0)[0]] == 0)
         if negative:
-            I_neg = self.Variable(varname_neg, V.shape, 0, 1, VarType.BINARY)
+            I_neg = self.Variable(V.name + "_ineg", V.shape, 0, 1, VarType.BINARY)
             variables.append(I_neg)
             if sum(V.lb >= 0) > 0:
                 constraints.append(I_neg[np.where(V.lb >= 0)[0]] == 0)
         if absolute:
-            I_abs = self.Variable(varname_abs, V.shape, 0, 1, VarType.BINARY)
+            I_abs = self.Variable(V.name + "_iabs", V.shape, 0, 1, VarType.BINARY)
             variables.append(I_abs)
             constraints.append(I_abs == I_pos + I_neg)
 
@@ -554,5 +590,65 @@ class Backend(abc.ABC):
         I_UBP = tolerance * I_neg if negative else 0
         UB = I_UBN - I_UBP
         constraints.append(V <= UB)
-        #return variables, constraints
+        # return variables, constraints
         return self.Problem(variables, constraints)
+
+
+class Indicators(Grammar):
+    def __init__(
+        self,
+        var_name: Optional[str] = None,
+        tolerance: float = 1e-3,
+        positive: bool = True,
+        negative: bool = False,
+        absolute: bool = False,
+    ) -> None:
+        # Probably there is some missing component which is not a problemdef
+        super().__init__()
+        self.var_name = var_name
+        self._tol = tolerance
+        self._pos = positive
+        self._neg = negative
+        self._abs = absolute
+
+    def _build_problem(self, other: ProblemDef):
+        if other._backend is None:
+            raise ValueError("Cannot combine empty grammars")
+        if self.var_name is None:
+            # Search for continous vars
+            cvars = [
+                k for k, v in other.symbols.items() if v._vartype == VarType.CONTINUOUS
+            ]
+            if len(cvars) == 0:
+                raise ValueError(
+                    "No available continuous vars for creating indicator vars"
+                )
+            if len(cvars) == 1:
+                self.var_name = cvars[0]
+            else:
+                raise ValueError(
+                    f"There are {len(cvars)} continous vars, but no var_name is provided."
+                )
+        return other._backend.Indicators(
+            other.get_symbol(self.var_name),
+            tolerance=self._tol,
+            positive=self._pos,
+            negative=self._neg,
+            absolute=self._abs,
+        )
+
+
+"""
+class DAG(Grammar):
+    def __init__(self, reactions=None) -> None:
+        super().__init__()
+
+    def _build_problem(self, other: ProblemDef) -> ProblemDef:
+        # Create a position variable per node
+        bck = other._backend
+        if bck is None:
+            raise ValueError("Cannot combine empty grammars")
+        # Do for the entire network or for a subset of edges
+        L = bck.Variable(varname, shape)
+        L[target] - L[source] >= E_ind + (1 - N) * (1 - E_ind)
+"""

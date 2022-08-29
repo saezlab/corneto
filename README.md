@@ -11,19 +11,22 @@ The library will be uploaded to pypi once the API is stable. Meanwhile, it can b
 
 ### Minimal setup
 
-By default, CORNETO does not include any backend nor solver, in order to avoid issues with architectures for which some of the required binaries are not available by default. To install only CORNETO with mininal dependencies, d
+By default, CORNETO does not include any backend nor solver, in order to avoid issues with architectures for which some of the required binaries are not available by default. To install only the CORNETO API, just type:
 
 ```bash
 conda create --name corneto python=3.8
 conda activate corneto
-pip install corneto-0.9.0a3-py3-none-any.whl
+pip install git+https://github.com/saezlab/corneto.git@0.9.0-alpha.3
 ```
+
+Note however that without any backend, you can't do much with CORNETO. There are two supported backends right now: [PICOS](https://picos-api.gitlab.io/picos/tutorial.html) and [CVXPY](https://www.cvxpy.org/). Both backends allow symbolic manipulation of expressions in matrix notation. 
 
 #### CVXPY backend
 
-CVXPY supports many solvers, including the Coin-OR CBC solver through the `cylp` package. If you want to have support for solving problems both for non-commercial and commercial projects, you can use CORNETO with `cvxpy` and `cylp`:
+CVXPY supports many solvers, including the open-source Coin-OR CBC solver through the `cylp` package. If you want to have support for solving problems both for non-commercial and commercial projects, you can use CORNETO with `cvxpy` and `cylp`:
 
 ```bash
+conda activate corneto
 pip install cvxpy cylp
 ```
 
@@ -34,13 +37,41 @@ conda activate corneto
 python -c "import cvxpy; print(cvxpy.installed_solvers())"
 ```
 
-The CBC solver should appear on the list. Please see the CVXPY documentation for more information on how to install other solvers https://www.cvxpy.org/install/. Depending on the solver and the platform, you will need to take different actions. For example, for using Gurobi, you will need to install the Gurobi solver with a valid license and then installing `gurobipy` dependency on the environment.
-
-#### PICOS backend
-If you want to use `PICOS` instead of `CVXPY` backend:
+The CBC solver should appear on the list. Please see the CVXPY documentation for more information on how to install other solvers https://www.cvxpy.org/install/. Depending on the solver and the platform, you will need to take different actions. For example, for using Gurobi, you will need to install the Gurobi solver with a valid license and then installing `gurobipy` dependency on the environment:
 
 ```bash
+conda activate corneto
+pip install gurobipy
+python -c "import cvxpy; print(cvxpy.installed_solvers())"
+```
+
+#### PICOS backend
+
+PICOS backend requires less dependencies than CVXPY and it can be a very good option for Apple M1 users. If you want to use `PICOS` instead of `CVXPY` backend, first install the dependency in your environment with:
+
+```bash
+conda activate corneto
 pip install PICOS
+```
+
+If you don't have CVXPY installed, CORNETO will select PICOS automatically. If you have both, you can just instantiate whatever you like:
+
+```python
+import numpy as np
+from corneto.backend import PicosBackend
+
+backend = PicosBackend()
+P = backend.Problem()
+
+n = 20
+A = np.random.rand(2, n)
+b = np.array([1, 0])
+x = backend.Variable('x', n)
+P += x
+P += sum(x) == 1, x >= 0
+# Convex optimization problem
+P.add_objectives(abs(A*x - b))
+P.solve(solver="cvxopt", verbosity=1)
 ```
 
 Check `PICOS` requirements for different solvers here: https://picos-api.gitlab.io/picos/introduction.html#features

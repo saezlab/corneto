@@ -4,6 +4,7 @@ from corneto._io import load_sif
 from typing import Optional, Iterable, Set, Union, Dict, List
 from corneto._typing import StrOrInt, TupleSIF
 from corneto._constants import *
+from corneto._decorators import jit
 
 
 class Properties:
@@ -269,7 +270,7 @@ class ReNet(abc.ABC):
     def get_reaction_ids(self, reaction_names: Iterable[str]) -> List[int]:
         return [self.get_reaction_id(r) for r in reaction_names]
 
-    def get_species_id(self, species_name: str):
+    def get_species_id(self, species_name: str) -> int:
         if self._indexed:
             return self._species_index[species_name]
         return self._species.index(species_name)
@@ -344,8 +345,13 @@ class ReNet(abc.ABC):
             return [self.get_species_id(n) if isinstance(n, str) else n for n in names]
 
     def successors(
-        self, ids: Iterable[int], id_type: IdType = IdType.REACTION, rev: bool = False
+        self,
+        ids: Union[int, Iterable[int]],
+        id_type: IdType = IdType.REACTION,
+        rev: bool = False,
     ) -> Set[int]:
+        if isinstance(ids, int):
+            ids = [ids]
         if id_type == IdType.REACTION:
             if not rev:
                 return self.get_reactions_with_reactants(self.get_products(ids))
@@ -401,7 +407,7 @@ class ReNet(abc.ABC):
     ) -> "ReNet":
         if sparse:
             # TODO: Add SparseReNet implementation
-            raise NotImplementedError("Sparse matrices not yet implemented")
+            raise NotImplementedError("Sparse matrices not implemented yet")
         if isinstance(sif, str):
             return ReNet.from_sif_file(
                 sif, delimiter, has_header, discard_self_loops, sparse

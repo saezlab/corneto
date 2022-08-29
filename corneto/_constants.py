@@ -1,9 +1,6 @@
 from enum import Enum
 
 VAR_FLOW = '_flow_rxn'
-VAR_FLOW_INDICATOR = '_is_flow_rxn_nonzero'
-VAR_FLOW_INDICATOR_POS = '_is_flow_rxn_positive'
-VAR_FLOW_INDICATOR_NEG = '_is_flow_rxn_negative'
 
 class Solver(str, Enum):
     GUROBI = "gurobi"
