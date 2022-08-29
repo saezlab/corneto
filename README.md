@@ -19,7 +19,10 @@ conda activate corneto
 pip install git+https://github.com/saezlab/corneto.git@0.9.0-alpha.3
 ```
 
-Note however that without any backend, you can't do much with CORNETO. There are two supported backends right now: [PICOS](https://picos-api.gitlab.io/picos/tutorial.html) and [CVXPY](https://www.cvxpy.org/). Both backends allow symbolic manipulation of expressions in matrix notation. 
+Alternatively you can download the wheel file from https://github.com/saezlab/corneto/releases/download/0.9.0-alpha.3/corneto-0.9.0a3-py3-none-any.whl and install it with `pip install corneto-0.9.0a3-py3-none-any.whl`. 
+
+> :warning: Please note that without any backend, you can't do much with CORNETO. There are two supported backends right now: [PICOS](https://picos-api.gitlab.io/picos/tutorial.html) and [CVXPY](https://www.cvxpy.org/). Both backends allow symbolic manipulation of expressions in matrix notation. 
+
 
 #### CVXPY backend
 
@@ -84,11 +87,19 @@ CORNETO can be installed on M1 architecture but may need few extra steps. Sugges
 brew install cmake
 brew install suite-sparse
 CVXOPT_SUITESPARSE_LIB_DIR=/opt/homebrew/Cellar/suite-sparse/VERSION/lib/ CVXOPT_SUITESPARSE_INC_DIR=/opt/homebrew/Cellar/suite-sparse/VERSION/include/ pip install cvxopt
-pip install PICOS
+pip install PICOS gurobipy
 pip install corneto-0.9.0a3-py3-none-any.whl
 ```
 
-In future releases, this will be automatized through `setup.py`.
+In order to properly install `brew` on M1, follow this guide: https://mac.install.guide/homebrew/index.html
+
+Additionally, for plotting you will need to get also `graphviz` with `homebrew`:
+
+```bash
+brew install graphviz
+```
+
+TODO: In future releases, this will be automatized through `setup.py`.
 
 ### Complete setup
 
