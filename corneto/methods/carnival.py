@@ -109,8 +109,10 @@ def carnival_constraints(
     p: ProblemDef = backend.Flow(rn)
     F, Fi = p.get_symbol(VAR_FLOW), None
     if use_flow_indicators and (flow_implies_signal or signal_implies_flow):
-        p += Indicators() #backend.Indicators(p.get_symbol(VAR_FLOW), negative=False, absolute=False)
-        Fi = p.get_symbol(VAR_FLOW + '_ipos') # TODO: make this simpler
+        p += (
+            Indicators()
+        )  # backend.Indicators(p.get_symbol(VAR_FLOW), negative=False, absolute=False)
+        Fi = p.get_symbol(VAR_FLOW + "_ipos")  # TODO: make this simpler
     p += F[rn.get_reaction_id("_outflow")] >= 1.01 * eps
     dist = dict()
     if dag:
@@ -260,16 +262,15 @@ def carnival_loss(
     l1_penalty_reaction: float = 0.0,
     l0_penalty_species: float = 0.0,
     ub_loss: Optional[Union[float, List[float]]] = None,
-    lb_loss: Optional[Union[float, List[float]]] = None
+    lb_loss: Optional[Union[float, List[float]]] = None,
 ) -> ProblemDef:
     # TODO: ProblemDef should be independent of the backend!
     losses = []
     p = ProblemDef()
-    Fi = carnival_def.get_symbol(VAR_FLOW + '_ipos')
+    Fi = carnival_def.get_symbol(VAR_FLOW + "_ipos")
     for i, c in enumerate(conditions.keys()):
         N_act, N_inh = carnival_def.get_symbols(
-            f"species_activated_{c}", 
-            f"species_inhibited_{c}"
+            f"species_activated_{c}", f"species_inhibited_{c}"
         )
         # Get the values of the species for the given condition
         species_values = np.array(
@@ -331,204 +332,23 @@ def carnival(
     eps: float = 1e-3,
     backend: Backend = DEFAULT_BACKEND,
 ):
-    m = backend
-    n_conditions = len(conditions.keys())
-    # Better usage:
-    # bck.Variable(name='x', shape=(1,), lb, ub) # var class backed by cp.Variable
-    # bck.flow_problem() -> vars
-    # Create flow vars and indicators (shared for all conditions)
-    if n_conditions > 1 and flow_implies_signal:
-        # TODO: To support this, it would require to duplicate also flow values and indicators
-        # and then add regularization on the reactions that are active in at least 1 condition.
-        # This extra overhead is not required, and the flow_implies_signal option is not the
-        # standard carnival anyways.
-        raise ValueError("flow_implies_signal is not supported in multi-conditions")
-    # TODO: improve API for this
-    # E.g: m.Flow(rn) + m.Indicators(id=VAR_FLOW, options) or at least m.Indicators(m.Flow(rn))
-    p: ProblemDef = m.Flow(rn)
-    F, Fi = p.get_symbol(VAR_FLOW), None
-    if use_flow_indicators and (flow_implies_signal or signal_implies_flow):
-        p += m.Indicators(p.get_symbol(VAR_FLOW), negative=False, absolute=False)
-        Fi = p.get_symbol(VAR_FLOW + '_ipos')
-    p += F[rn.get_reaction_id("_inflow")] >= 1.01 * eps
-    p += F[rn.get_reaction_id("_outflow")] >= 1.01 * eps
-    dist = dict()
-    if dag:
-        dist = rn.bfs(["_s"])
-        node_maxdist = rn.num_species - 1
-        dist_lbound = np.array([dist.get(i, 0) for i in range(rn.num_species)])
-        # compute upper bounds (max allowable distance in DAG for nodes)
-        dist_ubound = (
-            np.floor(
-                dag_flexibility
-                * (np.full(dist_lbound.shape, node_maxdist) - dist_lbound)
-            )
-            + dist_lbound
-        ).astype(int)
-
-    losses = []
-    for j, k in enumerate(conditions.keys()):
-        reachable = list(range(rn.num_species))
-        non_reachable = []
-        # If there is more than one condition, just check which nodes are reachable
-        # from this condition (forward pass from perturbation to measurements and
-        # backward pass from measurements to perturbations). Nodes and reactions
-        # that cannot be reached should have a value of 0.
-        fwd = set(rn.bfs([f"_pert_{k}"]).keys())
-        bck = set(rn.bfs([f"_meas_{k}"], rev=True).keys())
-        reachable = list(
-            fwd.intersection(bck) | {rn.species.index("_s"), rn.species.index("_t")}
-        )
-        non_reachable = list(set(range(rn.num_species)) - set(reachable))
-
-        N_act = m.Variable(
-            f"species_activated_{k}", (rn.num_species,), vartype=VarType.BINARY
-        )
-        N_inh = m.Variable(
-            f"species_inhibited_{k}", (rn.num_species,), vartype=VarType.BINARY
-        )
-        R_act = m.Variable(
-            f"reaction_sends_activation_{k}",
-            (rn.num_reactions,),
-            vartype=VarType.BINARY,
-        )
-        R_inh = m.Variable(
-            f"reaction_sends_inhibition_{k}",
-            (rn.num_reactions,),
-            vartype=VarType.BINARY,
-        )
-        p += [N_act, N_inh, R_act, R_inh]
-
-        if len(non_reachable) > 0:
-            # TODO: Do the same for non reachable reactions
-            p += N_act[non_reachable] == 0
-            p += N_inh[non_reachable] == 0
-
-        # Just for convenience, force the dummy measurement node to be active. Not required
-        p += N_act[rn.species.index(f"_meas_{k}")] == 1
-        # Same for source and target nodes. Assume they are active as a convention. Note that
-        # dummy source _s connects to perturbations with activatory edges if perturbation is up
-        # and inhibitory edges if perturbation is down. Dummy _s could be also down and propagate
-        # the inverse signal instead. Same for dummy target _t. As a convention, they are forced
-        # to be always activated instead to avoid these alternative options.
-        p += N_act[rn.species.index("_s")] == 1
-        p += N_act[rn.species.index("_t")] == 1
-        # Dont define activation/inhibition for reactions with no reactants or no products
-        # rids = np.flatnonzero(np.logical_and(rn.has_reactant(), rn.has_product()))
-        # TODO: Simplify this by adding methods to ReNet
-        # TODO: Filter out reactions that has reactant or product in the non reachable set
-        valid = np.zeros(rn.num_reactions, dtype=bool)
-        valid[reachable] = True
-        has_reactant = np.sum(rn.stoichiometry < 0, axis=0) > 0
-        has_product = np.sum(rn.stoichiometry > 0, axis=0) > 0
-        # has_reactant = np.sum(np.logical_and(rn.stoichiometry < 0, valid), axis=0) > 0
-        # has_product = np.sum(np.logical_and(rn.stoichiometry > 0, valid), axis=0) > 0
-        rids = np.flatnonzero(np.logical_and(has_reactant, has_product))
-        # TODO: Throw error if reactions have more than one reactant or product
-        # Get reactants and products: note that reactions should have
-        # only 1 reactant 1 product at most for CARNIVAL
-        # ix_react = np.array(list({rn.get_reactants([i]).pop() for i in rids}.intersection(reachable)))
-        # ix_prod = np.array(list({rn.get_products([i]).pop() for i in rids}.intersection(reachable)))
-        ix_react = np.array([rn.get_reactants([i]).pop() for i in rids])
-        ix_prod = np.array([rn.get_products([i]).pop() for i in rids])
-        signs = np.array(rn.properties.reaction_values())[rids]
-        Ra = R_act[rids]
-        Ri = R_inh[rids]
-        p += R_act + R_inh <= 1
-        p += N_act + N_inh <= 1
-        D_ai = N_act[ix_react] - N_inh[ix_react]
-        D_ia = N_inh[ix_react] - N_act[ix_react]
-        S_ai = (N_act[ix_react] + N_inh[ix_react]).multiply(signs)
-        p += Ra <= (D_ai + S_ai).multiply(signs)
-        p += Ri <= (D_ia + S_ai).multiply(signs)
-        if dag:
-            # p += DAG()
-            L = m.Variable(
-                f"dag_layer_position_{k}",
-                (rn.num_species,),
-                vartype=VarType.CONTINUOUS,
-                lb=dist_lbound,
-                ub=dist_ubound,
-            )
-            p += L
-            p += L[ix_prod] - L[ix_react] >= Ra + Ri + (1 - rn.num_species) * (
-                1 - (Ra + Ri)
-            )
-        # Link flow with signal
-        if signal_implies_flow and flow_implies_signal:
-            # Bi-directional implication
-            if Fi is None:
-                raise NotImplementedError(
-                    "flow <=> signal implication supported only with indicators"
-                )
-            else:
-                p += R_act + R_inh == Fi
-        elif signal_implies_flow:
-            # If signal then flow (if no flow then no signal)
-            # but a reaction with non-zero flow may not carry any signal
-            if Fi is None:
-                # If reaction has signal (r_act+r_inh == 1) then the flow on
-                # that reaction has to be >= eps value (active)
-                # If reaction has no signal (r_act+r_inh == 0) then the flow
-                # can have any value
-                p += F >= eps * (R_act + R_inh)
-            else:
-                p += R_act + R_inh <= Fi
-        elif flow_implies_signal:
-            if Fi is None:
-                # If reaction has a non-zero flow (f > eps)
-                # then the reaction has to transmit signal.
-                # If reaction has no flow, the signal can have
-                # any value. Note that this option by itself
-                # does not make sense for carnival, use only
-                # for experimentation.
-                p += eps * (R_act + R_inh) <= F
-            else:
-                p += Fi <= R_act + R_inh
-        # Constrain the product species of the reactions. They can be only up or
-        # down if at least one of the reactions that have the node as product
-        # carry some signal.
-        p += N_act <= rn.stoichiometry.clip(0, 1) @ R_act
-        p += N_inh <= rn.stoichiometry.clip(0, 1) @ R_inh
-        # Get the values of the species for the given condition
-        species_values = np.array(
-            [conditions[k][s][1] if s in conditions[k] else 0 for s in rn.species]
-        )
-        pos = species_values.clip(0, np.inf).reshape(1, -1) @ (1 - (N_act - N_inh))
-        neg = np.abs(species_values.clip(-np.inf, 0)).reshape(1, -1) @ (
-            (N_act - N_inh) + 1
-        )
-        loss = pos + neg
-        losses.append(loss)
-        if ub_loss is not None:
-            if isinstance(ub_loss, list):
-                p += loss <= ub_loss[j]
-            else:
-                p += loss <= ub_loss
-        if lb_loss is not None:
-            if isinstance(lb_loss, list):
-                p += loss >= lb_loss[j]
-            else:
-                p += loss >= lb_loss
-
-    # Add regularization
-    weights = [1.0] * len(losses)
-    if l0_penalty_reaction > 0:
-        if Fi is None:
-            raise ValueError(
-                "L0 regularization on flow cannot be used if signal is not connected to flow."
-            )
-        # TODO: Issues with sum and PICOS (https://gitlab.com/picos-api/picos/-/issues/330)
-        # override sum with picos.sum method
-        losses.append(sum(Fi))  # type: ignore
-        weights.append(l0_penalty_reaction)
-    if l1_penalty_reaction > 0:
-        losses.append(sum(F))  # type: ignore
-        weights.append(l1_penalty_reaction)
-    if l0_penalty_species > 0:
-        losses.append(sum(N_act + N_inh))
-        weights.append(l0_penalty_species)
-
-    # Add objective and weights to p
-    p.add_objectives(losses, weights, inplace=True)
-    return p
+    p = carnival_constraints(
+        rn,
+        backend=backend,
+        signal_implies_flow=signal_implies_flow,
+        flow_implies_signal=flow_implies_signal,
+        dag=dag,
+        dag_flexibility=dag_flexibility,
+        use_flow_indicators=use_flow_indicators,
+        eps=eps,
+    )
+    return p + carnival_loss(
+        rn,
+        conditions,
+        p,
+        l0_penalty_reaction=l0_penalty_reaction,
+        l0_penalty_species=l0_penalty_species,
+        l1_penalty_reaction=l1_penalty_reaction,
+        ub_loss=ub_loss,
+        lb_loss=lb_loss,
+    )
