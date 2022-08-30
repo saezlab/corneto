@@ -43,7 +43,7 @@ class PicosSymbol(CtProxySymbol, PicosExpression):
         ub: Optional[Union[float, np.ndarray]] = None,
         vartype: VarType = VarType.CONTINUOUS,
     ) -> None:
-        super().__init__(expr, name, lb, ub, vartype)       
+        super().__init__(expr, name, lb, ub, vartype)
 
 
 class PicosBackend(Backend):
@@ -51,6 +51,9 @@ class PicosBackend(Backend):
         import picos
 
         picos
+
+    def __str__(self) -> str:
+        return "PICOS Backend"
 
     def Variable(
         self,
@@ -76,23 +79,26 @@ class PicosBackend(Backend):
         self,
         p: ProblemDef,
         objective: Optional[CtProxyExpression] = None,
-        solver: Solver = Solver.GLPK_MI,
+        solver: Optional[Union[str, Solver]] = None,
         max_seconds: int = None,
         warm_start: bool = False,
         verbosity: int = 0,
         **options,
     ):
+        if not solver:
+            raise ValueError("A solver must be provided")
         P = pc.Problem()
         for c in p.constraints:
             P += c.e
         if objective is not None:
-            obj = objective.e if hasattr(objective, '_expr') else objective
+            obj = objective.e if hasattr(objective, "_expr") else objective
             if p._direction == Direction.MIN:
                 P.minimize = obj
             else:
                 P.maximize = obj
         if warm_start:
             from corneto._settings import LOGGER
+
             LOGGER.warn("warm_start is not supported yet, ignored")
         P.solve(
             timelimit=max_seconds,

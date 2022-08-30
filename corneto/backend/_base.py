@@ -2,10 +2,12 @@ import abc
 from turtle import pos
 import numpy as np
 import numbers
-from typing import Any, Dict, Iterable, Optional, Set, Tuple, Union, List
+from typing import Any, Dict, Iterable, Optional, Tuple, Union, List
+import corneto as cnt
 from corneto._constants import *
 from corneto._core import ReNet
 from corneto._decorators import _proxy
+#from corneto.backend import DEFAULT_SOLVER
 
 
 def _eq_shape(a: np.ndarray, b: np.ndarray) -> bool:
@@ -330,7 +332,7 @@ class ProblemDef:
 
     def solve(
         self,
-        solver: Solver = Solver.COIN_OR_CBC,
+        solver: Optional[Union[str, Solver]] = None,
         max_seconds: int = None,
         warm_start: bool = False,
         verbosity: int = 0,
@@ -338,6 +340,8 @@ class ProblemDef:
     ) -> Any:
         if self._backend is None:
             raise ValueError("No backend assigned.")
+        if not solver:
+            solver = cnt.DEFAULT_SOLVER
         return self._backend.solve(
             self,
             solver=solver,
@@ -492,12 +496,14 @@ class Backend(abc.ABC):
     def solve(
         self,
         p: ProblemDef,
-        solver: Solver = Solver.COIN_OR_CBC,
+        solver: Optional[Union[str, Solver]] = None,
         max_seconds: int = None,
         warm_start: bool = False,
         verbosity: int = 0,
         **options,
     ):
+        if not solver:
+            solver = cnt.DEFAULT_SOLVER
         o: Optional[CtProxyExpression]
         if p.objectives is not None and len(p.objectives) > 1:
             if len(p.weights) != len(p.objectives):
@@ -526,7 +532,7 @@ class Backend(abc.ABC):
         self,
         p: ProblemDef,
         objective: Optional[CtProxyExpression] = None,
-        solver: Solver = Solver.COIN_OR_CBC,
+        solver: Optional[Union[str, Solver]] = None,
         max_seconds: int = None,
         warm_start: bool = False,
         verbosity: int = 0,

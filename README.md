@@ -19,7 +19,7 @@ conda activate corneto
 pip install git+https://github.com/saezlab/corneto.git@0.9.0-alpha.3
 ```
 
-Alternatively you can download the wheel file from https://github.com/saezlab/corneto/releases/download/0.9.0-alpha.3/corneto-0.9.0a3-py3-none-any.whl and install it with `pip install corneto-0.9.0a3-py3-none-any.whl`. 
+Alternatively you can download the wheel (.whl) file from https://github.com/saezlab/corneto/releases and install it with `pip install file.whl`. 
 
 > :warning: Please note that without any backend, you can't do much with CORNETO. There are two supported backends right now: [PICOS](https://picos-api.gitlab.io/picos/tutorial.html) and [CVXPY](https://www.cvxpy.org/). Both backends allow symbolic manipulation of expressions in matrix notation. 
 

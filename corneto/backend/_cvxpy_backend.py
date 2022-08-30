@@ -1,3 +1,4 @@
+from multiprocessing.sharedctypes import Value
 from typing import Any, List, Optional, Tuple, Union
 from corneto.backend._base import (
     CtProxyExpression,
@@ -8,7 +9,8 @@ from corneto.backend._base import (
 )
 import numpy as np
 from corneto._constants import *
-import warnings
+from corneto._settings import LOGGER
+
 
 try:
     import cvxpy as cp
@@ -49,6 +51,9 @@ class CvxpyBackend(Backend):
 
         cvxpy
 
+    def __str__(self) -> str:
+        return "CVXPY Backend"
+
     def Variable(
         self,
         name: Optional[str] = None,
@@ -75,15 +80,17 @@ class CvxpyBackend(Backend):
         self,
         p: ProblemDef,
         objective: Optional[CtProxyExpression] = None,
-        solver: Solver = Solver.COIN_OR_CBC,
+        solver: Optional[Union[str, Solver]] = None,
         max_seconds: int = None,
         warm_start: bool = False,
         verbosity: int = 0,
         **options,
     ) -> Any:
+        if not solver:
+            raise ValueError("A solver must be provided")
         o: Union[cp.Minimize, cp.Maximize]
         if objective is not None:
-            obj = objective.e if hasattr(objective, '_expr') else objective
+            obj = objective.e if hasattr(objective, "_expr") else objective
             if p._direction == Direction.MIN:
                 o = cp.Minimize(obj)
             elif p._direction == Direction.MAX:
@@ -117,7 +124,7 @@ class CvxpyBackend(Backend):
             elif s == "CPLEX":
                 options["cplex_params"] = {"timelimit": max_seconds}
             elif s == "GLPK_MI":
-                warnings.warn("Timelimit for GLPK_MI is not supported")
+                LOGGER.warn("Timelimit for GLPK_MI is not supported")
             elif s == "SCIP":
                 # https://www.scipopt.org/doc/html/PARAMETERS.php
                 options["scip_params"] = {"limits/time": max_seconds}
