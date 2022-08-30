@@ -16,7 +16,7 @@ By default, CORNETO does not include any backend nor solver, in order to avoid i
 ```bash
 conda create --name corneto python=3.8
 conda activate corneto
-pip install git+https://github.com/saezlab/corneto.git@0.9.0-alpha.3
+pip install git+https://github.com/saezlab/corneto.git@0.9.0-alpha.4
 ```
 
 Alternatively you can download the wheel (.whl) file from https://github.com/saezlab/corneto/releases and install it with `pip install file.whl`. 
