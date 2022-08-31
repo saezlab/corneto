@@ -7,7 +7,8 @@ import corneto as cnt
 from corneto._constants import *
 from corneto._core import ReNet
 from corneto._decorators import _proxy
-#from corneto.backend import DEFAULT_SOLVER
+
+# from corneto.backend import DEFAULT_SOLVER
 
 
 def _eq_shape(a: np.ndarray, b: np.ndarray) -> bool:
@@ -642,6 +643,22 @@ class Indicators(Grammar):
             negative=self._neg,
             absolute=self._abs,
         )
+
+
+class HammingLoss(Grammar):
+    def __init__(self, reference: np.ndarray, y: CtProxyExpression, penalty: float=1.0) -> None:
+        super().__init__()
+        self.ref = reference
+        self.y = y
+        self.penalty = penalty
+
+    def _build_problem(self, other: ProblemDef) -> ProblemDef:
+        x = abs(self.ref)
+        idx_one = np.where(x == 1)[0]
+        idx_zero = np.where(x == 0)[0]
+        P = ProblemDef()
+        P.add_objectives((sum(self.y[idx_zero] - x[idx_zero]) + sum(x[idx_one] - self.y[idx_one])) * self.penalty, inplace=True)  # type: ignore
+        return P
 
 
 """

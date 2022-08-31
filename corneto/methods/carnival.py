@@ -13,15 +13,33 @@ def carnival_renet(
     conditions: Dict[str, Dict[str, Tuple[str, float]]],
     pert_id: str = "P",
     meas_id: str = "M",
+    conditions_as_timepoints=False,
 ) -> ReNet:
     # Create dummy nodes from _s (source node) to dummy condition nodes
     rnc = rn.copy()
+    ns = "_s"
+    nt = "_t"
+    if conditions_as_timepoints:
+        # Add only one perturbation _pert_ that connects to the _tp_pert_
+        # _pert_ nodes are used to discover the conditions in carnival and
+        # we dont have duplication of states per condition in case timepoints
+        # are used
+        rnc.add_reaction(f"_s-(1)-_pert_CTP", {"_s": -1, "_pert_CTP": 1}, value=1)
     for c, v in conditions.items():
-        dummy_cond_pert = f"_pert_{c}"
-        dummy_cond_meas = f"_meas_{c}"
-        rnc.add_reaction(
-            f"_s-(1)-{dummy_cond_pert}", {"_s": -1, dummy_cond_pert: 1}, value=1
-        )
+        if conditions_as_timepoints:
+            dummy_cond_pert = f"_tp_pert_{c}"
+            dummy_cond_meas = f"_tp_meas_{c}"
+            rnc.add_reaction(
+                f"_pert_CTP-(1)-{dummy_cond_pert}",
+                {"_pert_CTP": -1, dummy_cond_pert: 1},
+                value=1,
+            )
+        else:
+            dummy_cond_pert = f"_pert_{c}"
+            dummy_cond_meas = f"_meas_{c}"
+            rnc.add_reaction(
+                f"{ns}-(1)-{dummy_cond_pert}", {ns: -1, dummy_cond_pert: 1}, value=1
+            )
         for species, (type, value) in v.items():
             direction = 1 if value >= 0 else -1
             # Perturbations
@@ -38,9 +56,18 @@ def carnival_renet(
                     {species: -1, dummy_cond_meas: 1},
                     value=direction,
                 )
-        rnc.add_reaction(
-            f"{dummy_cond_pert}-(1)-_t", {dummy_cond_meas: -1, "_t": 1}, value=1
-        )
+        if conditions_as_timepoints:
+            rnc.add_reaction(
+                f"{dummy_cond_pert}-(1)-_meas_CTP",
+                {dummy_cond_meas: -1, "_meas_CTP": 1},
+                value=1,
+            )
+        else:
+            rnc.add_reaction(
+                f"{dummy_cond_pert}-(1)-{nt}", {dummy_cond_meas: -1, nt: 1}, value=1
+            )
+    if conditions_as_timepoints:
+        rnc.add_reaction(f"_meas_CTP-(1)-{nt}", {"_meas_CTP": -1, nt: 1}, value=1)
     rnc.add_reaction("_inflow", {"_s": 1})
     rnc.add_reaction("_outflow", {"_t": -1})
     return rnc
@@ -99,7 +126,7 @@ def carnival_constraints(
     for pert in perturbations:
         if not pert.startswith("_pert_"):
             raise ValueError(
-                "The provided network does not contain the `_pert` dummy nodes (perturbations per condition). Please call `carinval_network` before this function."
+                "The provided network does not contain the `_pert_` dummy nodes (perturbations per condition). Please call `carinval_network` before this function."
             )
         conditions.append(pert.split("_pert_")[1])
     n_conditions = len(conditions)
@@ -109,10 +136,9 @@ def carnival_constraints(
     p: ProblemDef = backend.Flow(rn)
     F, Fi = p.get_symbol(VAR_FLOW), None
     if use_flow_indicators and (flow_implies_signal or signal_implies_flow):
-        p += (
-            Indicators()
-        )  # backend.Indicators(p.get_symbol(VAR_FLOW), negative=False, absolute=False)
-        Fi = p.get_symbol(VAR_FLOW + "_ipos")  # TODO: make this simpler
+        p += Indicators()
+        # TODO: make this simpler!!
+        Fi = p.get_symbol(VAR_FLOW + "_ipos")
     p += F[rn.get_reaction_id("_outflow")] >= 1.01 * eps
     dist = dict()
     if dag:
