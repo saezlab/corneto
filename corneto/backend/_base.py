@@ -7,6 +7,7 @@ import corneto as cnt
 from corneto._constants import *
 from corneto._core import ReNet
 from corneto._decorators import _proxy
+from corneto._settings import LOGGER
 
 # from corneto.backend import DEFAULT_SOLVER
 
@@ -564,23 +565,26 @@ class Backend(abc.ABC):
         positive=True,
         negative=True,
         absolute=True,
+        suffix_pos="_ipos",
+        suffix_neg="_ineg",
+        suffix_abs="_iabs"
     ) -> ProblemDef:
         # Get upper/lower bounds for flow variables
         variables, constraints = [], []
         if not (positive or negative):
             raise ValueError("At least one of positive or negative must be True.")
         if positive:
-            I_pos = self.Variable(V.name + "_ipos", V.shape, 0, 1, VarType.BINARY)
+            I_pos = self.Variable(V.name + suffix_pos, V.shape, 0, 1, VarType.BINARY)
             variables.append(I_pos)
             if sum(V.ub <= 0) > 0:
                 constraints.append(I_pos[np.where(V.ub <= 0)[0]] == 0)
         if negative:
-            I_neg = self.Variable(V.name + "_ineg", V.shape, 0, 1, VarType.BINARY)
+            I_neg = self.Variable(V.name + suffix_neg, V.shape, 0, 1, VarType.BINARY)
             variables.append(I_neg)
             if sum(V.lb >= 0) > 0:
                 constraints.append(I_neg[np.where(V.lb >= 0)[0]] == 0)
         if absolute:
-            I_abs = self.Variable(V.name + "_iabs", V.shape, 0, 1, VarType.BINARY)
+            I_abs = self.Variable(V.name + suffix_abs, V.shape, 0, 1, VarType.BINARY)
             variables.append(I_abs)
             constraints.append(I_abs == I_pos + I_neg)
 
@@ -632,6 +636,7 @@ class Indicators(Grammar):
                 )
             if len(cvars) == 1:
                 self.var_name = cvars[0]
+                LOGGER.debug(f"No variable provided, creating indicators for {cvars[0]}")
             else:
                 raise ValueError(
                     f"There are {len(cvars)} continous vars, but no var_name is provided."
@@ -646,7 +651,12 @@ class Indicators(Grammar):
 
 
 class HammingLoss(Grammar):
-    def __init__(self, reference: np.ndarray, y: CtProxyExpression, penalty: float=1.0) -> None:
+    def __init__(
+        self,
+        reference: np.ndarray,
+        y: Union[str, CtProxyExpression],
+        penalty: float = 1.0,
+    ) -> None:
         super().__init__()
         self.ref = reference
         self.y = y
@@ -654,10 +664,11 @@ class HammingLoss(Grammar):
 
     def _build_problem(self, other: ProblemDef) -> ProblemDef:
         x = abs(self.ref)
+        y = other.get_symbol(self.y) if isinstance(self.y, str) else self.y
         idx_one = np.where(x == 1)[0]
         idx_zero = np.where(x == 0)[0]
         P = ProblemDef()
-        P.add_objectives((sum(self.y[idx_zero] - x[idx_zero]) + sum(x[idx_one] - self.y[idx_one])) * self.penalty, inplace=True)  # type: ignore
+        P.add_objectives((sum(y[idx_zero] - x[idx_zero]) + sum(x[idx_one] - y[idx_one])) * self.penalty, inplace=True)  # type: ignore
         return P
 
 

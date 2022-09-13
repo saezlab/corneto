@@ -6,7 +6,8 @@ def _read_sif(
     sif_file: str, 
     delimiter: str = "\t",
     has_header: bool = False,
-    discard_self_loops: Optional[bool] = True
+    discard_self_loops: Optional[bool] = True,
+    column_order: List[int] = [0, 1, 2] # source interaction target
 ) -> List[TupleSIF]:
     import csv
     reactions = set()
@@ -19,7 +20,7 @@ def _read_sif(
                 raise ValueError(
                     f"Invalid SIF line: {line}: Format has to be Node1 Value Node2"
                 )
-            s, d, t = line
+            s, d, t = [line[idx] for idx in column_order]
             if discard_self_loops and s == t:
                 continue
             reactions |= set([(s, int(d), t)])
@@ -101,12 +102,14 @@ def load_sif(
     sif_file: str, 
     delimiter: str = "\t",
     has_header: bool = False,
-    discard_self_loops: Optional[bool] = True):
+    discard_self_loops: Optional[bool] = True,
+    column_order: List[int] = [0, 1, 2]):
     reaction_tpls = _read_sif(
         sif_file,
         delimiter=delimiter, 
         has_header=has_header, 
-        discard_self_loops=discard_self_loops
+        discard_self_loops=discard_self_loops,
+        column_order=column_order
     )
     return load_sif_from_tuples(reaction_tpls)
 

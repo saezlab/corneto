@@ -31,6 +31,10 @@ class IdType(str, Enum):
     REACTION = "reaction"
     SPECIES = "species"
 
+class GraphIdType(str, Enum):
+    EDGE = "edge"
+    NODE = "node"
+
 class SpeciesType(str, Enum):
     REACTANT = "reactant"
     PRODUCT = "product"

@@ -1,10 +1,212 @@
 import abc
+from copy import deepcopy
+from multiprocessing.sharedctypes import Value
 import numpy as np
 from corneto._io import load_sif
-from typing import Optional, Iterable, Set, Union, Dict, List
+from typing import Any, Optional, Iterable, Set, Tuple, Union, Dict, List
 from corneto._typing import StrOrInt, TupleSIF
 from corneto._constants import *
 from corneto._decorators import jit
+from collections import OrderedDict
+
+
+class BaseGraph(abc.ABC):
+    def __init__(self) -> None:
+        super().__init__()
+
+    @abc.abstractmethod
+    def _add_edge(self, name: str, nodes: Tuple[Set[Any], Set[Any]]):
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def _set_edge_properties(self, name: str, properties: Dict[str, Any]):
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def _get_edge_properties(self, name: str) -> Dict[str, Any]:
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def _add_node(self, name: str, edges: Optional[Iterable[str]] = None):
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def _set_node_properties(self, name: str, properties: Dict[str, Any]):
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def _get_node_properties(self, name: str) -> Dict[str, Any]:
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def has_edge(self, name: str):
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def has_node(self, name: str):
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def remove_edge(self, name: str):
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def remove_node(self, name: str):
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def copy(self) -> 'BaseGraph':
+        raise NotImplementedError()
+
+    def remove_edges(self, edges: Set[str]):
+        for e in edges:
+            self.remove_edge(e)
+
+    def remove_nodes(self, nodes: Set[str]):
+        for n in nodes:
+            self.remove_node(n)
+
+    def add_edge_properties(
+        self, name: str, properties: Dict[str, Any], update: bool = True
+    ):
+        props = self._get_edge_properties(name)
+        if props is None:
+            props = properties.copy()
+        else:
+            if update:
+                props.update(properties)
+        self._set_edge_properties(name, props)
+
+    def add_node(
+        self,
+        name: str,
+        properties: Optional[Dict[str, Any]] = None,
+        update: bool = False,
+    ):
+        if not update and self.has_node(name):
+            raise ValueError(f"Node {name} already in the graph and update = False")
+        self._add_node(name)
+        if properties is not None:
+            props = self._get_node_properties(name)
+            if update:
+                props.update(properties)
+            self._set_node_properties(name, properties)
+
+    def add_nodes(
+        self,
+        nodes: Iterable[str],
+        properties: Optional[Dict[str, Dict[str, Any]]] = None,
+        update: bool = False,
+    ):
+        if properties is None:
+            properties = dict()
+        for n in nodes:
+            self.add_node(n, properties.get(n, None), update=update)
+
+    def add_edge(
+        self,
+        name: str,
+        nodes: Tuple[Any, Any],
+        directed: bool = False,
+        properties: Optional[Dict[str, Any]] = None,
+        update: bool = False,
+    ):
+        if not update and self.has_edge(name):
+            raise ValueError("The edge is alreday in the graph")
+        s, t = nodes
+        if not isinstance(s, set):
+            s = set(s)
+        if not isinstance(t, set):
+            t = set(t)
+        unodes = s.union(t)
+        for n in unodes:
+            self._add_node(n, [name])
+        if directed:
+            if properties is None:
+                properties = dict()
+            properties['__directed__'] = True
+        if properties is not None:
+            self.add_edge_properties(name, properties=properties, update=update)
+        self._add_edge(name, (s, t))
+
+    def add_edge_from_dict(
+        self, name: str, nodes: Dict[str, float]
+    ):
+        s = set(k for k, v in nodes.items() if v < 0)
+        t = set(k for k, v in nodes.items() if v > 0)
+        self._add_edge(name, (s, t))
+        for n in s.union(t):
+            self._add_node(n, [name])
+        self.add_edge_properties(name, {"__nodes__": nodes}, update=True)
+
+
+class Graph(BaseGraph):
+    def __init__(self) -> None:
+        super().__init__()
+        self._edges: Dict[str, Tuple[Any, Any]] = OrderedDict()
+        self._nodes: Dict[str, Set[str]] = OrderedDict()
+        self._edge_properties: Dict[str, Any] = dict()
+        self._node_properties: Dict[str, Any] = dict()
+
+    def _add_edge(self, name: str, nodes: Tuple[Any, Any]):
+        self._edges[name] = nodes
+
+    def _set_edge_properties(self, name: str, properties: Dict[str, Any]):
+        self._edge_properties[name] = properties
+
+    def _get_edge_properties(self, name: str) -> Dict[str, Any]:
+        return self._edge_properties.get(name, None)
+
+    def _add_node(self, name: str, edges: Optional[Iterable[str]] = None):
+        e = self._nodes.get(name, set())
+        if edges:
+            e |= set(edges)
+        self._nodes[name] = e
+
+    def _set_node_properties(self, name: str, properties: Dict[str, Any]):
+        self._node_properties[name] = properties
+
+    def _get_node_properties(self, name: str) -> Dict[str, Any]:
+        return self._node_properties[name]
+
+    def has_edge(self, name: str):
+        return name in self._edges
+
+    def has_node(self, name: str):
+        return name in self._nodes
+
+    def remove_edge(self, name: str):
+        s, t = self._edges[name]
+        n = s.union(t)
+        for node in n:
+            self._nodes[node].remove(name)
+        del self._edges[name]
+        if name in self._edge_properties:
+            del self._edge_properties[name]
+
+    def remove_node(self, name: str):
+        edges = self._nodes[name]
+        for e in edges:
+            s, t = self._edges[e]
+            if name in s:
+                s.remove(name)
+            if name in t:
+                t.remove(name)
+            props = self._edge_properties[e]
+            if "__nodes__" in props:
+                del props["__nodes__"][name]
+            if len(s) == 0 and len(t) == 0:
+                self.remove_edge(e)
+        del self._nodes[name]
+
+    def copy(self) -> 'Graph':
+        g = Graph()
+        g._edges = self._edges.copy()
+        g._nodes = self._nodes.copy()
+        g._edge_properties = deepcopy(self._edge_properties)
+        g._node_properties = deepcopy(self._node_properties)
+        return g
+
 
 
 class Properties:
@@ -124,7 +326,7 @@ class ReNet(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def _add_reaction(self, coeffs: Dict[str, int]):
+    def _add_reaction(self, name: str, coeffs: Dict[str, int]):
         pass
 
     @abc.abstractmethod
@@ -171,7 +373,7 @@ class ReNet(abc.ABC):
         n._reactions.append(name)
         if n._indexed:
             n._reaction_index[name] = len(n._reactions) - 1
-        n._add_reaction(coeffs)
+        n._add_reaction(name, coeffs)
         if value is not None:
             n.properties._reaction_values[n.get_reaction_id(name)] = value
         return n
@@ -404,13 +606,19 @@ class ReNet(abc.ABC):
         has_header: bool = False,
         discard_self_loops: Optional[bool] = True,
         sparse=False,
+        column_order: List[int] = [0, 1, 2],
     ) -> "ReNet":
         if sparse:
             # TODO: Add SparseReNet implementation
             raise NotImplementedError("Sparse matrices not implemented yet")
         if isinstance(sif, str):
             return ReNet.from_sif_file(
-                sif, delimiter, has_header, discard_self_loops, sparse
+                sif,
+                delimiter=delimiter,
+                has_header=has_header,
+                discard_self_loops=discard_self_loops,
+                sparse=sparse,
+                column_order=column_order,
             )
         elif isinstance(sif, list):
             return ReNet.from_sif_list(sif, sparse)
@@ -424,12 +632,19 @@ class ReNet(abc.ABC):
         has_header: bool = False,
         discard_self_loops: Optional[bool] = True,
         sparse=False,
+        column_order: List[int] = [0, 1, 2],
     ) -> "ReNet":
         if sparse:
             # TODO: Add SparseReNet implementation
             raise NotImplementedError("Sparse matrices not yet implemented")
 
-        S, s, r, p = load_sif(sif_file, delimiter, has_header, discard_self_loops)
+        S, s, r, p = load_sif(
+            sif_file,
+            delimiter=delimiter,
+            has_header=has_header,
+            discard_self_loops=discard_self_loops,
+            column_order=column_order,
+        )
         renet = DenseReNet(S, s, r)
         renet.properties._reaction_values = p
         return renet
@@ -468,6 +683,58 @@ class ReNet(abc.ABC):
         from corneto._nx import plot
 
         return plot(self.nxgraph(), **kwargs)
+
+
+class DictReNet(ReNet):
+    def __init__(
+        self, species: List[str], reactions: List[str], indexed: bool = True
+    ) -> None:
+        super().__init__(species, reactions, indexed)
+        self._reaction_data: Dict[str, Dict[str, int]] = dict()
+        self._species_data: Dict[str, Dict[str, int]] = dict()
+
+    def _add_reaction(self, name: str, coeffs: Dict[str, int]):
+        dr = self._reaction_data.get(name, {})
+        dr.update(coeffs)
+        for k, v in coeffs.items():
+            ds = self._species_data.get(k, {})
+            ds[name] = v
+
+    def _add_species(self, names: List[str]) -> None:
+        pass
+
+    def get_stoichiometry(self) -> np.ndarray:
+        raise NotImplementedError()
+
+    def get_reactants_of_reaction(self, reaction_id: int) -> Set[int]:
+        rxn = self._reactions[reaction_id]
+        return set(
+            self._species_index[k] for k, v in self._reaction_data[rxn].items() if v < 0
+        )
+
+    def get_products_of_reaction(self, reaction_id: int) -> Set[int]:
+        rxn = self._reactions[reaction_id]
+        return set(
+            self._species_index[k] for k, v in self._reaction_data[rxn].items() if v > 0
+        )
+
+    def get_reactions_with_product(self, species_id: int) -> Set[int]:
+        sp = self._species[species_id]
+        return set(
+            self._reaction_index[k] for k, v in self._species_data[sp].items() if v > 0
+        )
+
+    def get_reactions_with_reactant(self, species_id: int) -> Set[int]:
+        sp = self._species[species_id]
+        return set(
+            self._reaction_index[k] for k, v in self._species_data[sp].items() if v < 0
+        )
+
+    def _select_reactions(self, reaction_ids: List[int]) -> "ReNet":
+        raise NotImplementedError()
+
+    def copy(self):
+        raise NotImplementedError()
 
 
 class DenseReNet(ReNet):
@@ -518,7 +785,7 @@ class DenseReNet(ReNet):
             np.vstack((self._stoichiometry, rows)) if self._stoichiometry.size else rows
         )
 
-    def _add_reaction(self, coeffs: Dict[str, int]):
+    def _add_reaction(self, name: str, coeffs: Dict[str, int]):
         new_species = list(set(coeffs.keys()) - set(self.species))
         st_sz = self._stoichiometry.size
         if len(new_species) > 0:
