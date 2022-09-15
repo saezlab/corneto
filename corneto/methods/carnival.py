@@ -276,9 +276,9 @@ def carnival_constraints(
         # Constrain the product species of the reactions. They can be only up or
         # down if at least one of the reactions that have the node as product
         # carry some signal.
-        S_clipped = rn.stoichiometry.clip(0, 1)
-        p += N_act <= S_clipped @ R_act
-        p += N_inh <= S_clipped @ R_inh
+        incidence_matrix = rn.stoichiometry.clip(0, 1)
+        p += N_act <= incidence_matrix @ R_act
+        p += N_inh <= incidence_matrix @ R_inh
     return p
 
 
@@ -331,18 +331,12 @@ def carnival_loss(
             )
         # TODO: Issues with sum and PICOS (https://gitlab.com/picos-api/picos/-/issues/330)
         # override sum with picos.sum method
-        #losses.append(sum(Fi))  # type: ignore
-        #losses.append(Fi.T @ np.ones((1, Fi.shape[0])))
         losses.append(np.ones(Fi.shape) @ Fi)
         weights.append(l0_penalty_reaction)
     if l1_penalty_reaction > 0:
-        #losses.append(sum(F))  # type: ignore
-        #losses.append(F.T @ np.ones((1, F.shape[0])))
         losses.append(np.ones(F.shape) @ F)
         weights.append(l1_penalty_reaction)
     if l0_penalty_species > 0:
-        #losses.append(sum(N_act + N_inh))
-        #losses.append((N_act + N_inh).T @ np.ones((1, N_act.shape[0])))
         losses.append(np.ones(N_act.shape) @ (N_act + N_inh))
         weights.append(l0_penalty_species)
     # Add objective and weights to p

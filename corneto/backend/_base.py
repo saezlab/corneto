@@ -511,7 +511,6 @@ class Backend(abc.ABC):
             if len(p.weights) != len(p.objectives):
                 raise ValueError("Number of weights must match number of objectives")
             # auto-convert to a weighted sum
-            # TODO: PICOS has issues with sum, change to matrix notation?
             # type: ignore
             o = sum(
                 p.weights[i] * p.objectives[i] if p.weights[i] != 0.0 else 0.0  # type: ignore
@@ -671,7 +670,12 @@ class HammingLoss(Grammar):
         idx_one = np.where(x == 1)[0]
         idx_zero = np.where(x == 0)[0]
         P = ProblemDef()
-        P.add_objectives((sum(y[idx_zero] - x[idx_zero]) + sum(x[idx_one] - y[idx_one])) * self.penalty, inplace=True)  # type: ignore
+        diff_zeros = y[idx_zero] - x[idx_zero]
+        diff_ones = x[idx_one] - y[idx_one]
+        hamming_dist = np.ones(diff_zeros.shape) @ diff_zeros + np.ones(diff_ones.shape) @ diff_ones
+        #P.add_objectives((sum(diff_zeros) + sum(diff_ones)) * self.penalty, inplace=True)  # type: ignore
+        P.add_objectives(hamming_dist, weights=self.penalty, inplace=True)  # type: ignore
+    
         return P
 
 
