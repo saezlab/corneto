@@ -307,7 +307,7 @@ class ProblemDef:
             return self.add_constraints([other], inplace=inplace)
         elif isinstance(other, Iterable):
             o = self
-            if inplace:
+            if not inplace:
                 o = self.copy()
             for e in other:
                 if isinstance(e, CtProxySymbol):
@@ -556,7 +556,10 @@ class Backend(abc.ABC):
         varname: Optional[str] = VAR_FLOW,
     ) -> ProblemDef:
         V = self.Variable(varname, (rn.num_reactions,), lb, ub)
-        return self.Problem(V, rn.stoichiometry @ V == 0)
+        S = rn.stoichiometry
+        C = S @ V == 0
+        p = self.Problem(V, C)
+        return p
 
     def Indicators(
         self,

@@ -19,6 +19,18 @@ class BaseGraph(abc.ABC):
         raise NotImplementedError()
 
     @abc.abstractmethod
+    def _get_edge(self, name: str) -> Tuple[Set[Any], Set[Any]]:
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def _get_edge_names(self) -> List[str]:
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def _get_node_names(self) -> List[str]:
+        raise NotImplementedError()
+
+    @abc.abstractmethod
     def _set_edge_properties(self, name: str, properties: Dict[str, Any]):
         raise NotImplementedError()
 
@@ -76,6 +88,15 @@ class BaseGraph(abc.ABC):
             if update:
                 props.update(properties)
         self._set_edge_properties(name, props)
+
+    def add_node_properties(self, name: str, properties: Dict[str, Any], update: bool = True):
+        props = self._get_node_properties(name)
+        if props is None:
+            props = properties.copy()
+        else:
+            if update:
+                props.update(properties)
+        self._set_node_properties(name, properties)
 
     def add_node(
         self,
@@ -139,6 +160,23 @@ class BaseGraph(abc.ABC):
             self._add_node(n, [name])
         self.add_edge_properties(name, {"__nodes__": nodes}, update=True)
 
+    def is_edge_directed(self, name: str) -> bool:
+        props = self._get_edge_properties(name)
+        if props and '__directed__' in props:
+            return props['__directed__']
+        return True
+            
+    def create_edge_subgraph(self, edges: List[str]) -> 'Graph':
+        g = Graph()
+        for e in edges:
+            g.add_edge(e, self._get_edge(e), properties=self._get_edge_properties(e))
+        for n in g._get_node_names():
+            props = self._get_edge_properties(n)
+            if props is not None:
+                self.add_node_properties(n, props)
+        return g
+        
+
 
 class Graph(BaseGraph):
     def __init__(self) -> None:
@@ -167,7 +205,16 @@ class Graph(BaseGraph):
         self._node_properties[name] = properties
 
     def _get_node_properties(self, name: str) -> Dict[str, Any]:
-        return self._node_properties[name]
+        return self._node_properties.get(name, None)
+
+    def _get_edge(self, name: str) -> Tuple[Set[Any], Set[Any]]:
+        return self._edges[name]
+
+    def _get_edge_names(self) -> List[str]:
+        return list(self._edges.keys())
+
+    def _get_node_names(self) -> List[str]:
+        return list(self._nodes.keys())
 
     def has_edge(self, name: str):
         return name in self._edges
@@ -201,8 +248,8 @@ class Graph(BaseGraph):
 
     def copy(self) -> 'Graph':
         g = Graph()
-        g._edges = self._edges.copy()
-        g._nodes = self._nodes.copy()
+        g._edges = deepcopy(self._edges)
+        g._nodes = deepcopy(self._nodes)
         g._edge_properties = deepcopy(self._edge_properties)
         g._node_properties = deepcopy(self._node_properties)
         return g
@@ -685,58 +732,6 @@ class ReNet(abc.ABC):
         return plot(self.nxgraph(), **kwargs)
 
 
-class DictReNet(ReNet):
-    def __init__(
-        self, species: List[str], reactions: List[str], indexed: bool = True
-    ) -> None:
-        super().__init__(species, reactions, indexed)
-        self._reaction_data: Dict[str, Dict[str, int]] = dict()
-        self._species_data: Dict[str, Dict[str, int]] = dict()
-
-    def _add_reaction(self, name: str, coeffs: Dict[str, int]):
-        dr = self._reaction_data.get(name, {})
-        dr.update(coeffs)
-        for k, v in coeffs.items():
-            ds = self._species_data.get(k, {})
-            ds[name] = v
-
-    def _add_species(self, names: List[str]) -> None:
-        pass
-
-    def get_stoichiometry(self) -> np.ndarray:
-        raise NotImplementedError()
-
-    def get_reactants_of_reaction(self, reaction_id: int) -> Set[int]:
-        rxn = self._reactions[reaction_id]
-        return set(
-            self._species_index[k] for k, v in self._reaction_data[rxn].items() if v < 0
-        )
-
-    def get_products_of_reaction(self, reaction_id: int) -> Set[int]:
-        rxn = self._reactions[reaction_id]
-        return set(
-            self._species_index[k] for k, v in self._reaction_data[rxn].items() if v > 0
-        )
-
-    def get_reactions_with_product(self, species_id: int) -> Set[int]:
-        sp = self._species[species_id]
-        return set(
-            self._reaction_index[k] for k, v in self._species_data[sp].items() if v > 0
-        )
-
-    def get_reactions_with_reactant(self, species_id: int) -> Set[int]:
-        sp = self._species[species_id]
-        return set(
-            self._reaction_index[k] for k, v in self._species_data[sp].items() if v < 0
-        )
-
-    def _select_reactions(self, reaction_ids: List[int]) -> "ReNet":
-        raise NotImplementedError()
-
-    def copy(self):
-        raise NotImplementedError()
-
-
 class DenseReNet(ReNet):
     def __init__(
         self, stoichiometry: np.ndarray, species: List[str], reactions: List[str]
@@ -801,3 +796,127 @@ class DenseReNet(ReNet):
     @staticmethod
     def empty():
         return DenseReNet(np.array([]), [], [])
+
+
+class GReNet(ReNet):
+    def __init__(
+        self, stoichiometry: np.ndarray, species: List[str], reactions: List[str]
+    ) -> None:
+        if len(stoichiometry.shape) > 1:
+            self._graph = Graph()
+            for s in species:
+                self._graph.add_node(s)
+            # Build from stoichiometry
+            for j in range(stoichiometry.shape[1]):
+                idx = np.where(stoichiometry[:,j] != 0)[0]
+                nodes = {species[i]: stoichiometry[i, j] for i in idx}
+                self._graph.add_edge_from_dict(reactions[j], nodes)
+            sp = list(self._graph._nodes.keys())
+            rx = list(self._graph._edges.keys())
+            super().__init__(sp, rx)
+        else:
+            super().__init__([], [])
+        self._stoichiometry = stoichiometry
+        self._modified = False
+            
+
+
+    @staticmethod
+    def create_stoichiometric_matrix(graph: Graph) -> Tuple[np.ndarray, List[str], List[str]]:
+        nodes = list(graph._nodes.keys())
+        edges = list(graph._edges.keys())
+        S = np.zeros((len(nodes), len(edges)))
+        for j in range(S.shape[1]):
+            rxn = edges[j]
+            coeffs = graph._edge_properties[rxn]['__nodes__']
+            idx, vals = zip(*coeffs.items())
+            idx = [nodes.index(i) for i in idx]
+            S[idx, j] = vals
+        return S, nodes, edges
+
+    def get_stoichiometry(self) -> np.ndarray:
+        if not self._modified and self._stoichiometry is not None:
+            return self._stoichiometry
+        else:
+            S, _, _ = GReNet.create_stoichiometric_matrix(self._graph)
+            self._stoichiometry = S
+            self._modified = False
+            return S
+
+    def get_reactants_of_reaction(self, reaction_id: int) -> Set[int]:
+        r = self.reactions[reaction_id]
+        s, t = self._graph._edges[r]
+        return {self._species_index[sp] for sp in s}
+
+    def get_products_of_reaction(self, reaction_id: int) -> Set[int]:
+        r = self.reactions[reaction_id]
+        s, t = self._graph._edges[r]
+        return {self._species_index[sp] for sp in t}
+
+    def get_reactions_with_product(self, species_id: int) -> Set[int]:
+        sp = self._species[species_id]
+        edges = self._graph._nodes[sp]
+        rxns = []
+        for e in edges:
+            s, t = self._graph._edges[e]
+            if sp in t:
+                rxns.append(e)
+        return set(self._reaction_index[e] for e in rxns)
+
+    def get_reactions_with_reactant(self, species_id: int) -> Set[int]:
+        sp = self._species[species_id]
+        edges = self._graph._nodes[sp]
+        rxns = []
+        for e in edges:
+            s, t = self._graph._edges[e]
+            if sp in s:
+                rxns.append(e)
+        return set(self._reaction_index[e] for e in rxns)
+
+    def _select_reactions(self, reaction_ids: List[int]) -> "ReNet":
+        edges = [self.reactions[i] for i in reaction_ids]
+        g = self._graph.create_edge_subgraph(edges)
+        S, n, e = GReNet.create_stoichiometric_matrix(g)
+        rn = GReNet(S, n, e)
+        # Add properties
+        #rn.properties = self.properties.copy()
+        sv = {rn._species_index[k]: self.properties.species_value(k) for k in n}
+        rv = {rn._reaction_index[k]: self.properties.reaction_value(k) for k in e}
+        rn.properties._species_values = sv
+        rn.properties._reaction_values = rv
+        rn.properties._renet = rn
+        return rn
+
+    def copy(self):
+        rn = GReNet.empty()
+        rn._species = self._species.copy()
+        rn._reactions = self._reactions.copy()
+        rn._species_index = self._species_index.copy()
+        rn._reaction_index = self._reaction_index.copy()
+        rn._graph = self._graph.copy()
+        rn.properties = self.properties.copy()
+        rn.properties._renet = rn
+        return rn
+
+    def _add_species(self, names: List[str]) -> None:
+        for s in names:
+            self._graph.add_node(s)
+        self._modified = True
+
+    def _add_reaction(self, name: str, coeffs: Dict[str, int]):
+        new_species = list(set(coeffs.keys()) - set(self.species))
+        if len(new_species) > 0:
+            self.add_species(new_species)
+        self._graph.add_edge_from_dict(name, coeffs)
+        self._modified = True
+
+    @staticmethod
+    def empty():
+        return GReNet(np.array([]), [], [])
+
+    @staticmethod
+    def from_renet(rn: ReNet):
+        g = GReNet(rn.stoichiometry, rn.species, rn.reactions)
+        g.properties = rn.properties.copy()
+        g.properties._renet = g
+        return g 
