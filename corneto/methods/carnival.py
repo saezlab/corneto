@@ -133,13 +133,24 @@ def carnival_constraints(
     LOGGER.debug(f"Creating CARNIVAL definition with {n_conditions} conditions")
     if n_conditions > 1 and flow_implies_signal:
         raise ValueError("flow_implies_signal is not supported in multi-conditions")
-    p: ProblemDef = backend.Flow(rn)
-    F, Fi = p.get_symbol(VAR_FLOW), None
-    if use_flow_indicators and (flow_implies_signal or signal_implies_flow):
-        p += Indicators()
-        # TODO: make this simpler!!
-        Fi = p.get_symbol(VAR_FLOW + "_ipos")
-    p += F[rn.get_reaction_id("_outflow")] >= 1.01 * eps
+    use_flow = use_flow_indicators or flow_implies_signal or signal_implies_flow
+    if use_flow:
+        p = backend.Flow(rn)
+        F, Fi = p.get_symbol(VAR_FLOW), None
+        p += F[rn.get_reaction_id("_outflow")] >= 1.01 * eps
+        if use_flow_indicators:
+            p += Indicators()
+            # TODO: make this simpler!!
+            Fi = p.get_symbol(VAR_FLOW + "_ipos")
+    else:
+        F, Fi = None, None
+        p = backend.Problem()
+    
+    
+    # If a DAG is required, compute first bounds on distance
+    # to have a tighter problem. Dag_flexibility param can
+    # be used to obtain suboptimal solutions by allowing
+    # less flexibility in the way nodes can be placed.
     dist = dict()
     if dag:
         dist = rn.bfs(["_s"])
@@ -242,6 +253,7 @@ def carnival_constraints(
                 1 - (Ra + Ri)
             )
             p += L[ix_prod] - L[ix_react] <= rn.num_species - 1
+
         # Link flow with signal
         if signal_implies_flow and flow_implies_signal:
             # Bi-directional implication
@@ -295,8 +307,11 @@ def carnival_loss(
     # TODO: ProblemDef should be independent of the backend!
     losses = []
     p = ProblemDef()
-    F = carnival_def.get_symbol(VAR_FLOW)
-    Fi = carnival_def.get_symbol(VAR_FLOW + "_ipos")
+    F, Fi = None, None
+    if VAR_FLOW in carnival_def.symbols.keys():
+        F = carnival_def.get_symbol(VAR_FLOW)
+    if VAR_FLOW + "_ipos" in carnival_def.symbols.keys():
+        Fi = carnival_def.get_symbol(VAR_FLOW + "_ipos")
     for i, c in enumerate(conditions.keys()):
         N_act, N_inh = carnival_def.get_symbols(
             f"species_activated_{c}", f"species_inhibited_{c}"
@@ -334,6 +349,8 @@ def carnival_loss(
         losses.append(np.ones(Fi.shape) @ Fi)
         weights.append(l0_penalty_reaction)
     if l1_penalty_reaction > 0:
+        if F is None:
+            raise NotImplementedError("Use R_act and R_inh for regularization")
         losses.append(np.ones(F.shape) @ F)
         weights.append(l1_penalty_reaction)
     if l0_penalty_species > 0:

@@ -74,6 +74,7 @@ def plot(
     edge_alpha=1.0,
     custom_style=None,
     ax=None,
+    node_labels=None,
     figsize=None,
 ):
     try:
@@ -174,7 +175,7 @@ def plot(
             edgelist=[e],
             ax=ax,
         )
-    nx.draw_networkx_labels(G, pos, ax=ax)
+    nx.draw_networkx_labels(G, pos, labels=node_labels, ax=ax)
     return fig, ax, pos
 
 
