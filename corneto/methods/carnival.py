@@ -203,6 +203,14 @@ def carnival_constraints(
             p += N_act[non_reachable] == 0
             p += N_inh[non_reachable] == 0
 
+        # Also, if the measurements are selected, their edges from
+        # measurement to the dummy _meas_ node have to be selected.
+        # Not required, but forces to have a connected graph.
+        meas_rxns = list(rn.get_reactions_with_product(rn.get_species_id(f"_meas_{c}")))
+        meas_species = [rn.get_reactants_of_reaction(r).pop() for r in meas_rxns]
+        p += R_act[meas_rxns] + R_inh[meas_rxns] == N_act[meas_species] + N_inh[meas_species]
+
+
         # Just for convenience, force the dummy measurement node to be active. Not required
         p += N_act[rn.species.index(f"_meas_{c}")] == 1
         # Same for source and target nodes. Assume they are active as a convention. Note that
@@ -348,12 +356,12 @@ def carnival_loss(
         # override sum with picos.sum method
         losses.append(np.ones(Fi.shape) @ Fi)
         weights.append(l0_penalty_reaction)
-    if l1_penalty_reaction > 0:
+    if l1_penalty_reaction != 0:
         if F is None:
             raise NotImplementedError("Use R_act and R_inh for regularization")
         losses.append(np.ones(F.shape) @ F)
         weights.append(l1_penalty_reaction)
-    if l0_penalty_species > 0:
+    if l0_penalty_species != 0:
         losses.append(np.ones(N_act.shape) @ (N_act + N_inh))
         weights.append(l0_penalty_species)
     # Add objective and weights to p

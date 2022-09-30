@@ -228,13 +228,13 @@ def to_nxgraph(
             # print(reactants, products)
             prop = {"type": "complex", "id": rid, "name": renet.reactions[rid]}
             for r in reactants:
-                coeff = renet.stoichiometry()[r, rid]
+                coeff = renet.stoichiometry[r, rid]
                 # put 0 otherwise it draws activation/inhibition
                 coeff = 0
                 edges.append((renet.species[r], renet.reactions[rid], coeff))
                 edge_attributes[(renet.species[r], renet.reactions[rid])] = prop
             for p in products:
-                coeff = renet.stoichiometry()[p, rid]
+                coeff = renet.stoichiometry[p, rid]
                 edges.append((renet.reactions[rid], renet.species[p], coeff))
                 edge_attributes[(renet.reactions[rid], renet.species[p])] = prop
     G.add_weighted_edges_from(edges)
