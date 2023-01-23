@@ -45,20 +45,33 @@ def carnival_renet(
             # Perturbations
             if type.casefold() == pert_id.casefold():
                 rnc.add_reaction(
-                    f"{dummy_cond_pert}-({direction})-{species}",
+                    f"{dummy_cond_pert}--({direction})--{species}",
                     {dummy_cond_pert: -1, species: 1},
                     value=direction,
                 )
+                # If measurement is 0, add also an inhibitory edge
+                if value == 0:
+                    rnc.add_reaction(
+                        f"{dummy_cond_pert}--(-1)--{species}",
+                        {dummy_cond_pert: -1, species: 1},
+                        value=-1,
+                    )
             # Measurements
             elif type.casefold() == meas_id.casefold():
                 rnc.add_reaction(
-                    f"{species}-({direction})-{dummy_cond_meas}",
+                    f"{species}--({direction})--{dummy_cond_meas}",
                     {species: -1, dummy_cond_meas: 1},
                     value=direction,
                 )
+                if value == 0:
+                    rnc.add_reaction(
+                        f"{species}--(-1)--{dummy_cond_meas}",
+                        {species: -1, dummy_cond_meas: 1},
+                        value=-1,
+                    )    
         if conditions_as_timepoints:
             rnc.add_reaction(
-                f"{dummy_cond_pert}-(1)-_meas_CTP",
+                f"{dummy_cond_pert}--(1)--_meas_CTP",
                 {dummy_cond_meas: -1, "_meas_CTP": 1},
                 value=1,
             )
@@ -72,6 +85,26 @@ def carnival_renet(
     rnc.add_reaction("_outflow", {"_t": -1})
     return rnc
 
+def colorize(rne: ReNet, edges: Dict[str, int], nodes: Dict[str, int]):
+    edge_props, node_props = {}, {}
+    reactant_ids = [rne.get_reactants_of_reaction(i) for i in range(rne.num_reactions)]
+    #r = [rne.species[i.pop()] if len(i) > 0 else None for i in reactant_ids]
+    product_ids = [rne.get_products_of_reaction(i) for i in range(rne.num_reactions)]
+    #p = [rne.species[i.pop()] if len(i) > 0 else None for i in product_ids]
+    #reactions = list(zip(r, p))
+    up_edges = [r for r in rne.reactions if edges[r] > 0.5]
+    down_edges = [r for r in rne.reactions if edges[r] < -0.5]
+    up_nodes = [s for s in rne.species if nodes[s] > 0.5]
+    down_nodes = [s for s in rne.species if nodes[s] < -0.5]
+    for e in up_edges:
+        edge_props[e] = {"edge_color": "tab:red", "width": 2.0}
+    for e in down_edges:
+        edge_props[e] = {"edge_color": "tab:blue", "width": 2.0}
+    for n in up_nodes:
+        node_props[n] = {"color": "tab:red"}
+    for n in down_nodes:
+        node_props[n] = {"color": "tab:blue"}
+    return {"nodes": node_props, "edges": edge_props}
 
 def nx_style(rne: ReNet, carnival_problem: ProblemDef, condition=None) -> Dict:
     pc = carnival_problem
