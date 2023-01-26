@@ -16,7 +16,7 @@ By default, CORNETO does not include any backend nor solver, in order to avoid i
 ```bash
 conda create --name corneto python=3.8
 conda activate corneto
-pip install git+https://github.com/saezlab/corneto.git@0.9.0-alpha.4
+pip install git+https://github.com/saezlab/corneto.git@0.9.1-alpha.0
 ```
 
 Alternatively you can download the wheel (.whl) file from https://github.com/saezlab/corneto/releases and install it with `pip install file.whl`. 
@@ -70,7 +70,6 @@ n = 20
 A = np.random.rand(2, n)
 b = np.array([1, 0])
 x = backend.Variable('x', n)
-P += x
 P += sum(x) == 1, x >= 0
 # Convex optimization problem
 P.add_objectives(abs(A*x - b))
@@ -88,7 +87,7 @@ brew install cmake
 brew install suite-sparse
 CVXOPT_SUITESPARSE_LIB_DIR=/opt/homebrew/Cellar/suite-sparse/VERSION/lib/ CVXOPT_SUITESPARSE_INC_DIR=/opt/homebrew/Cellar/suite-sparse/VERSION/include/ pip install cvxopt
 pip install PICOS gurobipy
-pip install corneto-0.9.0a3-py3-none-any.whl
+pip install corneto-0.9.1a0-py3-none-any.whl
 ```
 
 In order to properly install `brew` on M1, follow this guide: https://mac.install.guide/homebrew/index.html
@@ -106,9 +105,9 @@ TODO: In future releases, this will be automatized through `setup.py`.
 A recommended setup for testing and generating plots with corneto requires additional dependencies. A recommended environment is created with the following command:
 
 ```bash
-conda create --name corneto python=3.8 cvxpy=1.2.1 cylp=0.91.5 matplotlib=3.5.1 networkx=2.7.1 pandas=1.4.3 jupyter=1.0.0 pydot=1.4.1 graphviz=2.50.0
+conda create --name corneto python=3.8 cvxpy cylp matplotlib networkx pandas jupyter pydot graphviz
 conda activate corneto
-pip install corneto-0.9.0a3-py3-none-any.whl
+pip install corneto-0.9.1a0-py3-none-any.whl
 ```
 
 Now the notebook included in the `tests` folder should be able to be run:

@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Any, List, Optional, Tuple, Union
+from typing import Set, Any, List, Optional, Tuple, Union
 from corneto.backend._base import CtProxyExpression, CtProxySymbol, Backend, ProblemDef
 from corneto._constants import *
 
@@ -10,11 +10,14 @@ except ImportError:
 
 
 class PicosExpression(CtProxyExpression):
-    def __init__(self, expr, parent: Optional[CtProxyExpression] = None) -> None:
-        super().__init__(expr, parent)
+    def __init__(self, expr: Any, symbols: Optional[Set["CtProxySymbol"]] = None) -> None:
+        super().__init__(expr, symbols)
 
-    def _create(self, expr: Any) -> "PicosExpression":
-        return PicosExpression(expr, self)
+    def _create_proxy_expr(self, expr: Any, symbols: Optional[Set["CtProxySymbol"]] = None) -> "PicosExpression":
+        #if symbols is not None:
+        #    return PicosExpression(expr, self._proxy_symbols | symbols)
+        #return PicosExpression(expr, self._proxy_symbols)
+        return PicosExpression(expr, symbols)
 
     def _elementwise_mul(self, other: Any) -> Any:
         return self._expr ^ other
@@ -24,14 +27,17 @@ class PicosExpression(CtProxyExpression):
         return self._expr.value
 
     def __matmul__(self, other: Any) -> "CtProxyExpression":
+        o = other
         if isinstance(other, CtProxyExpression):
-            other = other._expr
-        return self._create(self._expr * other)
+            # Get internal PICOS expression to operate with
+            o = other._expr
+        return self._create(self._expr * o, [other])
 
     def __rmatmul__(self, other: Any) -> "CtProxyExpression":
+        o = other
         if isinstance(other, CtProxyExpression):
-            other = other._expr
-        return self._create(other * self._expr)
+            o = other._expr
+        return self._create(o * self._expr, [other])
 
 
 class PicosSymbol(CtProxySymbol, PicosExpression):
@@ -85,8 +91,6 @@ class PicosBackend(Backend):
         verbosity: int = 0,
         **options,
     ):
-        if not solver:
-            raise ValueError("A solver must be provided")
         P = pc.Problem()
         for c in p.constraints:
             P += c.e

@@ -2,14 +2,12 @@ import abc
 from turtle import pos
 import numpy as np
 import numbers
-from typing import Any, Dict, Iterable, Optional, Tuple, Union, List
+from typing import Set, Any, Dict, Iterable, Optional, Tuple, Union, List
 import corneto as cnt
 from corneto._constants import *
 from corneto._core import ReNet
 from corneto._decorators import _proxy
 from corneto._settings import LOGGER
-
-# from corneto.backend import DEFAULT_SOLVER
 
 
 def _eq_shape(a: np.ndarray, b: np.ndarray) -> bool:
@@ -26,16 +24,31 @@ class CtProxyExpression(abc.ABC):
     # See: https://www.cvxpy.org/_modules/cvxpy/expressions/expression.html#Expression
     __array_priority__ = 100
 
-    def __init__(self, expr: Any, parent: Optional["CtProxyExpression"] = None) -> None:
+    def __init__(self, expr: Any, symbols: Optional[Set["CtProxySymbol"]] = None) -> None:
         super().__init__()
         self._expr = expr
-        self._parent = parent
+        self._proxy_symbols: Set["CtProxySymbol"] = set()
+        if symbols:
+            self._proxy_symbols.update(symbols)
 
-    # def __getattr__(self, name: str) -> Any:
-    #    return getattr(self._expr, name)
+    def is_symbol(self) -> bool:
+        return False
+
+    def _create(self, expr: Any, atoms: Iterable) -> "CtProxyExpression":
+        symbols = {s for s in atoms if isinstance(s, CtProxySymbol)}
+        if isinstance(self, CtProxySymbol):
+            symbols.add(self)
+        if isinstance(self, CtProxyExpression):
+            symbols.update(self._proxy_symbols)
+        if isinstance(expr, CtProxySymbol):
+            symbols.add(expr)
+        if isinstance(expr, CtProxyExpression):
+            symbols.update(expr._proxy_symbols)
+        # Ask to create a CVXPY/PICOS/.. expression
+        return self._create_proxy_expr(expr, symbols)
 
     @abc.abstractmethod
-    def _create(self, expr: Any) -> "CtProxyExpression":
+    def _create_proxy_expr(self, expr: Any, symbols: Optional[Set["CtProxySymbol"]] = None) -> "CtProxyExpression":
         pass
 
     @property
@@ -55,11 +68,13 @@ class CtProxyExpression(abc.ABC):
         return self._expr.__hash__()
 
     def apply(self, fun, *args, **kwargs) -> "CtProxyExpression":
-        return self._create(fun(self._expr, *args, **kwargs))
+        # TODO: remove the collection of symbols here
+        # symbols: Set[CtProxyExpression] = {s for s in args if isinstance(s, CtProxySymbol)}
+        return self._create(fun(self._expr, *args, **kwargs), {})
 
     @property
     def T(self):
-        return self._create(self._expr.T)
+        return self._create(self._expr.T, {})
 
     @abc.abstractmethod
     def _elementwise_mul(self, other: Any) -> Any:
@@ -222,6 +237,9 @@ class CtProxySymbol(CtProxyExpression):
         self._name = name
         self._vartype = vartype
 
+    def is_symbol(self) -> bool:
+        return True
+
     @property
     def lb(self) -> np.ndarray:
         return self._lb
@@ -239,14 +257,11 @@ class ProblemDef:
     def __init__(
         self,
         backend: Optional["Backend"] = None,
-        symbols: Optional[List[CtProxySymbol]] = None,
         constraints: Optional[List[CtProxyExpression]] = None,
         objectives: Optional[List[CtProxyExpression]] = None,
         weights: Optional[List[float]] = None,
         direction: Direction = Direction.MIN,
     ) -> None:
-        if symbols is None:
-            symbols = []
         if objectives is None:
             objectives = []
         if weights is None:
@@ -261,16 +276,17 @@ class ProblemDef:
         self._objectives = objectives if objectives else []
         self._index: Dict[str, CtProxySymbol] = dict()
         self._weights = weights if weights else []
-        self._symbols = symbols if symbols else []
         self._direction = direction
-        for s in symbols:
-            if s in self._index:
-                raise ValueError(f"Duplicate symbol name {s}")
-            self._index[s._name] = s
 
     @property
     def symbols(self) -> Dict[str, CtProxySymbol]:
-        return self._index
+        return {s.name: s for s in Backend.get_symbols(self._constraints + self._objectives)}
+
+    def get_symbol(self, name) -> CtProxySymbol:
+        return self.symbols[name]
+
+    def get_symbols(self, *args) -> List[CtProxySymbol]:
+        return [self.get_symbol(n) for n in args]
 
     @property
     def constraints(self) -> List[CtProxyExpression]:
@@ -291,7 +307,6 @@ class ProblemDef:
     def copy(self) -> "ProblemDef":
         return ProblemDef(
             self._backend,
-            self._symbols,
             self._constraints,
             self._objectives,
             self._weights,
@@ -302,8 +317,10 @@ class ProblemDef:
         if isinstance(other, ProblemDef):
             return self.merge(other, inplace=inplace)
         elif isinstance(other, CtProxySymbol):
-            return self.add_symbols([other], inplace=inplace)
-        elif isinstance(other, CtProxyExpression):
+            #raise ValueError("Symbol not required")
+            LOGGER.warn("Trying to add symbol: not required")
+            return self
+        elif isinstance(other, CtProxyExpression) and not isinstance(other, CtProxySymbol):
             return self.add_constraints([other], inplace=inplace)
         elif isinstance(other, Iterable):
             o = self
@@ -311,8 +328,9 @@ class ProblemDef:
                 o = self.copy()
             for e in other:
                 if isinstance(e, CtProxySymbol):
-                    o.add_symbols([e], inplace=True)
-                elif isinstance(e, CtProxyExpression):
+                    #o.add_symbols([e], inplace=True)
+                    pass
+                elif isinstance(e, CtProxyExpression) and not isinstance(e, CtProxySymbol):
                     o.add_constraints([e], inplace=True)
                 else:
                     raise ValueError(f"Unsupported type {type(e)}")
@@ -326,12 +344,6 @@ class ProblemDef:
     def __iadd__(self, other: Any) -> "ProblemDef":
         return self._add(other, inplace=True)
 
-    def get_symbol(self, name: str) -> CtProxySymbol:
-        return self._index[name]
-
-    def get_symbols(self, *args) -> List[CtProxySymbol]:
-        return [self.get_symbol(n) for n in args]
-
     def solve(
         self,
         solver: Optional[Union[str, Solver]] = None,
@@ -342,8 +354,6 @@ class ProblemDef:
     ) -> Any:
         if self._backend is None:
             raise ValueError("No backend assigned.")
-        if not solver:
-            solver = cnt.DEFAULT_SOLVER
         return self._backend.solve(
             self,
             solver=solver,
@@ -368,49 +378,34 @@ class ProblemDef:
         if inplace:
             self.add_constraints(other._constraints, inplace=True)
             self.add_objectives(other._objectives, other._weights, inplace=True)
-            self.add_symbols(other._symbols, inplace=True)
             return self
-        s = self._symbols + other._symbols
         c = self._constraints + other._constraints
         w = self._weights + other._weights
         o = self._objectives + other._objectives
-        return ProblemDef(b, s, c, o, w)
+        return ProblemDef(b, c, o, w)
 
     def add_constraints(
         self,
         constraints: Union[CtProxyExpression, List[CtProxyExpression]],
         inplace: bool = True,
     ) -> "ProblemDef":
+        # TODO: Auto-load symbols from expressions
         if not isinstance(constraints, list):
             constraints = [constraints]
+        for c in constraints:
+            if isinstance(c, CtProxySymbol):
+                raise ValueError(f"The variable {c.name} was added as a constraint")
         if inplace:
             self._constraints.extend(constraints)
             return self
         return ProblemDef(
             self._backend,
-            self._symbols,
             self._constraints + constraints,
             self._objectives,
             self._weights,
         )
 
-    def add_symbols(
-        self, symbols: Union[CtProxySymbol, List[CtProxySymbol]], inplace: bool = True
-    ) -> "ProblemDef":
-        if not isinstance(symbols, list):
-            symbols = [symbols]
-        if inplace:
-            self._symbols.extend(symbols)
-            for s in symbols:
-                self._index[s.name] = s
-            return self
-        return ProblemDef(
-            self._backend,
-            self._symbols + symbols,
-            self._constraints,
-            self._objectives,
-            self._weights,
-        )
+
 
     def add_objectives(
         self,
@@ -430,7 +425,6 @@ class ProblemDef:
             return self
         return ProblemDef(
             self._backend,
-            self._symbols,
             self._constraints,
             self._objectives + objectives,
             self._weights + weights,
@@ -439,7 +433,7 @@ class ProblemDef:
 
 class Grammar(ProblemDef):
     def __init__(self) -> None:
-        super().__init__(None, None, None, None, None, Direction.MIN)
+        super().__init__(None, None, None, None, Direction.MIN)
 
     def _build_problem(self, other: ProblemDef) -> ProblemDef:
         raise NotImplementedError()
@@ -459,6 +453,16 @@ class Backend(abc.ABC):
         except Exception as e:
             return False
 
+    @staticmethod
+    def get_symbols(expressions: Iterable[CtProxyExpression]) -> Set[CtProxySymbol]:
+        symbols: Set[CtProxySymbol] = set()
+        for e in expressions:
+            s: Set[CtProxySymbol]  = getattr(e, '_proxy_symbols', {}) # type: ignore
+            if isinstance(e, CtProxySymbol):
+                s.add(e)
+            symbols.update(s)
+        return symbols
+
     @abc.abstractmethod
     def _load(self):
         raise NotImplementedError()
@@ -476,24 +480,23 @@ class Backend(abc.ABC):
 
     def Problem(
         self,
-        # TODO: extract symbols from obj/constraints (like PICOS/CVXPY)
-        symbols: Optional[Union[CtProxySymbol, List[CtProxySymbol]]] = None,
-        constraints: Optional[Union[CtProxySymbol, List[CtProxyExpression]]] = None,
+        constraints: Optional[List[CtProxyExpression]] = None,
         objectives: Optional[Union[CtProxyExpression, List[CtProxyExpression]]] = None,
         weights: Optional[Union[float, List[float]]] = None,
         direction: Direction = Direction.MIN,
     ) -> ProblemDef:
-        if isinstance(symbols, CtProxySymbol):
-            symbols = [symbols]
+        
         if isinstance(constraints, CtProxyExpression):
             constraints = [constraints]
+        if constraints is None:
+            constraints = []
         if isinstance(objectives, CtProxyExpression):
             objectives = [objectives]
         if isinstance(weights, float):
             weights = [weights]
         elif isinstance(weights, numbers.Number):
             weights = [float(weights)]
-        return ProblemDef(self, symbols, constraints, objectives, weights, direction)
+        return ProblemDef(self, constraints, objectives, weights, direction)
 
     def solve(
         self,
@@ -504,8 +507,6 @@ class Backend(abc.ABC):
         verbosity: int = 0,
         **options,
     ):
-        if not solver:
-            solver = cnt.DEFAULT_SOLVER
         o: Optional[CtProxyExpression]
         if p.objectives is not None and len(p.objectives) > 1:
             if len(p.weights) != len(p.objectives):
@@ -557,7 +558,7 @@ class Backend(abc.ABC):
         V = self.Variable(varname, (rn.num_reactions,), lb, ub)
         S = rn.stoichiometry
         C = S @ V == 0
-        p = self.Problem(V, C)
+        p = self.Problem(C)
         return p
 
     def Indicators(
@@ -572,22 +573,22 @@ class Backend(abc.ABC):
         suffix_abs="_iabs"
     ) -> ProblemDef:
         # Get upper/lower bounds for flow variables
-        variables, constraints = [], []
+        constraints = []
         if not (positive or negative):
             raise ValueError("At least one of positive or negative must be True.")
         if positive:
             I_pos = self.Variable(V.name + suffix_pos, V.shape, 0, 1, VarType.BINARY)
-            variables.append(I_pos)
+            #variables.append(I_pos)
             if sum(V.ub <= 0) > 0:
                 constraints.append(I_pos[np.where(V.ub <= 0)[0]] == 0)
         if negative:
             I_neg = self.Variable(V.name + suffix_neg, V.shape, 0, 1, VarType.BINARY)
-            variables.append(I_neg)
+            #variables.append(I_neg)
             if sum(V.lb >= 0) > 0:
                 constraints.append(I_neg[np.where(V.lb >= 0)[0]] == 0)
         if absolute:
             I_abs = self.Variable(V.name + suffix_abs, V.shape, 0, 1, VarType.BINARY)
-            variables.append(I_abs)
+            #variables.append(I_abs)
             constraints.append(I_abs == I_pos + I_neg)
 
         if positive and negative:
@@ -604,7 +605,8 @@ class Backend(abc.ABC):
         UB = I_UBN - I_UBP
         constraints.append(V <= UB)
         # return variables, constraints
-        return self.Problem(variables, constraints)
+        #return self.Problem(variables, constraints)
+        return self.Problem(constraints)
 
 
 class Indicators(Grammar):

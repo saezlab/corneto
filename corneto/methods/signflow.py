@@ -8,7 +8,7 @@ from corneto._constants import *
 from corneto._settings import LOGGER
 
 
-def carnival_renet(
+def create_flow_graph(
     rn: ReNet,
     conditions: Dict[str, Dict[str, Tuple[str, float]]],
     pert_id: str = "P",
@@ -138,7 +138,7 @@ def nx_style(rne: ReNet, carnival_problem: ProblemDef, condition=None) -> Dict:
     return {"nodes": node_props, "edges": edge_props}
 
 
-def carnival_constraints(
+def signflow_constraints(
     rn: ReNet,
     backend: Backend = DEFAULT_BACKEND,
     signal_implies_flow: bool = True,
@@ -335,7 +335,7 @@ def carnival_constraints(
     return p
 
 
-def carnival_loss(
+def default_sign_loss(
     rn: ReNet,
     conditions: Dict,
     problem: ProblemDef,
@@ -400,7 +400,7 @@ def carnival_loss(
     p.add_objectives(losses, weights, inplace=True)
     return p
 
-def carnival(
+def signflow(
     rn: ReNet,
     conditions: Dict,
     signal_implies_flow: bool = True,
@@ -416,7 +416,7 @@ def carnival(
     eps: float = 1e-3,
     backend: Backend = DEFAULT_BACKEND,
 ):
-    p = carnival_constraints(
+    p = signflow_constraints(
         rn,
         backend=backend,
         signal_implies_flow=signal_implies_flow,
@@ -426,7 +426,7 @@ def carnival(
         use_flow_indicators=use_flow_indicators,
         eps=eps,
     )
-    return p + carnival_loss(
+    return p + default_sign_loss(
         rn,
         conditions,
         p,

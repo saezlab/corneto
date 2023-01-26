@@ -1,5 +1,5 @@
 from multiprocessing.sharedctypes import Value
-from typing import Any, List, Optional, Tuple, Union
+from typing import Set, Any, List, Optional, Tuple, Union
 from corneto.backend._base import (
     CtProxyExpression,
     CtProxySymbol,
@@ -19,11 +19,15 @@ except ImportError:
 
 
 class CvxpyExpression(CtProxyExpression):
-    def __init__(self, expr, parent: Optional[CtProxyExpression] = None) -> None:
-        super().__init__(expr, parent)
+    def __init__(self, expr: Any, symbols: Optional[Set["CtProxySymbol"]] = None) -> None:
+        super().__init__(expr, symbols)
 
-    def _create(self, expr: Any) -> "CvxpyExpression":
-        return CvxpyExpression(expr, self)
+    def _create_proxy_expr(self, expr: Any, symbols: Optional[Set["CtProxySymbol"]] = None) -> "CvxpyExpression":
+        # TODO: Move to upper class
+        #if symbols is not None:
+        #    return CvxpyExpression(expr, self._proxy_symbols | symbols)
+        #return CvxpyExpression(expr, self._proxy_symbols)
+        return CvxpyExpression(expr, symbols)
 
     def _elementwise_mul(self, other: Any) -> Any:
         return cp.multiply(self._expr, other)
@@ -86,8 +90,6 @@ class CvxpyBackend(Backend):
         verbosity: int = 0,
         **options,
     ) -> Any:
-        if not solver:
-            raise ValueError("A solver must be provided")
         o: Union[cp.Minimize, cp.Maximize]
         if objective is not None:
             obj = objective.e if hasattr(objective, "_expr") else objective
@@ -99,16 +101,18 @@ class CvxpyBackend(Backend):
         # and add the required ones.
         extras = []
         # Get variables
-        for v in p._symbols:
+        for v in p.symbols.values():
             if v.lb is not None:
                 extras.append(v >= v.lb)
             if v.ub is not None:
                 extras.append(v <= v.ub)
         cstr = [c.e for c in extras + p.constraints]
         P = cp.Problem(o, cstr)
-        s = solver.upper()
+        s = solver
+        if solver:
+            s = solver.upper()
         solvers = cp.installed_solvers()
-        if s not in solvers:
+        if s is not None and s not in solvers:
             raise ValueError(
                 f"Solver {s} is not installed/supported, supported solvers are: {solvers}"
             )

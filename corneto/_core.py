@@ -1,6 +1,5 @@
 import abc
 from copy import deepcopy
-from multiprocessing.sharedctypes import Value
 import numpy as np
 from corneto._io import load_sif
 from typing import Any, Optional, Iterable, Set, Tuple, Union, Dict, List
@@ -920,3 +919,7 @@ class GReNet(ReNet):
         g.properties = rn.properties.copy()
         g.properties._renet = g
         return g 
+
+    @staticmethod
+    def import_network(rn: ReNet):
+        return GReNet.from_renet(rn)
