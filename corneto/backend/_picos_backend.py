@@ -55,8 +55,7 @@ class PicosSymbol(CtProxySymbol, PicosExpression):
 class PicosBackend(Backend):
     def _load(self):
         import picos
-
-        picos
+        return picos
 
     def __str__(self) -> str:
         return "PICOS Backend"

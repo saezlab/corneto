@@ -52,8 +52,7 @@ class CvxpySymbol(CtProxySymbol, CvxpyExpression):
 class CvxpyBackend(Backend):
     def _load(self):
         import cvxpy
-
-        cvxpy
+        return cvxpy
 
     def __str__(self) -> str:
         return "CVXPY Backend"

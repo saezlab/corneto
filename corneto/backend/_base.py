@@ -453,6 +453,9 @@ class Backend(abc.ABC):
         except Exception as e:
             return False
 
+    def version(self) -> str:
+        return self._load().__version__
+
     @staticmethod
     def get_symbols(expressions: Iterable[CtProxyExpression]) -> Set[CtProxySymbol]:
         symbols: Set[CtProxySymbol] = set()
@@ -464,7 +467,7 @@ class Backend(abc.ABC):
         return symbols
 
     @abc.abstractmethod
-    def _load(self):
+    def _load(self) -> Any:
         raise NotImplementedError()
 
     @abc.abstractmethod
