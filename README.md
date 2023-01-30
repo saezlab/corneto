@@ -1,9 +1,11 @@
+<div align="center">
+<img src="https://raw.githubusercontent.com/saezlab/corneto/main/images/corneto-logo-250px.png" alt="logo"></img>
+</div>
+
+
 # CORNETO
 
-CORNETO (CORe NETwork Optimization) is a first step towards unification of ILP based problems (steady state analysis of networks) with the long term goal of unifying also signaling and constraint-based modeling of metabolism.
-
-CORNETO will translate the specification of a high level problem into an (I)LP formulation through different backends (e.g Python-MIP, PICOS and CVXPY) which are in charge of implementing specific backends for different free/commercial solvers in a transparent way. Different methods like CARNIVAL, CellNopt-ILP, Phonemes, etc could be reimplemented in a simple way on top of it, abstracting away all the low level details of ILP formulations.
-
+CORNETO (Core Network Optimization) is a Python library that models biological network inference problems using convex and combinatorial optimization. It offers a comprehensive framework to formulate and solve optimization problems commonly found in biological network inference. The library leverages domain-specific language frameworks, such as CVXPY or PICOS, to translate high-level problem specifications in a clear manner and solves the problem using a wide range of supported free and commercial solvers such as GLPK, CPLEX, Gurobi, CBC or OSQP.
 
 ## Installation
 
@@ -11,10 +13,10 @@ The library will be uploaded to pypi once the API is stable. Meanwhile, it can b
 
 ### Minimal setup
 
-By default, CORNETO does not include any backend nor solver, in order to avoid issues with architectures for which some of the required binaries are not available by default. To install only the CORNETO API, just type:
+CORNETO does not include any backend nor solver by default to avoid issues with architectures for which some of the required binaries are not available. To install only the CORNETO API, just type:
 
 ```bash
-conda create --name corneto python=3.8
+conda create --name corneto python
 conda activate corneto
 pip install git+https://github.com/saezlab/corneto.git@0.9.1-alpha.0
 ```
@@ -98,14 +100,12 @@ Additionally, for plotting you will need to get also `graphviz` with `homebrew`:
 brew install graphviz
 ```
 
-TODO: In future releases, this will be automatized through `setup.py`.
-
 ### Complete setup
 
 A recommended setup for testing and generating plots with corneto requires additional dependencies. A recommended environment is created with the following command:
 
 ```bash
-conda create --name corneto python=3.8 cvxpy cylp matplotlib networkx pandas jupyter pydot graphviz
+conda create --name corneto python cvxpy cylp matplotlib networkx pandas jupyter pydot graphviz
 conda activate corneto
 pip install corneto-0.9.1a0-py3-none-any.whl
 ```
