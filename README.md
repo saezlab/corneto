@@ -1,5 +1,5 @@
 <div align="center">
-<img src="https://raw.githubusercontent.com/saezlab/corneto/main/images/corneto-logo-250px.png" alt="logo"></img>
+<img src="https://github.com/pablormier/resources/raw/main/images/logos/corneto-logo-250px.png" alt="logo"></img>
 </div>
 
 
