@@ -1,26 +1,45 @@
 import pytest
 import pathlib
+from corneto._core import Graph
 
 
-def test_add_reaction_to_empty_renet_inplace():
-    from corneto._core import DenseReNet
+def test_add_simple_edges():
+    g = Graph()
+    g.add_edge("a", "b")
+    g.add_edge(1, 2)
+    assert "a" in g.vertices
+    assert "b" in g.vertices
+    assert 1 in g.vertices
+    assert 2 in g.vertices
 
-    rn = DenseReNet.empty()
-    rn.add_reaction("r1", {"A": -1, "B": 1}, value=1.0, inplace=True)
-    assert rn.reactions == ["r1"]
-    assert set(rn.species) == {"A", "B"}
-    assert rn.stoichiometry[rn.get_species_id("A"), :] == -1
-    assert rn.stoichiometry[rn.get_species_id("B"), :] == 1
+def test_get_edge():
+    g = Graph()
+    g.add_edge("a", "b")
+    g.add_edge((1, 2), (3, 4))
+    g.add_edge(1, 2, prop = True)
+    assert g.get_edge(("a", "b")) == g.get_edge((("a",), ("b",)))
+    assert g.get_edge(((1, 2), (3, 4))) == g.get_edge(({1, 2}, {3, 4}))
+    assert g.get_edge((1, 2)) is not None
 
 
-def test_add_reaction_to_empty_renet():
-    from corneto._core import DenseReNet
+def test_add_hyperedges():
+    g = Graph()
+    g.add_edge((1, 2), (3, 4))
+    g.add_edge(("a", 1), ("b", 2))
+    assert g.edges[0] == ({1, 2}, {3, 4})
+    assert g.edges[1] == ({"a", 1}, {"b", 2})
 
-    rn = DenseReNet.empty()
-    rn2 = rn.add_reaction("r1", {"A": -1, "B": 1}, value=1.0, inplace=False)
-    assert rn2.reactions == ["r1"]
-    assert set(rn2.species) == {"A", "B"}
-    assert rn2.stoichiometry[rn2.get_species_id("A"), :] == -1
-    assert rn2.stoichiometry[rn2.get_species_id("B"), :] == 1
-    assert rn != rn2
-    assert len(rn.reactions) == 0
+
+def test_edge_vertex_properties():
+    g = Graph()
+    g.add_edge({1: 10, "a": -1}, {2: -10, "b": 5})
+    props = g.get_edge(g.edges[0])
+    assert "v" in props[1] and props[1]["v"] == 10
+    assert "v" in props["a"] and props["a"]["v"] == -1
+    assert "v" in props[2] and props[2]["v"] == -10
+    assert "v" in props["b"] and props["b"]["v"] == 5
+
+def test_edge_properties():
+    g = Graph()
+    g.add_edge(1, 2, prop=True)
+    g.get_edge(({1}, {2}))

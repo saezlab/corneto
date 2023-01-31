@@ -22,20 +22,3 @@ def test_read_sif():
         )
     return True
 
-
-def test_simple_reaction_stoichiometry():
-    from corneto._io import _reaction_stoichiometry
-
-    st = _reaction_stoichiometry([["A", 1, "B"]])
-    assert st["A"] == -1 and st["B"] == 1
-
-
-def test_stoichiometry():
-    from corneto._io import _stoichiometry
-
-    S, rids, sids = _stoichiometry({"r1": {"A": -1, "B": 1}})
-    assert set(rids) == {"r1"}
-    assert set(sids) == {"A", "B"}
-    assert S[sids.index('A'), :] == -1
-    assert S[sids.index('B'), :] == 1
-

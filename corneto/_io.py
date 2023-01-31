@@ -18,7 +18,7 @@ def _read_sif(
                 continue
             if len(line) != 3:
                 raise ValueError(
-                    f"Invalid SIF line: {line}: Format has to be Node1 Value Node2"
+                    f"Invalid SIF line: {line}: expected 3 columns"
                 )
             s, d, t = [line[idx] for idx in column_order]
             if discard_self_loops and s == t:

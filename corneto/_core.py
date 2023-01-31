@@ -6,253 +6,215 @@ from typing import Any, Optional, Iterable, Set, Tuple, Union, Dict, List
 from corneto._typing import StrOrInt, TupleSIF
 from corneto._constants import *
 from corneto._decorators import jit
+from numbers import Number
 from collections import OrderedDict
+from itertools import chain
 
 
 class BaseGraph(abc.ABC):
     def __init__(self) -> None:
         super().__init__()
 
-    @abc.abstractmethod
-    def _add_edge(self, name: str, nodes: Tuple[Set[Any], Set[Any]]):
-        raise NotImplementedError()
-
-    @abc.abstractmethod
-    def _get_edge(self, name: str) -> Tuple[Set[Any], Set[Any]]:
-        raise NotImplementedError()
-
-    @abc.abstractmethod
-    def _get_edge_names(self) -> List[str]:
-        raise NotImplementedError()
-
-    @abc.abstractmethod
-    def _get_node_names(self) -> List[str]:
-        raise NotImplementedError()
-
-    @abc.abstractmethod
-    def _set_edge_properties(self, name: str, properties: Dict[str, Any]):
-        raise NotImplementedError()
-
-    @abc.abstractmethod
-    def _get_edge_properties(self, name: str) -> Dict[str, Any]:
-        raise NotImplementedError()
-
-    @abc.abstractmethod
-    def _add_node(self, name: str, edges: Optional[Iterable[str]] = None):
-        raise NotImplementedError()
-
-    @abc.abstractmethod
-    def _set_node_properties(self, name: str, properties: Dict[str, Any]):
-        raise NotImplementedError()
-
-    @abc.abstractmethod
-    def _get_node_properties(self, name: str) -> Dict[str, Any]:
-        raise NotImplementedError()
-
-    @abc.abstractmethod
-    def has_edge(self, name: str):
-        raise NotImplementedError()
-
-    @abc.abstractmethod
-    def has_node(self, name: str):
-        raise NotImplementedError()
-
-    @abc.abstractmethod
-    def remove_edge(self, name: str):
-        raise NotImplementedError()
-
-    @abc.abstractmethod
-    def remove_node(self, name: str):
-        raise NotImplementedError()
-
-    @abc.abstractmethod
-    def copy(self) -> 'BaseGraph':
-        raise NotImplementedError()
-
-    def remove_edges(self, edges: Set[str]):
-        for e in edges:
-            self.remove_edge(e)
-
-    def remove_nodes(self, nodes: Set[str]):
-        for n in nodes:
-            self.remove_node(n)
-
-    def add_edge_properties(
-        self, name: str, properties: Dict[str, Any], update: bool = True
-    ):
-        props = self._get_edge_properties(name)
-        if props is None:
-            props = properties.copy()
+    @staticmethod
+    def _as_dict(s):
+        if isinstance(s, str):
+            return {s: dict()}
+        if isinstance(s, Iterable):
+            # e.g 'ab' -> {'ab': {}}
+            if isinstance(s, str):
+                return {s: dict()}
+            if isinstance(s, dict):
+                result = dict()
+                for k, v in s.items():
+                    props = dict()
+                    if isinstance(v, Number):
+                        props["v"] = v
+                    elif isinstance(v, dict):
+                        # Shallow copy
+                        props = dict(v)
+                    else:
+                        raise ValueError()
+                    result[k] = props
+                return result
+            else:
+                # E.g.:
+                #   ('a', 'b') -> {'a': {}, 'b': {}}
+                #   (1, 2, 3) -> {1: {}, 2: {}, 3: {}}
+                return {v: dict() for v in s}
         else:
-            if update:
-                props.update(properties)
-        self._set_edge_properties(name, props)
+            # e.g 'a' -> {'a': {}}, 1 -> {1: {}}
+            return {s: dict()}
 
-    def add_node_properties(self, name: str, properties: Dict[str, Any], update: bool = True):
-        props = self._get_node_properties(name)
-        if props is None:
-            props = properties.copy()
-        else:
-            if update:
-                props.update(properties)
-        self._set_node_properties(name, properties)
+    @abc.abstractmethod
+    def _add_edge(self, s: Dict, t: Dict, id: Optional[str] = None, **kwargs):
+        raise NotImplementedError()
 
-    def add_node(
-        self,
-        name: str,
-        properties: Optional[Dict[str, Any]] = None,
-        update: bool = False,
-    ):
-        if not update and self.has_node(name):
-            raise ValueError(f"Node {name} already in the graph and update = False")
-        self._add_node(name)
-        if properties is not None:
-            props = self._get_node_properties(name)
-            if update:
-                props.update(properties)
-            self._set_node_properties(name, properties)
+    @abc.abstractmethod
+    def _add_vertex(self, v: Any, id: Optional[str] = None, **kwargs):
+        pass
 
-    def add_nodes(
-        self,
-        nodes: Iterable[str],
-        properties: Optional[Dict[str, Dict[str, Any]]] = None,
-        update: bool = False,
-    ):
-        if properties is None:
-            properties = dict()
-        for n in nodes:
-            self.add_node(n, properties.get(n, None), update=update)
+    @abc.abstractmethod
+    def _get_edge(self, edge: Tuple) -> Dict:
+        raise NotImplementedError()
 
-    def add_edge(
-        self,
-        name: str,
-        nodes: Tuple[Any, Any],
-        directed: bool = False,
-        properties: Optional[Dict[str, Any]] = None,
-        update: bool = False,
-    ):
-        if not update and self.has_edge(name):
-            raise ValueError("The edge is alreday in the graph")
-        s, t = nodes
-        if not isinstance(s, set):
-            s = set(s)
-        if not isinstance(t, set):
-            t = set(t)
-        unodes = s.union(t)
-        for n in unodes:
-            self._add_node(n, [name])
-        if directed:
-            if properties is None:
-                properties = dict()
-            properties['__directed__'] = True
-        if properties is not None:
-            self.add_edge_properties(name, properties=properties, update=update)
-        self._add_edge(name, (s, t))
+    def get_edge(self, edge: Tuple) -> Dict:
+        s, t = edge
+        if isinstance(s, str) or not isinstance(s, Iterable):
+            s = {s}
+        if isinstance(t, str) or not isinstance(t, Iterable):
+            t = {t}
+        s = frozenset(s)
+        t = frozenset(t)
+        return self._get_edge((s, t))
 
-    def add_edge_from_dict(
-        self, name: str, nodes: Dict[str, float]
-    ):
-        s = set(k for k, v in nodes.items() if v < 0)
-        t = set(k for k, v in nodes.items() if v > 0)
-        self._add_edge(name, (s, t))
-        for n in s.union(t):
-            self._add_node(n, [name])
-        self.add_edge_properties(name, {"__nodes__": nodes}, update=True)
+    @property
+    @abc.abstractmethod
+    def edges(self):
+        raise NotImplementedError()
 
-    def is_edge_directed(self, name: str) -> bool:
-        props = self._get_edge_properties(name)
-        if props and '__directed__' in props:
-            return props['__directed__']
-        return True
-            
-    def create_edge_subgraph(self, edges: List[str]) -> 'Graph':
-        g = Graph()
-        for e in edges:
-            g.add_edge(e, self._get_edge(e), properties=self._get_edge_properties(e))
-        for n in g._get_node_names():
-            props = self._get_edge_properties(n)
-            if props is not None:
-                self.add_node_properties(n, props)
-        return g
-        
+    @property
+    @abc.abstractmethod
+    def vertices(self):
+        raise NotImplementedError()
+
+    @property
+    @abc.abstractmethod
+    def num_vertices(self):
+        raise NotImplementedError()
+
+    @property
+    @abc.abstractmethod
+    def num_edges(self):
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def get_edges_from_vertex(self, v) -> Set:
+        raise NotImplementedError()
+
+    def successors(self, v) -> Set:
+        E = (t for (s, t) in self.get_edges_from_vertex(v) if v in s)
+        return set(chain.from_iterable(E))
+
+    def predecessors(self, v) -> Set:
+        E = (s for (s, t) in self.get_edges_from_vertex(v) if v in t)
+        return set(chain.from_iterable(E))
+
+    def add_edge(self, s, t, id: Optional[str] = None, directed: bool = True, **kwargs):
+        """
+        Make sure that s, t are passed as dicts where keys are vertices and values are
+        properties of the vertex-edge. Supported examples:
+        g.add_edge('a', 'b')
+        g.add_edge('a', 'b', name="e1", weight=2.0) # e1: a -> b (weight=2.0)
+        g.add_edge(1, 2)
+        g.add_edge((1,2), (3,4), name="e2") # e2: (1,2) -> (3,4)
+        g.add_edge({1: {'weight': -1}, 2: {'weight': 1}}, (3, 4)) # node-edge properties
+        g.add_edge({'a': 1, 'b': 1}, {'c': 1, 'd': 1}, name="e2") # properties related to the node/edge (e.g stoichiometry)
+        """
+        self._add_edge(
+            BaseGraph._as_dict(s),
+            BaseGraph._as_dict(t),
+            id=id,
+            directed=directed,
+            **kwargs,
+        )
+
+    def node_incidence_matrix(self, use_link_values: bool = False):
+        A = np.zeros((self.num_vertices, self.num_edges))
+        I = {v: i for i, v in enumerate(self.vertices)}
+        for j, e in enumerate(self.edges):
+            V = np.zeros(self.num_vertices)
+            s, t = e
+            for v in s:
+                value = -1
+                if use_link_values:
+                    if "v" in self.get_edge(e)[v]:
+                        value = -1 * abs(self.get_edge(e)[v]["v"])
+                    else:
+                        raise ValueError(f"Vertex {v} does not have an assigned value.")
+                V[I[v]] = value
+            for v in t:
+                value = 1
+                if use_link_values:
+                    if "v" in self.get_edge(e)[v]:
+                        value = abs(self.get_edge(e)[v]["v"])
+                    else:
+                        raise ValueError(f"Vertex {v} does not have an assigned value.")
+                V[I[v]] = value
+            A[:, j] = V
+        return A
 
 
 class Graph(BaseGraph):
     def __init__(self) -> None:
         super().__init__()
-        self._edges: Dict[str, Tuple[Any, Any]] = OrderedDict()
-        self._nodes: Dict[str, Set[str]] = OrderedDict()
-        self._edge_properties: Dict[str, Any] = dict()
-        self._node_properties: Dict[str, Any] = dict()
+        # Index of edge -> {nodes: vertex-edge properties}
+        self._edges: Dict[Tuple, Dict] = OrderedDict()
+        # Index of vertex -> {edges}
+        self._vertices: Dict[Any, Set] = OrderedDict()
+        self._edge_properties: Dict = OrderedDict()
+        self._vertex_properties: Dict = OrderedDict()
+        self._graph_properties: Dict[str, Any] = dict()
+        self._edge_index: Dict[str, Tuple] = dict()
+        self._vertex_index: Dict[str, Any] = dict()
 
-    def _add_edge(self, name: str, nodes: Tuple[Any, Any]):
-        self._edges[name] = nodes
+    def _add_edge(self, s: Dict, t: Dict, id: Optional[str] = None, **kwargs):
+        # TODO: Self loops not supported, needed?
+        uv = set().union(*[s, t])
+        sv = frozenset(s.keys())
+        tv = frozenset(t.keys())
+        edge = (sv, tv)
+        vertex_edge_props = dict()
+        for k, v in s.items():
+            vertex_edge_props[k] = v
+        for k, v in t.items():
+            vertex_edge_props[k] = v
+        self._edges[edge] = vertex_edge_props
+        self._edge_properties[edge] = dict()
+        if id:
+            self._edge_index[id] = edge
+        if len(kwargs) > 0:
+            self._edge_properties[edge].update(kwargs)
+        for v in uv:
+            if v in self._vertices:
+                self._vertices[v] |= {edge}
+            else:
+                self._vertices[v] = {edge}
 
-    def _set_edge_properties(self, name: str, properties: Dict[str, Any]):
-        self._edge_properties[name] = properties
+    def _add_vertex(self, v: Any, id: Optional[str] = None, **kwargs):
+        if v not in self._vertices:
+            self._vertices[v] = set()
+            self._vertex_properties[v] = dict(kwargs)
+        else:
+            if v in self._vertex_properties:
+                props = self._vertex_properties[v]
+            else:
+                props = dict()
+                self._vertex_properties[v] = props
+            props.update(kwargs)
+        if id:
+            self._vertex_index[id] = v
 
-    def _get_edge_properties(self, name: str) -> Dict[str, Any]:
-        return self._edge_properties.get(name, None)
+    def _get_edge(self, edge) -> Dict:
+        return self._edges[edge]
 
-    def _add_node(self, name: str, edges: Optional[Iterable[str]] = None):
-        e = self._nodes.get(name, set())
-        if edges:
-            e |= set(edges)
-        self._nodes[name] = e
-
-    def _set_node_properties(self, name: str, properties: Dict[str, Any]):
-        self._node_properties[name] = properties
-
-    def _get_node_properties(self, name: str) -> Dict[str, Any]:
-        return self._node_properties.get(name, None)
-
-    def _get_edge(self, name: str) -> Tuple[Set[Any], Set[Any]]:
-        return self._edges[name]
-
-    def _get_edge_names(self) -> List[str]:
+    @property
+    def edges(self):
         return list(self._edges.keys())
 
-    def _get_node_names(self) -> List[str]:
-        return list(self._nodes.keys())
+    @property
+    def vertices(self):
+        return list(self._vertices.keys())
 
-    def has_edge(self, name: str):
-        return name in self._edges
+    @property
+    def num_edges(self):
+        return len(self._edges)
 
-    def has_node(self, name: str):
-        return name in self._nodes
+    @property
+    def num_vertices(self):
+        return len(self._vertices)
 
-    def remove_edge(self, name: str):
-        s, t = self._edges[name]
-        n = s.union(t)
-        for node in n:
-            self._nodes[node].remove(name)
-        del self._edges[name]
-        if name in self._edge_properties:
-            del self._edge_properties[name]
-
-    def remove_node(self, name: str):
-        edges = self._nodes[name]
-        for e in edges:
-            s, t = self._edges[e]
-            if name in s:
-                s.remove(name)
-            if name in t:
-                t.remove(name)
-            props = self._edge_properties[e]
-            if "__nodes__" in props:
-                del props["__nodes__"][name]
-            if len(s) == 0 and len(t) == 0:
-                self.remove_edge(e)
-        del self._nodes[name]
-
-    def copy(self) -> 'Graph':
-        g = Graph()
-        g._edges = deepcopy(self._edges)
-        g._nodes = deepcopy(self._nodes)
-        g._edge_properties = deepcopy(self._edge_properties)
-        g._node_properties = deepcopy(self._node_properties)
-        return g
-
+    def get_edges_from_vertex(self, v) -> Set:
+        return self._vertices[v]
 
 
 class Properties:
@@ -807,7 +769,7 @@ class GReNet(ReNet):
                 self._graph.add_node(s)
             # Build from stoichiometry
             for j in range(stoichiometry.shape[1]):
-                idx = np.where(stoichiometry[:,j] != 0)[0]
+                idx = np.where(stoichiometry[:, j] != 0)[0]
                 nodes = {species[i]: stoichiometry[i, j] for i in idx}
                 self._graph.add_edge_from_dict(reactions[j], nodes)
             sp = list(self._graph._nodes.keys())
@@ -817,17 +779,17 @@ class GReNet(ReNet):
             super().__init__([], [])
         self._stoichiometry = stoichiometry
         self._modified = False
-            
-
 
     @staticmethod
-    def create_stoichiometric_matrix(graph: Graph) -> Tuple[np.ndarray, List[str], List[str]]:
+    def create_stoichiometric_matrix(
+        graph: Graph,
+    ) -> Tuple[np.ndarray, List[str], List[str]]:
         nodes = list(graph._nodes.keys())
         edges = list(graph._edges.keys())
         S = np.zeros((len(nodes), len(edges)))
         for j in range(S.shape[1]):
             rxn = edges[j]
-            coeffs = graph._edge_properties[rxn]['__nodes__']
+            coeffs = graph._edge_properties[rxn]["__nodes__"]
             idx, vals = zip(*coeffs.items())
             idx = [nodes.index(i) for i in idx]
             S[idx, j] = vals
@@ -878,7 +840,7 @@ class GReNet(ReNet):
         S, n, e = GReNet.create_stoichiometric_matrix(g)
         rn = GReNet(S, n, e)
         # Add properties
-        #rn.properties = self.properties.copy()
+        # rn.properties = self.properties.copy()
         sv = {rn._species_index[k]: self.properties.species_value(k) for k in n}
         rv = {rn._reaction_index[k]: self.properties.reaction_value(k) for k in e}
         rn.properties._species_values = sv
@@ -918,7 +880,7 @@ class GReNet(ReNet):
         g = GReNet(rn.stoichiometry, rn.species, rn.reactions)
         g.properties = rn.properties.copy()
         g.properties._renet = g
-        return g 
+        return g
 
     @staticmethod
     def import_network(rn: ReNet):
