@@ -3,11 +3,12 @@ from turtle import pos
 import numpy as np
 import numbers
 from typing import Set, Any, Dict, Iterable, Optional, Tuple, Union, List
-import corneto as cnt
+#import corneto as cnt
 from corneto._constants import *
-from corneto._core import ReNet
+#from corneto._core import ReNet
 from corneto._decorators import _proxy
 from corneto._settings import LOGGER
+from corneto._core import Graph
 
 
 def _eq_shape(a: np.ndarray, b: np.ndarray) -> bool:
@@ -317,8 +318,7 @@ class ProblemDef:
         if isinstance(other, ProblemDef):
             return self.merge(other, inplace=inplace)
         elif isinstance(other, CtProxySymbol):
-            #raise ValueError("Symbol not required")
-            LOGGER.warn("Trying to add symbol: not required")
+            LOGGER.warn(f"Ignoring request to add symbol {other} (not required)")
             return self
         elif isinstance(other, CtProxyExpression) and not isinstance(other, CtProxySymbol):
             return self.add_constraints([other], inplace=inplace)
@@ -553,14 +553,21 @@ class Backend(abc.ABC):
 
     def Flow(
         self,
-        rn: ReNet,
+        g: Graph,
         lb: Union[float, np.ndarray] = 0,
         ub: Union[float, np.ndarray] = 10,
+        values=False,
+        acyclic: bool = False,
         varname: Optional[str] = VAR_FLOW,
     ) -> ProblemDef:
-        V = self.Variable(varname, (rn.num_reactions,), lb, ub)
-        S = rn.stoichiometry
+        V = self.Variable(varname, (g.num_edges,), lb, ub)
+        S = g.vertex_incidence_matrix(values=values)
         C = S @ V == 0
+        if acyclic:
+            # TODO
+            # Run BFS from source nodes for lower bound
+            # Create Layer variables and restrict flow to be from L+1
+            raise NotImplementedError()
         p = self.Problem(C)
         return p
 

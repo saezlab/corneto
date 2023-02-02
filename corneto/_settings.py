@@ -1,8 +1,9 @@
 import logging
 import sys
-import importlib
+import os
+import numpy as np
+from importlib.util import find_spec
 from functools import wraps
-
 
 LOGGER = logging.getLogger("__corneto__")
 LOGGER.setLevel(logging.INFO)
@@ -17,3 +18,18 @@ _stream_handler.setFormatter(
     )
 )
 LOGGER.addHandler(_stream_handler)
+
+
+USE_NUMBA = find_spec("numba") and not os.environ.get("CORNETO_IGNORE_NUMBA", False)
+
+try_sparse = lambda x: x
+
+if find_spec("scipy"):
+    try:
+        from scipy import sparse
+        try_sparse = lambda x: sparse.csr_matrix(x)
+        LOGGER.debug(f"Using scipy csr sparse matrices by default")
+    except Exception as e:
+        LOGGER.debug(f"Error loading scipy, using numpy dense matrices instead: {e}")
+            
+

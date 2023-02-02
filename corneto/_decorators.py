@@ -2,9 +2,9 @@ import os
 from functools import wraps
 from importlib.util import find_spec
 from typing import Callable
-from corneto._settings import LOGGER
+from corneto._settings import LOGGER, USE_NUMBA
 
-USE_NUMBA = find_spec("numba") and not os.environ.get("CORNETO_IGNORE_NUMBA", False)
+
 
 def _jit(*_args, **_kwargs):
     def _dummy_jit(func):

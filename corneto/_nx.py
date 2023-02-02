@@ -1,4 +1,4 @@
-from corneto._core import ReNet
+from corneto._legacy import ReNet
 from corneto._typing import StrOrInt
 from typing import Any, Dict, List, Optional, Iterable, Union
 import warnings

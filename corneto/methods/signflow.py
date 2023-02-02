@@ -1,11 +1,253 @@
 import numpy as np
-from typing import Callable, Union, Dict, List, Optional, Tuple
+from typing import Callable, Union, Dict, List, Optional, Tuple, Set, Any
 from corneto import DEFAULT_BACKEND
-from corneto._core import ReNet
+from corneto._legacy import ReNet
 from corneto.backend import Backend
 from corneto.backend._base import ProblemDef, Indicators
 from corneto._constants import *
 from corneto._settings import LOGGER
+from corneto._core import Graph
+
+
+# flowgraph(g, X, Y)
+
+def flowgraph(
+    g: Graph, 
+    conditions: Dict[str, Dict[str, Tuple[str, float]]],
+    pert_id: str = "P",
+    meas_id: str = "M",
+    longitudinal_samples=False
+) -> Graph:
+    gc = g.copy()
+    #vertices = gc.vertices
+    #edges = gc.edges
+    ns = '_s'
+    nt = '_t'
+    if longitudinal_samples:
+        gc.add_edge(ns, '_pert_CTP', interaction=1)
+    for c, v in conditions.items():
+        if longitudinal_samples:
+            dummy_cond_pert = f"_tp_pert_{c}"
+            dummy_cond_meas = f"_tp_meas_{c}"
+            gc.add_edge(dummy_cond_pert, dummy_cond_meas, interaction=1)
+        else:
+            dummy_cond_pert = f"_pert_{c}"
+            dummy_cond_meas = f"_meas_{c}"
+            gc.add_edge(ns, dummy_cond_pert, interaction=1)
+        for species, (type, value) in v.items():
+            direction = 1 if value >= 0 else -1
+            # Perturbations
+            if type.casefold() == pert_id.casefold():
+                gc.add_edge(dummy_cond_pert, species, interaction=direction, value=value)
+                # If measurement is 0, add also an inhibitory edge
+                if value == 0:
+                    gc.add_edge(dummy_cond_pert, species, interaction=-1, value=value)
+            # Measurements
+            elif type.casefold() == meas_id.casefold():
+                gc.add_edge(species, dummy_cond_meas, interaction=direction, value=value)
+                if value == 0:
+                    gc.add_edge(species, dummy_cond_meas, interaction=direction, value=value)
+        if longitudinal_samples:
+            gc.add_edge(dummy_cond_meas, '_meas_CTP', interaction=1)
+        else:
+            gc.add_edge(dummy_cond_meas, nt, interaction=1)
+    if longitudinal_samples:
+        gc.add_edge('_meas_CTP', nt, interaction=1)
+    gc.add_edge((), ns, id='_inflow') # () -> ns
+    gc.add_edge(nt, (), id='_outflow') # nt -> ()
+    return gc
+
+
+def sg_constraints(
+    g: Graph,
+    backend: Backend = DEFAULT_BACKEND,
+    signal_implies_flow: bool = True,
+    flow_implies_signal: bool = False,
+    dag: bool = True,
+    use_flow_indicators: bool = True,
+    eps: float = 1e-3,
+) -> ProblemDef:
+    if "_s" not in g.vertices:
+        raise ValueError(
+            "The provided network does not have the `_s` and `_t` dummy nodes. Please call `carnival_network` before this function."
+        )
+    perturbations = g.successors('_s')
+    conditions = []
+    for pert in perturbations:
+        if not pert.startswith("_pert_"):
+            raise ValueError(
+                "The provided network does not contain the `_pert_` dummy nodes (perturbations per condition). Please call `carinval_network` before this function."
+            )
+        conditions.append(pert.split("_pert_")[1])
+    n_conditions = len(conditions)
+    
+    if n_conditions > 1 and flow_implies_signal:
+        raise ValueError("flow_implies_signal is not supported in multi-conditions")
+    use_flow = use_flow_indicators or flow_implies_signal or signal_implies_flow
+    if use_flow:
+        p = backend.Flow(g)
+        F, Fi = p.get_symbol(VAR_FLOW), None
+        idx = -1
+        for i, props in enumerate(g.edge_properties):
+            if props.get('id', None) == '_outflow':
+                idx = i
+                break
+        p += F[idx] >= 1.01 * eps
+        if use_flow_indicators:
+            p += Indicators()
+            Fi = p.get_symbol(VAR_FLOW + "_ipos")
+    else:
+        F, Fi = None, None
+        p = backend.Problem()
+    
+    dist = dict()
+    if dag:
+        dist = g.bfs('_s')
+        node_maxdist = g.num_vertices - 1
+        dist_lbound = np.array([dist.get(v, 0) for v in g.vertices])
+        dist_ubound = node_maxdist
+
+    vidx = {v: i for i, v in enumerate(g.vertices)}
+    eidx = {e: i for i, e in enumerate(g.edges)}
+
+    for c in conditions:
+        #reachable = list(g.vertices)
+        non_reachable = []
+        # If there is more than one condition, just check which nodes are reachable
+        # from this condition (forward pass from perturbation to measurements and
+        # backward pass from measurements to perturbations). Nodes and reactions
+        # that cannot be reached should have a value of 0.
+        fwd: Set[Any] = set(g.bfs([f"_pert_{c}"]).keys())
+        bck: Set[Any] = set(g.bfs([f"_meas_{c}"], rev=True).keys())
+        reachable = list(fwd.intersection(bck) | {"_s", "_t"})
+        non_reachable = list(set(g.vertices) - set(reachable))
+        non_reachable = [vidx[v] for v in non_reachable]
+        reachable = [vidx[v] for v in reachable]
+
+        N_act = backend.Variable(
+            f"species_activated_{c}", (g.num_vertices,), vartype=VarType.BINARY
+        )
+        N_inh = backend.Variable(
+            f"species_inhibited_{c}", (g.num_vertices,), vartype=VarType.BINARY
+        )
+        R_act = backend.Variable(
+            f"reaction_sends_activation_{c}",
+            (g.num_edges,),
+            vartype=VarType.BINARY,
+        )
+        R_inh = backend.Variable(
+            f"reaction_sends_inhibition_{c}",
+            (g.num_edges,),
+            vartype=VarType.BINARY,
+        )
+
+        if len(non_reachable) > 0:
+            # TODO: Do the same for non reachable reactions
+            p += N_act[non_reachable] == 0
+            p += N_inh[non_reachable] == 0
+
+        # Also, if the measurements are selected, their edges from
+        # measurement to the dummy _meas_ node have to be selected.
+        # Not required, but forces to have a connected graph.
+        #meas_rxns = list(rn.get_reactions_with_product(rn.get_species_id(f"_meas_{c}")))
+        meas_rxns = [eidx[e] for e in g.get_edges_with_target_vertex(f"_meas_{c}")]
+        #meas_species = [rn.get_reactants_of_reaction(r).pop() for r in meas_rxns]
+        meas_species = [vidx[list(g.edges[i][0])[0]] for i in meas_rxns]
+        p += R_act[meas_rxns] + R_inh[meas_rxns] == N_act[meas_species] + N_inh[meas_species]
+
+        
+        # Just for convenience, force the dummy measurement node to be active. Not required
+        p += N_act[vidx[f"_meas_{c}"]] == 1
+        # Same for source and target nodes. Assume they are active as a convention. Note that
+        # dummy source _s connects to perturbations with activatory edges if perturbation is up
+        # and inhibitory edges if perturbation is down. Dummy _s could be also down and propagate
+        # the inverse signal instead. Same for dummy target _t. As a convention, they are forced
+        # to be always activated instead to avoid these alternative options.
+        p += N_act[vidx["_s"]] == 1
+        p += N_act[vidx["_t"]] == 1
+        # Dont define activation/inhibition for reactions with no reactants or no products
+        # rids = np.flatnonzero(np.logical_and(rn.has_reactant(), rn.has_product()))
+        # TODO: Simplify this by adding methods to ReNet
+        # TODO: Filter out reactions that has reactant or product in the non reachable set
+        valid = np.zeros(g.num_edges, dtype=bool)
+        valid[reachable] = True
+        has_reactant = np.sum(g.vertex_incidence_matrix() < 0, axis=0) > 0
+        has_product = np.sum(g.vertex_incidence_matrix() > 0, axis=0) > 0
+        # has_reactant = np.sum(np.logical_and(rn.stoichiometry < 0, valid), axis=0) > 0
+        # has_product = np.sum(np.logical_and(rn.stoichiometry > 0, valid), axis=0) > 0
+        rids = np.flatnonzero(np.logical_and(has_reactant, has_product))
+        # TODO: Throw error if reactions have more than one reactant or product
+        # Get reactants and products: note that reactions should have
+        # only 1 reactant 1 product at most for CARNIVAL
+        # ix_react = np.array(list({rn.get_reactants([i]).pop() for i in rids}.intersection(reachable)))
+        # ix_prod = np.array(list({rn.get_products([i]).pop() for i in rids}.intersection(reachable)))
+        ix_react = [vidx[list(g.edges[i][0])[0]] for i in rids]
+        ix_prod = [vidx[list(g.edges[i][1])[0]] for i in rids]
+        #ix_react = np.array([rn.get_reactants([i]).pop() for i in rids])
+        #ix_prod = np.array([rn.get_products([i]).pop() for i in rids])
+        signs = np.array([p.get('interaction', 0) for p in g.edge_properties])[rids]
+        Ra = R_act[rids]
+        Ri = R_inh[rids]
+        p += R_act + R_inh <= 1
+        p += N_act + N_inh <= 1
+        D_ai = N_act[ix_react] - N_inh[ix_react]
+        D_ia = N_inh[ix_react] - N_act[ix_react]
+        S_ai = (N_act[ix_react] + N_inh[ix_react]).multiply(signs)
+        p += Ra <= (D_ai + S_ai).multiply(signs)
+        p += Ri <= (D_ia + S_ai).multiply(signs)
+        if dag:
+            L = backend.Variable(
+                f"dag_layer_position_{c}",
+                (g.num_vertices,),
+                vartype=VarType.CONTINUOUS,
+                lb=dist_lbound,
+                ub=dist_ubound,
+            )
+            p += L
+            p += L[ix_prod] - L[ix_react] >= Ra + Ri + (1 - g.num_vertices) * (
+                1 - (Ra + Ri)
+            )
+            p += L[ix_prod] - L[ix_react] <= g.num_vertices - 1
+
+        # Link flow with signal
+        if signal_implies_flow and flow_implies_signal:
+            # Bi-directional implication
+            if Fi is None:
+                raise NotImplementedError(
+                    "flow <=> signal implication supported only with flow indicators"
+                )
+            else:
+                p += R_act + R_inh == Fi
+        elif signal_implies_flow:
+            # If signal then flow (if no flow then no signal)
+            # but a reaction with non-zero flow may not carry any signal
+            if Fi is None:
+                # If reaction has signal (r_act+r_inh == 1) then the flow on
+                # that reaction has to be >= eps value (active)
+                # If reaction has no signal (r_act+r_inh == 0) then the flow
+                # can have any value
+                p += F >= eps * (R_act + R_inh)
+            else:
+                p += R_act + R_inh <= Fi
+        elif flow_implies_signal:
+            if Fi is None:
+                # If reaction has a non-zero flow (f >= eps)
+                # then the reaction has to transmit signal.
+                # If reaction has no flow, the signal can have
+                # any value. Note that this option by itself
+                # does not make sense for carnival, use only
+                # for experimentation.
+                p += eps * (R_act + R_inh) <= F
+            else:
+                p += Fi <= R_act + R_inh
+        # Constrain the product species of the reactions. They can be only up or
+        # down if at least one of the reactions that have the node as product
+        # carry some signal.
+        incidence_matrix = g.vertex_incidence_matrix(sparse=False).clip(0, 1)
+        p += N_act <= incidence_matrix @ R_act
+        p += N_inh <= incidence_matrix @ R_inh
+    return p
+
 
 
 def create_flow_graph(
@@ -336,7 +578,7 @@ def signflow_constraints(
 
 
 def default_sign_loss(
-    rn: ReNet,
+    g: Graph,
     conditions: Dict,
     problem: ProblemDef,
     l0_penalty_reaction: float = 0.0,
@@ -358,7 +600,7 @@ def default_sign_loss(
         )
         # Get the values of the species for the given condition
         species_values = np.array(
-            [conditions[c][s][1] if s in conditions[c] else 0 for s in rn.species]
+            [conditions[c][s][1] if s in conditions[c] else 0 for s in g.vertices]
         )
         pos = species_values.clip(0, np.inf).reshape(1, -1) @ (1 - (N_act - N_inh))
         neg = np.abs(species_values.clip(-np.inf, 0)).reshape(1, -1) @ (
@@ -391,6 +633,7 @@ def default_sign_loss(
     if l1_penalty_reaction != 0:
         if F is None:
             raise NotImplementedError("Use R_act and R_inh for regularization")
+        # TODO: This is valid only for positive fluxes
         losses.append(np.ones(F.shape) @ F)
         weights.append(l1_penalty_reaction)
     if l0_penalty_species != 0:
