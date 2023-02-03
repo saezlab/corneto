@@ -58,7 +58,10 @@ class PicosBackend(Backend):
         return picos
 
     def __str__(self) -> str:
-        return "PICOS Backend"
+        return "PICOS"
+
+    def available_solvers(self) -> List[str]:
+        return pc.available_solvers()
 
     def Variable(
         self,

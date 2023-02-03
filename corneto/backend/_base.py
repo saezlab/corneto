@@ -262,6 +262,7 @@ class ProblemDef:
         objectives: Optional[List[CtProxyExpression]] = None,
         weights: Optional[List[float]] = None,
         direction: Direction = Direction.MIN,
+        graph: Graph = None
     ) -> None:
         if objectives is None:
             objectives = []
@@ -278,6 +279,9 @@ class ProblemDef:
         self._index: Dict[str, CtProxySymbol] = dict()
         self._weights = weights if weights else []
         self._direction = direction
+        # Create a new class of problems on top of a graph
+        # where edges/nodes have associated optimization variables
+        self._graph = graph
 
     @property
     def symbols(self) -> Dict[str, CtProxySymbol]:
@@ -312,6 +316,7 @@ class ProblemDef:
             self._objectives,
             self._weights,
             self._direction,
+            self._graph
         )
 
     def _add(self, other: Any, inplace: bool = False):
@@ -365,7 +370,7 @@ class ProblemDef:
 
     def merge(self, other: "ProblemDef", inplace=False) -> "ProblemDef":
         # TODO: If the other is empty (or instance of grammar?) build the problem before merging
-        if isinstance(other, ProblemDef) and hasattr(other, "_build_problem"):
+        if isinstance(other, ProblemDef) and hasattr(other, "_build_problem"): # TODO Change by isinstance
             f = getattr(other, "_build_problem")
             other = f(self)
         b = self._backend if not None else other._backend
@@ -382,6 +387,7 @@ class ProblemDef:
         c = self._constraints + other._constraints
         w = self._weights + other._weights
         o = self._objectives + other._objectives
+        # TODO: manage the case of _graph in problem
         return ProblemDef(b, c, o, w)
 
     def add_constraints(
@@ -468,6 +474,10 @@ class Backend(abc.ABC):
 
     @abc.abstractmethod
     def _load(self) -> Any:
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def available_solvers() -> List[str]:
         raise NotImplementedError()
 
     @abc.abstractmethod

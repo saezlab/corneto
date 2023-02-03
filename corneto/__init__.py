@@ -6,6 +6,8 @@ from corneto.methods import create_flow_graph, signflow, signflow_constraints, d
 from corneto.backend._base import HammingLoss as hamming_loss
 #from corneto._core import ReNet
 from corneto._core import Graph
+from corneto._util import info
+from corneto.backend import DEFAULT_BACKEND as K
 
 import_sif = Graph.from_sif
     

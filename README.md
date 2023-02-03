@@ -13,7 +13,7 @@ CORNETO does not include any backend nor solver by default to avoid issues with 
 ```bash
 conda create --name corneto python
 conda activate corneto
-pip install git+https://github.com/saezlab/corneto.git@0.9.1-alpha.0
+pip install git+https://github.com/saezlab/corneto.git@0.9.0-alpha.7
 ```
 
 Alternatively you can download the wheel (.whl) file from https://github.com/saezlab/corneto/releases and install it with `pip install file.whl`. 
@@ -84,7 +84,7 @@ brew install cmake
 brew install suite-sparse
 CVXOPT_SUITESPARSE_LIB_DIR=/opt/homebrew/Cellar/suite-sparse/VERSION/lib/ CVXOPT_SUITESPARSE_INC_DIR=/opt/homebrew/Cellar/suite-sparse/VERSION/include/ pip install cvxopt
 pip install PICOS gurobipy
-pip install corneto-0.9.1a0-py3-none-any.whl
+pip install corneto-{version}.whl
 ```
 
 In order to properly install `brew` on M1, follow this guide: https://mac.install.guide/homebrew/index.html
@@ -102,7 +102,7 @@ A recommended setup for testing and generating plots with corneto requires addit
 ```bash
 conda create --name corneto python cvxpy cylp matplotlib networkx pandas jupyter pydot graphviz
 conda activate corneto
-pip install corneto-0.9.1a0-py3-none-any.whl
+pip install corneto-{version}.whl
 ```
 
 Now the notebook included in the `tests` folder should be able to be run:

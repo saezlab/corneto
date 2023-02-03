@@ -55,7 +55,10 @@ class CvxpyBackend(Backend):
         return cvxpy
 
     def __str__(self) -> str:
-        return "CVXPY Backend"
+        return "CVXPY"
+
+    def available_solvers(self) -> List[str]:
+        return cp.installed_solvers()
 
     def Variable(
         self,
