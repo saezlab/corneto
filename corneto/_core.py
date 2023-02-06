@@ -26,7 +26,7 @@ class BaseGraph(abc.ABC):
         super().__init__()
 
     @staticmethod
-    def _as_dict2(s):
+    def _as_dict(s):
         if isinstance(s, dict):
             result = dict()
             for k, v in s.items():
@@ -48,7 +48,7 @@ class BaseGraph(abc.ABC):
 
 
     @staticmethod
-    def _as_dict(s):
+    def _as_dict2(s):
         if isinstance(s, str):
             return {s: dict()}
         if isinstance(s, Iterable):
@@ -135,11 +135,11 @@ class BaseGraph(abc.ABC):
         return {(s, t) for (s, t) in self.get_edges_from_vertex(v) if v in t}
 
     def successors_of_vertex(self, v) -> Set:
-        E = (t for (s, t) in self.get_edges_from_vertex(v) if v in s)
+        E = (t if len(t) > 0 else () for (s, t) in self.get_edges_from_vertex(v) if v in s)
         return set(chain.from_iterable(E))
 
     def predecessors_of_vertex(self, v) -> Set:
-        E = (s for (s, t) in self.get_edges_from_vertex(v) if v in t)
+        E = (s if len(t) > 0 else () for (s, t) in self.get_edges_from_vertex(v) if v in t)
         return set(chain.from_iterable(E))
 
     def successors(self, vertices) -> Set:
@@ -224,6 +224,24 @@ class BaseGraph(abc.ABC):
                     new.append(s)
             succ = next_vertices(new)
         return visited
+    
+    @abc.abstractmethod
+    def subgraph(self, nodes):
+        raise NotImplementedError()
+    
+    def prune(
+        self,
+        source: List,
+        target: List,
+    ) -> 'Graph':
+        forward = set(self.bfs(source).keys())
+        backward = set(self.bfs(target, rev=True).keys())
+        reachable = list(forward.intersection(backward))
+        return self.subgraph(reachable)
+    
+    def plot(self, **kwargs):
+        from corneto import legacy_plot
+        legacy_plot(self, **kwargs)
 
 
 class Graph(BaseGraph):
@@ -285,6 +303,35 @@ class Graph(BaseGraph):
 
     def _get_edge(self, edge) -> Dict:
         return self._edges[edge]
+    
+    def subgraph(self, vertices: List) -> 'Graph':
+        g = Graph()
+        g._edges = []
+        g._edge_properties = []
+        g._edge_vertex_properties = []
+        g._vertex_index = OrderedDict()
+        g._vertex_properties = OrderedDict()
+        sv = set(vertices)
+        eidx = {e: i for i, e in enumerate(self._edges)}
+        E = set()
+        for v in vertices:
+            E |= self._vertex_index[v]
+        selected = []
+        for (s, t) in E:
+            if len(sv.intersection(s)) > 0 and len(sv.intersection(t)) > 0:
+                selected.append(eidx[(s, t)])
+        # Preserve original order
+        g._edges = [self._edges[i] for i in selected]
+        g._edge_properties = [deepcopy(self._edge_properties[i]) for i in selected]
+        g._edge_vertex_properties = [deepcopy(self._edge_vertex_properties[i]) for i in selected]
+        g._vertex_index = OrderedDict()
+        for v in self.vertices:
+            if v in vertices:
+                g._vertex_index[v] = deepcopy(self._vertex_index[v])
+                props = self._vertex_properties.get(v, None)
+                if props:
+                    g._vertex_properties[v] = deepcopy(props)
+        return g
 
     @property
     def edges(self):
@@ -303,7 +350,7 @@ class Graph(BaseGraph):
         return len(self._vertex_index)
 
     def get_edges_from_vertex(self, v) -> Set[Tuple]:
-        return self._vertex_index[v]
+        return self._vertex_index.get(v, set())
 
     @property
     def edge_vertex_properties(self) -> Tuple[Dict, ...]:

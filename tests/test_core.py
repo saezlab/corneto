@@ -90,3 +90,5 @@ def test_edge_vertex_properties():
     assert "v" in props[2] and props[2]["v"] == -10
     assert "v" in props["b"] and props["b"]["v"] == 5
 
+
+# TODO: predecessor/successor of a vertex without edges

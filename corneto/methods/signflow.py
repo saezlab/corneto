@@ -85,7 +85,7 @@ def signflow_constraints(
     use_flow = use_flow_indicators or flow_implies_signal or signal_implies_flow
     if use_flow:
         p = backend.Flow(g)
-        p._graph = graph
+        p._graph = g
         F, Fi = p.get_symbol(VAR_FLOW), None
         idx = -1
         for i, props in enumerate(g.edge_properties):
@@ -248,15 +248,17 @@ def signflow_constraints(
 def default_sign_loss(
     conditions: Dict,
     problem: ProblemDef,
-    l0_penalty_reaction: float = 0.0,
-    l1_penalty_reaction: float = 0.0,
-    l0_penalty_species: float = 0.0,
+    l0_edges: float = 0.0,
+    l0_vertices: float = 0.0,
+    l1_flow: float = 0.0,
     ub_loss: Optional[Union[float, List[float]]] = None,
     lb_loss: Optional[Union[float, List[float]]] = None,
 ) -> ProblemDef:
     losses = []
     p = ProblemDef()
     g = problem._graph
+    if g is None:
+        raise ValueError("Graph not available in the given problem")
     F, Fi = None, None
     if VAR_FLOW in problem.symbols.keys():
         F = problem.get_symbol(VAR_FLOW)
@@ -289,7 +291,7 @@ def default_sign_loss(
 
     # Add regularization
     weights = [1.0] * len(losses)
-    if l0_penalty_reaction > 0:
+    if l0_edges > 0:
         if Fi is None:
             raise ValueError(
                 "L0 regularization on flow cannot be used if signal is not connected to flow."
@@ -297,16 +299,51 @@ def default_sign_loss(
         # TODO: Issues with sum and PICOS (https://gitlab.com/picos-api/picos/-/issues/330)
         # override sum with picos.sum method
         losses.append(np.ones(Fi.shape) @ Fi)
-        weights.append(l0_penalty_reaction)
-    if l1_penalty_reaction != 0:
+        weights.append(l0_edges)
+    if l1_flow != 0:
         if F is None:
             raise NotImplementedError("Use R_act and R_inh for regularization")
         # TODO: This is valid only for positive fluxes
         losses.append(np.ones(F.shape) @ F)
-        weights.append(l1_penalty_reaction)
-    if l0_penalty_species != 0:
+        weights.append(l1_flow)
+    if l0_vertices != 0:
         losses.append(np.ones(N_act.shape) @ (N_act + N_inh))
-        weights.append(l0_penalty_species)
+        weights.append(l0_vertices)
     # Add objective and weights to p
     p.add_objectives(losses, weights, inplace=True)
     return p
+
+
+def signflow(
+    g: Graph,
+    conditions: Dict,
+    signal_implies_flow: bool = True,
+    flow_implies_signal: bool = False,  # not supported in multi-conditions
+    dag: bool = True,
+    l0_penalty_reaction: float = 0.0,
+    l1_penalty_reaction: float = 0.0,
+    l0_penalty_species: float = 0.0,
+    ub_loss: Optional[Union[float, List[float]]] = None,
+    lb_loss: Optional[Union[float, List[float]]] = None,
+    use_flow_indicators: bool = True,
+    eps: float = 1e-3,
+    backend: Backend = DEFAULT_BACKEND,
+):
+    p = signflow_constraints(
+        g,
+        backend=backend,
+        signal_implies_flow=signal_implies_flow,
+        flow_implies_signal=flow_implies_signal,
+        dag=dag,
+        use_flow_indicators=use_flow_indicators,
+        eps=eps,
+    )
+    return p + default_sign_loss(
+        conditions,
+        p,
+        l0_edges=l0_penalty_reaction,
+        l0_vertices=l0_penalty_species,
+        l1_flow=l1_penalty_reaction,
+        ub_loss=ub_loss,
+        lb_loss=lb_loss,
+    )

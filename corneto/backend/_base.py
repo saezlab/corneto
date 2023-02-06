@@ -477,7 +477,7 @@ class Backend(abc.ABC):
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def available_solvers() -> List[str]:
+    def available_solvers(self) -> List[str]:
         raise NotImplementedError()
 
     @abc.abstractmethod

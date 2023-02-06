@@ -10,5 +10,10 @@ from corneto._util import info
 from corneto.backend import DEFAULT_BACKEND as K
 
 import_sif = Graph.from_sif
+
+def legacy_plot(g: Graph, **kwargs):
+    from corneto._legacy import GReNet
+    g0 = GReNet.from_ngraph(g)
+    g0.plot(**kwargs)
     
 __version__ = '0.9.1-alpha.0'
