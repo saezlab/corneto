@@ -3,7 +3,7 @@
 [![main](https://github.com/saezlab/corneto/actions/workflows/unit-tests.yml/badge.svg)](https://github.com/saezlab/corneto/actions)
 <!-- badges: end -->
 
-CORNETO (Core Network Optimization) is a Python library that models biological network inference problems using convex and combinatorial optimization. It offers a comprehensive framework to formulate and solve optimization problems commonly found in biological network inference. The library leverages domain-specific language frameworks, such as CVXPY or PICOS, to translate high-level problem specifications in a clear manner and solves the problem using a wide range of supported free and commercial solvers such as GLPK, CPLEX, Gurobi, CBC or OSQP.
+CORNETO (Core Network Optimization) is a Python library that models biological network inference problems using convex and combinatorial optimization. It offers a comprehensive framework that facilitates the design and formulation of common optimization problems related to inference of biological networks from omics data. The library leverages domain-specific language frameworks, such as [CVXPY](https://www.cvxpy.org/index.html) or [PICOS](https://picos-api.gitlab.io/picos/), to translate high-level problem specifications in a clear manner and solves the problem using a wide range of supported free and commercial solvers.
 
 ## Installation
 
