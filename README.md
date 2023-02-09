@@ -37,7 +37,7 @@ To test if the solver is correctly installed, test the following command on the 
 
 ```bash
 conda activate corneto
-python -c "import cvxpy; print(cvxpy.installed_solvers())"
+python -c "import corneto; corneto.info()"
 ```
 
 The CBC solver should appear on the list. Please see the CVXPY documentation for more information on how to install other solvers https://www.cvxpy.org/install/. Depending on the solver and the platform, you will need to take different actions. For example, for using Gurobi, you will need to install the Gurobi solver with a valid license and then installing `gurobipy` dependency on the environment:
@@ -45,7 +45,7 @@ The CBC solver should appear on the list. Please see the CVXPY documentation for
 ```bash
 conda activate corneto
 pip install gurobipy
-python -c "import cvxpy; print(cvxpy.installed_solvers())"
+python -c "import corneto; corneto.info()"
 ```
 
 #### PICOS backend
@@ -114,3 +114,13 @@ Now the notebook included in the `tests` folder should be able to be run:
 cd corneto
 jupyter nbconvert --execute --to html tests/notebooks/tutorial.ipynb
 ```
+
+
+
+## Acknowledgements
+
+CORNETO is developed at the [Institute for Computational Biomedicine](https://saezlab.org) (Heidelberg University). The development of this project is supported by European Union's Horizon 2020 Programme under
+PerMedCoE project ([permedcoe.eu](https://permedcoe.eu/)) agreement no. 951773.
+
+<img src="https://raw.githubusercontent.com/saezlab/.github/main/profile/logos/saezlab.png" alt="Saez lab logo" height="64px" style="height:64px; width:auto"> <img src="https://lcsb-biocore.github.io/COBREXA.jl/stable/assets/permedcoe.svg" alt="PerMedCoE logo" height="64px" style="height:64px; width:auto"> <img src="https://www.klinikum.uni-heidelberg.de/typo3conf/ext/site_ukhd/Resources/Public/Images/Logo_ukhd_de.svg" alt="UKHD logo" height="64px" style="height:64px; width:auto">  
+

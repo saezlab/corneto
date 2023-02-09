@@ -18,20 +18,18 @@ def create_flow_graph(
     longitudinal_samples=False
 ) -> Graph:
     gc = g.copy()
-    #vertices = gc.vertices
-    #edges = gc.edges
     ns = '_s'
     nt = '_t'
     if longitudinal_samples:
-        gc.add_edge(ns, '_pert_CTP', interaction=1)
+        gc.add_edge(ns, '_pert_CTP', interaction=1) #_pert_CTP
     for c, v in conditions.items():
         if longitudinal_samples:
-            dummy_cond_pert = f"_tp_pert_{c}"
-            dummy_cond_meas = f"_tp_meas_{c}"
+            dummy_cond_pert = f"_tp_pert_{c}" #_tp_pert_{c} -> _t_x.{c}
+            dummy_cond_meas = f"_tp_meas_{c}" #_tp_meas_{c} -> _t_y.{c}
             gc.add_edge(dummy_cond_pert, dummy_cond_meas, interaction=1)
         else:
-            dummy_cond_pert = f"_pert_{c}"
-            dummy_cond_meas = f"_meas_{c}"
+            dummy_cond_pert = f"_pert_{c}" #_x.{c}
+            dummy_cond_meas = f"_meas_{c}" #_y.{c}
             gc.add_edge(ns, dummy_cond_pert, interaction=1)
         for species, (type, value) in v.items():
             direction = 1 if value >= 0 else -1
@@ -66,16 +64,19 @@ def signflow_constraints(
     use_flow_indicators: bool = True,
     eps: float = 1e-3,
 ) -> ProblemDef:
-    if "_s" not in g.vertices:
+    edges = g.edges
+    vertices = g.vertices
+    A = g.vertex_incidence_matrix(sparse=False)
+    if "_s" not in vertices:
         raise ValueError(
-            "The provided network does not have the `_s` and `_t` dummy nodes. Please call `carnival_network` before this function."
+            "The provided network does not have the `_s` and `_t` dummy nodes."
         )
     perturbations = g.successors('_s')
     conditions = []
     for pert in perturbations:
         if not pert.startswith("_pert_"):
             raise ValueError(
-                "The provided network does not contain the `_pert_` dummy nodes (perturbations per condition). Please call `carinval_network` before this function."
+                "The provided network does not contain the `_pert_` dummy nodes (perturbations per condition)."
             )
         conditions.append(pert.split("_pert_")[1])
     n_conditions = len(conditions)
@@ -99,7 +100,7 @@ def signflow_constraints(
     else:
         F, Fi = None, None
         p = backend.Problem()
-    
+        p._graph = g
     dist = dict()
     if dag:
         dist = g.bfs('_s')
@@ -107,8 +108,8 @@ def signflow_constraints(
         dist_lbound = np.array([dist.get(v, 0) for v in g.vertices])
         dist_ubound = node_maxdist
 
-    vidx = {v: i for i, v in enumerate(g.vertices)}
-    eidx = {e: i for i, e in enumerate(g.edges)}
+    vidx = {v: i for i, v in enumerate(vertices)}
+    eidx = {e: i for i, e in enumerate(edges)}
 
     for c in conditions:
         #reachable = list(g.vertices)
@@ -152,7 +153,7 @@ def signflow_constraints(
         #meas_rxns = list(rn.get_reactions_with_product(rn.get_species_id(f"_meas_{c}")))
         meas_rxns = [eidx[e] for e in g.get_edges_with_target_vertex(f"_meas_{c}")]
         #meas_species = [rn.get_reactants_of_reaction(r).pop() for r in meas_rxns]
-        meas_species = [vidx[list(g.edges[i][0])[0]] for i in meas_rxns]
+        meas_species = [vidx[list(edges[i][0])[0]] for i in meas_rxns]
         p += R_act[meas_rxns] + R_inh[meas_rxns] == N_act[meas_species] + N_inh[meas_species]
 
         
@@ -171,16 +172,16 @@ def signflow_constraints(
         # TODO: Filter out reactions that has reactant or product in the non reachable set
         valid = np.zeros(g.num_edges, dtype=bool)
         valid[reachable] = True
-        has_reactant = np.sum(g.vertex_incidence_matrix() < 0, axis=0) > 0
-        has_product = np.sum(g.vertex_incidence_matrix() > 0, axis=0) > 0
+        has_reactant = np.sum(A < 0, axis=0) > 0
+        has_product = np.sum(A > 0, axis=0) > 0
         # has_reactant = np.sum(np.logical_and(rn.stoichiometry < 0, valid), axis=0) > 0
         # has_product = np.sum(np.logical_and(rn.stoichiometry > 0, valid), axis=0) > 0
         rids = np.flatnonzero(np.logical_and(has_reactant, has_product))
         # TODO: Throw error if reactions have more than one reactant or product
         # Get reactants and products: note that reactions should have
         # only 1 reactant 1 product at most for CARNIVAL
-        ix_react = [vidx[list(g.edges[i][0])[0]] for i in rids]
-        ix_prod = [vidx[list(g.edges[i][1])[0]] for i in rids]
+        ix_react = [vidx[list(edges[i][0])[0]] for i in rids]
+        ix_prod = [vidx[list(edges[i][1])[0]] for i in rids]
         signs = np.array([p.get('interaction', 0) for p in g.edge_properties])[rids]
         Ra = R_act[rids]
         Ri = R_inh[rids]
@@ -238,7 +239,7 @@ def signflow_constraints(
         # Constrain the product species of the reactions. They can be only up or
         # down if at least one of the reactions that have the node as product
         # carry some signal.
-        incidence_matrix = g.vertex_incidence_matrix(sparse=False).clip(0, 1)
+        incidence_matrix = A.clip(0, 1)
         p += N_act <= incidence_matrix @ R_act
         p += N_inh <= incidence_matrix @ R_inh
     return p
@@ -307,6 +308,9 @@ def default_sign_loss(
         losses.append(np.ones(F.shape) @ F)
         weights.append(l1_flow)
     if l0_vertices != 0:
+        # TODO: This is applied only to the last condition, fix this
+        # Compute the mean of used nodes (nact+ninh) across conditions
+        # Minimize the avg sum = l1, minimize the number of values != 0 -> l0 reg
         losses.append(np.ones(N_act.shape) @ (N_act + N_inh))
         weights.append(l0_vertices)
     # Add objective and weights to p
@@ -320,9 +324,9 @@ def signflow(
     signal_implies_flow: bool = True,
     flow_implies_signal: bool = False,  # not supported in multi-conditions
     dag: bool = True,
-    l0_penalty_reaction: float = 0.0,
-    l1_penalty_reaction: float = 0.0,
-    l0_penalty_species: float = 0.0,
+    l0_penalty_edges: float = 0.0,
+    l1_penalty_flow: float = 0.0,
+    l0_penalty_vertices: float = 0.0,
     ub_loss: Optional[Union[float, List[float]]] = None,
     lb_loss: Optional[Union[float, List[float]]] = None,
     use_flow_indicators: bool = True,
@@ -341,9 +345,9 @@ def signflow(
     return p + default_sign_loss(
         conditions,
         p,
-        l0_edges=l0_penalty_reaction,
-        l0_vertices=l0_penalty_species,
-        l1_flow=l1_penalty_reaction,
+        l0_edges=l0_penalty_edges,
+        l0_vertices=l0_penalty_vertices,
+        l1_flow=l1_penalty_flow,
         ub_loss=ub_loss,
         lb_loss=lb_loss,
     )

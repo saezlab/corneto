@@ -437,7 +437,7 @@ class ProblemDef:
         )
 
 
-class Grammar(ProblemDef):
+class ProblemBuilder(ProblemDef):
     def __init__(self) -> None:
         super().__init__(None, None, None, None, Direction.MIN)
 
@@ -629,7 +629,7 @@ class Backend(abc.ABC):
         return self.Problem(constraints)
 
 
-class Indicators(Grammar):
+class Indicators(ProblemBuilder):
     def __init__(
         self,
         var_name: Optional[str] = None,
@@ -674,7 +674,7 @@ class Indicators(Grammar):
         )
 
 
-class HammingLoss(Grammar):
+class HammingLoss(ProblemBuilder):
     def __init__(
         self,
         reference: np.ndarray,

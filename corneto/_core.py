@@ -1,7 +1,6 @@
 import abc
 from copy import deepcopy
 import numpy as np
-from corneto._io import load_sif
 from typing import Any, Optional, Iterable, Set, Tuple, Union, Dict, List
 from corneto._typing import StrOrInt, TupleSIF
 from corneto._settings import try_sparse
@@ -239,9 +238,72 @@ class BaseGraph(abc.ABC):
         reachable = list(forward.intersection(backward))
         return self.subgraph(reachable)
     
-    def plot(self, **kwargs):
+    def plot_legacy(self, **kwargs):
         from corneto import legacy_plot
         legacy_plot(self, **kwargs)
+
+    def plot(self, **kwargs):
+        return self.to_graphviz()
+    
+    def to_graphviz(self, problem=None, condition=None, graph_attr=None, node_attr=None, edge_attr=None):
+        import graphviz
+        vertices, edges = self.vertices, self.edges
+        custom_vertex = dict()
+        custom_edge = dict()
+        if problem:
+            # TODO: very ad-hoc, improve
+            c = [k for k in problem.symbols.keys() if k.startswith('reaction_sends_activation')]
+            if len(c) > 1 and condition is None:
+                raise ValueError("Detected multiple conditions defined in problem, but a condition was not provided")
+            if len(c) == 1 and condition is None:
+                condition = c[0].split('activation_')[1]
+            vertex_values = problem.symbols[f'species_activated_{condition}'].value - problem.symbols[f'species_inhibited_{condition}'].value
+            edge_values = problem.symbols[f'reaction_sends_activation_{condition}'].value - problem.symbols[f'reaction_sends_inhibition_{condition}'].value
+            # Add custom values per edge/vertex
+            for v, value in zip(vertices, vertex_values):
+                if value < 0:
+                    custom_vertex[v] = dict(color='blue', penwidth='2', fillcolor='azure2', style='filled')
+                elif value > 0:
+                    custom_vertex[v] = dict(color='red', penwidth='2', fillcolor='lightcoral', style='filled')
+
+            for e, value in zip(edges, edge_values):
+                if value < 0:
+                    custom_edge[e] = dict(color='blue', penwidth='2')
+                elif value > 0:
+                    custom_edge[e] = dict(color='red', penwidth='2')    
+    
+        if node_attr is None:
+            node_attr = dict(fixedsize="true")
+        g = graphviz.Digraph(graph_attr=graph_attr, node_attr=node_attr, edge_attr=edge_attr)
+        for e, p in zip(edges, self.edge_properties):
+            s, t = e
+            s = list(s)
+            if len(s) == 0:
+                s = f'*_{str(t)}'
+                g.node(s, shape='point')
+            elif len(s) == 1:
+                s = str(s[0])
+                props = custom_vertex.get(s, dict())
+                g.node(s, shape='circle', **props)
+            else:
+                raise NotImplementedError("Represent- hyperedges as composite edges")
+            t = list(t)
+            if len(t) == 0:
+                t = f'{str(s)}_*'
+                g.node(t, shape='point')
+            elif len(t) == 1:
+                t = str(t[0])
+                props = custom_vertex.get(t, dict())
+                g.node(t, shape='circle', **props)
+            edge_type = p.get('interaction', 0)
+            props = custom_edge.get(e, dict())
+            if edge_type >= 0:
+                g.edge(s, t, arrowhead='normal', **props)
+            else:
+                g.edge(s, t, arrowhead='tee', **props)
+        return g    
+    
+
 
 
 class Graph(BaseGraph):
@@ -389,14 +451,18 @@ class Graph(BaseGraph):
         has_header: bool = False,
         discard_self_loops: Optional[bool] = True,
         column_order: List[int] = [0, 1, 2]):
-        from corneto._io import _read_sif
-        tuples = _read_sif(
+        from corneto._io import _read_sif_iter
+        it = _read_sif_iter(
             sif_file,
             delimiter=delimiter, 
             has_header=has_header, 
             discard_self_loops=discard_self_loops,
             column_order=column_order
         )
+        return Graph.from_sif_tuples(it)
+    
+    @staticmethod
+    def from_sif_tuples(tuples: Iterable[Tuple]):
         g = Graph()
         for (s, v, t) in tuples:
             g.add_edge(s, t, interaction=v)

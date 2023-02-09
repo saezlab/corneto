@@ -1,4 +1,4 @@
-from typing import List, Tuple, Optional, Dict, Set
+from typing import List, Iterable, Tuple, Optional, Dict, Set
 from corneto._typing import StrOrInt, TupleSIF
 import numpy as np
 
@@ -25,6 +25,30 @@ def _read_sif(
                 continue
             reactions |= set([(s, int(d), t)])
     return list(reactions)
+
+
+def _read_sif_iter(
+    sif_file: str, 
+    delimiter: str = "\t",
+    has_header: bool = False,
+    discard_self_loops: Optional[bool] = True,
+    column_order: List[int] = [0, 1, 2] # source interaction target
+) -> Iterable[TupleSIF]:
+    import csv
+    with open(sif_file, "r") as f:
+        reader = csv.reader(f, delimiter=delimiter)
+        for i, line in enumerate(reader):
+            if has_header and i == 0:
+                continue
+            if len(line) != 3:
+                raise ValueError(
+                    f"Invalid SIF line: {line}: expected 3 columns"
+                )
+            s, d, t = [line[idx] for idx in column_order]
+            if discard_self_loops and s == t:
+                continue
+            yield (s, int(d), t)
+
 
 def _reaction_stoichiometry(
     reaction: List[TupleSIF]
