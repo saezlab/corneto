@@ -27,4 +27,4 @@ def legacy_plot(g: Graph, **kwargs):
     g0.plot(**kwargs)
 
 
-__version__ = "0.9.1-alpha.0"
+__version__ = "0.9.1-alpha.1"
