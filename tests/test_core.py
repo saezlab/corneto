@@ -90,5 +90,25 @@ def test_edge_vertex_properties():
     assert "v" in props[2] and props[2]["v"] == -10
     assert "v" in props["b"] and props["b"]["v"] == 5
 
+def test_source_vertices():
+    g = Graph()
+    assert g.get_source_vertices() == set()
+    g.add_vertex('s')
+    assert g.get_source_vertices() == {'s'}
+    g.add_edge('s', 't')
+    assert g.get_source_vertices() == {'s'}
+    g.add_edge('u', 's')
+    assert g.get_source_vertices() == {'u'}
+
+
+def test_sink_vertices():
+    g = Graph()
+    assert g.get_sink_vertices() == set()
+    g.add_vertex('s')
+    assert g.get_sink_vertices() == {'s'}
+    g.add_edge('s', 't')
+    assert g.get_sink_vertices() == {'t'}
+    g.add_edge('t', 'u')
+    assert g.get_sink_vertices() == {'u'}
 
 # TODO: predecessor/successor of a vertex without edges

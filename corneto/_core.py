@@ -46,36 +46,6 @@ class BaseGraph(abc.ABC):
         else:
             raise ValueError()
 
-    @staticmethod
-    def _as_dict2(s):
-        if isinstance(s, str):
-            return {s: dict()}
-        if isinstance(s, Iterable):
-            # e.g 'ab' -> {'ab': {}}
-            if isinstance(s, str):
-                return {s: dict()}
-            if isinstance(s, dict):
-                result = dict()
-                for k, v in s.items():
-                    props = dict()
-                    if isinstance(v, Number):
-                        props["v"] = v
-                    elif isinstance(v, dict):
-                        # Shallow copy
-                        props = dict(v)
-                    else:
-                        raise ValueError()
-                    result[k] = props
-                return result
-            else:
-                # E.g.:
-                #   ('a', 'b') -> {'a': {}, 'b': {}}
-                #   (1, 2, 3) -> {1: {}, 2: {}, 3: {}}
-                return {v: dict() for v in s}
-        else:
-            # e.g 'a' -> {'a': {}}, 1 -> {1: {}}
-            return {s: dict()}
-
     @abc.abstractmethod
     def _add_edge(self, s: Dict, t: Dict, id: Optional[str] = None, **kwargs):
         raise NotImplementedError()
@@ -206,6 +176,29 @@ class BaseGraph(abc.ABC):
         if sparse:
             return try_sparse(A)
         return A
+    
+    def get_source_vertices(self) -> Set:
+        sources = set()
+        for v in self.vertices:
+            pred = self.predecessors_of_vertex(v)
+            if not pred or len(pred) == 0:
+                sources.add(v)
+            else:
+                if len(pred) == 1 and () in pred:
+                    sources.add(v)
+        return sources
+    
+    def get_sink_vertices(self) -> Set:
+        sinks = set()
+        for v in self.vertices:
+            succ = self.successors_of_vertex(v)
+            if not succ or len(succ) == 0:
+                sinks.add(v)
+            else:
+                if len(succ) == 1 and () in succ:
+                    sinks.add(v)
+        return sinks    
+
 
     def bfs(self, starting_vertices: Any, rev: bool = False) -> Dict[Any, int]:
         if isinstance(starting_vertices, Iterable) and not isinstance(
