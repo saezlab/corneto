@@ -41,4 +41,11 @@ def info():
         )
     else:
         print("No backend detected in the system. Please install Cvxpy or PICOS.")
+
+    try:
+        import graphviz
+
+        print(f"Graphviz available: v{graphviz.__version__}.")
+    except Exception as e:
+        print("Graphviz not installed.")
     print("https://github.com/saezlab/corneto")
