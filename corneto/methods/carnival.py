@@ -2,13 +2,20 @@ from corneto.methods.signflow import signflow, create_flow_graph, Graph
 from typing import Dict, List, Tuple, Union
 
 
-def runVanillaCarnival(perturbations: Dict, measurements: Dict, priorKnowledgeNetwork: Union[List[Tuple], Graph], betaWeight: float = 0.2, solver=None, **kwargs):
+def runVanillaCarnival(
+    perturbations: Dict,
+    measurements: Dict,
+    priorKnowledgeNetwork: Union[List[Tuple], Graph],
+    betaWeight: float = 0.2,
+    solver=None,
+    **kwargs
+):
     data = dict()
     for k, v in perturbations.items():
-        data[k] = ('P', v)
+        data[k] = ("P", v)
     for k, v in measurements.items():
-        data[k] = ('M', v)
-    conditions = {'c0': data}
+        data[k] = ("M", v)
+    conditions = {"c0": data}
     if isinstance(priorKnowledgeNetwork, List):
         G = Graph.from_sif_tuples(priorKnowledgeNetwork)
     elif isinstance(priorKnowledgeNetwork, Graph):

@@ -10,6 +10,7 @@ from numbers import Number
 from collections import OrderedDict
 from itertools import chain
 
+
 def _set(e):
     if isinstance(e, set):
         return e
@@ -44,7 +45,6 @@ class BaseGraph(abc.ABC):
             return {v: dict() for v in s}
         else:
             raise ValueError()
-
 
     @staticmethod
     def _as_dict2(s):
@@ -85,7 +85,7 @@ class BaseGraph(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def copy(self) -> 'BaseGraph':
+    def copy(self) -> "BaseGraph":
         raise NotImplementedError()
 
     @property
@@ -117,16 +117,16 @@ class BaseGraph(abc.ABC):
     def edge_properties(self) -> Tuple[Dict, ...]:
         raise NotImplementedError()
 
-    #@abc.abstractmethod
+    # @abc.abstractmethod
     def get_vertex_properties_for_edge(self, edge) -> Tuple[Dict, ...]:
         ev_props = self.edge_vertex_properties
-        return tuple(ev_props[i] for i, e in enumerate(self.edges) if e==edge)
+        return tuple(ev_props[i] for i, e in enumerate(self.edges) if e == edge)
 
     @property
     @abc.abstractmethod
     def edge_vertex_properties(self) -> Tuple[Dict, ...]:
         raise NotImplementedError()
-        
+
     def get_edges_with_source_vertex(self, v) -> Set[Tuple]:
         return {(s, t) for (s, t) in self.get_edges_from_vertex(v) if v in s}
 
@@ -134,11 +134,19 @@ class BaseGraph(abc.ABC):
         return {(s, t) for (s, t) in self.get_edges_from_vertex(v) if v in t}
 
     def successors_of_vertex(self, v) -> Set:
-        E = (t if len(t) > 0 else () for (s, t) in self.get_edges_from_vertex(v) if v in s)
+        E = (
+            t if len(t) > 0 else ()
+            for (s, t) in self.get_edges_from_vertex(v)
+            if v in s
+        )
         return set(chain.from_iterable(E))
 
     def predecessors_of_vertex(self, v) -> Set:
-        E = (s if len(t) > 0 else () for (s, t) in self.get_edges_from_vertex(v) if v in t)
+        E = (
+            s if len(t) > 0 else ()
+            for (s, t) in self.get_edges_from_vertex(v)
+            if v in t
+        )
         return set(chain.from_iterable(E))
 
     def successors(self, vertices) -> Set:
@@ -199,11 +207,10 @@ class BaseGraph(abc.ABC):
             return try_sparse(A)
         return A
 
-
-    def bfs(
-        self, starting_vertices: Any, rev: bool = False
-    ) -> Dict[Any, int]:
-        if isinstance(starting_vertices, Iterable) and not isinstance(starting_vertices, str):
+    def bfs(self, starting_vertices: Any, rev: bool = False) -> Dict[Any, int]:
+        if isinstance(starting_vertices, Iterable) and not isinstance(
+            starting_vertices, str
+        ):
             starting_vertices = frozenset(starting_vertices)
         else:
             starting_vertices = frozenset({starting_vertices})
@@ -223,87 +230,115 @@ class BaseGraph(abc.ABC):
                     new.append(s)
             succ = next_vertices(new)
         return visited
-    
+
     @abc.abstractmethod
     def subgraph(self, nodes):
         raise NotImplementedError()
-    
+
     def prune(
         self,
         source: List,
         target: List,
-    ) -> 'Graph':
+    ) -> "Graph":
         forward = set(self.bfs(source).keys())
         backward = set(self.bfs(target, rev=True).keys())
         reachable = list(forward.intersection(backward))
         return self.subgraph(reachable)
-    
+
     def plot_legacy(self, **kwargs):
         from corneto import legacy_plot
+
         legacy_plot(self, **kwargs)
 
     def plot(self, **kwargs):
         return self.to_graphviz()
-    
-    def to_graphviz(self, problem=None, condition=None, graph_attr=None, node_attr=None, edge_attr=None):
+
+    def to_graphviz(
+        self,
+        problem=None,
+        condition=None,
+        graph_attr=None,
+        node_attr=None,
+        edge_attr=None,
+    ):
         import graphviz
+
         vertices, edges = self.vertices, self.edges
         custom_vertex = dict()
         custom_edge = dict()
         if problem:
             # TODO: very ad-hoc, improve
-            c = [k for k in problem.symbols.keys() if k.startswith('reaction_sends_activation')]
+            c = [
+                k
+                for k in problem.symbols.keys()
+                if k.startswith("reaction_sends_activation")
+            ]
             if len(c) > 1 and condition is None:
-                raise ValueError("Detected multiple conditions defined in problem, but a condition was not provided")
+                raise ValueError(
+                    "Detected multiple conditions defined in problem, but a condition was not provided"
+                )
             if len(c) == 1 and condition is None:
-                condition = c[0].split('activation_')[1]
-            vertex_values = problem.symbols[f'species_activated_{condition}'].value - problem.symbols[f'species_inhibited_{condition}'].value
-            edge_values = problem.symbols[f'reaction_sends_activation_{condition}'].value - problem.symbols[f'reaction_sends_inhibition_{condition}'].value
+                condition = c[0].split("activation_")[1]
+            vertex_values = (
+                problem.symbols[f"species_activated_{condition}"].value
+                - problem.symbols[f"species_inhibited_{condition}"].value
+            )
+            edge_values = (
+                problem.symbols[f"reaction_sends_activation_{condition}"].value
+                - problem.symbols[f"reaction_sends_inhibition_{condition}"].value
+            )
             # Add custom values per edge/vertex
             for v, value in zip(vertices, vertex_values):
                 if value < 0:
-                    custom_vertex[v] = dict(color='blue', penwidth='2', fillcolor='azure2', style='filled')
+                    custom_vertex[v] = dict(
+                        color="blue", penwidth="2", fillcolor="azure2", style="filled"
+                    )
                 elif value > 0:
-                    custom_vertex[v] = dict(color='red', penwidth='2', fillcolor='lightcoral', style='filled')
+                    custom_vertex[v] = dict(
+                        color="red",
+                        penwidth="2",
+                        fillcolor="lightcoral",
+                        style="filled",
+                    )
 
             for e, value in zip(edges, edge_values):
                 if value < 0:
-                    custom_edge[e] = dict(color='blue', penwidth='2')
+                    custom_edge[e] = dict(color="blue", penwidth="2")
                 elif value > 0:
-                    custom_edge[e] = dict(color='red', penwidth='2')    
-    
+                    custom_edge[e] = dict(color="red", penwidth="2")
+
         if node_attr is None:
             node_attr = dict(fixedsize="true")
-        g = graphviz.Digraph(graph_attr=graph_attr, node_attr=node_attr, edge_attr=edge_attr)
+        g = graphviz.Digraph(
+            graph_attr=graph_attr, node_attr=node_attr, edge_attr=edge_attr
+        )
         for e, p in zip(edges, self.edge_properties):
             s, t = e
             s = list(s)
             if len(s) == 0:
-                s = f'*_{str(t)}'
-                g.node(s, shape='point')
+                s = f"*_{str(t)}"
+                g.node(s, shape="point")
             elif len(s) == 1:
                 s = str(s[0])
                 props = custom_vertex.get(s, dict())
-                g.node(s, shape='circle', **props)
+                g.node(s, shape="circle", **props)
             else:
                 raise NotImplementedError("Represent- hyperedges as composite edges")
             t = list(t)
             if len(t) == 0:
-                t = f'{str(s)}_*'
-                g.node(t, shape='point')
+                t = f"{str(s)}_*"
+                g.node(t, shape="point")
             elif len(t) == 1:
                 t = str(t[0])
                 props = custom_vertex.get(t, dict())
-                g.node(t, shape='circle', **props)
-            edge_type = p.get('interaction', 0)
+                g.node(t, shape="circle", **props)
+            edge_type = p.get("interaction", 0)
             props = custom_edge.get(e, dict())
             if edge_type >= 0:
-                g.edge(s, t, arrowhead='normal', **props)
+                g.edge(s, t, arrowhead="normal", **props)
             else:
-                g.edge(s, t, arrowhead='tee', **props)
-        return g    
-    
-
+                g.edge(s, t, arrowhead="tee", **props)
+        return g
 
 
 class Graph(BaseGraph):
@@ -339,7 +374,7 @@ class Graph(BaseGraph):
         if len(kwargs) > 0:
             edge_props.update(kwargs)
         if id:
-            edge_props['id'] = id
+            edge_props["id"] = id
         self._edge_properties.append(edge_props)
         # Add vertices to the index
         for v in uv:
@@ -362,11 +397,10 @@ class Graph(BaseGraph):
         if id:
             props[id] = id
 
-
     def _get_edge(self, edge) -> Dict:
         return self._edges[edge]
-    
-    def subgraph(self, vertices: List) -> 'Graph':
+
+    def subgraph(self, vertices: List) -> "Graph":
         g = Graph()
         g._edges = []
         g._edge_properties = []
@@ -385,7 +419,9 @@ class Graph(BaseGraph):
         # Preserve original order
         g._edges = [self._edges[i] for i in selected]
         g._edge_properties = [deepcopy(self._edge_properties[i]) for i in selected]
-        g._edge_vertex_properties = [deepcopy(self._edge_vertex_properties[i]) for i in selected]
+        g._edge_vertex_properties = [
+            deepcopy(self._edge_vertex_properties[i]) for i in selected
+        ]
         g._vertex_index = OrderedDict()
         for v in self.vertices:
             if v in vertices:
@@ -422,16 +458,22 @@ class Graph(BaseGraph):
     def edge_properties(self) -> Tuple[Dict, ...]:
         return tuple(self._edge_properties)
 
-    def copy(self) -> 'Graph':
+    def copy(self) -> "Graph":
         return deepcopy(self)
 
     @staticmethod
-    def from_vertex_incidence(A: np.ndarray, vertex_ids: List[str], edge_ids: List[str]):
+    def from_vertex_incidence(
+        A: np.ndarray, vertex_ids: List[str], edge_ids: List[str]
+    ):
         g = Graph()
         if len(vertex_ids) != A.shape[0]:
-            raise ValueError("The number of rows in A matrix is different from the number of vertex ids")
+            raise ValueError(
+                "The number of rows in A matrix is different from the number of vertex ids"
+            )
         if len(edge_ids) != A.shape[1]:
-            raise ValueError("The number of columns in A matrix is different from the number of edge ids")
+            raise ValueError(
+                "The number of columns in A matrix is different from the number of edge ids"
+            )
         for v in vertex_ids:
             g.add_vertex(v)
         for j, v in enumerate(edge_ids):
@@ -446,25 +488,26 @@ class Graph(BaseGraph):
 
     @staticmethod
     def from_sif(
-        sif_file: str, 
+        sif_file: str,
         delimiter: str = "\t",
         has_header: bool = False,
         discard_self_loops: Optional[bool] = True,
-        column_order: List[int] = [0, 1, 2]):
+        column_order: List[int] = [0, 1, 2],
+    ):
         from corneto._io import _read_sif_iter
+
         it = _read_sif_iter(
             sif_file,
-            delimiter=delimiter, 
-            has_header=has_header, 
+            delimiter=delimiter,
+            has_header=has_header,
             discard_self_loops=discard_self_loops,
-            column_order=column_order
+            column_order=column_order,
         )
         return Graph.from_sif_tuples(it)
-    
+
     @staticmethod
     def from_sif_tuples(tuples: Iterable[Tuple]):
         g = Graph()
         for (s, v, t) in tuples:
             g.add_edge(s, t, interaction=v)
         return g
-

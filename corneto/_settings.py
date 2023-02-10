@@ -27,9 +27,8 @@ try_sparse = lambda x: x
 if find_spec("scipy"):
     try:
         from scipy import sparse
+
         try_sparse = lambda x: sparse.csr_matrix(x)
         LOGGER.debug(f"Using scipy csr sparse matrices by default")
     except Exception as e:
         LOGGER.debug(f"Error loading scipy, using numpy dense matrices instead: {e}")
-            
-

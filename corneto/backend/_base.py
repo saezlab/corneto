@@ -3,9 +3,11 @@ from turtle import pos
 import numpy as np
 import numbers
 from typing import Set, Any, Dict, Iterable, Optional, Tuple, Union, List
-#import corneto as cnt
+
+# import corneto as cnt
 from corneto._constants import *
-#from corneto._core import ReNet
+
+# from corneto._core import ReNet
 from corneto._decorators import _proxy
 from corneto._settings import LOGGER
 from corneto._core import Graph
@@ -25,7 +27,9 @@ class CtProxyExpression(abc.ABC):
     # See: https://www.cvxpy.org/_modules/cvxpy/expressions/expression.html#Expression
     __array_priority__ = 100
 
-    def __init__(self, expr: Any, symbols: Optional[Set["CtProxySymbol"]] = None) -> None:
+    def __init__(
+        self, expr: Any, symbols: Optional[Set["CtProxySymbol"]] = None
+    ) -> None:
         super().__init__()
         self._expr = expr
         self._proxy_symbols: Set["CtProxySymbol"] = set()
@@ -49,7 +53,9 @@ class CtProxyExpression(abc.ABC):
         return self._create_proxy_expr(expr, symbols)
 
     @abc.abstractmethod
-    def _create_proxy_expr(self, expr: Any, symbols: Optional[Set["CtProxySymbol"]] = None) -> "CtProxyExpression":
+    def _create_proxy_expr(
+        self, expr: Any, symbols: Optional[Set["CtProxySymbol"]] = None
+    ) -> "CtProxyExpression":
         pass
 
     @property
@@ -262,7 +268,7 @@ class ProblemDef:
         objectives: Optional[List[CtProxyExpression]] = None,
         weights: Optional[List[float]] = None,
         direction: Direction = Direction.MIN,
-        graph: Graph = None
+        graph: Graph = None,
     ) -> None:
         if objectives is None:
             objectives = []
@@ -285,7 +291,9 @@ class ProblemDef:
 
     @property
     def symbols(self) -> Dict[str, CtProxySymbol]:
-        return {s.name: s for s in Backend.get_symbols(self._constraints + self._objectives)}
+        return {
+            s.name: s for s in Backend.get_symbols(self._constraints + self._objectives)
+        }
 
     def get_symbol(self, name) -> CtProxySymbol:
         return self.symbols[name]
@@ -316,7 +324,7 @@ class ProblemDef:
             self._objectives,
             self._weights,
             self._direction,
-            self._graph
+            self._graph,
         )
 
     def _add(self, other: Any, inplace: bool = False):
@@ -325,7 +333,9 @@ class ProblemDef:
         elif isinstance(other, CtProxySymbol):
             LOGGER.warn(f"Ignoring request to add symbol {other} (not required)")
             return self
-        elif isinstance(other, CtProxyExpression) and not isinstance(other, CtProxySymbol):
+        elif isinstance(other, CtProxyExpression) and not isinstance(
+            other, CtProxySymbol
+        ):
             return self.add_constraints([other], inplace=inplace)
         elif isinstance(other, Iterable):
             o = self
@@ -333,9 +343,11 @@ class ProblemDef:
                 o = self.copy()
             for e in other:
                 if isinstance(e, CtProxySymbol):
-                    #o.add_symbols([e], inplace=True)
+                    # o.add_symbols([e], inplace=True)
                     pass
-                elif isinstance(e, CtProxyExpression) and not isinstance(e, CtProxySymbol):
+                elif isinstance(e, CtProxyExpression) and not isinstance(
+                    e, CtProxySymbol
+                ):
                     o.add_constraints([e], inplace=True)
                 else:
                     raise ValueError(f"Unsupported type {type(e)}")
@@ -370,7 +382,9 @@ class ProblemDef:
 
     def merge(self, other: "ProblemDef", inplace=False) -> "ProblemDef":
         # TODO: If the other is empty (or instance of grammar?) build the problem before merging
-        if isinstance(other, ProblemDef) and hasattr(other, "_build_problem"): # TODO Change by isinstance
+        if isinstance(other, ProblemDef) and hasattr(
+            other, "_build_problem"
+        ):  # TODO Change by isinstance
             f = getattr(other, "_build_problem")
             other = f(self)
         b = self._backend if not None else other._backend
@@ -410,8 +424,6 @@ class ProblemDef:
             self._objectives,
             self._weights,
         )
-
-
 
     def add_objectives(
         self,
@@ -466,7 +478,7 @@ class Backend(abc.ABC):
     def get_symbols(expressions: Iterable[CtProxyExpression]) -> Set[CtProxySymbol]:
         symbols: Set[CtProxySymbol] = set()
         for e in expressions:
-            s: Set[CtProxySymbol]  = getattr(e, '_proxy_symbols', {}) # type: ignore
+            s: Set[CtProxySymbol] = getattr(e, "_proxy_symbols", {})  # type: ignore
             if isinstance(e, CtProxySymbol):
                 s.add(e)
             symbols.update(s)
@@ -498,7 +510,7 @@ class Backend(abc.ABC):
         weights: Optional[Union[float, List[float]]] = None,
         direction: Direction = Direction.MIN,
     ) -> ProblemDef:
-        
+
         if isinstance(constraints, CtProxyExpression):
             constraints = [constraints]
         if constraints is None:
@@ -590,7 +602,7 @@ class Backend(abc.ABC):
         absolute=True,
         suffix_pos="_ipos",
         suffix_neg="_ineg",
-        suffix_abs="_iabs"
+        suffix_abs="_iabs",
     ) -> ProblemDef:
         # Get upper/lower bounds for flow variables
         constraints = []
@@ -598,17 +610,17 @@ class Backend(abc.ABC):
             raise ValueError("At least one of positive or negative must be True.")
         if positive:
             I_pos = self.Variable(V.name + suffix_pos, V.shape, 0, 1, VarType.BINARY)
-            #variables.append(I_pos)
+            # variables.append(I_pos)
             if sum(V.ub <= 0) > 0:
                 constraints.append(I_pos[np.where(V.ub <= 0)[0]] == 0)
         if negative:
             I_neg = self.Variable(V.name + suffix_neg, V.shape, 0, 1, VarType.BINARY)
-            #variables.append(I_neg)
+            # variables.append(I_neg)
             if sum(V.lb >= 0) > 0:
                 constraints.append(I_neg[np.where(V.lb >= 0)[0]] == 0)
         if absolute:
             I_abs = self.Variable(V.name + suffix_abs, V.shape, 0, 1, VarType.BINARY)
-            #variables.append(I_abs)
+            # variables.append(I_abs)
             constraints.append(I_abs == I_pos + I_neg)
 
         if positive and negative:
@@ -625,7 +637,7 @@ class Backend(abc.ABC):
         UB = I_UBN - I_UBP
         constraints.append(V <= UB)
         # return variables, constraints
-        #return self.Problem(variables, constraints)
+        # return self.Problem(variables, constraints)
         return self.Problem(constraints)
 
 
@@ -660,7 +672,9 @@ class Indicators(ProblemBuilder):
                 )
             if len(cvars) == 1:
                 self.var_name = cvars[0]
-                LOGGER.debug(f"No variable provided, creating indicators for {cvars[0]}")
+                LOGGER.debug(
+                    f"No variable provided, creating indicators for {cvars[0]}"
+                )
             else:
                 raise ValueError(
                     f"There are {len(cvars)} continous vars, but no var_name is provided."
@@ -694,10 +708,13 @@ class HammingLoss(ProblemBuilder):
         P = ProblemDef()
         diff_zeros = y[idx_zero] - x[idx_zero]
         diff_ones = x[idx_one] - y[idx_one]
-        hamming_dist = np.ones(diff_zeros.shape) @ diff_zeros + np.ones(diff_ones.shape) @ diff_ones
-        #P.add_objectives((sum(diff_zeros) + sum(diff_ones)) * self.penalty, inplace=True)  # type: ignore
+        hamming_dist = (
+            np.ones(diff_zeros.shape) @ diff_zeros
+            + np.ones(diff_ones.shape) @ diff_ones
+        )
+        # P.add_objectives((sum(diff_zeros) + sum(diff_ones)) * self.penalty, inplace=True)  # type: ignore
         P.add_objectives(hamming_dist, weights=self.penalty, inplace=True)  # type: ignore
-    
+
         return P
 
 

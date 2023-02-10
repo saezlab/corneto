@@ -10,13 +10,17 @@ except ImportError:
 
 
 class PicosExpression(CtProxyExpression):
-    def __init__(self, expr: Any, symbols: Optional[Set["CtProxySymbol"]] = None) -> None:
+    def __init__(
+        self, expr: Any, symbols: Optional[Set["CtProxySymbol"]] = None
+    ) -> None:
         super().__init__(expr, symbols)
 
-    def _create_proxy_expr(self, expr: Any, symbols: Optional[Set["CtProxySymbol"]] = None) -> "PicosExpression":
-        #if symbols is not None:
+    def _create_proxy_expr(
+        self, expr: Any, symbols: Optional[Set["CtProxySymbol"]] = None
+    ) -> "PicosExpression":
+        # if symbols is not None:
         #    return PicosExpression(expr, self._proxy_symbols | symbols)
-        #return PicosExpression(expr, self._proxy_symbols)
+        # return PicosExpression(expr, self._proxy_symbols)
         return PicosExpression(expr, symbols)
 
     def _elementwise_mul(self, other: Any) -> Any:
@@ -55,6 +59,7 @@ class PicosSymbol(CtProxySymbol, PicosExpression):
 class PicosBackend(Backend):
     def _load(self):
         import picos
+
         return picos
 
     def __str__(self) -> str:

@@ -9,50 +9,55 @@ from corneto._settings import LOGGER
 from corneto._core import Graph
 
 
-
 def create_flow_graph(
-    g: Graph, 
+    g: Graph,
     conditions: Dict[str, Dict[str, Tuple[str, float]]],
     pert_id: str = "P",
     meas_id: str = "M",
-    longitudinal_samples=False
+    longitudinal_samples=False,
 ) -> Graph:
     gc = g.copy()
-    ns = '_s'
-    nt = '_t'
+    ns = "_s"
+    nt = "_t"
     if longitudinal_samples:
-        gc.add_edge(ns, '_pert_CTP', interaction=1) #_pert_CTP
+        gc.add_edge(ns, "_pert_CTP", interaction=1)  # _pert_CTP
     for c, v in conditions.items():
         if longitudinal_samples:
-            dummy_cond_pert = f"_tp_pert_{c}" #_tp_pert_{c} -> _t_x.{c}
-            dummy_cond_meas = f"_tp_meas_{c}" #_tp_meas_{c} -> _t_y.{c}
-            #gc.add_edge(dummy_cond_pert, dummy_cond_meas, interaction=1)
-            gc.add_edge('_pert_CTP', dummy_cond_pert, interaction=1)
+            dummy_cond_pert = f"_tp_pert_{c}"  # _tp_pert_{c} -> _t_x.{c}
+            dummy_cond_meas = f"_tp_meas_{c}"  # _tp_meas_{c} -> _t_y.{c}
+            # gc.add_edge(dummy_cond_pert, dummy_cond_meas, interaction=1)
+            gc.add_edge("_pert_CTP", dummy_cond_pert, interaction=1)
         else:
-            dummy_cond_pert = f"_pert_{c}" #_x.{c}
-            dummy_cond_meas = f"_meas_{c}" #_y.{c}
+            dummy_cond_pert = f"_pert_{c}"  # _x.{c}
+            dummy_cond_meas = f"_meas_{c}"  # _y.{c}
             gc.add_edge(ns, dummy_cond_pert, interaction=1)
         for species, (type, value) in v.items():
             direction = 1 if value >= 0 else -1
             # Perturbations
             if type.casefold() == pert_id.casefold():
-                gc.add_edge(dummy_cond_pert, species, interaction=direction, value=value)
+                gc.add_edge(
+                    dummy_cond_pert, species, interaction=direction, value=value
+                )
                 # If measurement is 0, add also an inhibitory edge
                 if value == 0:
                     gc.add_edge(dummy_cond_pert, species, interaction=-1, value=value)
             # Measurements
             elif type.casefold() == meas_id.casefold():
-                gc.add_edge(species, dummy_cond_meas, interaction=direction, value=value)
+                gc.add_edge(
+                    species, dummy_cond_meas, interaction=direction, value=value
+                )
                 if value == 0:
-                    gc.add_edge(species, dummy_cond_meas, interaction=direction, value=value)
+                    gc.add_edge(
+                        species, dummy_cond_meas, interaction=direction, value=value
+                    )
         if longitudinal_samples:
-            gc.add_edge(dummy_cond_meas, '_meas_CTP', interaction=1)
+            gc.add_edge(dummy_cond_meas, "_meas_CTP", interaction=1)
         else:
             gc.add_edge(dummy_cond_meas, nt, interaction=1)
     if longitudinal_samples:
-        gc.add_edge('_meas_CTP', nt, interaction=1)
-    gc.add_edge((), ns, id='_inflow') # () -> ns
-    gc.add_edge(nt, (), id='_outflow') # nt -> ()
+        gc.add_edge("_meas_CTP", nt, interaction=1)
+    gc.add_edge((), ns, id="_inflow")  # () -> ns
+    gc.add_edge(nt, (), id="_outflow")  # nt -> ()
     return gc
 
 
@@ -72,7 +77,7 @@ def signflow_constraints(
         raise ValueError(
             "The provided network does not have the `_s` and `_t` dummy nodes."
         )
-    perturbations = g.successors('_s')
+    perturbations = g.successors("_s")
     conditions = []
     for pert in perturbations:
         if not pert.startswith("_pert_"):
@@ -81,7 +86,7 @@ def signflow_constraints(
             )
         conditions.append(pert.split("_pert_")[1])
     n_conditions = len(conditions)
-    
+
     if n_conditions > 1 and flow_implies_signal:
         raise ValueError("flow_implies_signal is not supported in multi-conditions")
     use_flow = use_flow_indicators or flow_implies_signal or signal_implies_flow
@@ -91,7 +96,7 @@ def signflow_constraints(
         F, Fi = p.get_symbol(VAR_FLOW), None
         idx = -1
         for i, props in enumerate(g.edge_properties):
-            if props.get('id', None) == '_outflow':
+            if props.get("id", None) == "_outflow":
                 idx = i
                 break
         p += F[idx] >= 1.01 * eps
@@ -104,7 +109,7 @@ def signflow_constraints(
         p._graph = g
     dist = dict()
     if dag:
-        dist = g.bfs('_s')
+        dist = g.bfs("_s")
         node_maxdist = g.num_vertices - 1
         dist_lbound = np.array([dist.get(v, 0) for v in g.vertices])
         dist_ubound = node_maxdist
@@ -113,7 +118,7 @@ def signflow_constraints(
     eidx = {e: i for i, e in enumerate(edges)}
 
     for c in conditions:
-        #reachable = list(g.vertices)
+        # reachable = list(g.vertices)
         non_reachable = []
         # If there is more than one condition, just check which nodes are reachable
         # from this condition (forward pass from perturbation to measurements and
@@ -151,13 +156,15 @@ def signflow_constraints(
         # Also, if the measurements are selected, their edges from
         # measurement to the dummy _meas_ node have to be selected.
         # Not required, but forces to have a connected graph.
-        #meas_rxns = list(rn.get_reactions_with_product(rn.get_species_id(f"_meas_{c}")))
+        # meas_rxns = list(rn.get_reactions_with_product(rn.get_species_id(f"_meas_{c}")))
         meas_rxns = [eidx[e] for e in g.get_edges_with_target_vertex(f"_meas_{c}")]
-        #meas_species = [rn.get_reactants_of_reaction(r).pop() for r in meas_rxns]
+        # meas_species = [rn.get_reactants_of_reaction(r).pop() for r in meas_rxns]
         meas_species = [vidx[list(edges[i][0])[0]] for i in meas_rxns]
-        p += R_act[meas_rxns] + R_inh[meas_rxns] == N_act[meas_species] + N_inh[meas_species]
+        p += (
+            R_act[meas_rxns] + R_inh[meas_rxns]
+            == N_act[meas_species] + N_inh[meas_species]
+        )
 
-        
         # Just for convenience, force the dummy measurement node to be active. Not required
         p += N_act[vidx[f"_meas_{c}"]] == 1
         # Same for source and target nodes. Assume they are active as a convention. Note that
@@ -183,7 +190,7 @@ def signflow_constraints(
         # only 1 reactant 1 product at most for CARNIVAL
         ix_react = [vidx[list(edges[i][0])[0]] for i in rids]
         ix_prod = [vidx[list(edges[i][1])[0]] for i in rids]
-        signs = np.array([p.get('interaction', 0) for p in g.edge_properties])[rids]
+        signs = np.array([p.get("interaction", 0) for p in g.edge_properties])[rids]
         Ra = R_act[rids]
         Ri = R_inh[rids]
         p += R_act + R_inh <= 1
@@ -244,6 +251,7 @@ def signflow_constraints(
         p += N_act <= incidence_matrix @ R_act
         p += N_inh <= incidence_matrix @ R_inh
     return p
+
 
 # TODO: Create building block so problem is passed
 # through composition

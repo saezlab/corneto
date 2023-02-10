@@ -1,7 +1,8 @@
 from corneto.methods.signflow import create_flow_graph
 from corneto.methods.signflow import signflow_constraints
 from corneto.methods.signflow import default_sign_loss
-#from corneto.methods.signflow import signflow
+
+# from corneto.methods.signflow import signflow
 
 # Legacy
 from corneto.methods.signflow import create_flow_graph as carnival_renet

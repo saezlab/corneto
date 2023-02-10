@@ -66,7 +66,7 @@ class BaseGraph(abc.ABC):
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def copy(self) -> 'BaseGraph':
+    def copy(self) -> "BaseGraph":
         raise NotImplementedError()
 
     def remove_edges(self, edges: Set[str]):
@@ -88,7 +88,9 @@ class BaseGraph(abc.ABC):
                 props.update(properties)
         self._set_edge_properties(name, props)
 
-    def add_node_properties(self, name: str, properties: Dict[str, Any], update: bool = True):
+    def add_node_properties(
+        self, name: str, properties: Dict[str, Any], update: bool = True
+    ):
         props = self._get_node_properties(name)
         if props is None:
             props = properties.copy()
@@ -144,14 +146,12 @@ class BaseGraph(abc.ABC):
         if directed:
             if properties is None:
                 properties = dict()
-            properties['__directed__'] = True
+            properties["__directed__"] = True
         if properties is not None:
             self.add_edge_properties(name, properties=properties, update=update)
         self._add_edge(name, (s, t))
 
-    def add_edge_from_dict(
-        self, name: str, nodes: Dict[str, float]
-    ):
+    def add_edge_from_dict(self, name: str, nodes: Dict[str, float]):
         s = set(k for k, v in nodes.items() if v < 0)
         t = set(k for k, v in nodes.items() if v > 0)
         self._add_edge(name, (s, t))
@@ -161,11 +161,11 @@ class BaseGraph(abc.ABC):
 
     def is_edge_directed(self, name: str) -> bool:
         props = self._get_edge_properties(name)
-        if props and '__directed__' in props:
-            return props['__directed__']
+        if props and "__directed__" in props:
+            return props["__directed__"]
         return True
-            
-    def create_edge_subgraph(self, edges: List[str]) -> 'Graph':
+
+    def create_edge_subgraph(self, edges: List[str]) -> "Graph":
         g = Graph()
         for e in edges:
             g.add_edge(e, self._get_edge(e), properties=self._get_edge_properties(e))
@@ -174,7 +174,6 @@ class BaseGraph(abc.ABC):
             if props is not None:
                 self.add_node_properties(n, props)
         return g
-        
 
 
 class Graph(BaseGraph):
@@ -245,14 +244,13 @@ class Graph(BaseGraph):
                 self.remove_edge(e)
         del self._nodes[name]
 
-    def copy(self) -> 'Graph':
+    def copy(self) -> "Graph":
         g = Graph()
         g._edges = deepcopy(self._edges)
         g._nodes = deepcopy(self._nodes)
         g._edge_properties = deepcopy(self._edge_properties)
         g._node_properties = deepcopy(self._node_properties)
         return g
-
 
 
 class Properties:
@@ -807,7 +805,7 @@ class GReNet(ReNet):
                 self._graph.add_node(s)
             # Build from stoichiometry
             for j in range(stoichiometry.shape[1]):
-                idx = np.where(stoichiometry[:,j] != 0)[0]
+                idx = np.where(stoichiometry[:, j] != 0)[0]
                 nodes = {species[i]: stoichiometry[i, j] for i in idx}
                 self._graph.add_edge_from_dict(reactions[j], nodes)
             sp = list(self._graph._nodes.keys())
@@ -817,17 +815,17 @@ class GReNet(ReNet):
             super().__init__([], [])
         self._stoichiometry = stoichiometry
         self._modified = False
-            
-
 
     @staticmethod
-    def create_stoichiometric_matrix(graph: Graph) -> Tuple[np.ndarray, List[str], List[str]]:
+    def create_stoichiometric_matrix(
+        graph: Graph,
+    ) -> Tuple[np.ndarray, List[str], List[str]]:
         nodes = list(graph._nodes.keys())
         edges = list(graph._edges.keys())
         S = np.zeros((len(nodes), len(edges)))
         for j in range(S.shape[1]):
             rxn = edges[j]
-            coeffs = graph._edge_properties[rxn]['__nodes__']
+            coeffs = graph._edge_properties[rxn]["__nodes__"]
             idx, vals = zip(*coeffs.items())
             idx = [nodes.index(i) for i in idx]
             S[idx, j] = vals
@@ -878,7 +876,7 @@ class GReNet(ReNet):
         S, n, e = GReNet.create_stoichiometric_matrix(g)
         rn = GReNet(S, n, e)
         # Add properties
-        #rn.properties = self.properties.copy()
+        # rn.properties = self.properties.copy()
         sv = {rn._species_index[k]: self.properties.species_value(k) for k in n}
         rv = {rn._reaction_index[k]: self.properties.reaction_value(k) for k in e}
         rn.properties._species_values = sv
@@ -918,17 +916,17 @@ class GReNet(ReNet):
         g = GReNet(rn.stoichiometry, rn.species, rn.reactions)
         g.properties = rn.properties.copy()
         g.properties._renet = g
-        return g 
+        return g
 
     @staticmethod
     def from_ngraph(g: NGraph):
         A = g.vertex_incidence_matrix()
-        if hasattr(A, 'todense'):
+        if hasattr(A, "todense"):
             A = A.todense()
         reaction_values: Dict[int, float] = dict()
         g0 = GReNet(A, g.vertices, g.edges)
         for i, props in enumerate(g.edge_properties):
-            g0.properties._reaction_values[i] = props.get('interaction', 0)
+            g0.properties._reaction_values[i] = props.get("interaction", 0)
         g0.properties._renet = g0
         return g0
 

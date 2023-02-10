@@ -19,14 +19,18 @@ except ImportError:
 
 
 class CvxpyExpression(CtProxyExpression):
-    def __init__(self, expr: Any, symbols: Optional[Set["CtProxySymbol"]] = None) -> None:
+    def __init__(
+        self, expr: Any, symbols: Optional[Set["CtProxySymbol"]] = None
+    ) -> None:
         super().__init__(expr, symbols)
 
-    def _create_proxy_expr(self, expr: Any, symbols: Optional[Set["CtProxySymbol"]] = None) -> "CvxpyExpression":
+    def _create_proxy_expr(
+        self, expr: Any, symbols: Optional[Set["CtProxySymbol"]] = None
+    ) -> "CvxpyExpression":
         # TODO: Move to upper class
-        #if symbols is not None:
+        # if symbols is not None:
         #    return CvxpyExpression(expr, self._proxy_symbols | symbols)
-        #return CvxpyExpression(expr, self._proxy_symbols)
+        # return CvxpyExpression(expr, self._proxy_symbols)
         return CvxpyExpression(expr, symbols)
 
     def _elementwise_mul(self, other: Any) -> Any:
@@ -52,6 +56,7 @@ class CvxpySymbol(CtProxySymbol, CvxpyExpression):
 class CvxpyBackend(Backend):
     def _load(self):
         import cvxpy
+
         return cvxpy
 
     def __str__(self) -> str:
