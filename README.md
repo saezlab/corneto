@@ -48,36 +48,6 @@ pip install gurobipy
 python -c "import corneto; corneto.info()"
 ```
 
-#### PICOS backend
-
-PICOS backend requires less dependencies than CVXPY and it can be a very good option for Apple M1 users. If you want to use `PICOS` instead of `CVXPY` backend, first install the dependency in your environment with:
-
-```bash
-conda activate corneto
-pip install PICOS
-```
-
-If you don't have CVXPY installed, CORNETO will select PICOS automatically. If you have both, you can just instantiate whatever you like:
-
-```python
-import numpy as np
-from corneto.backend import PicosBackend
-
-backend = PicosBackend()
-P = backend.Problem()
-
-n = 20
-A = np.random.rand(2, n)
-b = np.array([1, 0])
-x = backend.Variable('x', n)
-P += sum(x) == 1, x >= 0
-# Convex optimization problem
-P.add_objectives(abs(A*x - b))
-P.solve(solver="cvxopt", verbosity=1)
-```
-
-Check `PICOS` requirements for different solvers here: https://picos-api.gitlab.io/picos/introduction.html#features
-
 #### Apple M1
 
 CORNETO can be installed on M1 architecture but may need few extra steps. Suggested configuration is to use `PICOS` backend with `gurobipy`. Installing `PICOS` with pip requires `CVXOPT`, that can be compiled for `M1`, see https://cvxopt.org/install/:
