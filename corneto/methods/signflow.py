@@ -26,7 +26,8 @@ def create_flow_graph(
         if longitudinal_samples:
             dummy_cond_pert = f"_tp_pert_{c}" #_tp_pert_{c} -> _t_x.{c}
             dummy_cond_meas = f"_tp_meas_{c}" #_tp_meas_{c} -> _t_y.{c}
-            gc.add_edge(dummy_cond_pert, dummy_cond_meas, interaction=1)
+            #gc.add_edge(dummy_cond_pert, dummy_cond_meas, interaction=1)
+            gc.add_edge('_pert_CTP', dummy_cond_pert, interaction=1)
         else:
             dummy_cond_pert = f"_pert_{c}" #_x.{c}
             dummy_cond_meas = f"_meas_{c}" #_y.{c}
