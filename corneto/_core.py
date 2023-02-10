@@ -2,7 +2,6 @@ import abc
 from copy import deepcopy
 import numpy as np
 from typing import Any, Optional, Iterable, Set, Tuple, Union, Dict, List
-from corneto._typing import StrOrInt, TupleSIF
 from corneto._settings import try_sparse
 from corneto._constants import *
 from corneto._decorators import jit
@@ -249,10 +248,10 @@ class BaseGraph(abc.ABC):
     def to_graphviz(
         self,
         problem=None,
-        condition=None,
-        graph_attr=None,
-        node_attr=None,
-        edge_attr=None,
+        condition: str=None,
+        graph_attr: Dict[str,str]=None,
+        node_attr: Dict[str,str]=None,
+        edge_attr: Dict[str,str]=None,
     ):
         import graphviz
 
@@ -260,10 +259,12 @@ class BaseGraph(abc.ABC):
         custom_vertex = dict()
         custom_edge = dict()
         if problem:
+            if hasattr(problem, 'symbols'):
+                problem = {k: v.value for k, v in problem.symbols.items()}
             # TODO: very ad-hoc, improve
             c = [
                 k
-                for k in problem.symbols.keys()
+                for k in problem.keys()
                 if k.startswith("reaction_sends_activation")
             ]
             if len(c) > 1 and condition is None:
@@ -273,12 +274,12 @@ class BaseGraph(abc.ABC):
             if len(c) == 1 and condition is None:
                 condition = c[0].split("activation_")[1]
             vertex_values = (
-                problem.symbols[f"species_activated_{condition}"].value
-                - problem.symbols[f"species_inhibited_{condition}"].value
+                problem[f"species_activated_{condition}"]
+                - problem[f"species_inhibited_{condition}"]
             )
             edge_values = (
-                problem.symbols[f"reaction_sends_activation_{condition}"].value
-                - problem.symbols[f"reaction_sends_inhibition_{condition}"].value
+                problem[f"reaction_sends_activation_{condition}"]
+                - problem[f"reaction_sends_inhibition_{condition}"]
             )
             # Add custom values per edge/vertex
             for v, value in zip(vertices, vertex_values):
