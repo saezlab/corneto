@@ -16,7 +16,7 @@ CORNETO does not include any backend nor solver by default to avoid issues with 
 ```bash
 conda create --name corneto python
 conda activate corneto
-pip install git+https://github.com/saezlab/corneto.git@0.9.0-alpha.7
+pip install git+https://github.com/saezlab/corneto.git@0.9.1-alpha.0
 ```
 
 Alternatively you can download the wheel (.whl) file from https://github.com/saezlab/corneto/releases and install it with `pip install file.whl`. 
@@ -68,21 +68,14 @@ Additionally, for plotting you will need to get also `graphviz` with `homebrew`:
 brew install graphviz
 ```
 
-### Complete setup
+### Recommended environment
 
 A recommended setup for testing and generating plots with corneto requires additional dependencies. A recommended environment is created with the following command:
 
 ```bash
-conda create --name corneto python cvxpy cylp matplotlib networkx pandas jupyter pydot graphviz
+conda create --name corneto python=3.9 cylp matplotlib jupyter graphviz
 conda activate corneto
-pip install corneto-{version}.whl
-```
-
-Now the notebook included in the `tests` folder should be able to be run:
-
-```bash
-cd corneto
-jupyter nbconvert --execute --to html tests/notebooks/tutorial.ipynb
+pip install cvxpy gurobipy git+https://github.com/saezlab/corneto.git@0.9.1-alpha.0
 ```
 
 
