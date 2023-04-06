@@ -79,6 +79,7 @@ pip install cvxpy gurobipy graphviz git+https://github.com/saezlab/corneto.git@0
 python -c "import corneto; corneto.info()"
 ```
 
+CVXPY with Gurobi is the recommended setting for handling a wide variety of problems. A gurobi license (free academic license or commercial one) is required. If you have an academic email, this step is very easy to do in just few minutes: https://www.gurobi.com/features/academic-named-user-license/
 
 
 ## Acknowledgements
