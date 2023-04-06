@@ -76,6 +76,7 @@ A recommended setup for testing and generating plots with corneto requires addit
 conda create --name corneto python=3.9 cylp matplotlib jupyter graphviz
 conda activate corneto
 pip install cvxpy gurobipy git+https://github.com/saezlab/corneto.git@0.9.1-alpha.0
+python -c "import corneto; corneto.info()"
 ```
 
 
