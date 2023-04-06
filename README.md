@@ -73,9 +73,9 @@ brew install graphviz
 A recommended setup for testing and generating plots with corneto requires additional dependencies. A recommended environment is created with the following command:
 
 ```bash
-conda create --name corneto python=3.9 matplotlib jupyter graphviz
+conda create --name corneto python=3.9 matplotlib jupyter graphviz python-graphviz
 conda activate corneto
-pip install cvxpy gurobipy graphviz git+https://github.com/saezlab/corneto.git@0.9.1-alpha.0
+pip install cvxpy gurobipy git+https://github.com/saezlab/corneto.git@0.9.1-alpha.0
 python -c "import corneto; corneto.info()"
 ```
 
