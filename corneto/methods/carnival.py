@@ -1,6 +1,6 @@
 from corneto.methods.signflow import signflow, create_flow_graph, Graph
 from typing import Dict, List, Tuple, Union
-from corneto import K
+from corneto.backend import DEFAULT_BACKEND as K
 import numpy as np
 import warnings
 
