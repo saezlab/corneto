@@ -10,9 +10,9 @@ supported_backends = [CvxpyBackend(), PicosBackend()]
 def available_backends():
     return [b for b in supported_backends if b.is_available()]
 
-
-_cvxpy_solvers = ["gurobi", "cplex", "mosek", "scip", "cbc", "glpk_mi"]
-_picos_solvers = ["gurobi", "cplex", "mosek", "scip", "glpk"]
+# TODO: fix the way we check for solvers
+_cvxpy_solvers = ["gurobi", "cplex", "mosek", "scip", "cbc", "glpk_mi", "scipy", "copt"]
+_picos_solvers = ["gurobi", "cplex", "mosek", "scip", "glpk", "scipy", "copt"]
 
 
 DEFAULT_BACKEND = available_backends()[0] if len(available_backends()) > 0 else None
