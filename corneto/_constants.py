@@ -1,6 +1,6 @@
 from enum import Enum
 
-VAR_FLOW = "_flow_rxn"
+VAR_FLOW = "_flow"
 
 
 class Solver(str, Enum):

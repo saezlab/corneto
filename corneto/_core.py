@@ -148,7 +148,7 @@ class BaseGraph(abc.ABC):
     def add_vertex(self, v: Any, id: Optional[str] = None, **kwargs):
         self._add_vertex(v, id, **kwargs)
 
-    def vertex_incidence_matrix(self, values: bool = False, sparse: bool = True):
+    def vertex_incidence_matrix(self, values: bool = False, sparse: bool = False):
         A = np.zeros((self.num_vertices, self.num_edges))
         I = {v: i for i, v in enumerate(self.vertices)}
         for j, e in enumerate(self.edges):
@@ -183,7 +183,7 @@ class BaseGraph(abc.ABC):
             if not pred or len(pred) == 0:
                 sources.add(v)
             else:
-                if len(pred) == 1 and () in pred:
+                if len(pred) == 1 and (() in pred or frozenset() in pred):
                     sources.add(v)
         return sources
     
@@ -194,7 +194,7 @@ class BaseGraph(abc.ABC):
             if not succ or len(succ) == 0:
                 sinks.add(v)
             else:
-                if len(succ) == 1 and () in succ:
+                if len(succ) == 1 and (() in succ or frozenset() in succ):
                     sinks.add(v)
         return sinks    
 
@@ -427,11 +427,20 @@ class Graph(BaseGraph):
 
     @property
     def edges(self):
-        return list(self._edges)
+        return self._edges
 
     @property
     def vertices(self):
-        return list(self._vertex_index.keys())
+        return self._vertex_index.keys()
+    
+    def get_vertex_indexes(self):
+        return {v: i for i, v in enumerate(self._vertex_index.keys())}
+    
+    def get_edge_indexes(self):
+        return {e: i for i, e in enumerate(self._edges)}
+    
+    def get_vertex_edge_indexes(self):
+        return self.get_vertex_indexes(), self.get_edge_indexes()
 
     @property
     def num_edges(self):

@@ -578,19 +578,94 @@ class Backend(abc.ABC):
         lb: Union[float, np.ndarray] = 0,
         ub: Union[float, np.ndarray] = 10,
         values=False,
-        acyclic: bool = False,
         varname: Optional[str] = VAR_FLOW,
     ) -> ProblemDef:
-        V = self.Variable(varname, (g.num_edges,), lb, ub)
-        S = g.vertex_incidence_matrix(values=values)
-        C = S @ V == 0
-        if acyclic:
-            # TODO
-            # Run BFS from source nodes for lower bound
-            # Create Layer variables and restrict flow to be from L+1
-            raise NotImplementedError()
-        p = self.Problem(C)
-        return p
+        F = self.Variable(varname, (g.num_edges,), lb, ub)
+        A = g.vertex_incidence_matrix(values=values)
+        return self.Problem(A @ F == 0)
+    
+    def AcyclicFlow(
+        self,
+        g: Graph,
+        lb: Union[float, np.ndarray] = 0,
+        ub: Union[float, np.ndarray] = 10,
+        values=False,
+        max_parents: Optional[Union[int, Dict[Any, int]]] = None,
+        varname: Optional[str] = VAR_FLOW,
+    ) -> ProblemDef:
+        if not varname:
+            varname = VAR_FLOW
+        if not isinstance(lb, np.ndarray):
+            lb = np.array([lb] * g.num_edges)
+        if not isinstance(ub, np.ndarray):
+            ub = np.array([ub] * g.num_edges)
+        for (s, t) in g.edges:
+            if len(s) > 1 or len(t) > 1:
+                raise NotImplementedError("Hyperedges not supported yet")
+        if isinstance(max_parents, int):
+            max_parents = {v: max_parents for v in g.vertices}
+        vix, eix = g.get_vertex_edge_indexes()
+        # Consider how to extend for undirected (neg and pos flows), and hyperedges
+        P = self.Flow(g, lb, ub, values=values, varname=varname)
+        # Create indicators for the flow vars
+        P += Indicators(positive=any(ub > 0), negative=any(lb < 0)) # creates a {varname}_ipos variable
+        # TODO: recover easily the created indicators!
+        Ip = P.get_symbol(varname + '_ipos') if any(ub > 0) else None
+        In = P.get_symbol(varname + '_ineg') if any(lb < 0) else None
+        if Ip is not None and In is not None:
+            I = Ip + In
+        elif Ip is not None:
+            I = Ip
+        elif In is not None:
+            I = In
+        else:
+            raise ValueError()
+        # Limit the number of parents per node, if requested
+        if max_parents is not None:
+            # Get indexes of edges vi->vj for all vi
+            for v, max in max_parents.items():
+                par_edges = g.get_edges_with_target_vertex(v)
+                edges_idx = [eix[e] for e in par_edges]
+                if len(edges_idx) > 0:
+                    # Sum selected parent edges
+                    P += np.ones((len(edges_idx),)) @ I[edges_idx] <= max 
+        # Create a DAG layer num for each vertex
+        L = self.Variable('_dag_layer_pos', (g.num_vertices,), 0, g.num_vertices - 1)
+        # These constraints are not compatible with hyperedges
+        if np.any(ub > 0):
+            # Get edges s->t that can have a positive flow
+            e_pos = [g.edges[i] for i in np.flatnonzero(ub > 0)]
+            edges = [(s, t) for (s, t) in e_pos if len(s) > 0 and len(t) > 0]
+            e_ix = [eix[e] for e in edges]
+            # Get the index of the source / target vertices of the edge
+            s_idx = [vix[list(s)[0]] for (s, _) in edges]
+            t_idx = [vix[list(t)[0]] for (_, t) in edges]
+            # The layer position in a DAG of the target vertex of the edge
+            # has to be greater than the source vertex, otherwise Ip (pos flow) has to be 0 
+            P += L[t_idx] - L[s_idx] >= Ip[e_ix] + (1 - g.num_vertices) * (1 - Ip[e_ix])
+            P += L[t_idx] - L[s_idx] <= g.num_vertices - 1
+        if np.any(lb < 0):
+            # NOTE: Negative flows eq. to reversed directed edge
+            # Get edges s->t that can have a positive flow
+            e_neg = [g.edges[i] for i in np.flatnonzero(lb < 0)]
+            edges = [(s, t) for (s, t) in e_neg if len(s) > 0 and len(t) > 0]
+            e_ix = [eix[e] for e in edges]
+            # Get the index of the source / target vertices of the edge
+            s_idx = [vix[list(s)[0]] for (s, _) in edges]
+            t_idx = [vix[list(t)[0]] for (_, t) in edges]
+
+            P += L[s_idx] - L[t_idx] >= In[e_ix] + (1 - g.num_vertices) * (1 - In[e_ix])
+            P += L[s_idx] - L[t_idx] <= g.num_vertices - 1            
+        
+        # TODO: Hyperedges need to compare max pos. targets > max pos. sources
+        # This requires linearization of the max or adding N*M constraints per hyperedge
+        # E.g if {A, B} -> {C, D, E}, we have to make sure that if the edge flow is positive,
+        # then L(A) < L(C), L(A) < L(D), L(A) < L(E). Same for B.
+        # Check how different in complexity from the loopless method based on nullspace of adjacency:
+        # https://www.sciencedirect.com/science/article/pii/S0006349510052252
+        # https://cobrapy.readthedocs.io/en/latest/_modules/cobra/flux_analysis/loopless.html#add_loopless
+        # https://cobrapy.readthedocs.io/en/latest/_modules/cobra/util/array.html#nullspace 
+        return P
 
     def Indicators(
         self,
@@ -598,10 +673,8 @@ class Backend(abc.ABC):
         tolerance=1e-3,
         positive=True,
         negative=True,
-        absolute=True,
         suffix_pos="_ipos",
-        suffix_neg="_ineg",
-        suffix_abs="_iabs",
+        suffix_neg="_ineg"
     ) -> ProblemDef:
         # Get upper/lower bounds for flow variables
         constraints = []
@@ -609,22 +682,14 @@ class Backend(abc.ABC):
             raise ValueError("At least one of positive or negative must be True.")
         if positive:
             I_pos = self.Variable(V.name + suffix_pos, V.shape, 0, 1, VarType.BINARY)
-            # variables.append(I_pos)
             if sum(V.ub <= 0) > 0:
                 constraints.append(I_pos[np.where(V.ub <= 0)[0]] == 0)
         if negative:
             I_neg = self.Variable(V.name + suffix_neg, V.shape, 0, 1, VarType.BINARY)
-            # variables.append(I_neg)
             if sum(V.lb >= 0) > 0:
                 constraints.append(I_neg[np.where(V.lb >= 0)[0]] == 0)
-        if absolute:
-            I_abs = self.Variable(V.name + suffix_abs, V.shape, 0, 1, VarType.BINARY)
-            # variables.append(I_abs)
-            constraints.append(I_abs == I_pos + I_neg)
-
         if positive and negative:
             constraints.append(I_pos + I_neg <= 1)
-
         # lower bound constraints: F >= F_lb * I_neg + eps * I_pos
         I_LBN = I_neg.multiply(V.lb) if negative else V.lb
         I_LBP = tolerance * I_pos if positive else 0
@@ -635,8 +700,6 @@ class Backend(abc.ABC):
         I_UBP = tolerance * I_neg if negative else 0
         UB = I_UBN - I_UBP
         constraints.append(V <= UB)
-        # return variables, constraints
-        # return self.Problem(variables, constraints)
         return self.Problem(constraints)
 
 
@@ -647,7 +710,6 @@ class Indicators(ProblemBuilder):
         tolerance: float = 1e-3,
         positive: bool = True,
         negative: bool = False,
-        absolute: bool = False,
     ) -> None:
         # Probably there is some missing component which is not a problemdef
         super().__init__()
@@ -655,7 +717,6 @@ class Indicators(ProblemBuilder):
         self._tol = tolerance
         self._pos = positive
         self._neg = negative
-        self._abs = absolute
 
     def _build_problem(self, other: ProblemDef):
         if other._backend is None:
@@ -682,8 +743,7 @@ class Indicators(ProblemBuilder):
             other.get_symbol(self.var_name),
             tolerance=self._tol,
             positive=self._pos,
-            negative=self._neg,
-            absolute=self._abs,
+            negative=self._neg
         )
 
 
@@ -711,23 +771,5 @@ class HammingLoss(ProblemBuilder):
             np.ones(diff_zeros.shape) @ diff_zeros
             + np.ones(diff_ones.shape) @ diff_ones
         )
-        # P.add_objectives((sum(diff_zeros) + sum(diff_ones)) * self.penalty, inplace=True)  # type: ignore
         P.add_objectives(hamming_dist, weights=self.penalty, inplace=True)  # type: ignore
-
         return P
-
-
-"""
-class DAG(Grammar):
-    def __init__(self, reactions=None) -> None:
-        super().__init__()
-
-    def _build_problem(self, other: ProblemDef) -> ProblemDef:
-        # Create a position variable per node
-        bck = other._backend
-        if bck is None:
-            raise ValueError("Cannot combine empty grammars")
-        # Do for the entire network or for a subset of edges
-        L = bck.Variable(varname, shape)
-        L[target] - L[source] >= E_ind + (1 - N) * (1 - E_ind)
-"""

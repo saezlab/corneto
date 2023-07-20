@@ -31,4 +31,4 @@ if find_spec("scipy"):
         try_sparse = lambda x: sparse.csr_matrix(x)
         LOGGER.debug(f"Using scipy csr sparse matrices by default")
     except Exception as e:
-        LOGGER.debug(f"Error loading scipy, using numpy dense matrices instead: {e}")
+        LOGGER.debug(f"Scipy not installed, using numpy dense matrices instead: {e}")

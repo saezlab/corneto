@@ -7,6 +7,7 @@ from corneto.backend._base import ProblemDef, Indicators
 from corneto._constants import *
 from corneto._settings import LOGGER
 from corneto._core import Graph
+from corneto._settings import try_sparse
 
 
 def create_flow_graph(
@@ -60,6 +61,157 @@ def create_flow_graph(
     gc.add_edge(nt, (), id="_outflow")  # nt -> ()
     return gc
 
+def aggflows(g: Graph, K: Backend = DEFAULT_BACKEND):
+    max_parents = {v: 1 for v in g.vertices if not str(v).startswith('_')}
+    sign = np.array([prop.get("interaction", 0) for prop in g.edge_properties])
+    Vix, Eix = g.get_vertex_edge_indexes()
+    # Creates Flow (Ex1) cont., L (Vx1) cont. for acyclicity, I (Ex1) for indicators for acyclicity
+    P = K.AcyclicFlow(g, max_parents=max_parents)
+    # F is a binary vector indicating if edges are selected or not.
+    # AcyclicFlow guarantees that the space of possible vectors is restricted
+    # to DAGs
+    F = P.get_symbol(VAR_FLOW + "_ipos") # selected edges
+    # AcyclicFlow makes sure that the 1s in F correspond to an acyclic graph
+    # using max_parents 1 except for dummy nodes forces the sol. to be a tree.
+    # VxE incidence matrix without negative values. Thus, each row
+    # corresponds with a vertex (vj) and the ones indicate which edges
+    # are parent edges (vi->vj).
+    A = g.vertex_incidence_matrix()
+    At = try_sparse(np.clip(A, 0, 1))
+    Ah = try_sparse(np.clip(-A, 0, 1))
+    
+    # Compute propagation of values on the tree (selected edges in F)
+    # Each vertex takes the value of the parent * sign edge.
+    # General function: vj = sign( 1/n * \sum_i vi * sign(e_ij) * e_ij )
+    # vj = vi * sign(e_ij) * e_ij
+    # V = K.Variable("V", (g.num_vertices,), lb=-1, ub=1, vartype=VarType.INTEGER)
+    # V could be replaced by an integer variable
+    Vp = K.Variable("Vp", (g.num_vertices,), vartype=VarType.BINARY) # Vx1
+    Vn = K.Variable("Vn", (g.num_vertices,), vartype=VarType.BINARY) # Vx1
+    #V = K.Variable("V"), (g.num_vertices,), vartype=VarType.INTEGER, lb=-1, ub=1)
+    Z = K.Variable("Z", (g.num_edges,), vartype=VarType.INTEGER, lb=-1, ub=1)
+    V = Vp - Vn
+    P += Vp + Vn <= 1
+    # At @ F counts number of selected edges vi->vj are selected, for each vj
+    # if no edge is selected, Vp or Vn have to be 0
+    num_incoming_edges = At @ F
+    P += Vp <= num_incoming_edges
+    P += Vn <= num_incoming_edges
+    # Ah.T is E x V, where the 1s in each row are the vertex that are the head of the edge
+    E = (Ah.T @ V).multiply(sign) # E x 1, multiplies the head var vertex value with the sign of the edge
+    # Multiply E * F to filter out edges not selected
+    P += Z >= -F
+    P += Z <= F
+    P += (F - 1) <= (E - Z)
+    P += (E - Z) <= (1 - F)
+    totals = []
+    for j, v in enumerate(g.vertices):
+        # Get parent edges
+        eij = g.get_edges_with_target_vertex(v)
+        if len(eij) > 0:
+            idx = [Eix[e] for e in eij]
+            # sum contributions of each edge and comp. average
+            total = (1/len(idx)) * (np.ones(len(idx)) @ Z[idx])
+            totals.append((v, eij, total))
+            # If the sum is 0, the vertex has to be 0? or it decides
+            P += Vp[j] >= total
+            P += Vn[j] >= -total
+    return P, E, totals
+
+
+
+def aggflow(g: Graph, K: Backend = DEFAULT_BACKEND, eps=1e-3):
+    # Constrain to the space of acyclic flows
+    P = K.AcyclicFlow(g)
+    E = P.get_symbol(VAR_FLOW + "_ipos")  # selected edges
+    # Node values in {0, 1} -> transformed to -1, 1 (inhibited, activated)
+    # Note that every node will have an assigned value, but only those connected
+    # to selected edges are the ones considered. NOTE! in this case signal cannot
+    # stop in the middle since this directly links flow and signal
+    V = K.Variable("V", (g.num_vertices,), vartype=VarType.BINARY)
+    # Dummy var for linearization
+    Z = K.Variable("Z", (g.num_vertices,), vartype=VarType.BINARY)
+    sign = np.array([prop.get("interaction", 0) for prop in g.edge_properties])
+    Vix, Eix = g.get_vertex_edge_indexes()
+    # TODO: VECTORIZE
+    for vj, j in Vix.items():
+        par = g.get_edges_with_target_vertex(vj)
+        if len(par) == 0:
+            continue  # v can take any value
+        contribs = []
+        for edge in par:
+            (vi,) = edge
+            i = Vix[vi]
+            eij = Eix[edge]  # index of vi -> vj
+            # Compute e_ij * vi where e_ij is the indicator of flow (edge selected)
+            # Here it assumes that each node has to be either 0 or 1 (or -1/1).
+            # Note: all values of nodes = 0 for which no incoming edge is 1 are not selected
+            P += (Z[eij] <= V[i], Z[eij] <= E[eij], Z[eij] >= E[eij] + V[i] - 1)
+            val_ij = sign[eij] * (Z[eij] * 2 - 1)
+            val_ij = (val_ij + 1) / 2  # to 0-1 again, simplify
+            contribs.append(val_ij)
+        value = sum(contribs) / len(
+            contribs
+        )  # >= 0 only if some parent provides a positive value
+        P += V[j] >= value
+        P += V[j] <= 1000 * value
+
+    # Error hard to compute in this case. It depends on the value of Eij.
+    # val = 1, eij=1 and vj=
+    #
+    # , but for -1s,
+    # we need to convert check if I[eij] == 1 and V[j]==0
+    # I[eij]+V[j] - 1
+
+    # The value of every node depends on it's parents, and if the edge is selected (E)
+    # We need to linearize the multiplication of E and V
+    # Compute the value of vertices, based on its parents
+    # Linearize multiplication Eij * Par(Vj)
+    # Vj = 1/n sum_i par(Vj) * Eij, Eij in {0,1}
+    # Note: values of edges fixed (interaction of the edge).
+    # If unknown (e.g, NN), can be a variable (-1,1) or two edges with fixed sign (-1, 1).
+    # Compute the value for each node
+    # vj = 1/n sum(par(vj)*eij) in -1, 1
+    # vj >= 0 -> pos=1, else 0
+    # vj < 0 -> neg=1, else 0, pos+neg <=1
+
+
+def aggflow2(g: Graph, K: Backend = DEFAULT_BACKEND):
+    # Constrain to the space of acyclic flows
+    P = K.AcyclicFlow(g)
+    E = P.get_symbol(VAR_FLOW + "_ipos")  # selected edges
+    # Node values in {0, 1} -> transformed to -1, 1 (inhibited, activated)
+    # Note that every node will have an assigned value, but only those connected
+    # to selected edges are the ones considered. NOTE! in this case signal cannot
+    # stop in the middle since this directly links flow and signal
+    V = K.Variable("V", (g.num_vertices,), vartype=VarType.BINARY)
+    # Dummy var for linearization
+    Z = K.Variable("Z", (g.num_vertices,), vartype=VarType.BINARY)
+    sign = np.array([prop.get("interaction", 0) for prop in g.edge_properties])
+    Vix, Eix = g.get_vertex_edge_indexes()
+    # TODO: VECTORIZE
+    for vj, j in Vix.items():
+        par = g.get_edges_with_target_vertex(vj)
+        if len(par) == 0:
+            continue  # v can take any value
+        contribs = []
+        for edge in par:
+            (vi,) = edge
+            i = Vix[vi]
+            eij = Eix[edge]  # index of vi -> vj
+            # Compute e_ij * vi where e_ij is the indicator of flow (edge selected)
+            # Here it assumes that each node has to be either 0 or 1 (or -1/1).
+            # Note: all values of nodes = 0 for which no incoming edge is 1 are not selected
+            P += (Z[eij] <= V[i], Z[eij] <= E[eij], Z[eij] >= E[eij] + V[i] - 1)
+            val_ij = sign[eij] * (Z[eij] * 2 - 1)
+            val_ij = (val_ij + 1) / 2  # to 0-1 again, simplify
+            contribs.append(val_ij)
+        value = sum(contribs) / len(
+            contribs
+        )  # >= 0 only if some parent provides a positive value
+        P += V[j] >= value
+        P += V[j] <= 1000 * value
+
 
 def signflow_constraints(
     g: Graph,
@@ -72,7 +224,7 @@ def signflow_constraints(
 ) -> ProblemDef:
     edges = g.edges
     vertices = g.vertices
-    A = g.vertex_incidence_matrix(sparse=False)
+    A = g.vertex_incidence_matrix()
     if "_s" not in vertices:
         raise ValueError(
             "The provided network does not have the `_s` and `_t` dummy nodes."
@@ -246,8 +398,9 @@ def signflow_constraints(
                 p += Fi <= R_act + R_inh
         # Constrain the product species of the reactions. They can be only up or
         # down if at least one of the reactions that have the node as product
-        # carry some signal.
-        incidence_matrix = A.clip(0, 1)
+        # carry some signal. Clip neg. values since we only look at the positive
+        # ones in the incidence matrix (the targets of each edge)
+        incidence_matrix = try_sparse(A.clip(0, 1))
         p += N_act <= incidence_matrix @ R_act
         p += N_inh <= incidence_matrix @ R_inh
     return p
