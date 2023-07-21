@@ -113,7 +113,7 @@ def _get_node_props(prefix, row):
     return props
 
 
-def _select_solver():
+def select_mip_solver():
     priority = ['gurobi', 'cplex', 'copt', 'mosek', 'scipy', 'scip', 'cbc', 'glpk_mi', None]
     solvers = [s.lower() for s in K.available_solvers()]
     solver = None
@@ -127,19 +127,6 @@ def _select_solver():
             break
     return solver
 
-
-def _print(*args, **kwargs):
-    # TODO: To be replaced by a logger
-    v = kwargs.get('v', None)
-    if v is not None:
-        kwargs.pop('v')
-        print(*args, **kwargs)
-
-def _get_scores(d):
-    return (
-       [v for v in d.values() if v < 0],
-       [v for v in d.values() if v > 0]
-    )
 
 def _extended_carnival_problem(G,
                             input_node_scores,
@@ -166,91 +153,9 @@ def _extended_carnival_problem(G,
         Pc.add_objectives(node_penalty @ selected_nodes)
     
     return Pc, Gf
-
-
-def search_causalnet(
-        prior_graph,
-        input_node_scores,
-        output_node_scores,
-        node_weights=None,
-        node_cutoff=0.1,
-        min_penalty=0.01, 
-        max_penalty=1.0,
-        missing_penalty=10,
-        edge_penalty=1e-2,
-        solver=None,
-        verbose=True,
-        show_solver_output=False,
-        max_seconds=None,
-        **kwargs
-    ):
-    v = verbose
-
-    if solver is None:
-        solver = _select_solver()
-
-    measured_nodes = set(input_node_scores.keys()) | set(output_node_scores.keys())
- 
-    _print("Total positive/negative scores of the inputs and outputs:", v=verbose)
-    w_neg_in, w_pos_in = _get_scores(input_node_scores)
-    w_neg_out, w_pos_out = _get_scores(output_node_scores)
-    _print(f" - (-) input nodes: {sum(w_neg_in)}", v=v)
-    _print(f" - (+) input nodes: {sum(w_pos_in)}", v=v)
-    _print(f" - (-) output nodes: {sum(w_neg_out)}", v=v)
-    _print(f" - (+) output nodes: {sum(w_pos_out)}", v=v)
     
-    # Total weights
-    total = abs(sum(w_neg_in)) + abs(sum(w_neg_out)) + sum(w_pos_in) + sum(w_pos_out)
-    _print(f" - abs total (inputs + outputs): {total}", v=v)
-    
-    if node_weights is None:
-        node_weights = {}
-    else:
-        node_penalties = _weights_to_penalties(node_weights, cutoff=node_cutoff,
-                                               max_penalty=max_penalty,
-                                               min_penalty=min_penalty)
 
-    # assign 0 penalties to input/output nodes, missing_penalty to missing nodes
-    c_node_penalties = {k: node_penalties.get(k, missing_penalty) if k not in measured_nodes else 0.0 for k in prior_graph.vertices}
-
-    _print("Building CORNETO problem...", v=v)
-    P, G = _extended_carnival_problem(
-        prior_graph,
-        input_node_scores,
-        output_node_scores,
-        node_penalties=c_node_penalties,
-        edge_penalty=edge_penalty
-    )
-
-    _print(f"Solving with {solver}...", v=v)
-    ps = P.solve(
-        solver=solver, 
-        max_seconds=max_seconds, 
-        verbosity=int(show_solver_output),
-        scipy_options=dict(disp='true'), 
-        **kwargs)
-    
-    _print("Done.", v=verbose)
-    
-    obj_names = ["Loss (unfitted inputs/output)", "Edge penalty error", "Node penalty error"]
-    _print("Solution summary:", v=v)
-    for s, o in zip(obj_names, P.objectives):
-        _print(f" - {s}: {o.value}", v=v)
-    df,cols = _export_results(P, G, input_node_scores, output_node_scores)
-    return df, cols, P
-
-
-def _weights_to_penalties(props, 
-                          cutoff,
-                          min_penalty, 
-                          max_penalty):
-    if any(p < 0 or p > 1 for p in props.values()):
-        raise ValueError("Node weights were not between 0 and 1. Consider minmax or another normalization.")
-    
-    return {k: max_penalty if v < cutoff else min_penalty for k, v in props.items()}
-
-
-def _export_results(P, G, input_dict, output_dict):
+def export_results(P, G, input_dict, output_dict):
     # Get results
     nodes = P.symbols['species_activated_c0'].value - P.symbols['species_inhibited_c0'].value
     edges = P.symbols['reaction_sends_activation_c0'].value - P.symbols['reaction_sends_inhibition_c0'].value
