@@ -174,7 +174,7 @@ def signflow_constraints(
         # the inverse signal instead. Same for dummy target _t. As a convention, they are forced
         # to be always activated instead to avoid these alternative options.
         p += N_act[vidx["_s"]] == 1
-        p += N_act[vidx["_t"]] == 1
+        p += N_act[vidx["_t"]] >= 0
         # Dont define activation/inhibition for reactions with no reactants or no products
         # rids = np.flatnonzero(np.logical_and(rn.has_reactant(), rn.has_product()))
         # TODO: Simplify this by adding methods to ReNet
