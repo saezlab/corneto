@@ -1,8 +1,10 @@
 from corneto.methods.signflow import signflow, create_flow_graph, Graph
 from typing import Dict, List, Tuple, Union
 from corneto.backend import DEFAULT_BACKEND as K
+from corneto._settings import LOGGER
 import numpy as np
 import warnings
+
 
 def _check_graphviz():
     try:
@@ -16,6 +18,7 @@ def runVanillaCarnival(
     measurements: Dict,
     priorKnowledgeNetwork: Union[List[Tuple], Graph],
     betaWeight: float = 0.2,
+    regularization_on_nodes: bool = True,
     solver=None,
     **kwargs
 ):
@@ -32,7 +35,13 @@ def runVanillaCarnival(
     else:
         raise ValueError("Provide a list of sif tuples or a graph")
     Gf = create_flow_graph(G, conditions)
-    P = signflow(Gf, conditions, l0_penalty_vertices=betaWeight)
+    if len(conditions) > 1 and regularization_on_nodes:
+        LOGGER.warning("Regularization on nodes is not supported when multiple conditions are provided. Regularization on edges will be used instead.")
+        regularization_on_nodes = False
+    if regularization_on_nodes:
+        P = signflow(Gf, conditions, l0_penalty_vertices=betaWeight)
+    else:
+        P = signflow(Gf, conditions, l0_penalty_edges=betaWeight)
     P.solve(solver=solver, **kwargs)
     return P, Gf
 
