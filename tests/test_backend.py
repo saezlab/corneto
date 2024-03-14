@@ -2,7 +2,9 @@ import pytest
 import pathlib
 import numpy as np
 from corneto.backend import PicosBackend, CvxpyBackend
+from corneto._graph import Graph
 import cvxpy as cp
+from corneto import VAR_FLOW
 
 
 @pytest.fixture(params=[CvxpyBackend, PicosBackend])
@@ -10,13 +12,21 @@ def backend(request):
     return request.param()
 
 
+@pytest.fixture
+def mitocore_small():
+    from corneto._io import _load_compressed_gem
+
+    file = pathlib.Path(__file__).parent.joinpath("gem", "mitocore_small.xz")
+    S, R, M = _load_compressed_gem(file)
+    return S, R, M
+
+
 def test_picos_convex():
     backend = PicosBackend()
     P = backend.Problem()
     A = np.array([[0.12, 0.92, 0.76, 0.98, 0.79], [0.58, 0.57, 0.53, 0.71, 0.55]])
     b = np.array([1, 0])
-    x = backend.Variable("x", A.shape[1])
-    # P += x # not needed since 0.9.1
+    x = backend.Variable("x", (A.shape[1],))
     P += sum(x) == 1, x >= 0
     # Convex optimization problem
     P.add_objectives(abs(A @ x - b), inplace=True)
@@ -30,11 +40,12 @@ def test_cvxpy_convex():
     P = backend.Problem()
     A = np.array([[0.12, 0.92, 0.76, 0.98, 0.79], [0.58, 0.57, 0.53, 0.71, 0.55]])
     b = np.array([1, 0])
-    x = backend.Variable("x", A.shape[1])
-    # P += x # not needed since 0.9.1
-    P += sum(x) == 1, x >= 0
+    x = backend.Variable("x", (A.shape[1],))
+    P += sum(x) == 1, x >= 0  # type: ignore
     # Convex optimization problem
-    P.add_objectives(cp.sum_squares((A @ x - b).e), inplace=True)
+    P.add_objectives(
+        cp.sum_squares((A @ x - b).e), inplace=True
+    )  # TODO: add sum squares
     P.solve(solver="osqp", verbosity=1)
     assert np.all(np.array(x.value) < np.array([1e-6, 0.64, 0.37, 1e-6, 1e-6]))
     assert np.all(np.array(x.value) > np.array([-1e-6, 0.62, 0.36, -1e-6, -1e-6]))
@@ -45,9 +56,8 @@ def test_cvxpy_convex_apply():
     P = backend.Problem()
     A = np.array([[0.12, 0.92, 0.76, 0.98, 0.79], [0.58, 0.57, 0.53, 0.71, 0.55]])
     b = np.array([1, 0])
-    x = backend.Variable("x", A.shape[1])
-    # P += x # not needed since 0.9.1
-    P += sum(x) == 1, x >= 0
+    x = backend.Variable("x", (A.shape[1],))
+    P += sum(x) == 1, x >= 0  # type: ignore
     # Convex optimization problem
     P.add_objectives((A @ x - b).apply(cp.sum_squares), inplace=True)
     P.solve(solver="osqp", verbosity=1)
@@ -103,7 +113,7 @@ def test_cvxpy_custom_expr_symbols():
     P = backend.Problem()
     A = np.zeros((2, 5))
     b = np.array([1, 0])
-    x = backend.Variable("x", A.shape[1])
+    x = backend.Variable("x", (A.shape[1],))
     P.add_objectives((A @ x - b).apply(cp.sum_squares), inplace=True)
     assert "x" in P.symbols
 
@@ -113,7 +123,7 @@ def test_picos_custom_expr_symbols():
     P = backend.Problem()
     A = np.zeros((2, 5))
     b = np.array([1, 0])
-    x = backend.Variable("x", A.shape[1])
+    x = backend.Variable("x", (A.shape[1],))
     P.add_objectives(abs(A @ x - b), inplace=True)
     assert "x" in P.symbols
 
@@ -132,3 +142,150 @@ def test_rmatmul_symbols(backend):
     x = backend.Variable("x", A.shape)
     P.add_objectives(x @ A, inplace=True)
     assert "x" in P.symbols
+
+
+def test_undirected_flow(backend):
+    g = Graph()
+    g.add_edges([((), "A"), ("A", "B"), ("A", "C"), ("B", "D"), ("C", "D"), ("D", ())])
+    P = backend.Flow(g, lb=-1000, ub=1000)
+    P += P.expr.flow[1] >= 10
+    P += P.expr.flow[2] >= -10
+    P.add_objectives(sum(P.expr.flow), weights=1)
+    P.solve()
+    assert np.isclose(P.objectives[0].value, 0)
+
+
+def test_undirected_flow_unbounded(backend):
+    from corneto._graph import Graph
+    from corneto import VAR_FLOW
+
+    g = Graph()
+    g.add_edges([((), "A"), ("A", "B"), ("A", "C"), ("B", "D"), ("C", "D"), ("D", ())])
+    P = backend.Flow(g, lb=None, ub=None)
+    P += P.expr.flow[1] >= 10
+    P += P.expr.flow[2] >= -10
+    P.add_objectives(sum(P.expr.flow), weights=1)
+    P.solve()
+    assert np.isclose(P.objectives[0].value, 0)
+
+
+def test_fba_flow(backend, mitocore_small):
+    S, R, M = mitocore_small
+    reaction_id = np.flatnonzero(R["id"] == "EX_biomass_e")[0]
+    G = Graph.from_vertex_incidence(S, M["id"], R["id"])
+    P = backend.Flow(G, lb=R["lb"], ub=R["ub"], values=True, n_flows=1)
+    obj = P.expr.flow[reaction_id]
+    P.add_objectives(-obj)  # maximize
+    P.solve()
+    assert np.isclose(np.round(obj.value, 3), 100.257)
+
+
+def test_fba_flow_with_weighted_obj(backend, mitocore_small):
+    S, R, M = mitocore_small
+    reaction_id = np.flatnonzero(R["id"] == "EX_biomass_e")[0]
+    G = Graph.from_vertex_incidence(S, M["id"], R["id"])
+    P = backend.Flow(G, lb=R["lb"], ub=R["ub"], values=True, n_flows=1)
+    obj = P.expr.flow[reaction_id]
+    P.add_objectives(obj, weights=-1)  # maximize
+    P.solve()
+    assert np.isclose(np.round(obj.value, 3), 100.257)
+
+
+def test_fba_multiflow(backend, mitocore_small):
+    S, R, M = mitocore_small
+    reaction_id = np.flatnonzero(R["id"] == "EX_biomass_e")[0]
+    G = Graph.from_vertex_incidence(S, M["id"], R["id"])
+    P = backend.Flow(G, lb=R["lb"], ub=R["ub"], values=True, n_flows=2)
+    obj = P.expr.flow[reaction_id]
+    P.add_objectives(-sum(obj))
+    P.solve()
+    assert np.allclose(np.round(obj.value, 3), [100.257, 100.257])
+
+
+def test_acyclic_flow_directed_graph(backend):
+    G = Graph.from_sif_tuples(
+        [
+            ("v1", 1, "v2"),
+            ("v2", 1, "v2"),
+            ("v2", 1, "v3"),
+            ("v3", -1, "v1"),
+            ("v1", -1, "v2"),
+            ("v2", 1, "v4"),
+            ("v4", -1, "v3"),
+            ("v4", 1, "v5"),
+            ("v5", 1, "v3"),
+            ("v5", -1, "v6"),
+            ("v3", 1, "v5"),
+            ("v3", 1, "v6"),
+        ]
+    )
+    G.add_edge((), "v1")
+    G.add_edge("v6", ())
+    P = backend.AcyclicFlow(G, lb=0, ub=10)
+    # P.add_objectives(-sum(P.get_symbol(VAR_FLOW + "_ipos")))
+    P.add_objectives(-sum(P.expr.with_flow))
+    solver = None
+    if isinstance(backend, PicosBackend):
+        # Picos choses ECOS solver for this...
+        # TODO: overwrite solver preferences
+        solver = "glpk"
+    P.solve(solver=solver)
+    # Check that the maximum acyclic graph has no cycles
+    # TODO: picos returns a column vector [[1],[0],...] homogeneise outputs
+    # sol = np.round(P.get_symbol(VAR_FLOW + "_ipos").value).ravel()
+    sol = np.round(P.expr.with_flow.value).ravel()
+    assert np.allclose(
+        sol, [1.0, 0.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+    )
+
+
+def test_acyclic_flow_undirected_edge(backend):
+    G = Graph.from_sif_tuples(
+        [
+            ("v1", 1, "v2"),
+            ("v2", 1, "v2"),
+            ("v2", 1, "v3"),
+            ("v3", -1, "v1"),
+            ("v1", -1, "v2"),
+            ("v2", 1, "v4"),
+            ("v4", -1, "v3"),
+            ("v4", 1, "v5"),
+            ("v5", 1, "v3"),
+            ("v5", -1, "v6"),
+            ("v3", 1, "v5"),
+            ("v3", 1, "v6"),
+        ]
+    )
+    G.add_edge((), "v1")
+    G.add_edge("v6", ())
+    # TODO: fix lb/ub being a list instead of a numpy array
+    lb = np.array([0] * G.ne)
+    ub = np.array([10] * G.ne)
+    lb[3] = -10  # reversible v3 <-> v1
+    P = backend.AcyclicFlow(G, lb=lb, ub=ub)
+    # obj = P.get_symbol(VAR_FLOW + "_ipos") + P.get_symbol(VAR_FLOW + "_ineg")
+    P.add_objectives(-sum(P.expr.with_flow))
+    solver = None
+    if isinstance(backend, PicosBackend):
+        # Picos choses ECOS solver for this...
+        # TODO: overwrite solver preferences
+        solver = "glpk"
+    P.solve(solver=solver)
+    sol = np.round(P.expr.with_flow.value).ravel()
+    vsol1 = [1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+    vsol2 = [1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0]
+    assert np.allclose(sol, vsol1) or np.allclose(sol, vsol2)
+
+
+@pytest.mark.skip(reason="Only a small subset of solvers support this")
+def test_l2_norm(backend):
+    x = np.array([1, 2])
+    y = np.array([3, 4])
+    expected_result = np.linalg.norm(x - y)
+    P = backend.Problem()
+    diff = backend.Variable("diff", x.shape)
+    n = diff.norm()
+    P += [diff == x - y]
+    P.add_objectives(n)
+    P.solve()
+    assert np.isclose(n.value, expected_result, rtol=1e-5)

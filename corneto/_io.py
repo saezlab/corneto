@@ -1,10 +1,22 @@
-from typing import List, Iterable, Tuple, Optional, Dict, Set
-from corneto._typing import StrOrInt, TupleSIF
+from pathlib import Path
+from typing import (
+    List,
+    Iterable,
+    Tuple,
+    Optional,
+    Dict,
+    Set,
+    Union,
+    TypeVar,
+    Any,
+    TYPE_CHECKING,
+)
+from corneto._types import TupleSIF, CobraModel
 import numpy as np
 
 
 def _read_sif(
-    sif_file: str,
+    sif_file: Union[str, Path],
     delimiter: str = "\t",
     has_header: bool = False,
     discard_self_loops: Optional[bool] = True,
@@ -69,7 +81,7 @@ def _reaction_stoichiometry(reaction: List[TupleSIF]) -> Dict[str, int]:
                 else:
                     raise ValueError(f"Malformed reaction, options are: {rid}, {k}")
         if rid is None:
-            raise ValueError(f"Malformed reaction")
+            raise ValueError("Malformed reaction")
         reactants = {s: -int(d) for s, d, t in reaction if t == rid}
         products = {t: int(d) for s, d, t in reaction if s == rid}
         return {**reactants, **products}
@@ -137,3 +149,125 @@ def load_sif(
         column_order=column_order,
     )
     return load_sif_from_tuples(reaction_tpls)
+
+
+def import_cobra_model(model: CobraModel) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    # From MIOM: https://github.com/MetExplore/miom/blob/main/miom/mio.py
+    try:
+        from cobra.util.array import create_stoichiometric_matrix  # type: ignore
+    except ImportError as e:
+        raise ImportError("COBRApy not installed.", e)
+    S = create_stoichiometric_matrix(model)
+    subsystems = []
+    for rxn in model.reactions:
+        subsys = rxn.subsystem
+        list_subsystem_rxn = []
+        # For .mat models, the subsystem can be loaded as a
+        # string repr of a numpy array
+        if isinstance(subsys, str) and (
+            subsys.startswith("array(") or subsys.startswith("[array(")
+        ):
+            try:
+                subsys = eval(subsys.strip())
+            except Exception:
+                # Try to create a list
+                import re
+
+                subsys = re.findall("\['(.*?)'\]", subsys)
+                if len(subsys) == 0:
+                    subsys = rxn.subsystem
+            # A list containing a numpy array?
+            for s in subsys:
+                if "tolist" in dir(s):
+                    list_subsystem_rxn.extend(s.tolist())
+                else:
+                    list_subsystem_rxn.append(s)
+            if len(list_subsystem_rxn) == 1:
+                list_subsystem_rxn = list_subsystem_rxn[0]
+            subsystems.append(list_subsystem_rxn)
+
+        elif "tolist" in dir(rxn.subsystem):
+            subsystems.append(rxn.subsystem.tolist())
+        else:
+            subsystems.append(rxn.subsystem)
+
+    rxn_data = [
+        (
+            rxn.id,
+            rxn.name,
+            rxn.lower_bound,
+            rxn.upper_bound,
+            subsystem,
+            rxn.gene_reaction_rule,
+        )
+        for rxn, subsystem in zip(model.reactions, subsystems)
+    ]
+    met_data = [(met.id, met.name, met.formula) for met in model.metabolites]
+    R = np.array(
+        rxn_data,
+        dtype=[
+            ("id", "object"),
+            ("name", "object"),
+            ("lb", "float"),
+            ("ub", "float"),
+            ("subsystem", "object"),
+            ("gpr", "object"),
+        ],
+    )
+    M = np.array(
+        met_data,
+        dtype=[("id", "object"), ("name", "object"), ("formula", "object")],
+    )
+    return S, R, M
+
+
+def _is_url(url):
+    """
+    Determine if the provided string is a valid url
+    :param url: string
+    :return: True if the string is a URL
+    """
+    from urllib.parse import urlparse
+
+    if isinstance(url, str):
+        try:
+            result = urlparse(url)
+            return all([result.scheme, result.netloc])
+        except ValueError:
+            return False
+    return False
+
+
+def _download(url_file):
+    import pathlib
+
+    if not _is_url(url_file):
+        raise ValueError("Invalid url")
+    import tempfile
+    import os
+    from urllib.request import urlopen
+
+    ext = pathlib.Path(url_file).suffix
+    path = os.path.join(tempfile.mkdtemp(), "file" + ext)
+    with urlopen(url_file) as rsp, open(path, "wb") as output:
+        output.write(rsp.read())
+    return path
+
+
+def _load_compressed_gem(url_or_filepath):
+    # https://github.com/MetExplore/miom
+    import pathlib
+
+    file = url_or_filepath
+    if _is_url(url_or_filepath):
+        file = _download(url_or_filepath)
+    ext = pathlib.Path(file).suffix
+    if ext == ".xz" or ext == ".miom":
+        import lzma
+        from io import BytesIO
+
+        with lzma.open(file, "rb") as f_in:
+            M = np.load(BytesIO(f_in.read()), allow_pickle=True)
+    else:
+        M = np.load(file)
+    return M["S"], M["reactions"], M["metabolites"]

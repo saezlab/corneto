@@ -1,12 +1,14 @@
 import abc
-from copy import deepcopy
-import numpy as np
-from corneto._io import load_sif
-from typing import Any, Optional, Iterable, Set, Tuple, Union, Dict, List
-from corneto._typing import StrOrInt, TupleSIF
-from corneto._constants import *
 from collections import OrderedDict
-from corneto._core import Graph as NGraph
+from copy import deepcopy
+from typing import Any, Dict, Iterable, List, Optional, Set, Tuple, Union
+
+import numpy as np
+
+from corneto._constants import *
+from corneto._graph import Graph as NGraph
+from corneto._io import load_sif
+from corneto._types import StrOrInt, TupleSIF
 
 
 class BaseGraph(abc.ABC):
@@ -933,3 +935,93 @@ class GReNet(ReNet):
     @staticmethod
     def import_network(rn: ReNet):
         return GReNet.from_renet(rn)
+
+
+def legacy_graphviz(
+    self,
+    problem=None,
+    condition: str = None,
+    graph_attr: Dict[str, str] = None,
+    node_attr: Dict[str, str] = None,
+    edge_attr: Dict[str, str] = None,
+):
+    import graphviz
+
+    vertices, edges = self.vertices, self.edges
+    custom_vertex = dict()
+    custom_edge = dict()
+    if problem:
+        if hasattr(problem, "symbols"):
+            problem = {k: v.value for k, v in problem.symbols.items()}
+        # TODO: very ad-hoc, improve
+        c = [k for k in problem.keys() if k.startswith("reaction_sends_activation")]
+        if len(c) > 1 and condition is None:
+            raise ValueError(
+                "Detected multiple conditions defined in problem, but a condition was not provided"
+            )
+        if len(c) == 1 and condition is None:
+            condition = c[0].split("activation_")[1]
+        vertex_values = (
+            problem[f"species_activated_{condition}"]
+            - problem[f"species_inhibited_{condition}"]
+        )
+        edge_values = (
+            problem[f"reaction_sends_activation_{condition}"]
+            - problem[f"reaction_sends_inhibition_{condition}"]
+        )
+        # Add custom values per edge/vertex
+        for v, value in zip(vertices, vertex_values):
+            if value < 0:
+                custom_vertex[v] = dict(
+                    color="blue", penwidth="2", fillcolor="azure2", style="filled"
+                )
+            elif value > 0:
+                custom_vertex[v] = dict(
+                    color="red",
+                    penwidth="2",
+                    fillcolor="lightcoral",
+                    style="filled",
+                )
+
+        for e, value in zip(edges, edge_values):
+            if value < 0:
+                custom_edge[e] = dict(color="blue", penwidth="2")
+            elif value > 0:
+                custom_edge[e] = dict(color="red", penwidth="2")
+
+    if node_attr is None:
+        node_attr = dict(fixedsize="true")
+    g = graphviz.Digraph(
+        graph_attr=graph_attr, node_attr=node_attr, edge_attr=edge_attr
+    )
+    for e, p in zip(edges, self.edge_properties):
+        s, t = e
+        s = list(s)
+        if len(s) == 0:
+            s = f"*_{str(t)}"
+            g.node(s, shape="point")
+        elif len(s) == 1:
+            s = str(s[0])
+            props = custom_vertex.get(s, dict())
+            g.node(s, shape="circle", **props)
+        else:
+            raise NotImplementedError("Represent- hyperedges as composite edges")
+        t = list(t)
+        if len(t) == 0:
+            t = f"{str(s)}_*"
+            g.node(t, shape="point")
+        elif len(t) == 1:
+            t = str(t[0])
+            props = custom_vertex.get(t, dict())
+            g.node(t, shape="circle", **props)
+        edge_type = p.get("interaction", 0)
+        props = custom_edge.get(e, dict())
+        if ("directed" in p and p["directed"] == False) or (
+            "undirected" in p and p["undirected"] == True
+        ):
+            props["dir"] = "none"
+        if edge_type >= 0:
+            g.edge(s, t, arrowhead="normal", **props)
+        else:
+            g.edge(s, t, arrowhead="tee", **props)
+    return g

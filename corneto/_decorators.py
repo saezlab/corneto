@@ -28,7 +28,7 @@ if USE_NUMBA:
         jit = _jit
 
 
-def _proxy(func):
+def _delegate(func):
     @wraps(func)
     def _wrapper_func(self, *args, **kwargs):
         symbols = set()
@@ -45,13 +45,14 @@ def _proxy(func):
                     symbols.add(args[0])
                 args[0] = args[0]._expr  # symbol is lost
         if hasattr(self._expr, func.__name__):
-            # Call the function in the original expression (PICOS or CVXPY) if available
-            # e.g., if function is __add__, checks if the PICOS/CVXPY expression has that function
-            # and uses it instead, this returns a new PICOS/CVXPY expression which is wrapped in a CtProxyExpression
+            # Call the function in the original expression (PICOS/CVXPY/.. backend)
+            # if available. E.g., if function is __add__, checks if the backend
+            # expression has that function and uses it instead, this returns a
+            # new backend expression which is wrapped back to CORNETO expr.
             return self._create(
                 getattr(self._expr, func.__name__)(*args, **kwargs), symbols
             )
-        # This is not a native function, run it and create a new CtProxyExpression
+        # This is not a native function, run it and create a new CnExpression
         return self._create(func(self, *args, **kwargs), symbols)
 
     return _wrapper_func

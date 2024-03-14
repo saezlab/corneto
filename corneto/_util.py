@@ -1,15 +1,38 @@
-
 from collections import OrderedDict
+from itertools import filterfalse
+from typing import Any, Callable, Dict, Iterable, Optional, Set, TypeVar
+
 import numpy as np
-from typing import Dict, Optional
 from numpy.linalg import svd
+
+T = TypeVar("T")
+
+
+def unique_iter(
+    iterable: Iterable[T], key: Optional[Callable[[T], Any]] = None
+) -> Iterable[T]:
+    # Based on https://iteration-utilities.readthedocs.io/en/latest/generated/unique_everseen.html
+    seen: Set[Any] = set()
+    seen_add = seen.add
+    if key is None:
+        for element in filterfalse(seen.__contains__, iterable):
+            seen_add(element)
+            yield element
+    else:
+        for element in iterable:
+            k = key(element)
+            if k not in seen:
+                seen_add(k)
+                yield element
+
 
 def get_latest_version(
     url="https://raw.githubusercontent.com/saezlab/corneto/main/pyproject.toml",
     timeout=5,
 ):
-    import urllib.request
     import re
+    import urllib.request
+
     try:
         response = urllib.request.urlopen(url, timeout=timeout)
         content = response.read().decode()
@@ -19,26 +42,30 @@ def get_latest_version(
             return version
     except Exception as e:
         return None
-    
+
+
 def _support_html_output(force_html: bool = False):
     # from https://github.com/tqdm/tqdm/blob/master/tqdm/autonotebook.py
     # and https://github.com/tqdm/tqdm/blob/0bb91857eca0d4aea08f66cf1c8949abe0cd6b7a/tqdm/notebook.py#L38
     try:
         from IPython import get_ipython
-        from IPython.display import HTML
         from IPython.core.display import display
+        from IPython.display import HTML
+
         ipy = get_ipython()
         if ipy is None:
             return False
-        if 'IPKernelApp' not in get_ipython().config:
+        if "IPKernelApp" not in get_ipython().config:
             return False
         return True
     except:
         return False
 
+
 def _get_info() -> Dict[str, Dict]:
     from corneto import __version__
-    from corneto.backend import available_backends, DEFAULT_BACKEND
+    from corneto.backend import DEFAULT_BACKEND, available_backends
+
     info: Dict[str, Dict] = OrderedDict()
 
     latest = get_latest_version()
@@ -49,86 +76,103 @@ def _get_info() -> Dict[str, Dict]:
             cv = f"v{__version__} (latest: v{latest})"
         else:
             cv = f"v{__version__}"
-    info['corneto_version'] = {'title': 'Installed version', 'message': cv, 'value': __version__}
-    info['backends'] = {
-        'title': 'Available backends', 
-        'message': ", ".join([str(e) + f" v{e.version()}" for e in available_backends()]), 
-        'value': available_backends()
+    info["corneto_version"] = {
+        "title": "Installed version",
+        "message": cv,
+        "value": __version__,
     }
-    info['default_backend'] = {
-        'title': 'Default backend (corneto.K)', 
-        'message': "No backend detected, please install CVXPY or PICOS",
-        'value': None
+    info["backends"] = {
+        "title": "Available backends",
+        "message": ", ".join(
+            [str(e) + f" v{e.version()}" for e in available_backends()]
+        ),
+        "value": available_backends(),
     }
-    info['available_solvers'] = {
-        'title': 'Installed solvers',
-        'message': 'No installed solvers',
-        'value': []
-    }      
+    info["default_backend"] = {
+        "title": "Default backend (corneto.K)",
+        "message": "No backend detected, please install CVXPY or PICOS",
+        "value": None,
+    }
+    info["available_solvers"] = {
+        "title": "Installed solvers",
+        "message": "No installed solvers",
+        "value": [],
+    }
     if DEFAULT_BACKEND:
-        info['default_backend']['message'] = str(DEFAULT_BACKEND)
-        info['default_backend']['value'] = DEFAULT_BACKEND
-        info['available_solvers']['message'] = ", ".join([s for s in DEFAULT_BACKEND.available_solvers()])
-        info['available_solvers']['value'] = DEFAULT_BACKEND.available_solvers()
-    info['graphviz_version'] = {
-        'title': 'Graphviz version',
-        'message': 'Graphviz not installed. To support plotting, please install graphviz with conda',
-        'value': None
+        info["default_backend"]["message"] = str(DEFAULT_BACKEND)
+        info["default_backend"]["value"] = DEFAULT_BACKEND
+        info["available_solvers"]["message"] = ", ".join(
+            [s for s in DEFAULT_BACKEND.available_solvers()]
+        )
+        info["available_solvers"]["value"] = DEFAULT_BACKEND.available_solvers()
+    info["graphviz_version"] = {
+        "title": "Graphviz version",
+        "message": "Graphviz not installed. To support plotting, please install graphviz with conda",
+        "value": None,
     }
     try:
         import graphviz
-        info['graphviz_version']['message'] = f"v{graphviz.__version__}"
-        info['graphviz_version']['value'] = graphviz.__version__
+
+        info["graphviz_version"]["message"] = f"v{graphviz.__version__}"
+        info["graphviz_version"]["value"] = graphviz.__version__
     except Exception as e:
         pass
-    info['repo_url'] = {
-        'title': 'Repository',
-        'message': "https://github.com/saezlab/corneto",
-        'value': "https://github.com/saezlab/corneto"
+    info["repo_url"] = {
+        "title": "Repository",
+        "message": "https://github.com/saezlab/corneto",
+        "value": "https://github.com/saezlab/corneto",
     }
     return info
+
 
 def info():
     info = _get_info()
 
     if _support_html_output():
-        from IPython.display import HTML
-        from IPython.core.display import display
-        import pkg_resources
         import base64
-        logo_path = pkg_resources.resource_filename(__name__, 'rsc/logo/corneto-logo-512px.png')
-        with open(logo_path, 'rb') as f:
+
+        import pkg_resources
+        from IPython.core.display import display
+        from IPython.display import HTML
+
+        logo_path = pkg_resources.resource_filename(__name__, "resources/logo.png")
+        with open(logo_path, "rb") as f:
             img_bytes = f.read()
-        b64img = base64.b64encode(img_bytes).decode('utf-8')
-        html = f'''
+        b64img = base64.b64encode(img_bytes).decode("utf-8")
+        html = f"""
         <table style='background-color:rgba(0, 0, 0, 0);'>
         <tr>
-            <td><img src="data:image/jpeg;base64,{b64img}" width="85px" /></td>
+            <td style="min-width:85px">
+                <img src="data:image/jpeg;base64,{b64img}" style="width: 100%; max-width:100px;" />
+            </td>
             <td>
             <table>
                 *
             </table>
             </td>
         </tr>
-        </table>'''
-        html_info = ''
+        </table>"""
+        html_info = ""
         for k, v in info.items():
-            title = v['title']
-            message = v['message']
-            if '_url' in k:
+            title = v["title"]
+            message = v["message"]
+            if "_url" in k:
                 message = f"<a href={message}>{message}</a>"
-            html_info += f"<tr><td>{title}:</td><td style='text-align:left'>{message}</td></tr>"
-        display(HTML(html.replace('*', html_info)))
-        
+            html_info += (
+                f"<tr><td>{title}:</td><td style='text-align:left'>{message}</td></tr>"
+            )
+        display(HTML(html.replace("*", html_info)))
+
     else:
         for v in info.values():
-            title = v['title']
-            message = v['message']
+            title = v["title"]
+            message = v["message"]
             print(f"{title}:", f"{message}")
+
 
 def _info():
     from corneto import __version__
-    from corneto.backend import available_backends, DEFAULT_BACKEND, DEFAULT_SOLVER
+    from corneto.backend import DEFAULT_BACKEND, available_backends
 
     latest = get_latest_version()
     if latest == __version__:
@@ -149,13 +193,13 @@ def _info():
             ", ".join([s for s in DEFAULT_BACKEND.available_solvers()]),
         )
     else:
-        print("No backend detected in the system. Please install Cvxpy or PICOS.")
+        print("No backend detected in the system. Please install CVXPY or PICOS.")
 
     try:
         import graphviz
 
         print(f"Graphviz available: v{graphviz.__version__}.")
-    except Exception as e:
+    except Exception:
         print("Graphviz not installed.")
     print("https://github.com/saezlab/corneto")
 
@@ -163,7 +207,7 @@ def _info():
 def nullspace(A, atol=1e-13, rtol=0):
     # https://scipy-cookbook.readthedocs.io/items/RankNullspace.html
     A = np.atleast_2d(A)
-    u, s, vh = svd(A)
+    _, s, vh = svd(A)
     tol = max(atol, rtol * s[0])
     nnz = (s >= tol).sum()
     ns = vh[nnz:].conj().T

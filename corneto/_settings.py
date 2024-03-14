@@ -1,9 +1,8 @@
 import logging
-import sys
 import os
+import sys
 import numpy as np
 from importlib.util import find_spec
-from functools import wraps
 
 LOGGER = logging.getLogger("__corneto__")
 LOGGER.setLevel(logging.INFO)
@@ -19,16 +18,61 @@ _stream_handler.setFormatter(
 )
 LOGGER.addHandler(_stream_handler)
 
-
+# Experimental
 USE_NUMBA = find_spec("numba") and not os.environ.get("CORNETO_IGNORE_NUMBA", False)
 
-try_sparse = lambda x: x
+try:
+    from scipy import sparse  # type: ignore
 
-if find_spec("scipy"):
+    sparsify = sparse.csr_matrix
+    LOGGER.debug("Using scipy csr sparse matrices by default")
+except ImportError:
+
+    def sparsify(x):
+        LOGGER.warning("Scipy not installed, using numpy dense matrices instead.")
+        return x
+
+    LOGGER.debug("Scipy not installed, using numpy dense matrices instead.")
+
+
+def _numpy_array(arg1, shape=None, dtype=None):
+    if isinstance(arg1, np.ndarray):
+        return arg1
+
+    # Handle (data, (row_ind, col_ind)) case
+    if (
+        isinstance(arg1, tuple)
+        and len(arg1) == 2
+        and isinstance(arg1[1], tuple)
+        and len(arg1[1]) == 2
+    ):
+        data, (row_ind, col_ind) = arg1
+        if shape is None:
+            shape = (max(row_ind) + 1, max(col_ind) + 1)
+        mat = np.zeros(shape, dtype=dtype)
+        for d, r, c in zip(data, row_ind, col_ind):
+            mat[r, c] = d
+        return mat
+
+    # Handle (data, indices, indptr) case
+    elif isinstance(arg1, tuple) and len(arg1) == 3:
+        data, indices, indptr = arg1
+        if shape is None:
+            shape = (len(indptr) - 1, max(indices) + 1)
+        mat = np.zeros(shape, dtype=dtype if dtype is not None else float)
+        for i in range(len(indptr) - 1):
+            for j in range(indptr[i], indptr[i + 1]):
+                mat[i, indices[j]] = data[j]
+        return mat
+
+    else:
+        raise ValueError("Invalid input format")
+
+
+def _get_matrix_builder():
     try:
-        from scipy import sparse
+        from scipy import sparse  # type: ignore
 
-        try_sparse = lambda x: sparse.csr_matrix(x)
-        LOGGER.debug(f"Using scipy csr sparse matrices by default")
-    except Exception as e:
-        LOGGER.debug(f"Scipy not installed, using numpy dense matrices instead: {e}")
+        return sparse.csr_array
+    except ImportError:
+        return _numpy_array

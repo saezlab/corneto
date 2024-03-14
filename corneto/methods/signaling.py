@@ -1,22 +1,24 @@
+from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union
+
 import numpy as np
-from typing import Callable, Union, Dict, List, Optional, Tuple, Set, Any
+
 from corneto import DEFAULT_BACKEND
-from corneto._legacy import ReNet
-from corneto.backend import Backend
-from corneto.backend._base import ProblemDef, Indicators
 from corneto._constants import *
-from corneto._settings import LOGGER
-from corneto._core import Graph
-from corneto._settings import try_sparse
+
+# from corneto._core import Graph
+from corneto._graph import BaseGraph
+from corneto._settings import sparsify
+from corneto.backend import Backend
+from corneto.backend._base import Indicators, ProblemDef
 
 
 def create_flow_graph(
-    g: Graph,
+    g: BaseGraph,
     conditions: Dict[str, Dict[str, Tuple[str, float]]],
     pert_id: str = "P",
     meas_id: str = "M",
     longitudinal_samples=False,
-) -> Graph:
+) -> BaseGraph:
     gc = g.copy()
     ns = "_s"
     nt = "_t"
@@ -63,7 +65,7 @@ def create_flow_graph(
 
 
 def signflow_constraints(
-    g: Graph,
+    g: BaseGraph,
     backend: Backend = DEFAULT_BACKEND,
     signal_implies_flow: bool = True,
     flow_implies_signal: bool = False,
@@ -71,7 +73,7 @@ def signflow_constraints(
     use_flow_indicators: bool = True,
     eps: float = 1e-3,
 ) -> ProblemDef:
-    edges = g.edges
+    edges = g.E
     vertices = g.vertices
     A = g.vertex_incidence_matrix()
     if "_s" not in vertices:
@@ -92,15 +94,21 @@ def signflow_constraints(
         raise ValueError("flow_implies_signal is not supported in multi-conditions")
     use_flow = use_flow_indicators or flow_implies_signal or signal_implies_flow
     if use_flow:
-        p = backend.Flow(g)
+        p = backend.Flow(g, ub=10)
         p._graph = g
         F, Fi = p.get_symbol(VAR_FLOW), None
         idx = -1
-        for i, props in enumerate(g.edge_properties):
+        # TODO: find outflow edges
+        for i in range(g.num_edges):
+            s, t = g.get_edge(i)
+            if len(t) == 0 and len(s) > 0:
+                p += F[i] >= 1.01 * eps
+        """
+        for i, props in enumerate(g.get_attr_edges()):
             if props.get("id", None) == "_outflow":
                 idx = i
                 break
-        p += F[idx] >= 1.01 * eps
+        p += F[idx] >= 1.01 * eps"""
         if use_flow_indicators:
             p += Indicators()
             Fi = p.get_symbol(VAR_FLOW + "_ipos")
@@ -126,7 +134,7 @@ def signflow_constraints(
         # backward pass from measurements to perturbations). Nodes and reactions
         # that cannot be reached should have a value of 0.
         fwd: Set[Any] = set(g.bfs([f"_pert_{c}"]).keys())
-        bck: Set[Any] = set(g.bfs([f"_meas_{c}"], rev=True).keys())
+        bck: Set[Any] = set(g.bfs([f"_meas_{c}"], reverse=True).keys())
         reachable = list(fwd.intersection(bck) | {"_s", "_t"})
         non_reachable = list(set(g.vertices) - set(reachable))
         non_reachable = [vidx[v] for v in non_reachable]
@@ -149,6 +157,9 @@ def signflow_constraints(
             vartype=VarType.BINARY,
         )
 
+        p.register(f"edge_values_{c}", R_act - R_inh)
+        p.register(f"vertex_values_{c}", N_act - N_inh)
+
         if len(non_reachable) > 0:
             # TODO: Do the same for non reachable reactions
             p += N_act[non_reachable] == 0
@@ -158,16 +169,20 @@ def signflow_constraints(
         # measurement to the dummy _meas_ node have to be selected.
         # Not required, but forces to have a connected graph.
         # meas_rxns = list(rn.get_reactions_with_product(rn.get_species_id(f"_meas_{c}")))
-        meas_rxns = [eidx[e] for e in g.get_edges_with_target_vertex(f"_meas_{c}")]
+
+        # meas_rxns = [eidx[e] for e in g.get_edges_with_target_vertex(f"_meas_{c}")]
+        meas_rxns = [i for i, _ in g.in_edges(f"_meas_{c}")]
         # meas_species = [rn.get_reactants_of_reaction(r).pop() for r in meas_rxns]
-        meas_species = [vidx[list(edges[i][0])[0]] for i in meas_rxns]
+        meas_species = [
+            vidx[list(g.get_edge(i)[0])[0]] for i in meas_rxns
+        ]  # assumes a single vertex
         p += (
             R_act[meas_rxns] + R_inh[meas_rxns]
             == N_act[meas_species] + N_inh[meas_species]
         )
 
         # Just for convenience, force the dummy measurement node to be active. Not required
-        p += N_act[vidx[f"_meas_{c}"]] == 1
+        # p += N_act[vidx[f"_meas_{c}"]] == 1
         # Same for source and target nodes. Assume they are active as a convention. Note that
         # dummy source _s connects to perturbations with activatory edges if perturbation is up
         # and inhibitory edges if perturbation is down. Dummy _s could be also down and propagate
@@ -191,7 +206,7 @@ def signflow_constraints(
         # only 1 reactant 1 product at most for CARNIVAL
         ix_react = [vidx[list(edges[i][0])[0]] for i in rids]
         ix_prod = [vidx[list(edges[i][1])[0]] for i in rids]
-        signs = np.array([p.get("interaction", 0) for p in g.edge_properties])[rids]
+        signs = np.array([p.get("interaction", 0) for p in g.get_attr_edges()])[rids]
         Ra = R_act[rids]
         Ri = R_inh[rids]
         p += R_act + R_inh <= 1
@@ -249,7 +264,7 @@ def signflow_constraints(
         # down if at least one of the reactions that have the node as product
         # carry some signal. Clip neg. values since we only look at the positive
         # ones in the incidence matrix (the targets of each edge)
-        incidence_matrix = try_sparse(A.clip(0, 1))
+        incidence_matrix = sparsify(A.clip(0, 1))
         p += N_act <= incidence_matrix @ R_act
         p += N_inh <= incidence_matrix @ R_inh
     return p
@@ -330,7 +345,7 @@ def default_sign_loss(
 
 
 def signflow(
-    g: Graph,
+    g: BaseGraph,
     conditions: Dict,
     signal_implies_flow: bool = True,
     flow_implies_signal: bool = False,  # not supported in multi-conditions

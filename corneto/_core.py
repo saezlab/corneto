@@ -2,7 +2,7 @@ import abc
 from copy import deepcopy
 import numpy as np
 from typing import Any, Optional, Iterable, Set, Tuple, Union, Dict, List
-from corneto._settings import try_sparse
+from corneto._settings import sparsify
 from corneto._constants import *
 from corneto._decorators import jit
 from numbers import Number
@@ -46,11 +46,11 @@ class BaseGraph(abc.ABC):
             raise ValueError()
 
     @abc.abstractmethod
-    def _add_edge(self, s: Dict, t: Dict, id: Optional[str] = None, **kwargs):
+    def _add_edge(self, s: Dict, t: Dict, id: Optional[str] = None, **kwargs) -> int:
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def _add_vertex(self, v: Any, id: Optional[str] = None, **kwargs):
+    def _add_vertex(self, v: Any, id: Optional[str] = None, **kwargs) -> int:
         pass
 
     @abc.abstractmethod
@@ -103,6 +103,7 @@ class BaseGraph(abc.ABC):
         return {(s, t) for (s, t) in self.get_edges_from_vertex(v) if v in t}
 
     def successors_of_vertex(self, v) -> Set:
+        # TODO: check if directed or not
         E = (
             t if len(t) > 0 else ()
             for (s, t) in self.get_edges_from_vertex(v)
@@ -132,8 +133,10 @@ class BaseGraph(abc.ABC):
             succ |= self.predecessors_of_vertex(v)
         return succ
 
-    def add_edge(self, s, t, id: Optional[str] = None, directed: bool = True, **kwargs):
-        self._add_edge(
+    def add_edge(
+        self, s, t, id: Optional[str] = None, directed: bool = True, **kwargs
+    ) -> int:
+        return self._add_edge(
             BaseGraph._as_dict(s),
             BaseGraph._as_dict(t),
             id=id,
@@ -141,12 +144,16 @@ class BaseGraph(abc.ABC):
             **kwargs,
         )
 
-    def add_edges(self, edges: List[Tuple], directed: bool = True, **kwargs):
-        for (s, t) in edges:
-            self.add_edge(s, t, directed=directed, **kwargs)
+    def add_edges(
+        self, edges: List[Tuple], directed: bool = True, **kwargs
+    ) -> List[int]:
+        idx = []
+        for s, t in edges:
+            idx.append(self.add_edge(s, t, directed=directed, **kwargs))
+        return idx
 
-    def add_vertex(self, v: Any, id: Optional[str] = None, **kwargs):
-        self._add_vertex(v, id, **kwargs)
+    def add_vertex(self, v: Any, id: Optional[str] = None, **kwargs) -> int:
+        return self._add_vertex(v, id, **kwargs)
 
     def vertex_incidence_matrix(self, values: bool = False, sparse: bool = False):
         A = np.zeros((self.num_vertices, self.num_edges))
@@ -173,9 +180,9 @@ class BaseGraph(abc.ABC):
                 V[I[v]] = value
             A[:, j] = V
         if sparse:
-            return try_sparse(A)
+            return sparsify(A)
         return A
-    
+
     def get_source_vertices(self) -> Set:
         sources = set()
         for v in self.vertices:
@@ -186,7 +193,7 @@ class BaseGraph(abc.ABC):
                 if len(pred) == 1 and (() in pred or frozenset() in pred):
                     sources.add(v)
         return sources
-    
+
     def get_sink_vertices(self) -> Set:
         sinks = set()
         for v in self.vertices:
@@ -196,8 +203,7 @@ class BaseGraph(abc.ABC):
             else:
                 if len(succ) == 1 and (() in succ or frozenset() in succ):
                     sinks.add(v)
-        return sinks    
-
+        return sinks
 
     def bfs(self, starting_vertices: Any, rev: bool = False) -> Dict[Any, int]:
         if isinstance(starting_vertices, Iterable) and not isinstance(
@@ -248,10 +254,10 @@ class BaseGraph(abc.ABC):
     def to_graphviz(
         self,
         problem=None,
-        condition: str=None,
-        graph_attr: Dict[str,str]=None,
-        node_attr: Dict[str,str]=None,
-        edge_attr: Dict[str,str]=None,
+        condition: str = None,
+        graph_attr: Dict[str, str] = None,
+        node_attr: Dict[str, str] = None,
+        edge_attr: Dict[str, str] = None,
     ):
         import graphviz
 
@@ -259,14 +265,10 @@ class BaseGraph(abc.ABC):
         custom_vertex = dict()
         custom_edge = dict()
         if problem:
-            if hasattr(problem, 'symbols'):
+            if hasattr(problem, "symbols"):
                 problem = {k: v.value for k, v in problem.symbols.items()}
             # TODO: very ad-hoc, improve
-            c = [
-                k
-                for k in problem.keys()
-                if k.startswith("reaction_sends_activation")
-            ]
+            c = [k for k in problem.keys() if k.startswith("reaction_sends_activation")]
             if len(c) > 1 and condition is None:
                 raise ValueError(
                     "Detected multiple conditions defined in problem, but a condition was not provided"
@@ -328,6 +330,10 @@ class BaseGraph(abc.ABC):
                 g.node(t, shape="circle", **props)
             edge_type = p.get("interaction", 0)
             props = custom_edge.get(e, dict())
+            if ("directed" in p and p["directed"] == False) or (
+                "undirected" in p and p["undirected"] == True
+            ):
+                props["dir"] = "none"
             if edge_type >= 0:
                 g.edge(s, t, arrowhead="normal", **props)
             else:
@@ -349,13 +355,14 @@ class Graph(BaseGraph):
         # Vertex properties
         self._vertex_properties: Dict = OrderedDict()
 
-    def _add_edge(self, s: Dict, t: Dict, id: Optional[str] = None, **kwargs):
+    def _add_edge(self, s: Dict, t: Dict, id: Optional[str] = None, **kwargs) -> int:
         # TODO: Self loops not supported, needed?
         uv = set().union(*[s, t])
         sv = frozenset(s.keys())
         tv = frozenset(t.keys())
         edge = (sv, tv)
         self._edges.append(edge)
+        idx = len(self._edges) - 1
         # Get vertex-edge properties
         ve_props = dict()
         for k, v in s.items():
@@ -376,12 +383,15 @@ class Graph(BaseGraph):
                 self._vertex_index[v] |= {edge}
             else:
                 self._vertex_index[v] = {edge}
+        return idx
 
-    def _add_vertex(self, v: Any, id: Optional[str] = None, **kwargs):
+    def _add_vertex(self, v: Any, id: Optional[str] = None, **kwargs) -> int:
         if v not in self._vertex_index:
             self._vertex_index[v] = set()
             self._vertex_properties[v] = dict(kwargs)
+            idx = len(self._vertex_index) - 1
         else:
+            idx = list(self._vertex_index).index(v)
             if v in self._vertex_properties:
                 props = self._vertex_properties[v]
             else:
@@ -390,6 +400,7 @@ class Graph(BaseGraph):
             props.update(kwargs)
         if id:
             props[id] = id
+        return idx
 
     def _get_edge(self, edge) -> Dict:
         return self._edges[edge]
@@ -402,12 +413,13 @@ class Graph(BaseGraph):
         g._vertex_index = OrderedDict()
         g._vertex_properties = OrderedDict()
         sv = set(vertices)
+        # TODO: Fix issues with edge indexes
         eidx = {e: i for i, e in enumerate(self._edges)}
         E = set()
         for v in vertices:
             E |= self._vertex_index[v]
         selected = []
-        for (s, t) in E:
+        for s, t in E:
             if len(sv.intersection(s)) > 0 and len(sv.intersection(t)) > 0:
                 selected.append(eidx[(s, t)])
         # Preserve original order
@@ -432,13 +444,14 @@ class Graph(BaseGraph):
     @property
     def vertices(self):
         return self._vertex_index.keys()
-    
+
     def get_vertex_indexes(self):
         return {v: i for i, v in enumerate(self._vertex_index.keys())}
-    
+
     def get_edge_indexes(self):
+        # TODO: Fix
         return {e: i for i, e in enumerate(self._edges)}
-    
+
     def get_vertex_edge_indexes(self):
         return self.get_vertex_indexes(), self.get_edge_indexes()
 
@@ -450,6 +463,7 @@ class Graph(BaseGraph):
     def num_vertices(self):
         return len(self._vertex_index)
 
+    # TODO: rename to get_adjacent_edges
     def get_edges_from_vertex(self, v) -> Set[Tuple]:
         return self._vertex_index.get(v, set())
 
@@ -511,6 +525,6 @@ class Graph(BaseGraph):
     @staticmethod
     def from_sif_tuples(tuples: Iterable[Tuple]):
         g = Graph()
-        for (s, v, t) in tuples:
+        for s, v, t in tuples:
             g.add_edge(s, t, interaction=v)
         return g

@@ -1,16 +1,24 @@
 from enum import Enum
 
 VAR_FLOW = "_flow"
+DEFAULT_LB = -10
+DEFAULT_UB = 10
+
+EXPR_NAME_FLOW_NZI = "with_flow"
+EXPR_NAME_FLOW = "flow"
+EXPR_NAME_FLOW_IPOS = "positive_flow"
+EXPR_NAME_FLOW_INEG = "negative_flow"
 
 
 class Solver(str, Enum):
     GUROBI = "gurobi"
     COIN_OR_CBC = "cbc"
-    CPLEX = ("cplex",)
-    GLPK_MI = ("glpk_mi",)
-    SCIP = ("scip",)
-    CVXOPT = ("cvxopt",)
+    CPLEX = "cplex"
+    GLPK_MI = "glpk_mi"
+    SCIP = "scip"
+    CVXOPT = "cvxopt"
     MOSEK = "mosek"
+    SCIPY = "scipy"
 
     def to_cvxpy(self) -> str:
         return self.value.upper()
@@ -30,22 +38,6 @@ class VarType(str, Enum):
 class Direction(str, Enum):
     MAX = "max"
     MIN = "min"
-
-
-class IdType(str, Enum):
-    REACTION = "reaction"
-    SPECIES = "species"
-
-
-class GraphIdType(str, Enum):
-    EDGE = "edge"
-    NODE = "node"
-
-
-class SpeciesType(str, Enum):
-    REACTANT = "reactant"
-    PRODUCT = "product"
-    BOTH = "both"
 
 
 GLOBAL_SOLVER_PARAMS = ["max_seconds", "verbosity"]
