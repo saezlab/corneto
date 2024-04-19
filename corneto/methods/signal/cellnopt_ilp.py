@@ -367,6 +367,7 @@ def plot_fitness(G, exp_list, P, measured_only=False):
     TODO: there are some assumptions, like the first experiment is the reference experiment and it is called 'exp0'
     """
     import matplotlib.pyplot as plt
+
     N_exps = len(exp_list)
     N_nodes = len(G.V)
     output_names = list(
