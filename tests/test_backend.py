@@ -120,6 +120,21 @@ def test_register(backend):
     assert "1-x" in P.expressions
 
 
+def test_register_merge(backend):
+    P1 = backend.Problem()
+    x = backend.Variable("x", lb=-10, ub=10)
+    P1 += x >= 0
+    P1.register("1-x", 1-x)
+    P2 = backend.Problem()
+    y = backend.Variable("y", lb=-10, ub=10)
+    P2 += y >= 0
+    P2.register("1-y", 1-y)
+    P = P1.merge(P2)
+    assert "1-x" in P.expressions
+    assert "1-y" in P.expressions
+
+
+
 def test_symbol_only_in_objective(backend):
     x = backend.Variable("x", lb=-10, ub=10)
     P = backend.Problem()
