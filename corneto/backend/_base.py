@@ -4,7 +4,6 @@ import numbers
 from typing import Set, Any, Dict, Iterable, Optional, Tuple, Union, List, Callable
 from corneto._settings import LOGGER, _get_matrix_builder
 from corneto.utils import Attributes
-import warnings
 
 from corneto._constants import *
 from corneto._decorators import _delegate
@@ -29,6 +28,7 @@ class CExpression(abc.ABC):
         super().__init__()
         self._expr = expr
         self._proxy_symbols: Set["CSymbol"] = set()
+        self._name = ""
         if symbols:
             self._proxy_symbols.update(symbols)
 
@@ -47,6 +47,10 @@ class CExpression(abc.ABC):
             symbols.update(expr._proxy_symbols)
         # Ask to create a CVXPY/PICOS/.. expression
         return self._create_proxy_expr(expr, symbols)
+
+    @property
+    def name(self):
+        return self._name
 
     @abc.abstractmethod
     def _create_proxy_expr(
@@ -429,8 +433,7 @@ class ProblemDef:
             self.add_expressions(other._expressions, inplace=True)
             return self
         c = self._constraints + other._constraints
-        e = self._expressions.copy()
-        e.update(other._expressions)
+        e = self._expressions.update(other._expressions)
         w = self._weights + other._weights
         o = self._objectives + other._objectives
         # TODO: generalize for any subclass of ProblemDef
@@ -570,7 +573,7 @@ class Backend(abc.ABC):
         ub: Optional[Union[float, np.ndarray]] = None,
         vartype: VarType = VarType.CONTINUOUS,
     ) -> CSymbol:
-        pass
+        raise NotImplementedError()
 
     def Problem(
         self,
@@ -608,7 +611,13 @@ class Backend(abc.ABC):
         **options,
     ):
         if solver is None:
-            solver = self._default_solver
+            if self._default_solver is None:
+                from corneto.backend import DEFAULT_SOLVER
+
+                solver = DEFAULT_SOLVER
+            else:
+                solver = self._default_solver
+
         o: Optional[CExpression]
         if p.objectives is not None and len(p.objectives) > 1:
             if len(p.weights) != len(p.objectives):
@@ -717,7 +726,7 @@ class Backend(abc.ABC):
             ub = np.array([ub] * g.num_edges)
         for s, t in g.E:
             if len(s) > 1 or len(t) > 1:
-                raise NotImplementedError("Hyperedges not supported yet")
+                raise NotImplementedError("Hyperedges not supported")
         if isinstance(max_parents, int):
             max_parents = {v: max_parents for v in g.vertices}
         P = self.Flow(
@@ -925,6 +934,40 @@ class Backend(abc.ABC):
         return self.Problem(
             [xor >= x - y, xor >= y - x, xor <= x + y, xor <= 2 - x - y]
         )
+
+
+class NoBackend(Backend):
+    def __init__(self) -> None:
+        self._error = "No backend available. Please install on of the supported backends, e.g. `pip install cvxpy`."
+
+    def _load(self):
+        return None
+
+    def available_solvers(self):
+        return []
+
+    def Variable(
+        self,
+        *args,
+        **kwargs,
+    ) -> CSymbol:
+        raise NotImplementedError(self._error)
+
+    def _solve(
+        self,
+        *args,
+        **kwargs,
+    ):
+        raise NotImplementedError(self._error)
+
+    def Constant(self) -> CSymbol:
+        raise NotImplementedError(self._error)
+
+    def Parameter(self) -> CSymbol:
+        raise NotImplementedError(self._error)
+
+    def build(self, p: ProblemDef) -> Any:
+        raise NotImplementedError(self._error)
 
 
 def _find_continuous_var(p):

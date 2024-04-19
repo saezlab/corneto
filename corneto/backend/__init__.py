@@ -1,6 +1,8 @@
-# from importlib.util import find_spec
-from typing import Optional
-from corneto.backend._base import Backend, VarType, Indicator, NonZeroIndicator
+from corneto.backend._base import (
+    Backend,
+    NoBackend,
+    VarType,
+)
 from corneto.backend._cvxpy_backend import CvxpyBackend
 from corneto.backend._picos_backend import PicosBackend
 import corneto._settings as s
@@ -14,12 +16,12 @@ def available_backends():
     return [b for b in supported_backends if b.is_available()]
 
 
-_cvxpy_mip_solvers = ["GUROBI", "CPLEX", "MOSEK", "SCIP", "CBC", "GLPK_MI"]
-_picos_mip_solvers = ["gurobi", "cplex", "mosek", "scip", "glpk"]
+_cvxpy_mip_solvers = ["GUROBI", "CPLEX", "SCIP", "SCIPY", "CBC", "GLPK_MI"]
+_picos_mip_solvers = ["gurobi", "cplex", "scip", "glpk"]
 
 
-DEFAULT_BACKEND: Optional[Backend] = (
-    available_backends()[0] if len(available_backends()) > 0 else None
+DEFAULT_BACKEND: Backend = (
+    available_backends()[0] if len(available_backends()) > 0 else NoBackend()
 )
 DEFAULT_SOLVER = None
 
