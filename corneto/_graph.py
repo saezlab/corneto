@@ -103,8 +103,8 @@ class BaseGraph(abc.ABC):
     @abc.abstractmethod
     def _add_edge(
         self,
-        source: Set,
-        target: Set,
+        source: Iterable,
+        target: Iterable,
         type: EdgeType,
         edge_source_attr: Optional[Attributes] = None,
         edge_target_attr: Optional[Attributes] = None,
@@ -478,9 +478,13 @@ class BaseGraph(abc.ABC):
 
     def prune(
         self,
-        source: List,
-        target: List,
+        source: Optional[List] = None,
+        target: Optional[List] = None,
     ) -> "Graph":
+        if source is None:
+            source = list(self.V)
+        if target is None:
+            target = list(self.V)
         forward = set(self.bfs(source).keys())
         backward = set(self.bfs(target, reverse=True).keys())
         reachable = list(forward.intersection(backward))
@@ -675,8 +679,8 @@ class Graph(BaseGraph):
 
     def _add_edge(
         self,
-        source: Set,
-        target: Set,
+        source: Iterable,
+        target: Iterable,
         type: EdgeType,
         edge_source_attr: Optional[Attributes] = None,
         edge_target_attr: Optional[Attributes] = None,
@@ -684,7 +688,7 @@ class Graph(BaseGraph):
     ) -> int:
         sv = frozenset(source)
         tv = frozenset(target)
-        uv = sv | tv
+        #uv = sv | tv
         edge = (sv, tv)
         self._edges.append(edge)
         idx = len(self._edges) - 1
@@ -698,11 +702,16 @@ class Graph(BaseGraph):
         if edge_target_attr is not None:
             edge_attr.set_attr(Attr.TARGET_ATTR, edge_target_attr)
         self._edge_attr.append(edge_attr)
-        for v in uv:
+
+        seen = set()
+        for v in list(source) + list(target):
+            if v in seen:
+                continue
             if v in self._vertices:
                 self._vertices[v].add(idx)
             else:
                 self._vertices[v] = {idx}
+            seen.add(v)
         return idx
 
     def _add_vertex(self, vertex: Any, **kwargs) -> int:
@@ -933,6 +942,7 @@ class Graph(BaseGraph):
     def from_miom_model(model):
         if isinstance(model, str):
             from corneto._io import _load_compressed_gem
+
             S, R, M = _load_compressed_gem(model)
         else:
             S = model.S, M = model.M, R = model.R
