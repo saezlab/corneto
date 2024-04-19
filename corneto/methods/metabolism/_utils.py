@@ -1,6 +1,7 @@
 import ast
 import re
 from multiprocessing import Pool, cpu_count
+from corneto._settings import LOGGER
 
 _pattern = r"\b(?!and\b|or\b)[A-Za-z0-9_]+\b"
 
@@ -17,7 +18,22 @@ def _or(a, b):
     return max(a, b)
 
 
-def _eval_gpr(node, context, func_and, func_or):
+def get_genes_from_gpr(gpr_expression, regex=_pattern):
+    return set(re.findall(regex, gpr_expression))
+
+
+def get_unique_genes(G, gpr_field="GPR", startswith=None, regex=_pattern):
+    ugenes = set()
+    for i in range(G.num_edges):
+        gpr = G.get_attr_edge(i).get(gpr_field, "")
+        genes = get_genes_from_gpr(gpr, regex=regex)
+        if startswith is not None:
+            genes = {g for g in genes if g.startswith(startswith)}
+        ugenes |= genes
+    return ugenes
+
+
+def _eval_gpr(node, context, func_and, func_or, expression=None):
     if isinstance(node, ast.Expression):
         return _eval_gpr(node.body, context, func_and, func_or)
     elif isinstance(node, ast.BoolOp):
@@ -34,7 +50,9 @@ def _eval_gpr(node, context, func_and, func_or):
     elif isinstance(node, ast.Name):
         return context[node.id]
     else:
-        raise ValueError(f"Unsupported AST node: {type(node).__name__}")
+        #raise ValueError(f"Unsupported AST node: {type(node).__name__}")
+        LOGGER.warning(f"Unsupported AST node: {type(node).__name__}, expression = {expression}")
+        return None
 
 
 def evaluate_gpr(
@@ -45,12 +63,15 @@ def evaluate_gpr(
     pattern=_pattern,
     default_value=0,
 ):
-    if not isinstance(expression, str):
+    if not isinstance(expression, str) or len(expression) == 0:
         return default_value
     matches = set(re.findall(pattern, expression))
     context = {k: symbol_values.get(k, default_value) for k in matches}
     parsed = ast.parse(expression, mode="eval")
-    return _eval_gpr(parsed, context, func_and, func_or)
+    val = _eval_gpr(parsed, context, func_and, func_or, expression=expression)
+    if val is None:
+        val = default_value
+    return val
 
 
 def evaluate_gpr_expression(
@@ -85,7 +106,6 @@ def evaluate_gpr_rules(
     n_processes=None,
 ):
     def evaluate_for_symbol_values(symbol_values):
-        # Assuming evaluate_gpr_expression is properly defined and implemented.
         return evaluate_gpr_expression(
             gpr_expressions=gpr_expressions,
             symbol_values=symbol_values,
@@ -95,9 +115,7 @@ def evaluate_gpr_rules(
             pattern=pattern,
         )
 
-    # Determine the actual number of processes to use
     if n_processes is None or n_processes == 0:
-        # Sequential processing without multiprocessing
         results = [evaluate_for_symbol_values(sv) for sv in symbol_values_list]
     else:
         # Use multiprocessing

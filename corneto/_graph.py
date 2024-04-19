@@ -926,14 +926,21 @@ class Graph(BaseGraph):
             attr = G.get_attr_edge(i)
             attr["default_lb"] = R["lb"][i]
             attr["default_ub"] = R["ub"][i]
+            attr["GPR"] = R["gpr"][i]
         return G
 
     @staticmethod
     def from_miom_model(model):
-        G = Graph.from_vertex_incidence(model.S, model.M["id"], model.R["id"])
+        if isinstance(model, str):
+            from corneto._io import _load_compressed_gem
+            S, R, M = _load_compressed_gem(model)
+        else:
+            S = model.S, M = model.M, R = model.R
+        G = Graph.from_vertex_incidence(S, M["id"], R["id"])
         # Add metadata to the graph, such as default lb/ub for reactions
         for i in range(G.num_edges):
             attr = G.get_attr_edge(i)
-            attr["default_lb"] = model.R["lb"][i]
-            attr["default_ub"] = model.R["ub"][i]
+            attr["default_lb"] = R["lb"][i]
+            attr["default_ub"] = R["ub"][i]
+            attr["GPR"] = R["gpr"][i]
         return G
