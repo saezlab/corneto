@@ -1,15 +1,19 @@
 import pytest
 import pathlib
 import numpy as np
-from corneto.backend import PicosBackend, CvxpyBackend
+from corneto.backend import PicosBackend, CvxpyBackend, Backend
 from corneto._graph import Graph
 import cvxpy as cp
-from corneto import VAR_FLOW
 
 
 @pytest.fixture(params=[CvxpyBackend, PicosBackend])
 def backend(request):
-    return request.param()
+    K: Backend = request.param()
+    if isinstance(K, CvxpyBackend):
+        K._default_solver = "SCIPY"
+    elif isinstance(K, PicosBackend):
+        K._default_solver = "glpk"
+    return K
 
 
 @pytest.fixture
@@ -63,6 +67,13 @@ def test_cvxpy_convex_apply():
     P.solve(solver="osqp", verbosity=1)
     assert np.all(np.array(x.value) < np.array([1e-6, 0.64, 0.37, 1e-6, 1e-6]))
     assert np.all(np.array(x.value) > np.array([-1e-6, 0.62, 0.36, -1e-6, -1e-6]))
+
+
+def test_cexpression_name(backend):
+    x = backend.Variable("x")
+    e = x <= 10
+    e._name = "x_leq_10"
+    assert e.name == "x_leq_10"
 
 
 def test_lb_symbol(backend):
@@ -225,10 +236,6 @@ def test_acyclic_flow_directed_graph(backend):
     # P.add_objectives(-sum(P.get_symbol(VAR_FLOW + "_ipos")))
     P.add_objectives(-sum(P.expr.with_flow))
     solver = None
-    if isinstance(backend, PicosBackend):
-        # Picos choses ECOS solver for this...
-        # TODO: overwrite solver preferences
-        solver = "glpk"
     P.solve(solver=solver)
     # Check that the maximum acyclic graph has no cycles
     # TODO: picos returns a column vector [[1],[0],...] homogeneise outputs

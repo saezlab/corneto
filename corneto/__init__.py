@@ -2,7 +2,6 @@ import sys
 
 from corneto._constants import *
 
-from corneto import _ml as ml
 from corneto import _plotting as pl
 from corneto._graph import Graph, Attr, Attributes, EdgeType
 from corneto._util import info
@@ -40,6 +39,6 @@ import_sif = Graph.from_sif
 __version__ = "1.0.0-alpha.0"
 
 
-sys.modules.update({f"{__name__}.{m}": globals()[m] for m in ["ml", "pl"]})
+sys.modules.update({f"{__name__}.{m}": globals()[m] for m in ["pl"]})
 
 del sys
