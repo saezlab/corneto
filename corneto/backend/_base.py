@@ -433,7 +433,8 @@ class ProblemDef:
             self.add_expressions(other._expressions, inplace=True)
             return self
         c = self._constraints + other._constraints
-        e = self._expressions.update(other._expressions)
+        e = self._expressions.copy()
+        e.update(other._expressions)
         w = self._weights + other._weights
         o = self._objectives + other._objectives
         # TODO: generalize for any subclass of ProblemDef

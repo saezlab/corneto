@@ -112,6 +112,14 @@ def test_expr_symbols(backend):
     assert e5._proxy_symbols == {x, y, z}
 
 
+def test_register(backend):
+    P = backend.Problem()
+    x = backend.Variable("x", lb=-10, ub=10)
+    P += x >= 0
+    P.register("1-x", 1-x)
+    assert "1-x" in P.expressions
+
+
 def test_symbol_only_in_objective(backend):
     x = backend.Variable("x", lb=-10, ub=10)
     P = backend.Problem()

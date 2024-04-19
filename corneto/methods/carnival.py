@@ -10,6 +10,8 @@ def info(s, show=True):
         LOGGER.info(s)
 
 
+# TODO: Return a problem, which is associated to the carnival graph
+# think about connecting edge/nodes with variables!
 def runVanillaCarnival(
     perturbations: Dict,
     measurements: Dict,
@@ -74,6 +76,16 @@ def runInverseCarnival(
     **kwargs,
 ):
     raise NotImplementedError()
+    if isinstance(priorKnowledgeNetwork, List):
+        G = Graph.from_sif_tuples(priorKnowledgeNetwork)
+    elif isinstance(priorKnowledgeNetwork, Graph):
+        G = priorKnowledgeNetwork
+    else:
+        raise ValueError("Provide a list of sif tuples or a graph")
+    perturbations = {v: 0.0 for v in G.get_source_vertices()}
+    return runVanillaCarnival(
+        perturbations, measurements, G, betaWeight=betaWeight, solver=solver, **kwargs
+    )
 
 
 def heuristic_carnival(
@@ -116,6 +128,18 @@ def heuristic_carnival(
         Gp, inputs_p, outputs_p, subset_edges=selected_edges
     )
     return Gp, selected_edges, paths
+
+
+def get_graph_format(G, P, condition="c0"):
+    graph_format = dict()
+    vertices = (
+        P.symbols["species_activates_" + condition].value
+        - P.symbols["species_inhibits_" + condition].value
+    )
+    edges = (
+        P.symbols["reaction_sends_activation_" + condition].value
+        - P.symbols["reaction_sends_inhibition_" + condition].value
+    )
 
 
 def _str_state(state, max_steps=3):

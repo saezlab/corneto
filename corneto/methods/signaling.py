@@ -6,8 +6,8 @@ from corneto import DEFAULT_BACKEND
 from corneto._constants import *
 
 # from corneto._core import Graph
-from corneto._graph import BaseGraph
-from corneto._settings import sparsify
+from corneto._graph import Graph, BaseGraph
+from corneto._settings import LOGGER, sparsify
 from corneto.backend import Backend
 from corneto.backend._base import Indicators, ProblemDef
 
@@ -156,10 +156,10 @@ def signflow_constraints(
             (g.num_edges,),
             vartype=VarType.BINARY,
         )
-
+        
         p.register(f"edge_values_{c}", R_act - R_inh)
         p.register(f"vertex_values_{c}", N_act - N_inh)
-
+        
         if len(non_reachable) > 0:
             # TODO: Do the same for non reachable reactions
             p += N_act[non_reachable] == 0
