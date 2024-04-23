@@ -667,8 +667,8 @@ class Backend(abc.ABC):
     def Flow(
         self,
         g: BaseGraph,
-        lb: Optional[Union[float, np.ndarray]] = 0,
-        ub: Optional[Union[float, np.ndarray]] = DEFAULT_UB,
+        lb: Optional[Union[float, List, np.ndarray]] = 0,
+        ub: Optional[Union[float, List, np.ndarray]] = DEFAULT_UB,
         n_flows: int = 1,
         values: bool = False,
         varname: str = VAR_FLOW,
@@ -680,6 +680,10 @@ class Backend(abc.ABC):
         indicator_tolerance: float = 1e-4,
     ) -> ProblemDef:
         shape: Tuple = (g.num_edges,)
+        if isinstance(lb, list):
+            lb = np.array(lb)
+        if isinstance(ub, list):
+            ub = np.array(ub)
         if n_flows > 1:
             shape = (g.num_edges, n_flows)
             # If lb/ub are vectors, duplicate for each flow
