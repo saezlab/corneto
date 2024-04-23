@@ -19,6 +19,18 @@ def _eq_shape(a: np.ndarray, b: np.ndarray) -> bool:
     return a.shape == b.shape
 
 
+def _identical_columns(array):
+    # Get the first column as a reference column
+    ref_column = array[:, 0]
+    
+    # Compare all columns to the reference column
+    # np.all will check if all elements in the result are True along axis 0 (down the rows)
+    are_columns_identical = np.all(array == ref_column[:, np.newaxis], axis=0)
+    
+    # np.all on the result checks if all columns are identical to the reference column
+    return np.all(are_columns_identical)
+
+
 class CExpression(abc.ABC):
     # Arithmetic operator overloading with Numpy
     # See: https://www.cvxpy.org/_modules/cvxpy/expressions/expression.html#Expression
@@ -85,17 +97,25 @@ class CExpression(abc.ABC):
     def _elementwise_mul(self, other: Any) -> Any:
         pass
 
+    @_delegate
+    def multiply(self, other: Any) -> "CExpression":
+        return self._elementwise_mul(other)
+
     @abc.abstractmethod
     def _norm(self, p: int = 2) -> Any:
         pass
 
     @_delegate
-    def multiply(self, other: Any) -> "CExpression":
-        return self._elementwise_mul(other)
-
-    @_delegate
     def norm(self, p: int = 2) -> "CExpression":
         return self._norm(p=p)
+    
+    @abc.abstractmethod
+    def _sum(self, axis: Optional[int] = None) -> Any:
+        pass
+
+    @_delegate
+    def sum(self, axis: Optional[int] = None) -> "CExpression":
+        return self._sum(axis=axis)
 
     @_delegate
     def __getitem__(self, item) -> "CExpression":  # type: ignore
@@ -671,6 +691,7 @@ class Backend(abc.ABC):
         ub: Optional[Union[float, List, np.ndarray]] = DEFAULT_UB,
         n_flows: int = 1,
         values: bool = False,
+        shared_bounds: bool = False,
         varname: str = VAR_FLOW,
         create_nonzero_indicators: bool = False,
         alias_flow: str = EXPR_NAME_FLOW,
@@ -684,12 +705,13 @@ class Backend(abc.ABC):
             lb = np.array(lb)
         if isinstance(ub, list):
             ub = np.array(ub)
+        shape = (g.num_edges, 0)
         if n_flows > 1:
             shape = (g.num_edges, n_flows)
             # If lb/ub are vectors, duplicate for each flow
-            if isinstance(lb, float):
+            if isinstance(lb, (int, float)):
                 lb = np.ones(shape) * lb
-            if isinstance(ub, float):
+            if isinstance(ub, (int, float)):
                 ub = np.ones(shape) * ub
             if isinstance(lb, np.ndarray) and len(lb.shape) == 1:
                 lb = np.tile(lb, (n_flows, 1)).T
@@ -698,6 +720,15 @@ class Backend(abc.ABC):
         F = self.Variable(varname, shape, lb, ub)
         A = self._sparse(g.get_vertex_incidence_matrix_as_lists(values=values))
         P = self.Problem(A @ F == 0)
+        if shared_bounds and n_flows > 1:
+            # check num dims of lb
+            if shape[1] > 1 and not _identical_columns(lb):
+                raise ValueError("shared_bounds=True cannot be used when lower bounds are not identical across flows")
+            if shape[1] > 1 and not _identical_columns(ub):
+                raise ValueError("shared_bounds=True cannot be used when upper bounds are not identical across flows")
+            S = F.sum(axis=1)
+            P += S <= ub[:, 0]
+            P += S >= lb[:, 0]
         if create_nonzero_indicators:
             P += NonZeroIndicator(tolerance=indicator_tolerance)
             Ip = P.get_symbol(varname + "_ipos")

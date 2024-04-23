@@ -35,6 +35,9 @@ class CvxpyExpression(CExpression):
 
     def _norm(self, p: int = 2) -> CExpression:
         return cp.norm(self._expr, p=p)
+    
+    def _sum(self, axis: Optional[int] = None) -> Any:
+        return cp.sum(self._expr, axis=axis)
 
     @property
     def value(self) -> np.ndarray:

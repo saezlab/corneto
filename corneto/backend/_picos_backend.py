@@ -27,6 +27,9 @@ class PicosExpression(CExpression):
 
     def _norm(self, p: int = 2) -> CExpression:
         return pc.expressions.exp_norm.Norm(self._expr, p=p)
+    
+    def _sum(self, axis: Optional[int] = None) -> Any:
+        return pc.expressions.sum(self._expr, axis=axis)
 
     @property
     def value(self) -> np.ndarray:
