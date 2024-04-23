@@ -99,11 +99,6 @@ def _delegate(func):
             return self._create(
                 getattr(self._expr, func.__name__)(*args, **kwargs), symbols
             )
-        LOGGER.warning(
-            f"Directly calling function '{func.__name__}' on the backend engine may lead to "
-            "incompatibility issues with other computational backends. It's recommended to "
-            "use compatible abstraction methods to ensure backend-agnostic operation."
-        )
         return self._create(func(self, *args, **kwargs), symbols)
 
     return _wrapper_func
