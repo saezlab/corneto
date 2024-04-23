@@ -1,6 +1,4 @@
-import os
 from functools import wraps
-from importlib.util import find_spec
 from typing import Callable
 from corneto._settings import LOGGER, USE_NUMBA
 
