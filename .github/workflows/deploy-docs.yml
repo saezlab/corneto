@@ -5,6 +5,8 @@ on:
     branches:
       - main
       - dev
+    tags:
+      - '*'
 
 jobs:
   build-and-deploy:
@@ -12,22 +14,26 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # Ensures all history is fetched for sphinx-multiversion to detect all tags and branches
 
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
           python-version: '3.11'
+
       - name: Setup Graphviz
         uses: ts-graphviz/setup-graphviz@v2
+
       - name: Install Dependencies
         run: |
           pip install poetry
           poetry install
 
-      - name: Build Docs
+      - name: Build Docs with sphinx-multiversion
         run: |
           cd docs
-          poetry run make html
+          poetry run sphinx-multiversion source _build/html
 
       - name: Prepare Deployment
         run: |
@@ -35,18 +41,8 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
 
-      - name: Set Destination Directory
-        id: set-dest-dir
-        run: |
-          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
-            echo "::set-output name=dir::"
-          else
-            echo "::set-output name=dir::dev"
-          fi
-
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs/_build/html
-          destination_dir: ${{ steps.set-dest-dir.outputs.dir }}
