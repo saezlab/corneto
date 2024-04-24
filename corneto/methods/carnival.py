@@ -130,16 +130,20 @@ def heuristic_carnival(
     return Gp, selected_edges, paths
 
 
-def get_graph_format(G, P, condition="c0"):
-    graph_format = dict()
-    vertices = (
-        P.symbols["species_activates_" + condition].value
-        - P.symbols["species_inhibits_" + condition].value
-    )
-    edges = (
-        P.symbols["reaction_sends_activation_" + condition].value
-        - P.symbols["reaction_sends_inhibition_" + condition].value
-    )
+def get_result(P, G, condition="c0"):
+    V = P.expr["vertex_values_" + condition].value
+    E = P.expr["edge_values_" + condition].value
+    return {'V': G.V, 'value': V}, {'E': G.E, 'value': E}
+
+
+def get_selected_edges(P, G, condition="c0"):
+    # Get the indexes of the edges whose value is not zero
+    E = P.expr["edge_values_" + condition].value
+    selected_edges = []
+    for i, v in enumerate(E):
+        if v != 0:
+            selected_edges.append(i)
+    return selected_edges
 
 
 def _str_state(state, max_steps=3):
