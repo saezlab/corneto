@@ -1,0 +1,933 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>corneto.backend package &#8212; CORNETO  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster.custom.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster.bundle.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster-sideTip-shadow.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster-sideTip-punk.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster-sideTip-noir.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster-sideTip-light.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster-sideTip-borderless.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/micromodal.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
+  <script src="../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/hoverxref.js"></script>
+    <script src="../_static/js/tooltipster.bundle.min.js"></script>
+    <script src="../_static/js/micromodal.min.js"></script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/corneto.backend';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="corneto.methods package" href="corneto.methods.html" />
+    <link rel="prev" title="corneto package" href="corneto.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
+
+  
+  
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="../_static/logo.png" class="logo__image only-light" alt="CORNETO  documentation - Home"/>
+    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="CORNETO  documentation - Home"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav class="navbar-nav">
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../guide/index.html">
+                        User guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../tutorials/index.html">
+                        Tutorials
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="index.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-external" href="https://github.com/saezlab/corneto">
+                        GitHub
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item">
+<nav class="navbar-nav">
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../guide/index.html">
+                        User guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../tutorials/index.html">
+                        Tutorials
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="index.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-external" href="https://github.com/saezlab/corneto">
+                        GitHub
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">corneto.backend package</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="corneto.methods.html">corneto.methods package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="corneto.methods.metabolism.html">corneto.methods.metabolism package</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="corneto.utils.html">corneto.utils package</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">API Reference</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="corneto.html" class="nav-link">corneto package</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">corneto.back...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="corneto-backend-package">
+<h1>corneto.backend package<a class="headerlink" href="#corneto-backend-package" title="Permalink to this heading">#</a></h1>
+<section id="module-corneto.backend">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-corneto.backend" title="Permalink to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="corneto.backend.Backend">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">corneto.backend.</span></span><span class="sig-name descname"><span class="pre">Backend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">default_solver=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sparse_class=&lt;class</span> <span class="pre">'scipy.sparse._csr.csr_array'&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.backend.Backend" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>default_solver</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.12)"><em>Optional</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>]</em>) – </p></li>
+<li><p><strong>sparse_class</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.12)"><em>Callable</em></a>) – </p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.backend.Backend.is_available">
+<span class="sig-name descname"><span class="pre">is_available</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#corneto.backend.Backend.is_available" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.backend.Backend.version">
+<span class="sig-name descname"><span class="pre">version</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#corneto.backend.Backend.version" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.backend.Backend.get_symbols">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_symbols</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expressions</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.backend.Backend.get_symbols" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Set" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Set</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">CSymbol</span></code>]</p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>expressions</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.12)"><em>Iterable</em></a><em>[</em><em>CExpression</em><em>]</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.backend.Backend.available_solvers">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">available_solvers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#corneto.backend.Backend.available_solvers" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.backend.Backend.Variable">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Variable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lb</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ub</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vartype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">VarType.CONTINUOUS</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.backend.Backend.Variable" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">CSymbol</span></code></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>name</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.12)"><em>Optional</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>]</em>) – </p></li>
+<li><p><strong>shape</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.12)"><em>Optional</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.12)"><em>Tuple</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>...</em><em>]</em><em>]</em>) – </p></li>
+<li><p><strong>lb</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.12)"><em>Optional</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.12)"><em>Union</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>ndarray</em></a><em>]</em><em>]</em>) – </p></li>
+<li><p><strong>ub</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.12)"><em>Optional</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.12)"><em>Union</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>ndarray</em></a><em>]</em><em>]</em>) – </p></li>
+<li><p><strong>vartype</strong> (<a class="hxr-hoverxref hxr-tooltip reference internal" href="#corneto.backend.VarType" title="corneto._constants.VarType"><em>VarType</em></a>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.backend.Backend.Problem">
+<span class="sig-name descname"><span class="pre">Problem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">constraints</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">objectives</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expressions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Direction.MIN</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.backend.Backend.Problem" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ProblemDef</span></code></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>constraints</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.12)"><em>Optional</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.12)"><em>Union</em></a><em>[</em><em>CExpression</em><em>, </em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.12)"><em>List</em></a><em>[</em><em>CExpression</em><em>]</em><em>]</em><em>]</em>) – </p></li>
+<li><p><strong>objectives</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.12)"><em>Optional</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.12)"><em>Union</em></a><em>[</em><em>CExpression</em><em>, </em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.12)"><em>List</em></a><em>[</em><em>CExpression</em><em>]</em><em>]</em><em>]</em>) – </p></li>
+<li><p><strong>expressions</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.12)"><em>Optional</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.12)"><em>Dict</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>CExpression</em><em>]</em><em>]</em>) – </p></li>
+<li><p><strong>weights</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.12)"><em>Optional</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.12)"><em>Union</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.12)"><em>List</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>]</em><em>]</em><em>]</em>) – </p></li>
+<li><p><strong>direction</strong> (<em>Direction</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.backend.Backend.build">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.backend.Backend.build" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>p</strong> (<em>ProblemDef</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.backend.Backend.solve">
+<span class="sig-name descname"><span class="pre">solve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_seconds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warm_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbosity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.backend.Backend.solve" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>p</strong> (<em>ProblemDef</em>) – </p></li>
+<li><p><strong>solver</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.12)"><em>Optional</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.12)"><em>Union</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>Solver</em><em>]</em><em>]</em>) – </p></li>
+<li><p><strong>max_seconds</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.12)"><em>Optional</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>]</em>) – </p></li>
+<li><p><strong>warm_start</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – </p></li>
+<li><p><strong>verbosity</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.backend.Backend.Constant">
+<span class="sig-name descname"><span class="pre">Constant</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#corneto.backend.Backend.Constant" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">CSymbol</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.backend.Backend.Parameter">
+<span class="sig-name descname"><span class="pre">Parameter</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#corneto.backend.Backend.Parameter" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">CSymbol</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.backend.Backend.Flow">
+<span class="sig-name descname"><span class="pre">Flow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lb</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ub</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_flows</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shared_bounds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">varname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'_flow'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">create_nonzero_indicators</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias_flow</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'flow'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias_flow_ipos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'positive_flow'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias_flow_ineg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'negative_flow'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias_nonzero_flow</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'with_flow'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indicator_tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0001</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.backend.Backend.Flow" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ProblemDef</span></code></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>g</strong> (<em>BaseGraph</em>) – </p></li>
+<li><p><strong>lb</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.12)"><em>Optional</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.12)"><em>Union</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.12)"><em>List</em></a><em>, </em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>ndarray</em></a><em>]</em><em>]</em>) – </p></li>
+<li><p><strong>ub</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.12)"><em>Optional</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.12)"><em>Union</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.12)"><em>List</em></a><em>, </em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>ndarray</em></a><em>]</em><em>]</em>) – </p></li>
+<li><p><strong>n_flows</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – </p></li>
+<li><p><strong>values</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – </p></li>
+<li><p><strong>shared_bounds</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – </p></li>
+<li><p><strong>varname</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – </p></li>
+<li><p><strong>create_nonzero_indicators</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – </p></li>
+<li><p><strong>alias_flow</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – </p></li>
+<li><p><strong>alias_flow_ipos</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – </p></li>
+<li><p><strong>alias_flow_ineg</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – </p></li>
+<li><p><strong>alias_nonzero_flow</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – </p></li>
+<li><p><strong>indicator_tolerance</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.backend.Backend.AcyclicFlow">
+<span class="sig-name descname"><span class="pre">AcyclicFlow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lb</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ub</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_parents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vertex_lb_dist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">varname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'_flow'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias_flow</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'flow'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias_flow_ipos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'positive_flow'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias_flow_ineg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'negative_flow'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias_nonzero_flow</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'with_flow'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indicator_tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0001</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.backend.Backend.AcyclicFlow" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ProblemDef</span></code></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>g</strong> (<em>BaseGraph</em>) – </p></li>
+<li><p><strong>lb</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.12)"><em>Union</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>ndarray</em></a><em>]</em>) – </p></li>
+<li><p><strong>ub</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.12)"><em>Union</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>ndarray</em></a><em>]</em>) – </p></li>
+<li><p><strong>values</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – </p></li>
+<li><p><strong>max_parents</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.12)"><em>Optional</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.12)"><em>Union</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.12)"><em>Dict</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><em>Any</em></a><em>, </em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>]</em><em>]</em><em>]</em>) – </p></li>
+<li><p><strong>vertex_lb_dist</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.12)"><em>Optional</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>ndarray</em></a><em>]</em>) – </p></li>
+<li><p><strong>varname</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – </p></li>
+<li><p><strong>alias_flow</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – </p></li>
+<li><p><strong>alias_flow_ipos</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – </p></li>
+<li><p><strong>alias_flow_ineg</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – </p></li>
+<li><p><strong>alias_nonzero_flow</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – </p></li>
+<li><p><strong>indicator_tolerance</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.backend.Backend.Indicator">
+<span class="sig-name descname"><span class="pre">Indicator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">V</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indexes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suffix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'_i'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.backend.Backend.Indicator" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ProblemDef</span></code></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>V</strong> (<em>CSymbol</em>) – </p></li>
+<li><p><strong>indexes</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.12)"><em>Optional</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.12)"><em>Union</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.12)"><em>Tuple</em></a><em>, </em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.12)"><em>List</em></a><em>, </em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>ndarray</em></a><em>]</em><em>]</em>) – </p></li>
+<li><p><strong>suffix</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – </p></li>
+<li><p><strong>name</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.12)"><em>Optional</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>]</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.backend.Backend.NonZeroIndicator">
+<span class="sig-name descname"><span class="pre">NonZeroIndicator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">V</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indexes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suffix_pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'_ipos'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suffix_neg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'_ineg'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.backend.Backend.NonZeroIndicator" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ProblemDef</span></code></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>V</strong> (<em>CSymbol</em>) – </p></li>
+<li><p><strong>indexes</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.12)"><em>Optional</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.12)"><em>Union</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.12)"><em>Tuple</em></a><em>, </em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.12)"><em>List</em></a><em>, </em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>ndarray</em></a><em>]</em><em>]</em>) – </p></li>
+<li><p><strong>suffix_pos</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – </p></li>
+<li><p><strong>suffix_neg</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – </p></li>
+<li><p><strong>tolerance</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.backend.Backend.Indicators">
+<span class="sig-name descname"><span class="pre">Indicators</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">V</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">negative</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suffix_pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'_ipos'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suffix_neg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'_ineg'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.backend.Backend.Indicators" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ProblemDef</span></code></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>V</strong> (<em>CSymbol</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.backend.Backend.Xor">
+<span class="sig-name descname"><span class="pre">Xor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">varname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'_xor'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.backend.Backend.Xor" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>CExpression</em>) – </p></li>
+<li><p><strong>y</strong> (<em>CExpression</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="corneto.backend.VarType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">corneto.backend.</span></span><span class="sig-name descname"><span class="pre">VarType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.backend.VarType" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="corneto.backend.VarType.INTEGER">
+<span class="sig-name descname"><span class="pre">INTEGER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'integer'</span></em><a class="headerlink" href="#corneto.backend.VarType.INTEGER" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="corneto.backend.VarType.CONTINUOUS">
+<span class="sig-name descname"><span class="pre">CONTINUOUS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'continuous'</span></em><a class="headerlink" href="#corneto.backend.VarType.CONTINUOUS" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="corneto.backend.VarType.BINARY">
+<span class="sig-name descname"><span class="pre">BINARY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'binary'</span></em><a class="headerlink" href="#corneto.backend.VarType.BINARY" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="corneto.backend.CvxpyBackend">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">corneto.backend.</span></span><span class="sig-name descname"><span class="pre">CvxpyBackend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">default_solver=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sparse_class=&lt;class</span> <span class="pre">'scipy.sparse._csr.csr_array'&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.backend.CvxpyBackend" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="hxr-hoverxref hxr-tooltip reference internal" href="#corneto.backend.Backend" title="corneto.backend._base.Backend"><code class="xref py py-class docutils literal notranslate"><span class="pre">Backend</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>default_solver</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.12)"><em>Optional</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>]</em>) – </p></li>
+<li><p><strong>sparse_class</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.12)"><em>Callable</em></a>) – </p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.backend.CvxpyBackend.available_solvers">
+<span class="sig-name descname"><span class="pre">available_solvers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#corneto.backend.CvxpyBackend.available_solvers" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.backend.CvxpyBackend.Variable">
+<span class="sig-name descname"><span class="pre">Variable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lb</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ub</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vartype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">VarType.CONTINUOUS</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.backend.CvxpyBackend.Variable" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">CSymbol</span></code></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>name</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.12)"><em>Optional</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>]</em>) – </p></li>
+<li><p><strong>shape</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.12)"><em>Optional</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.12)"><em>Tuple</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>...</em><em>]</em><em>]</em>) – </p></li>
+<li><p><strong>lb</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.12)"><em>Optional</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.12)"><em>Union</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>ndarray</em></a><em>]</em><em>]</em>) – </p></li>
+<li><p><strong>ub</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.12)"><em>Optional</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.12)"><em>Union</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>ndarray</em></a><em>]</em><em>]</em>) – </p></li>
+<li><p><strong>vartype</strong> (<a class="hxr-hoverxref hxr-tooltip reference internal" href="#corneto.backend.VarType" title="corneto._constants.VarType"><em>VarType</em></a>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.backend.CvxpyBackend.build">
+<span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.backend.CvxpyBackend.build" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>p</strong> (<em>ProblemDef</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="corneto.backend.PicosBackend">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">corneto.backend.</span></span><span class="sig-name descname"><span class="pre">PicosBackend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">default_solver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.backend.PicosBackend" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="hxr-hoverxref hxr-tooltip reference internal" href="#corneto.backend.Backend" title="corneto.backend._base.Backend"><code class="xref py py-class docutils literal notranslate"><span class="pre">Backend</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>default_solver</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.12)"><em>Optional</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>]</em>) – </p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.backend.PicosBackend.available_solvers">
+<span class="sig-name descname"><span class="pre">available_solvers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#corneto.backend.PicosBackend.available_solvers" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.backend.PicosBackend.build">
+<span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.backend.PicosBackend.build" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>p</strong> (<em>ProblemDef</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.backend.PicosBackend.Variable">
+<span class="sig-name descname"><span class="pre">Variable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lb</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ub</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vartype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">VarType.CONTINUOUS</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.backend.PicosBackend.Variable" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">CSymbol</span></code></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>name</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.12)"><em>Optional</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>]</em>) – </p></li>
+<li><p><strong>shape</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.12)"><em>Optional</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.12)"><em>Tuple</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>...</em><em>]</em><em>]</em>) – </p></li>
+<li><p><strong>lb</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.12)"><em>Optional</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.12)"><em>Union</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>ndarray</em></a><em>]</em><em>]</em>) – </p></li>
+<li><p><strong>ub</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.12)"><em>Optional</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.12)"><em>Union</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>ndarray</em></a><em>]</em><em>]</em>) – </p></li>
+<li><p><strong>vartype</strong> (<a class="hxr-hoverxref hxr-tooltip reference internal" href="#corneto.backend.VarType" title="corneto._constants.VarType"><em>VarType</em></a>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="corneto.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">corneto package</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="corneto.methods.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">corneto.methods package</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-corneto.backend">Module contents</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.Backend"><code class="docutils literal notranslate"><span class="pre">Backend</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.Backend.is_available"><code class="docutils literal notranslate"><span class="pre">Backend.is_available()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.Backend.version"><code class="docutils literal notranslate"><span class="pre">Backend.version()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.Backend.get_symbols"><code class="docutils literal notranslate"><span class="pre">Backend.get_symbols()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.Backend.available_solvers"><code class="docutils literal notranslate"><span class="pre">Backend.available_solvers()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.Backend.Variable"><code class="docutils literal notranslate"><span class="pre">Backend.Variable()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.Backend.Problem"><code class="docutils literal notranslate"><span class="pre">Backend.Problem()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.Backend.build"><code class="docutils literal notranslate"><span class="pre">Backend.build()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.Backend.solve"><code class="docutils literal notranslate"><span class="pre">Backend.solve()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.Backend.Constant"><code class="docutils literal notranslate"><span class="pre">Backend.Constant()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.Backend.Parameter"><code class="docutils literal notranslate"><span class="pre">Backend.Parameter()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.Backend.Flow"><code class="docutils literal notranslate"><span class="pre">Backend.Flow()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.Backend.AcyclicFlow"><code class="docutils literal notranslate"><span class="pre">Backend.AcyclicFlow()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.Backend.Indicator"><code class="docutils literal notranslate"><span class="pre">Backend.Indicator()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.Backend.NonZeroIndicator"><code class="docutils literal notranslate"><span class="pre">Backend.NonZeroIndicator()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.Backend.Indicators"><code class="docutils literal notranslate"><span class="pre">Backend.Indicators()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.Backend.Xor"><code class="docutils literal notranslate"><span class="pre">Backend.Xor()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.VarType"><code class="docutils literal notranslate"><span class="pre">VarType</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.VarType.INTEGER"><code class="docutils literal notranslate"><span class="pre">VarType.INTEGER</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.VarType.CONTINUOUS"><code class="docutils literal notranslate"><span class="pre">VarType.CONTINUOUS</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.VarType.BINARY"><code class="docutils literal notranslate"><span class="pre">VarType.BINARY</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.CvxpyBackend"><code class="docutils literal notranslate"><span class="pre">CvxpyBackend</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.CvxpyBackend.available_solvers"><code class="docutils literal notranslate"><span class="pre">CvxpyBackend.available_solvers()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.CvxpyBackend.Variable"><code class="docutils literal notranslate"><span class="pre">CvxpyBackend.Variable()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.CvxpyBackend.build"><code class="docutils literal notranslate"><span class="pre">CvxpyBackend.build()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.PicosBackend"><code class="docutils literal notranslate"><span class="pre">PicosBackend</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.PicosBackend.available_solvers"><code class="docutils literal notranslate"><span class="pre">PicosBackend.available_solvers()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.PicosBackend.build"><code class="docutils literal notranslate"><span class="pre">PicosBackend.build()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.PicosBackend.Variable"><code class="docutils literal notranslate"><span class="pre">PicosBackend.Variable()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/api/corneto.backend.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2023, Saez-Rodriguez group.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.2.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
