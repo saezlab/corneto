@@ -112,7 +112,13 @@ html_css_files = [
 ]
 html_show_sphinx = False
 
-html_theme_options = {"primary_sidebar_end": ["sidebar-ethical-ads"]}
+html_theme_options = {
+    "primary_sidebar_end": ["sidebar-ethical-ads"],
+    "switcher": {
+        "json_url": "_static/switcher.json",
+        "version_match": "dev",
+    },
+}
 
 intersphinx_mapping = {
     "scipy": ("https://docs.scipy.org/doc/scipy/", None),
