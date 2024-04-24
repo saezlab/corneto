@@ -6,13 +6,16 @@ from corneto._graph import EdgeType
 from typing import Union
 
 
-def corneto_graph_to_networkx(G: BaseGraph):
+def corneto_graph_to_networkx(G: BaseGraph, skip_unsupported_edges: bool = False):
     nx = import_optional_module("networkx")
     dir_edges = []
     undir_edges = []
     for i, (s, t) in G.edges():
         if len(s) > 1 or len(t) > 1:
-            raise ValueError("Hyperedges are not supported by NetworkX")
+            if skip_unsupported_edges:
+                continue
+            else:
+                raise ValueError("Hyperedges are not supported by NetworkX")
         attr = G.get_attr_edge(i)
         etype = attr.get_attr(Attr.EDGE_TYPE)
         if etype == EdgeType.DIRECTED:
@@ -27,6 +30,11 @@ def corneto_graph_to_networkx(G: BaseGraph):
         raise ValueError("Hybrid graphs are not supported by NetworkX")
     for i, (s, t) in G.edges():
         attr = G.get_attr_edge(i)
+        if len(s) == 0 or len(t) == 0:
+            if skip_unsupported_edges:
+                continue
+            else:
+                raise ValueError("Edges with no source or target are not supported")
         s = list(s)[0]
         t = list(t)[0]
         Gnx.add_edge(s, t, **attr)
