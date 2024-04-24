@@ -1,0 +1,42 @@
+name: Build and Deploy Docs
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+
+      - name: Install Dependencies
+        run: |
+          pip install poetry
+          poetry install
+
+      - name: Build Docs
+        run: |
+          cd docs
+          poetry run make html
+
+      - name: Prepare Deployment
+        run: |
+          touch _build/html/.nojekyll
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/_build/html
+          destination_dir: ${{ github.ref == 'refs/heads/main' ? '' : 'dev' }}
