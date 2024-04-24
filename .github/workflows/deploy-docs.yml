@@ -11,12 +11,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v2
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v2
         with:
-          python-version: '3.9'
+          python-version: '3.11'
 
       - name: Install Dependencies
         run: |
@@ -34,9 +34,18 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
 
+      - name: Set Destination Directory
+        id: set-dest-dir
+        run: |
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            echo "::set-output name=dir::"
+          else
+            echo "::set-output name=dir::dev"
+          fi
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs/_build/html
-          destination_dir: ${{ github.ref == 'refs/heads/main' ? '' : 'dev' }}
+          destination_dir: ${{ steps.set-dest-dir.outputs.dir }}
