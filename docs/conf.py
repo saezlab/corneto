@@ -38,6 +38,7 @@ extensions = [
     'sphinx.ext.doctest',
     "sphinx_favicon",
     "hoverxref.extension",
+    "sphinx_multiversion",
     "_extension.gallery_directive",
 ]
 
