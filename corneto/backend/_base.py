@@ -705,7 +705,6 @@ class Backend(abc.ABC):
             lb = np.array(lb)
         if isinstance(ub, list):
             ub = np.array(ub)
-        shape = (g.num_edges, 0)
         if n_flows > 1:
             shape = (g.num_edges, n_flows)
             # If lb/ub are vectors, duplicate for each flow
@@ -722,9 +721,9 @@ class Backend(abc.ABC):
         P = self.Problem(A @ F == 0)
         if shared_bounds and n_flows > 1:
             # check num dims of lb
-            if shape[1] > 1 and not _identical_columns(lb):
+            if len(shape) > 1 and shape[1] > 1 and not _identical_columns(lb):
                 raise ValueError("shared_bounds=True cannot be used when lower bounds are not identical across flows")
-            if shape[1] > 1 and not _identical_columns(ub):
+            if len(shape) > 1 and shape[1] > 1 and not _identical_columns(ub):
                 raise ValueError("shared_bounds=True cannot be used when upper bounds are not identical across flows")
             S = F.sum(axis=1)
             P += S <= ub[:, 0]
