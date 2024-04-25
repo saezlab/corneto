@@ -1,4 +1,4 @@
-# CORNETO: A Unified Omics-Driven Framework for Network Inference <img src="https://github.com/pablormier/resources/raw/main/images/logos/corneto-logo-512px.png" align="right" height="200" alt="logo">
+# CORNETO: A Unified Framework for Omics-Driven Network Inference <img src="https://github.com/pablormier/resources/raw/main/images/logos/corneto-logo-512px.png" align="right" height="200" alt="logo">
 <!-- badges: start -->
 [![main](https://github.com/saezlab/corneto/actions/workflows/unit-tests.yml/badge.svg)](https://github.com/saezlab/corneto/actions)
 <!-- badges: end -->
