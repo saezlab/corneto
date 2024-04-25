@@ -60,6 +60,12 @@
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'guide/interoperability/cvxpy';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.15.2';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = '_static/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
+        </script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="PICOS: A Python interface to conic optimization solvers" href="picos.html" />
@@ -473,25 +479,25 @@ document.write(`
                                      CVXPY                                     
                                      v1.4.3                                    
 ===============================================================================
-(CVXPY) Apr 24 07:26:27 PM: Your problem has 5 variables, 2 constraints, and 0 parameters.
-(CVXPY) Apr 24 07:26:27 PM: It is compliant with the following grammars: DCP, DQCP
-(CVXPY) Apr 24 07:26:27 PM: (If you need to solve this problem multiple times, but with different data, consider using parameters.)
-(CVXPY) Apr 24 07:26:27 PM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
-(CVXPY) Apr 24 07:26:27 PM: Your problem is compiled with the CPP canonicalization backend.
+(CVXPY) Apr 25 12:01:25 AM: Your problem has 5 variables, 2 constraints, and 0 parameters.
+(CVXPY) Apr 25 12:01:25 AM: It is compliant with the following grammars: DCP, DQCP
+(CVXPY) Apr 25 12:01:25 AM: (If you need to solve this problem multiple times, but with different data, consider using parameters.)
+(CVXPY) Apr 25 12:01:25 AM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
+(CVXPY) Apr 25 12:01:25 AM: Your problem is compiled with the CPP canonicalization backend.
 -------------------------------------------------------------------------------
                                   Compilation                                  
 -------------------------------------------------------------------------------
-(CVXPY) Apr 24 07:26:27 PM: Compiling problem (target solver=OSQP).
-(CVXPY) Apr 24 07:26:27 PM: Reduction chain: CvxAttr2Constr -&gt; Qp2SymbolicQp -&gt; QpMatrixStuffing -&gt; OSQP
-(CVXPY) Apr 24 07:26:27 PM: Applying reduction CvxAttr2Constr
-(CVXPY) Apr 24 07:26:27 PM: Applying reduction Qp2SymbolicQp
-(CVXPY) Apr 24 07:26:27 PM: Applying reduction QpMatrixStuffing
-(CVXPY) Apr 24 07:26:27 PM: Applying reduction OSQP
-(CVXPY) Apr 24 07:26:27 PM: Finished problem compilation (took 1.056e-02 seconds).
+(CVXPY) Apr 25 12:01:25 AM: Compiling problem (target solver=OSQP).
+(CVXPY) Apr 25 12:01:25 AM: Reduction chain: CvxAttr2Constr -&gt; Qp2SymbolicQp -&gt; QpMatrixStuffing -&gt; OSQP
+(CVXPY) Apr 25 12:01:25 AM: Applying reduction CvxAttr2Constr
+(CVXPY) Apr 25 12:01:25 AM: Applying reduction Qp2SymbolicQp
+(CVXPY) Apr 25 12:01:25 AM: Applying reduction QpMatrixStuffing
+(CVXPY) Apr 25 12:01:25 AM: Applying reduction OSQP
+(CVXPY) Apr 25 12:01:25 AM: Finished problem compilation (took 1.072e-02 seconds).
 -------------------------------------------------------------------------------
                                 Numerical solver                               
 -------------------------------------------------------------------------------
-(CVXPY) Apr 24 07:26:27 PM: Invoking solver OSQP  to obtain a solution.
+(CVXPY) Apr 25 12:01:25 AM: Invoking solver OSQP  to obtain a solution.
 -----------------------------------------------------------------
            OSQP v0.6.3  -  Operator Splitting QP Solver
               (c) Bartolomeo Stellato,  Goran Banjac
@@ -509,24 +515,24 @@ settings: linear system solver = qdldl,
           warm start: on, polish: on, time_limit: off
 
 iter   objective    pri res    dua res    rho        time
-   1  -5.2220e+00   3.68e+00   1.70e+02   1.00e-01   5.62e-05s
- 150   6.9994e-01   1.96e-05   7.82e-06   4.77e+00   1.39e-04s
-plsh   7.0000e-01   1.95e-30   0.00e+00   --------   1.92e-04s
+   1  -5.2220e+00   3.68e+00   1.70e+02   1.00e-01   5.83e-05s
+ 150   6.9994e-01   1.96e-05   7.82e-06   4.77e+00   2.23e-04s
+plsh   7.0000e-01   1.95e-30   0.00e+00   --------   2.51e-04s
 
 status:               solved
 solution polish:      successful
 number of iterations: 150
 optimal objective:    0.7000
-run time:             1.92e-04s
+run time:             2.51e-04s
 optimal rho estimate: 9.81e+00
 
 -------------------------------------------------------------------------------
                                     Summary                                    
 -------------------------------------------------------------------------------
-(CVXPY) Apr 24 07:26:27 PM: Problem status: optimal
-(CVXPY) Apr 24 07:26:27 PM: Optimal value: -3.000e-01
-(CVXPY) Apr 24 07:26:27 PM: Compilation took 1.056e-02 seconds
-(CVXPY) Apr 24 07:26:27 PM: Solver (including time spent in interface) took 1.559e-03 seconds
+(CVXPY) Apr 25 12:01:25 AM: Problem status: optimal
+(CVXPY) Apr 25 12:01:25 AM: Optimal value: -3.000e-01
+(CVXPY) Apr 25 12:01:25 AM: Compilation took 1.072e-02 seconds
+(CVXPY) Apr 25 12:01:25 AM: Solver (including time spent in interface) took 1.462e-03 seconds
 </pre></div>
 </div>
 </div>

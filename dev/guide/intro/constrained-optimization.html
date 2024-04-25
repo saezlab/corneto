@@ -60,6 +60,12 @@
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'guide/intro/constrained-optimization';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.15.2';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = '_static/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
+        </script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Multi-commodity Network Flows" href="multi-commodity-network-flows.html" />
@@ -475,7 +481,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;corneto.backend._cvxpy_backend.CvxpyBackend at 0x7f194cd9c350&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;corneto.backend._cvxpy_backend.CvxpyBackend at 0x7f78302b9010&gt;
 </pre></div>
 </div>
 </div>
@@ -512,7 +518,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;corneto.backend._base.ProblemDef at 0x7f19348e7c90&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;corneto.backend._base.ProblemDef at 0x7f77f7ff6c50&gt;
 </pre></div>
 </div>
 </div>
@@ -527,8 +533,8 @@ document.write(`
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;obj5&#39;: Variable((1,), obj5, boolean=True),
  &#39;obj4&#39;: Variable((1,), obj4, boolean=True),
  &#39;obj2&#39;: Variable((1,), obj2, boolean=True),
- &#39;obj3&#39;: Variable((1,), obj3, boolean=True),
- &#39;obj1&#39;: Variable((1,), obj1, boolean=True)}
+ &#39;obj1&#39;: Variable((1,), obj1, boolean=True),
+ &#39;obj3&#39;: Variable((1,), obj3, boolean=True)}
 </pre></div>
 </div>
 </div>
@@ -601,33 +607,32 @@ document.write(`
                                      CVXPY                                     
                                      v1.4.3                                    
 ===============================================================================
-(CVXPY) Apr 24 07:26:37 PM: Your problem has 50 variables, 1 constraints, and 0 parameters.
-(CVXPY) Apr 24 07:26:37 PM: It is compliant with the following grammars: DCP, DQCP
-(CVXPY) Apr 24 07:26:37 PM: (If you need to solve this problem multiple times, but with different data, consider using parameters.)
-(CVXPY) Apr 24 07:26:37 PM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
-(CVXPY) Apr 24 07:26:37 PM: Your problem is compiled with the CPP canonicalization backend.
+(CVXPY) Apr 25 12:01:34 AM: Your problem has 50 variables, 1 constraints, and 0 parameters.
+(CVXPY) Apr 25 12:01:34 AM: It is compliant with the following grammars: DCP, DQCP
+(CVXPY) Apr 25 12:01:34 AM: (If you need to solve this problem multiple times, but with different data, consider using parameters.)
+(CVXPY) Apr 25 12:01:34 AM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
+(CVXPY) Apr 25 12:01:34 AM: Your problem is compiled with the CPP canonicalization backend.
 -------------------------------------------------------------------------------
                                   Compilation                                  
 -------------------------------------------------------------------------------
-(CVXPY) Apr 24 07:26:37 PM: Compiling problem (target solver=SCIP).
-(CVXPY) Apr 24 07:26:37 PM: Reduction chain: FlipObjective -&gt; Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; SCIP
-(CVXPY) Apr 24 07:26:37 PM: Applying reduction FlipObjective
-(CVXPY) Apr 24 07:26:37 PM: Applying reduction Dcp2Cone
-(CVXPY) Apr 24 07:26:37 PM: Applying reduction CvxAttr2Constr
-(CVXPY) Apr 24 07:26:37 PM: Applying reduction ConeMatrixStuffing
-(CVXPY) Apr 24 07:26:37 PM: Applying reduction SCIP
-(CVXPY) Apr 24 07:26:37 PM: Finished problem compilation (took 8.386e-03 seconds).
+(CVXPY) Apr 25 12:01:34 AM: Compiling problem (target solver=SCIP).
+(CVXPY) Apr 25 12:01:34 AM: Reduction chain: FlipObjective -&gt; Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; SCIP
+(CVXPY) Apr 25 12:01:34 AM: Applying reduction FlipObjective
+(CVXPY) Apr 25 12:01:34 AM: Applying reduction Dcp2Cone
+(CVXPY) Apr 25 12:01:34 AM: Applying reduction CvxAttr2Constr
+(CVXPY) Apr 25 12:01:34 AM: Applying reduction ConeMatrixStuffing
+(CVXPY) Apr 25 12:01:34 AM: Applying reduction SCIP
+(CVXPY) Apr 25 12:01:34 AM: Finished problem compilation (took 9.077e-03 seconds).
 -------------------------------------------------------------------------------
                                 Numerical solver                               
 -------------------------------------------------------------------------------
-(CVXPY) Apr 24 07:26:37 PM: Invoking solver SCIP  to obtain a solution.
+(CVXPY) Apr 25 12:01:34 AM: Invoking solver SCIP  to obtain a solution.
 -------------------------------------------------------------------------------
                                     Summary                                    
 -------------------------------------------------------------------------------
-(CVXPY) Apr 24 07:26:37 PM: Problem status: optimal
+(CVXPY) Apr 25 12:01:34 AM: Problem status: optimal
 feasible solution found by trivial heuristic after 0.0 seconds, objective value -6.000000e+02
 presolving:
-(CVXPY) Apr 24 07:26:37 PM: Optimal value: 7.534e+03
 (round 1, fast)       4 del vars, 0 del conss, 0 add conss, 0 chg bounds, 0 chg sides, 0 chg coeffs, 0 upgd conss, 0 impls, 0 clqs
 (round 2, exhaustive) 4 del vars, 0 del conss, 0 add conss, 0 chg bounds, 0 chg sides, 0 chg coeffs, 1 upgd conss, 0 impls, 0 clqs
 (round 3, medium)     4 del vars, 1 del conss, 0 add conss, 46 chg bounds, 0 chg sides, 0 chg coeffs, 1 upgd conss, 0 impls, 0 clqs
@@ -643,8 +648,9 @@ Solving Nodes      : 0
 Primal Bound       : -7.53400000000000e+03 (3 solutions)
 Dual Bound         : -7.53400000000000e+03
 Gap                : 0.00 %
-(CVXPY) Apr 24 07:26:37 PM: Compilation took 8.386e-03 seconds
-(CVXPY) Apr 24 07:26:37 PM: Solver (including time spent in interface) took 4.537e-03 seconds
+(CVXPY) Apr 25 12:01:34 AM: Optimal value: 7.534e+03
+(CVXPY) Apr 25 12:01:34 AM: Compilation took 9.077e-03 seconds
+(CVXPY) Apr 25 12:01:34 AM: Solver (including time spent in interface) took 4.077e-03 seconds
 </pre></div>
 </div>
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Problem(Maximize(Expression(AFFINE, NONNEGATIVE, ())), [Inequality(Expression(AFFINE, NONNEGATIVE, ()))])
