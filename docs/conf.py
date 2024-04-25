@@ -24,7 +24,7 @@ author = "Pablo Rodriguez-Mier"
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
-    # "myst_parser",
+    #"myst_parser",
     "myst_nb",
     "sphinx_design",
     "sphinx.ext.autodoc",
@@ -49,6 +49,7 @@ myst_enable_extensions = [
     "dollarmath",
     "html_image",
     "html_admonition",
+    "substitution"
 ]
 
 html_context = {
@@ -65,6 +66,7 @@ nb_execution_mode = "cache"
 nb_execution_timeout = 300
 nb_merge_streams = True
 typehints_defaults = "braces"
+
 
 source_suffix = {
     ".rst": "restructuredtext",
