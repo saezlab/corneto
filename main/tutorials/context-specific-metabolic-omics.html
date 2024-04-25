@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Extraction of context-specific metabolic models &#8212; CORNETO  documentation</title>
+    <title>Context-specific metabolic model from transcriptomics data &#8212; CORNETO  documentation</title>
   
   
   
@@ -68,6 +68,8 @@
         </script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="API Reference" href="../api/index.html" />
+    <link rel="prev" title="Tutorials" href="index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -189,7 +191,7 @@ document.write(`
                     </li>
                 
 
-                    <li class="nav-item">
+                    <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="index.html">
                         Tutorials
                       </a>
@@ -278,9 +280,7 @@ document.write(`
       
       
       
-        
-      
-      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+      <div class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -300,7 +300,7 @@ document.write(`
                     </li>
                 
 
-                    <li class="nav-item">
+                    <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="index.html">
                         Tutorials
                       </a>
@@ -345,6 +345,18 @@ document.write(`
     
   </div>
   
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Context-specific metabolic model from transcriptomics data</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
   </div>
@@ -377,7 +389,10 @@ document.write(`
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
-    <li class="breadcrumb-item active" aria-current="page">Extraction...</li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Tutorials</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">Context-spec...</li>
   </ul>
 </nav>
 </div>
@@ -394,8 +409,8 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="extraction-of-context-specific-metabolic-models">
-<h1>Extraction of context-specific metabolic models<a class="headerlink" href="#extraction-of-context-specific-metabolic-models" title="Permalink to this heading">#</a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="context-specific-metabolic-model-from-transcriptomics-data">
+<h1>Context-specific metabolic model from transcriptomics data<a class="headerlink" href="#context-specific-metabolic-model-from-transcriptomics-data" title="Permalink to this heading">#</a></h1>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">corneto</span> <span class="k">as</span> <span class="nn">cn</span>
@@ -430,52 +445,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">OSError</span><span class="g g-Whitespace">                                   </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">line</span> <span class="mi">2</span>
-<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="kn">from</span> <span class="nn">cobra.io</span> <span class="kn">import</span> <span class="n">read_sbml_model</span>
-<span class="ne">----&gt; </span><span class="mi">2</span> <span class="n">model</span> <span class="o">=</span> <span class="n">read_sbml_model</span><span class="p">(</span><span class="s2">&quot;../../tests/gem/ecoli_core.zip&quot;</span><span class="p">)</span>
-<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">G</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Graph</span><span class="o">.</span><span class="n">from_cobra_model</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
-<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="n">G</span><span class="o">.</span><span class="n">shape</span>
-
-<span class="nn">File ~/.cache/pypoetry/virtualenvs/corneto-lU1q7eKj-py3.11/lib/python3.11/site-packages/cobra/io/sbml.py:460,</span> in <span class="ni">read_sbml_model</span><span class="nt">(filename, number, f_replace, **kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">458</span>     <span class="k">return</span> <span class="n">_sbml_to_model</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">number</span><span class="o">=</span><span class="n">number</span><span class="p">,</span> <span class="n">f_replace</span><span class="o">=</span><span class="n">f_replace</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">459</span> <span class="k">except</span> <span class="ne">IOError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-<span class="ne">--&gt; </span><span class="mi">460</span>     <span class="k">raise</span> <span class="n">e</span>
-<span class="g g-Whitespace">    </span><span class="mi">462</span> <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">original_error</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">463</span>     <span class="n">cobra_error</span> <span class="o">=</span> <span class="n">CobraSBMLError</span><span class="p">(</span>
-<span class="g g-Whitespace">    </span><span class="mi">464</span>         <span class="s2">&quot;Something went wrong reading the SBML model. Most likely the SBML&quot;</span>
-<span class="g g-Whitespace">    </span><span class="mi">465</span>         <span class="s2">&quot; model is not valid. Please check that your model is valid using &quot;</span>
-   <span class="p">(</span><span class="o">...</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">470</span>         <span class="s2">&quot;at https://github.com/opencobra/cobrapy/issues .&quot;</span>
-<span class="g g-Whitespace">    </span><span class="mi">471</span>     <span class="p">)</span>
-
-<span class="nn">File ~/.cache/pypoetry/virtualenvs/corneto-lU1q7eKj-py3.11/lib/python3.11/site-packages/cobra/io/sbml.py:457,</span> in <span class="ni">read_sbml_model</span><span class="nt">(filename, number, f_replace, **kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">402</span><span class="w"> </span><span class="sd">&quot;&quot;&quot;Read SBML model from given filename.</span>
-<span class="g g-Whitespace">    </span><span class="mi">403</span><span class="sd"> </span>
-<span class="g g-Whitespace">    </span><span class="mi">404</span><span class="sd"> If the given filename ends with the suffix &#39;&#39;.gz&#39;&#39; (for example,</span>
-<span class="sd">   (...)</span>
-<span class="g g-Whitespace">    </span><span class="mi">454</span><span class="sd"> File handles to compressed files are not supported yet.</span>
-<span class="g g-Whitespace">    </span><span class="mi">455</span><span class="sd"> &quot;&quot;&quot;</span>
-<span class="g g-Whitespace">    </span><span class="mi">456</span> <span class="k">try</span><span class="p">:</span>
-<span class="ne">--&gt; </span><span class="mi">457</span>     <span class="n">doc</span> <span class="o">=</span> <span class="n">_get_doc_from_filename</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">458</span>     <span class="k">return</span> <span class="n">_sbml_to_model</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">number</span><span class="o">=</span><span class="n">number</span><span class="p">,</span> <span class="n">f_replace</span><span class="o">=</span><span class="n">f_replace</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">459</span> <span class="k">except</span> <span class="ne">IOError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-
-<span class="nn">File ~/.cache/pypoetry/virtualenvs/corneto-lU1q7eKj-py3.11/lib/python3.11/site-packages/cobra/io/sbml.py:504,</span> in <span class="ni">_get_doc_from_filename</span><span class="nt">(filename)</span>
-<span class="g g-Whitespace">    </span><span class="mi">501</span>         <span class="n">doc</span><span class="p">:</span> <span class="n">libsbml</span><span class="o">.</span><span class="n">SBMLDocument</span> <span class="o">=</span> <span class="n">libsbml</span><span class="o">.</span><span class="n">readSBMLFromFile</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">502</span>     <span class="k">else</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">503</span>         <span class="c1"># string representation</span>
-<span class="ne">--&gt; </span><span class="mi">504</span>         <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span>
-<span class="g g-Whitespace">    </span><span class="mi">505</span>             <span class="sa">f</span><span class="s2">&quot;The file with &#39;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&#39; does not exist, &quot;</span>
-<span class="g g-Whitespace">    </span><span class="mi">506</span>             <span class="sa">f</span><span class="s2">&quot;or is not an SBML string. Provide the path to &quot;</span>
-<span class="g g-Whitespace">    </span><span class="mi">507</span>             <span class="sa">f</span><span class="s2">&quot;an existing SBML file or a valid SBML string representation:</span><span class="se">\n</span><span class="s2">&quot;</span>
-<span class="g g-Whitespace">    </span><span class="mi">508</span>         <span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">509</span> <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">):</span>
-<span class="g g-Whitespace">    </span><span class="mi">510</span>     <span class="c1"># file handle</span>
-<span class="g g-Whitespace">    </span><span class="mi">511</span>     <span class="n">doc</span><span class="p">:</span> <span class="n">libsbml</span><span class="o">.</span><span class="n">SBMLDocument</span> <span class="o">=</span> <span class="n">libsbml</span><span class="o">.</span><span class="n">readSBMLFromString</span><span class="p">(</span><span class="n">filename</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
-
-<span class="ne">OSError</span>: The file with &#39;../../tests/gem/ecoli_core.zip&#39; does not exist, or is not an SBML string. Provide the path to an existing SBML file or a valid SBML string representation:
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(77, 91)
 </pre></div>
 </div>
 </div>
@@ -643,7 +613,7 @@ document.write(`
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[&lt;Axes: title={&#39;center&#39;: &#39;value&#39;}&gt;]], dtype=object)
 </pre></div>
 </div>
-<img alt="../_images/7784bec9419c01f081637e9de07c6297ae48a211ab8a12092a909c5a29740f19.png" src="../_images/7784bec9419c01f081637e9de07c6297ae48a211ab8a12092a909c5a29740f19.png" />
+<img alt="../_images/47b7fef25e4546e5abbff9d2722cd10ae0f0e53a5daec996067dc8233cd72c6f.png" src="../_images/47b7fef25e4546e5abbff9d2722cd10ae0f0e53a5daec996067dc8233cd72c6f.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -965,6 +935,24 @@ document.write(`
                 <footer class="prev-next-footer">
                   
 <div class="prev-next-area">
+    <a class="left-prev"
+       href="index.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Tutorials</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../api/index.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">API Reference</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
 </div>
                 </footer>
               
