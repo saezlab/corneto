@@ -118,6 +118,7 @@ html_theme_options = {
         "json_url": "_static/switcher.json",
         "version_match": "dev",
     },
+    "navbar_start": ["navbar-logo", "version-switcher"]
 }
 
 intersphinx_mapping = {
