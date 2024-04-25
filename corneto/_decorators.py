@@ -90,13 +90,16 @@ def _delegate(func):
                     symbols.add(args[0])
                 args[0] = args[0]._expr  # symbol is lost
         if hasattr(self._expr, func.__name__):
-            # Call the function in the original expression (PICOS/CVXPY/.. backend)
-            # if available. E.g., if function is __add__, checks if the backend
-            # expression has that function and uses it instead, this returns a
-            # new backend expression which is wrapped back to CORNETO expr.
-            return self._create(
-                getattr(self._expr, func.__name__)(*args, **kwargs), symbols
-            )
+            # Check if its callable
+            f = getattr(self._expr, func.__name__)
+            if callable(f):
+                # Call the function in the original expression (PICOS/CVXPY/.. backend)
+                # if available. E.g., if function is __add__, checks if the backend
+                # expression has that function and uses it instead, this returns a
+                # new backend expression which is wrapped back to CORNETO expr.
+                return self._create(
+                    f(*args, **kwargs), symbols
+                )
         return self._create(func(self, *args, **kwargs), symbols)
 
     return _wrapper_func
