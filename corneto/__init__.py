@@ -36,7 +36,7 @@ __all__ = [
 
 import_sif = Graph.from_sif
 
-__version__ = "1.0.0-alpha.0"
+__version__ = "1.0.0.dev0"
 
 
 sys.modules.update({f"{__name__}.{m}": globals()[m] for m in ["pl"]})
