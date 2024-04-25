@@ -32,14 +32,12 @@ jobs:
 
       - name: Build Docs with sphinx-multiversion
         run: |
-          if [ "${{ github.ref }}" == "refs/heads/main" ]; then
-            OUTDIR=docs/_build/html
-          else
-            BRANCH_NAME=$(echo ${{ github.ref }} | sed 's,refs/heads/,,; s,refs/tags/,,')
-            OUTDIR=docs/_build/html/${BRANCH_NAME}
-          fi
-          poetry run sphinx-multiversion docs $OUTDIR
-
+          poetry run sphinx-multiversion docs docs/_build/html
+      
+      - name: Create Redirection HTML
+        run: |
+          echo '<meta http-equiv="refresh" content="0; URL='https://saezlab.github.io/corneto/main'" />' > docs/_build/html/index.html
+  
       - name: Prepare Deployment
         run: |
           touch ./docs/_build/html/.nojekyll
@@ -51,4 +49,4 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs/_build/html
-          keep_files: true  # Keeps existing files at deployment location
+          keep_files: true
