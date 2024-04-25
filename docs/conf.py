@@ -20,6 +20,7 @@ project = "CORNETO"
 copyright = "2023, Saez-Rodriguez group"
 author = "Pablo Rodriguez-Mier"
 
+
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
@@ -67,6 +68,11 @@ nb_execution_timeout = 300
 nb_merge_streams = True
 typehints_defaults = "braces"
 
+
+import corneto
+myst_substitutions = {
+    "version": corneto.__version__,
+}
 
 source_suffix = {
     ".rst": "restructuredtext",

@@ -17,9 +17,9 @@ pip install git+https://github.com/saezlab/corneto.git@dev
 
 # For the latest stable release, use:
 pip install corneto
-
 ```
 
+**Version**: {{version}}
 
 ```{gallery-grid}
 :grid-columns: 1 2 3 3
