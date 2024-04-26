@@ -53,8 +53,8 @@ def _read_sif_iter(
         for i, line in enumerate(reader):
             if has_header and i == 0:
                 continue
-            if len(line) != 3:
-                raise ValueError(f"Invalid SIF line: {line}: expected 3 columns")
+            if len(line) <= 2:
+                raise ValueError(f"Invalid SIF line: {line}: expected at least 3 columns")
             s, d, t = [line[idx] for idx in column_order]
             if discard_self_loops and s == t:
                 continue
