@@ -503,7 +503,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;corneto.backend._cvxpy_backend.CvxpyBackend at 0x7f3877f8db10&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;corneto.backend._cvxpy_backend.CvxpyBackend at 0x7f6d1cb95150&gt;
 </pre></div>
 </div>
 </div>
@@ -540,7 +540,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;corneto.backend._base.ProblemDef at 0x7f387c7230d0&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;corneto.backend._base.ProblemDef at 0x7f6ce3fc5490&gt;
 </pre></div>
 </div>
 </div>
@@ -554,9 +554,9 @@ document.write(`
 <div class="cell_output docutils container">
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;obj5&#39;: Variable((1,), obj5, boolean=True),
  &#39;obj4&#39;: Variable((1,), obj4, boolean=True),
- &#39;obj3&#39;: Variable((1,), obj3, boolean=True),
  &#39;obj1&#39;: Variable((1,), obj1, boolean=True),
- &#39;obj2&#39;: Variable((1,), obj2, boolean=True)}
+ &#39;obj2&#39;: Variable((1,), obj2, boolean=True),
+ &#39;obj3&#39;: Variable((1,), obj3, boolean=True)}
 </pre></div>
 </div>
 </div>
@@ -629,31 +629,30 @@ document.write(`
                                      CVXPY                                     
                                      v1.4.3                                    
 ===============================================================================
-(CVXPY) Apr 29 08:18:39 PM: Your problem has 50 variables, 1 constraints, and 0 parameters.
-(CVXPY) Apr 29 08:18:39 PM: It is compliant with the following grammars: DCP, DQCP
-(CVXPY) Apr 29 08:18:39 PM: (If you need to solve this problem multiple times, but with different data, consider using parameters.)
-(CVXPY) Apr 29 08:18:39 PM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
-(CVXPY) Apr 29 08:18:39 PM: Your problem is compiled with the CPP canonicalization backend.
+(CVXPY) Apr 29 08:28:21 PM: Your problem has 50 variables, 1 constraints, and 0 parameters.
+(CVXPY) Apr 29 08:28:21 PM: It is compliant with the following grammars: DCP, DQCP
+(CVXPY) Apr 29 08:28:21 PM: (If you need to solve this problem multiple times, but with different data, consider using parameters.)
+(CVXPY) Apr 29 08:28:21 PM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
+(CVXPY) Apr 29 08:28:21 PM: Your problem is compiled with the CPP canonicalization backend.
 -------------------------------------------------------------------------------
                                   Compilation                                  
 -------------------------------------------------------------------------------
-(CVXPY) Apr 29 08:18:39 PM: Compiling problem (target solver=SCIP).
-(CVXPY) Apr 29 08:18:39 PM: Reduction chain: FlipObjective -&gt; Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; SCIP
-(CVXPY) Apr 29 08:18:39 PM: Applying reduction FlipObjective
-(CVXPY) Apr 29 08:18:39 PM: Applying reduction Dcp2Cone
-(CVXPY) Apr 29 08:18:39 PM: Applying reduction CvxAttr2Constr
-(CVXPY) Apr 29 08:18:39 PM: Applying reduction ConeMatrixStuffing
-(CVXPY) Apr 29 08:18:39 PM: Applying reduction SCIP
-(CVXPY) Apr 29 08:18:39 PM: Finished problem compilation (took 8.615e-03 seconds).
+(CVXPY) Apr 29 08:28:21 PM: Compiling problem (target solver=SCIP).
+(CVXPY) Apr 29 08:28:21 PM: Reduction chain: FlipObjective -&gt; Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; SCIP
+(CVXPY) Apr 29 08:28:21 PM: Applying reduction FlipObjective
+(CVXPY) Apr 29 08:28:21 PM: Applying reduction Dcp2Cone
+(CVXPY) Apr 29 08:28:21 PM: Applying reduction CvxAttr2Constr
+(CVXPY) Apr 29 08:28:21 PM: Applying reduction ConeMatrixStuffing
+(CVXPY) Apr 29 08:28:21 PM: Applying reduction SCIP
+(CVXPY) Apr 29 08:28:21 PM: Finished problem compilation (took 7.973e-03 seconds).
 -------------------------------------------------------------------------------
                                 Numerical solver                               
 -------------------------------------------------------------------------------
-(CVXPY) Apr 29 08:18:39 PM: Invoking solver SCIP  to obtain a solution.
+(CVXPY) Apr 29 08:28:21 PM: Invoking solver SCIP  to obtain a solution.
 -------------------------------------------------------------------------------
                                     Summary                                    
 -------------------------------------------------------------------------------
-(CVXPY) Apr 29 08:18:39 PM: Problem status: optimal
-(CVXPY) Apr 29 08:18:39 PM: Optimal value: 7.534e+03
+(CVXPY) Apr 29 08:28:21 PM: Problem status: optimal
 feasible solution found by trivial heuristic after 0.0 seconds, objective value -6.000000e+02
 presolving:
 (round 1, fast)       4 del vars, 0 del conss, 0 add conss, 0 chg bounds, 0 chg sides, 0 chg coeffs, 0 upgd conss, 0 impls, 0 clqs
@@ -671,8 +670,9 @@ Solving Nodes      : 0
 Primal Bound       : -7.53400000000000e+03 (3 solutions)
 Dual Bound         : -7.53400000000000e+03
 Gap                : 0.00 %
-(CVXPY) Apr 29 08:18:39 PM: Compilation took 8.615e-03 seconds
-(CVXPY) Apr 29 08:18:39 PM: Solver (including time spent in interface) took 3.475e-03 seconds
+(CVXPY) Apr 29 08:28:21 PM: Optimal value: 7.534e+03
+(CVXPY) Apr 29 08:28:21 PM: Compilation took 7.973e-03 seconds
+(CVXPY) Apr 29 08:28:21 PM: Solver (including time spent in interface) took 4.477e-03 seconds
 </pre></div>
 </div>
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Problem(Maximize(Expression(AFFINE, NONNEGATIVE, ())), [Inequality(Expression(AFFINE, NONNEGATIVE, ()))])
