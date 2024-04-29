@@ -1,9 +1,8 @@
 
-
 <!DOCTYPE html>
 
 
-<html lang="en" data-content_root="" data-theme="light">
+<html lang="en" data-content_root="../../" data-theme="light">
 
   <head>
     <meta charset="utf-8" />
@@ -29,7 +28,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster.custom.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster.bundle.min.css" />
@@ -39,24 +38,23 @@
     <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster-sideTip-light.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster-sideTip-borderless.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/micromodal.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=8fb392e5" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
   <script src="../../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/hoverxref.js"></script>
     <script src="../../_static/js/tooltipster.bundle.min.js"></script>
     <script src="../../_static/js/micromodal.min.js"></script>
-    <script src="../../_static/design-tabs.js"></script>
+    <script src="../../_static/design-tabs.js?v=36754332"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'guide/intro/constrained-optimization';</script>
@@ -451,12 +449,12 @@ document.write(`
                 <article class="bd-article">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="constrained-optimization">
-<h1>Constrained Optimization<a class="headerlink" href="#constrained-optimization" title="Permalink to this heading">#</a></h1>
+<h1>Constrained Optimization<a class="headerlink" href="#constrained-optimization" title="Link to this heading">#</a></h1>
 <p>Constrained optimization is a cornerstone of many scientific and engineering disciplines, aiming to find the best solution to a problem within a set of specified boundaries or constraints. Common types of constrained optimization problems include linear, nonlinear, integer or mixed-integer programming, among others. Specifically, Linear Programming (LP) and (Mixed)Integer Linear Programming (MILP) are two widely used techniques in this domain. LP involves problems where both the objective function and the constraints are linear, and the decision variables can take any continuous values. On the other hand, (M)ILP is a more specialized form where some or all of the decision variables are required to be integers. Both LP and (M)ILP are particularly useful in modeling network problems, including many problems typically used in network biology, due to their ability to handle complex interrelationships and constraints inherent in such systems.</p>
 <p>CORNETO offers an unified framwork for network learning from prior knowledge, where network inference problems are modelled through constrained optimization. Thanks to its modular backend implementation, different specialized mathematical optimization frameworks such as CVXPY or PICOS can be used to model and solve the optimization problems.</p>
 <p>Here we will see how can we use CORNETO as a multi-backend constrained optimization framework for very basic optimization problems.</p>
 <section id="the-knapsack-problem">
-<h2>The Knapsack Problem<a class="headerlink" href="#the-knapsack-problem" title="Permalink to this heading">#</a></h2>
+<h2>The Knapsack Problem<a class="headerlink" href="#the-knapsack-problem" title="Link to this heading">#</a></h2>
 <p>The knapsack problem is an optimization problem in which we are given a set of items, each with a weight and a value. We are also given a knapsack with a limited capacity. The goal is to select a subset of the items to put in the knapsack so that the total value of the items is maximized, while the total weight does not exceed the capacity of the knapsack.</p>
 <center style="margin:25px">
     <img src="https://github.com/saezlab/PerMedCoE_tools_virtual_course_2023/raw/main/assets/knapsack-wikipedia.png" alt="Knapsack" style="width: 100%; max-width:400px; margin-bottom:10px;">
@@ -505,7 +503,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;corneto.backend._cvxpy_backend.CvxpyBackend at 0x7f3758468ad0&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;corneto.backend._cvxpy_backend.CvxpyBackend at 0x7f8de07bcc50&gt;
 </pre></div>
 </div>
 </div>
@@ -542,7 +540,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;corneto.backend._base.ProblemDef at 0x7f371aa27c10&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;corneto.backend._base.ProblemDef at 0x7f8db11b6390&gt;
 </pre></div>
 </div>
 </div>
@@ -557,8 +555,8 @@ document.write(`
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;obj5&#39;: Variable((1,), obj5, boolean=True),
  &#39;obj4&#39;: Variable((1,), obj4, boolean=True),
  &#39;obj2&#39;: Variable((1,), obj2, boolean=True),
- &#39;obj3&#39;: Variable((1,), obj3, boolean=True),
- &#39;obj1&#39;: Variable((1,), obj1, boolean=True)}
+ &#39;obj1&#39;: Variable((1,), obj1, boolean=True),
+ &#39;obj3&#39;: Variable((1,), obj3, boolean=True)}
 </pre></div>
 </div>
 </div>
@@ -594,7 +592,7 @@ document.write(`
 </div>
 </section>
 <section id="a-more-complex-knapsack">
-<h2>A more complex knapsack<a class="headerlink" href="#a-more-complex-knapsack" title="Permalink to this heading">#</a></h2>
+<h2>A more complex knapsack<a class="headerlink" href="#a-more-complex-knapsack" title="Link to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># A larger example from:</span>
@@ -631,30 +629,30 @@ document.write(`
                                      CVXPY                                     
                                      v1.4.3                                    
 ===============================================================================
-(CVXPY) Apr 26 11:15:58 AM: Your problem has 50 variables, 1 constraints, and 0 parameters.
-(CVXPY) Apr 26 11:15:58 AM: It is compliant with the following grammars: DCP, DQCP
-(CVXPY) Apr 26 11:15:58 AM: (If you need to solve this problem multiple times, but with different data, consider using parameters.)
-(CVXPY) Apr 26 11:15:58 AM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
-(CVXPY) Apr 26 11:15:58 AM: Your problem is compiled with the CPP canonicalization backend.
+(CVXPY) Apr 29 06:37:34 PM: Your problem has 50 variables, 1 constraints, and 0 parameters.
+(CVXPY) Apr 29 06:37:34 PM: It is compliant with the following grammars: DCP, DQCP
+(CVXPY) Apr 29 06:37:34 PM: (If you need to solve this problem multiple times, but with different data, consider using parameters.)
+(CVXPY) Apr 29 06:37:34 PM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
+(CVXPY) Apr 29 06:37:34 PM: Your problem is compiled with the CPP canonicalization backend.
 -------------------------------------------------------------------------------
                                   Compilation                                  
 -------------------------------------------------------------------------------
-(CVXPY) Apr 26 11:15:58 AM: Compiling problem (target solver=SCIP).
-(CVXPY) Apr 26 11:15:58 AM: Reduction chain: FlipObjective -&gt; Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; SCIP
-(CVXPY) Apr 26 11:15:58 AM: Applying reduction FlipObjective
-(CVXPY) Apr 26 11:15:58 AM: Applying reduction Dcp2Cone
-(CVXPY) Apr 26 11:15:58 AM: Applying reduction CvxAttr2Constr
-(CVXPY) Apr 26 11:15:58 AM: Applying reduction ConeMatrixStuffing
-(CVXPY) Apr 26 11:15:58 AM: Applying reduction SCIP
-(CVXPY) Apr 26 11:15:58 AM: Finished problem compilation (took 8.408e-03 seconds).
+(CVXPY) Apr 29 06:37:34 PM: Compiling problem (target solver=SCIP).
+(CVXPY) Apr 29 06:37:34 PM: Reduction chain: FlipObjective -&gt; Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; SCIP
+(CVXPY) Apr 29 06:37:34 PM: Applying reduction FlipObjective
+(CVXPY) Apr 29 06:37:34 PM: Applying reduction Dcp2Cone
+(CVXPY) Apr 29 06:37:34 PM: Applying reduction CvxAttr2Constr
+(CVXPY) Apr 29 06:37:34 PM: Applying reduction ConeMatrixStuffing
+(CVXPY) Apr 29 06:37:34 PM: Applying reduction SCIP
+(CVXPY) Apr 29 06:37:34 PM: Finished problem compilation (took 8.065e-03 seconds).
 -------------------------------------------------------------------------------
                                 Numerical solver                               
 -------------------------------------------------------------------------------
-(CVXPY) Apr 26 11:15:58 AM: Invoking solver SCIP  to obtain a solution.
+(CVXPY) Apr 29 06:37:34 PM: Invoking solver SCIP  to obtain a solution.
 -------------------------------------------------------------------------------
                                     Summary                                    
 -------------------------------------------------------------------------------
-(CVXPY) Apr 26 11:15:58 AM: Problem status: optimal
+(CVXPY) Apr 29 06:37:34 PM: Problem status: optimal
 feasible solution found by trivial heuristic after 0.0 seconds, objective value -6.000000e+02
 presolving:
 (round 1, fast)       4 del vars, 0 del conss, 0 add conss, 0 chg bounds, 0 chg sides, 0 chg coeffs, 0 upgd conss, 0 impls, 0 clqs
@@ -672,9 +670,9 @@ Solving Nodes      : 0
 Primal Bound       : -7.53400000000000e+03 (3 solutions)
 Dual Bound         : -7.53400000000000e+03
 Gap                : 0.00 %
-(CVXPY) Apr 26 11:15:58 AM: Optimal value: 7.534e+03
-(CVXPY) Apr 26 11:15:58 AM: Compilation took 8.408e-03 seconds
-(CVXPY) Apr 26 11:15:58 AM: Solver (including time spent in interface) took 3.700e-03 seconds
+(CVXPY) Apr 29 06:37:34 PM: Optimal value: 7.534e+03
+(CVXPY) Apr 29 06:37:34 PM: Compilation took 8.065e-03 seconds
+(CVXPY) Apr 29 06:37:34 PM: Solver (including time spent in interface) took 3.725e-03 seconds
 </pre></div>
 </div>
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Problem(Maximize(Expression(AFFINE, NONNEGATIVE, ())), [Inequality(Expression(AFFINE, NONNEGATIVE, ()))])

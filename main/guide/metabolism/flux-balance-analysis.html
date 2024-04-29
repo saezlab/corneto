@@ -1,9 +1,8 @@
 
-
 <!DOCTYPE html>
 
 
-<html lang="en" data-content_root="" data-theme="light">
+<html lang="en" data-content_root="../../" data-theme="light">
 
   <head>
     <meta charset="utf-8" />
@@ -29,7 +28,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster.custom.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster.bundle.min.css" />
@@ -39,24 +38,23 @@
     <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster-sideTip-light.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster-sideTip-borderless.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/micromodal.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=8fb392e5" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
   <script src="../../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/hoverxref.js"></script>
     <script src="../../_static/js/tooltipster.bundle.min.js"></script>
     <script src="../../_static/js/micromodal.min.js"></script>
-    <script src="../../_static/design-tabs.js"></script>
+    <script src="../../_static/design-tabs.js?v=36754332"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'guide/metabolism/flux-balance-analysis';</script>
@@ -451,11 +449,11 @@ document.write(`
                 <article class="bd-article">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="flux-balance-analysis-fba">
-<h1>Flux Balance Analysis (FBA)<a class="headerlink" href="#flux-balance-analysis-fba" title="Permalink to this heading">#</a></h1>
+<h1>Flux Balance Analysis (FBA)<a class="headerlink" href="#flux-balance-analysis-fba" title="Link to this heading">#</a></h1>
 <p>Flux Balance Analysis (FBA) is a computational method used primarily in systems biology and metabolic engineering. It’s a way to understand and predict the flow or “flux” of metabolites in a metabolic network under certain conditions.</p>
 <p>In this tutorial, we will see how to create FBA problems with CORNETO for metabolic analysis, how CORNETO can interoperate with other FBA-based libraries such as COBRApy or MIOM, and how CORNETO’s FBA problem can be used as a building block for more advanced FBA methods.</p>
 <section id="what-is-fba">
-<h2>What is FBA?<a class="headerlink" href="#what-is-fba" title="Permalink to this heading">#</a></h2>
+<h2>What is FBA?<a class="headerlink" href="#what-is-fba" title="Link to this heading">#</a></h2>
 <p>The basis of FBA lies in the principle of steady-state, where the concentration of internal metabolites doesn’t change over time even though they may be consumed and produced. This means that the total rate at which a metabolite is produced equals the rate at which it’s consumed.</p>
 <p>In the realm of metabolic network analysis, this concept translates to steady-state metabolic fluxes. A flux is a rate at which a substance moves through a system, and in metabolic systems, flux represents the rate of turnover of a metabolite through a specific pathway or reaction. When considering the steady-state, each reaction’s flux in the metabolic network is balanced, meaning that, for every internal metabolite, the sum of fluxes leading to its production is equal to the sum of fluxes leading to its consumption. This balance ensures that, over time, there’s no accumulation or depletion of any metabolite in the system.</p>
 <p>For quantifying these fluxes, the typical units used are millimoles per gram dry weight per hour (mmol/gDW/h). The “mmol” part represents the quantity of the metabolite, the “gDW” (gram dry weight) normalizes this value to the biomass of the organism, and the “/h” provides a temporal dimension, indicating how fast the metabolic turnover occurs. This unit allows researchers and practitioners to make meaningful comparisons across different metabolic systems and conditions. For example, a flux value of 5 mmol/gDW/h for a particular reaction indicates that 5 millimoles of the relevant metabolite are produced or consumed per gram of the organism’s dry weight every hour.</p>
@@ -468,7 +466,7 @@ document.write(`
 </center>
 </section>
 <section id="fba-with-corneto">
-<h2>FBA with CORNETO<a class="headerlink" href="#fba-with-corneto" title="Permalink to this heading">#</a></h2>
+<h2>FBA with CORNETO<a class="headerlink" href="#fba-with-corneto" title="Link to this heading">#</a></h2>
 <p>In order to define a FBA problem, you need to know the following:</p>
 <ul class="simple">
 <li><p><strong>Genome-scale metabolic network</strong>: This is the prior knowledge, usually known as genome-scale metabolic models (GEMs). These models represent the metabolic network through a stoichiometric matrix, where each row represents a metabolite and each column represents a reaction. The entries in the matrix are the stoichiometric coefficients of the metabolites in the reactions. These models also contain annotations such as Gene-Protein-Rules (GPRs) and default reaction bounds.</p></li>
@@ -479,7 +477,7 @@ document.write(`
 <p>CORNETO naturally supports FBA-based problems by transforming a genome scale metabolic network into a prior knowledge graph, and then modelling the FBA problem as a network flow problem. This is the main building block for creating more complex problems, such as multicondition Sparse FBA or multicondition iMAT for context-specific reconstruction.</p>
 </section>
 <section id="using-cobrapy">
-<h2>Using COBRApy<a class="headerlink" href="#using-cobrapy" title="Permalink to this heading">#</a></h2>
+<h2>Using COBRApy<a class="headerlink" href="#using-cobrapy" title="Link to this heading">#</a></h2>
 <p>Here we show how can we use COBRApy to import the <code class="docutils literal notranslate"><span class="pre">textbook</span></code> metabolic network and how can we import it in CORNETO. We will also compare the FBA solution from COBRApy and CORNETO.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -513,7 +511,7 @@ document.write(`
                 <td><strong>Name</strong></td><td>Biomass Objective Function with GAM</td>
             </tr><tr>
                 <td><strong>Memory address</strong></td>
-                <td>0x7f6368b4a090</td>
+                <td>0x7f716c6528d0</td>
             </tr><tr>
                 <td><strong>Stoichiometry</strong></td>
                 <td>
@@ -538,7 +536,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Solution 0.874 at 0x7f6368c4a050&gt;
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Solution 0.874 at 0x7f716c741390&gt;
 </pre></div>
 </div>
 </div>
@@ -625,7 +623,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/1614f0352264f2f1134014a7c665cc50ff45cdadb4e190790ba56b191f1dc09d.svg" src="../../_images/1614f0352264f2f1134014a7c665cc50ff45cdadb4e190790ba56b191f1dc09d.svg" /></div>
+<img alt="../../_images/e3a8f51b16f7b38cffd71b5aff9d6abe7b127bc90c28e2d7e46a5e19d064bcbe.svg" src="../../_images/e3a8f51b16f7b38cffd71b5aff9d6abe7b127bc90c28e2d7e46a5e19d064bcbe.svg" /></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -652,7 +650,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/8a5dcb4d3faa86fea6c6a80bee13b73575ca29e45a20fbe842d01a59913d4a62.svg" src="../../_images/8a5dcb4d3faa86fea6c6a80bee13b73575ca29e45a20fbe842d01a59913d4a62.svg" /></div>
+<img alt="../../_images/6d2923cdc22b6684520bfbe31e291b88209c910e3d73c05f1dc135e3bb271769.svg" src="../../_images/6d2923cdc22b6684520bfbe31e291b88209c910e3d73c05f1dc135e3bb271769.svg" /></div>
 </div>
 </section>
 </section>

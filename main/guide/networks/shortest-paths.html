@@ -1,9 +1,8 @@
 
-
 <!DOCTYPE html>
 
 
-<html lang="en" data-content_root="" data-theme="light">
+<html lang="en" data-content_root="../../" data-theme="light">
 
   <head>
     <meta charset="utf-8" />
@@ -29,7 +28,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster.custom.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster.bundle.min.css" />
@@ -39,24 +38,23 @@
     <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster-sideTip-light.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster-sideTip-borderless.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/micromodal.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=8fb392e5" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
   <script src="../../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/hoverxref.js"></script>
     <script src="../../_static/js/tooltipster.bundle.min.js"></script>
     <script src="../../_static/js/micromodal.min.js"></script>
-    <script src="../../_static/design-tabs.js"></script>
+    <script src="../../_static/design-tabs.js?v=36754332"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'guide/networks/shortest-paths';</script>
@@ -451,7 +449,7 @@ document.write(`
                 <article class="bd-article">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="shortest-paths">
-<h1>Shortest paths<a class="headerlink" href="#shortest-paths" title="Permalink to this heading">#</a></h1>
+<h1>Shortest paths<a class="headerlink" href="#shortest-paths" title="Link to this heading">#</a></h1>
 <p>In network analysis, finding the shortest path between two nodes is often done using algorithms like Dijkstra’s, Bellman-Ford, Floyd-Warshall, A-star, etc. However, these methods are particularly designed for the specific case of finding shortest paths and cannot be easily adapted for other tasks. Also, they have particular assumptions, for example, Dijkstra doesn’t work with negative weights, and Bellman-Ford doesn’t work with negative cycles.</p>
 <p>CORNETO isn’t just another library for shortest paths. Instead, CORNETO allows you to model shortest-path problems using constrained optimization. This means that you have a flexible framework to formulate and solve these problems, making CORNETO a versatile tool. By converting a graph into a network flow problem, CORNETO can easily handle shortest path problems that are solved by any LP and ILP solver, or you can use this problem to build more advanced ones.</p>
 <div class="admonition note">
@@ -460,7 +458,7 @@ document.write(`
 </div>
 <p>In this tutorial, we will see how to use CORNETO to solve shortest-path problems and find a solution using an LP solver.</p>
 <section id="creating-a-weighted-graph">
-<h2>Creating a weighted graph<a class="headerlink" href="#creating-a-weighted-graph" title="Permalink to this heading">#</a></h2>
+<h2>Creating a weighted graph<a class="headerlink" href="#creating-a-weighted-graph" title="Link to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">corneto</span> <span class="k">as</span> <span class="nn">cn</span>
@@ -529,7 +527,7 @@ document.write(`
 </div>
 </section>
 <section id="random-graphs">
-<h2>Random graphs<a class="headerlink" href="#random-graphs" title="Permalink to this heading">#</a></h2>
+<h2>Random graphs<a class="headerlink" href="#random-graphs" title="Link to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a function that generates a shortest path problem on a random graph created with networkx</span>
@@ -558,7 +556,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[4090, 3249, 1655, 428, 4327, 335, 43, 1099]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[3367, 462, 703, 150, 87, 1590, 601, 842]
 </pre></div>
 </div>
 </div>
@@ -570,7 +568,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>21.957246899992068
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>16.06427097024838
 </pre></div>
 </div>
 </div>
@@ -590,7 +588,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>21.957246899992068
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>16.06427097024838
 </pre></div>
 </div>
 </div>
@@ -602,7 +600,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/7d6b9ac5fdf0349588b0449771d616c070ebb2738c82141314ae61b333246239.svg" src="../../_images/7d6b9ac5fdf0349588b0449771d616c070ebb2738c82141314ae61b333246239.svg" /></div>
+<img alt="../../_images/24a04438f68240c19e1e5535c6f0aa39e3b1a601fe36b9892885c33ce1becbaf.svg" src="../../_images/24a04438f68240c19e1e5535c6f0aa39e3b1a601fe36b9892885c33ce1becbaf.svg" /></div>
 </div>
 </section>
 </section>

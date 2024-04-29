@@ -1,9 +1,8 @@
 
-
 <!DOCTYPE html>
 
 
-<html lang="en" data-content_root="" data-theme="light">
+<html lang="en" data-content_root="../../" data-theme="light">
 
   <head>
     <meta charset="utf-8" />
@@ -29,7 +28,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster.custom.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster.bundle.min.css" />
@@ -39,24 +38,23 @@
     <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster-sideTip-light.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster-sideTip-borderless.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/micromodal.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=8fb392e5" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
   <script src="../../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/hoverxref.js"></script>
     <script src="../../_static/js/tooltipster.bundle.min.js"></script>
     <script src="../../_static/js/micromodal.min.js"></script>
-    <script src="../../_static/design-tabs.js"></script>
+    <script src="../../_static/design-tabs.js?v=36754332"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'guide/networks/steiner-trees';</script>
@@ -451,7 +449,7 @@ document.write(`
                 <article class="bd-article">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="steiner-trees-sts">
-<h1>Steiner Trees (STs)<a class="headerlink" href="#steiner-trees-sts" title="Permalink to this heading">#</a></h1>
+<h1>Steiner Trees (STs)<a class="headerlink" href="#steiner-trees-sts" title="Link to this heading">#</a></h1>
 <p>A Steiner tree is a concept stemming from combinatorial optimization that seeks to connect a given set of vertices (or nodes) in the shortest possible total distance, but with the added provision that additional nodes not in the original set can be included if they reduce the overall connecting distance.</p>
 <p>Given a weighted graph <span class="math notranslate nohighlight">\( G = (V, E) \)</span> and a subset <span class="math notranslate nohighlight">\( T \subseteq V \)</span> of terminal vertices, the goal of the Steiner Tree problem is to find a tree of minimum weight in <span class="math notranslate nohighlight">\( G \)</span> that spans all vertices in <span class="math notranslate nohighlight">\( T \)</span>. This tree can include vertices not in <span class="math notranslate nohighlight">\( T \)</span>, and these additional vertices are called Steiner vertices. The objective is to connect all the terminals using the shortest possible total edge weight.</p>
 <p>One notable application of Steiner trees is in the analysis and modeling of biological networks. By using Steiner trees, researchers can identify minimal subnetworks that connect a given set of proteins or genes, potentially pinpointing previously unobserved or unknown elements (analogous to the Steiner points) that play crucial roles in these networks. Such insights can help in understanding disease mechanisms, drug targets, and the fundamental underpinnings of biological processes.</p>
@@ -469,7 +467,7 @@ document.write(`
 </ul>
 <p>In this tutorial, we will demonstrate how to model and solve undirected Steiner tree problems using CORNETO. We will use a small example network to illustrate the process, and we will compare the solutions with those obtained with the very well known <code class="docutils literal notranslate"><span class="pre">networkx</span></code> graph library.</p>
 <section id="heuristic-steiner-tree-from-networkx">
-<h2>Heuristic steiner tree from NetworkX<a class="headerlink" href="#heuristic-steiner-tree-from-networkx" title="Permalink to this heading">#</a></h2>
+<h2>Heuristic steiner tree from NetworkX<a class="headerlink" href="#heuristic-steiner-tree-from-networkx" title="Link to this heading">#</a></h2>
 <p>First, we will create a random undirected graph with random weights between 1 an 10. Then we will run the heuristic steiner tree algorithm from NetworkX to see which solution it finds.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -517,7 +515,7 @@ document.write(`
 <p>We need to check if the solution is the optimal one or not. <strong>Since we’ve used an heuristic (but fast) method, we don’t have any proof about optimality</strong>. We will see now how CORNETO can be used to get a better solution (which is also the optimal). Due to CORNETO’s exact modeling of the problem, and the use of advanced mathematical solvers, we can not only achieve a solution superior to that of NetworkX, but also have the guarantees that the solution is optimal and no better network exists.</p>
 </section>
 <section id="exact-steiner-trees-with-corneto">
-<h2>Exact Steiner Trees with CORNETO<a class="headerlink" href="#exact-steiner-trees-with-corneto" title="Permalink to this heading">#</a></h2>
+<h2>Exact Steiner Trees with CORNETO<a class="headerlink" href="#exact-steiner-trees-with-corneto" title="Link to this heading">#</a></h2>
 <p>Now, we will do the same using CORNETO to convert the random graph to a corneto graph and then we will create an ILP steiner tree problem, which is exact, and we will solve it using the SCIP solver (open source).</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -599,33 +597,33 @@ document.write(`
                                      CVXPY                                     
                                      v1.4.3                                    
 ===============================================================================
-(CVXPY) Apr 26 11:16:53 AM: Your problem has 310 variables, 7 constraints, and 0 parameters.
-(CVXPY) Apr 26 11:16:53 AM: It is compliant with the following grammars: DCP, DQCP
-(CVXPY) Apr 26 11:16:53 AM: (If you need to solve this problem multiple times, but with different data, consider using parameters.)
-(CVXPY) Apr 26 11:16:53 AM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
-(CVXPY) Apr 26 11:16:53 AM: Your problem is compiled with the CPP canonicalization backend.
+(CVXPY) Apr 29 06:38:27 PM: Your problem has 310 variables, 7 constraints, and 0 parameters.
+(CVXPY) Apr 29 06:38:27 PM: It is compliant with the following grammars: DCP, DQCP
+(CVXPY) Apr 29 06:38:27 PM: (If you need to solve this problem multiple times, but with different data, consider using parameters.)
+(CVXPY) Apr 29 06:38:27 PM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
+(CVXPY) Apr 29 06:38:27 PM: Your problem is compiled with the CPP canonicalization backend.
 -------------------------------------------------------------------------------
                                   Compilation                                  
 -------------------------------------------------------------------------------
-(CVXPY) Apr 26 11:16:53 AM: Compiling problem (target solver=SCIPY).
-(CVXPY) Apr 26 11:16:53 AM: Reduction chain: Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; SCIPY
-(CVXPY) Apr 26 11:16:53 AM: Applying reduction Dcp2Cone
-(CVXPY) Apr 26 11:16:53 AM: Applying reduction CvxAttr2Constr
-(CVXPY) Apr 26 11:16:53 AM: Applying reduction ConeMatrixStuffing
-(CVXPY) Apr 26 11:16:53 AM: Applying reduction SCIPY
-(CVXPY) Apr 26 11:16:53 AM: Finished problem compilation (took 1.298e-02 seconds).
+(CVXPY) Apr 29 06:38:27 PM: Compiling problem (target solver=SCIPY).
+(CVXPY) Apr 29 06:38:27 PM: Reduction chain: Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; SCIPY
+(CVXPY) Apr 29 06:38:27 PM: Applying reduction Dcp2Cone
+(CVXPY) Apr 29 06:38:27 PM: Applying reduction CvxAttr2Constr
+(CVXPY) Apr 29 06:38:27 PM: Applying reduction ConeMatrixStuffing
+(CVXPY) Apr 29 06:38:27 PM: Applying reduction SCIPY
+(CVXPY) Apr 29 06:38:27 PM: Finished problem compilation (took 1.390e-02 seconds).
 -------------------------------------------------------------------------------
                                 Numerical solver                               
 -------------------------------------------------------------------------------
-(CVXPY) Apr 26 11:16:53 AM: Invoking solver SCIPY  to obtain a solution.
+(CVXPY) Apr 29 06:38:27 PM: Invoking solver SCIPY  to obtain a solution.
 Solver terminated with message: Optimization terminated successfully. (HiGHS Status 7: Optimal)
 -------------------------------------------------------------------------------
                                     Summary                                    
 -------------------------------------------------------------------------------
-(CVXPY) Apr 26 11:17:27 AM: Problem status: optimal
-(CVXPY) Apr 26 11:17:27 AM: Optimal value: 4.100e+01
-(CVXPY) Apr 26 11:17:27 AM: Compilation took 1.298e-02 seconds
-(CVXPY) Apr 26 11:17:27 AM: Solver (including time spent in interface) took 3.414e+01 seconds
+(CVXPY) Apr 29 06:39:01 PM: Problem status: optimal
+(CVXPY) Apr 29 06:39:01 PM: Optimal value: 4.100e+01
+(CVXPY) Apr 29 06:39:01 PM: Compilation took 1.390e-02 seconds
+(CVXPY) Apr 29 06:39:01 PM: Solver (including time spent in interface) took 3.403e+01 seconds
 </pre></div>
 </div>
 <img alt="../../_images/7ac2b48505a5381dce8da60f48407c921ef447f293d58fdfa4eacc5f29a7aca2.svg" src="../../_images/7ac2b48505a5381dce8da60f48407c921ef447f293d58fdfa4eacc5f29a7aca2.svg" /></div>
@@ -658,33 +656,33 @@ Solver terminated with message: Optimization terminated successfully. (HiGHS Sta
                                      CVXPY                                     
                                      v1.4.3                                    
 ===============================================================================
-(CVXPY) Apr 26 11:17:27 AM: Your problem has 670 variables, 17 constraints, and 0 parameters.
-(CVXPY) Apr 26 11:17:27 AM: It is compliant with the following grammars: DCP, DQCP
-(CVXPY) Apr 26 11:17:27 AM: (If you need to solve this problem multiple times, but with different data, consider using parameters.)
-(CVXPY) Apr 26 11:17:27 AM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
-(CVXPY) Apr 26 11:17:27 AM: Your problem is compiled with the CPP canonicalization backend.
+(CVXPY) Apr 29 06:39:01 PM: Your problem has 670 variables, 17 constraints, and 0 parameters.
+(CVXPY) Apr 29 06:39:01 PM: It is compliant with the following grammars: DCP, DQCP
+(CVXPY) Apr 29 06:39:01 PM: (If you need to solve this problem multiple times, but with different data, consider using parameters.)
+(CVXPY) Apr 29 06:39:01 PM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
+(CVXPY) Apr 29 06:39:01 PM: Your problem is compiled with the CPP canonicalization backend.
 -------------------------------------------------------------------------------
                                   Compilation                                  
 -------------------------------------------------------------------------------
-(CVXPY) Apr 26 11:17:27 AM: Compiling problem (target solver=SCIPY).
-(CVXPY) Apr 26 11:17:27 AM: Reduction chain: Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; SCIPY
-(CVXPY) Apr 26 11:17:27 AM: Applying reduction Dcp2Cone
-(CVXPY) Apr 26 11:17:27 AM: Applying reduction CvxAttr2Constr
-(CVXPY) Apr 26 11:17:27 AM: Applying reduction ConeMatrixStuffing
-(CVXPY) Apr 26 11:17:27 AM: Applying reduction SCIPY
-(CVXPY) Apr 26 11:17:27 AM: Finished problem compilation (took 2.519e-02 seconds).
+(CVXPY) Apr 29 06:39:01 PM: Compiling problem (target solver=SCIPY).
+(CVXPY) Apr 29 06:39:01 PM: Reduction chain: Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; SCIPY
+(CVXPY) Apr 29 06:39:01 PM: Applying reduction Dcp2Cone
+(CVXPY) Apr 29 06:39:01 PM: Applying reduction CvxAttr2Constr
+(CVXPY) Apr 29 06:39:01 PM: Applying reduction ConeMatrixStuffing
+(CVXPY) Apr 29 06:39:01 PM: Applying reduction SCIPY
+(CVXPY) Apr 29 06:39:01 PM: Finished problem compilation (took 2.508e-02 seconds).
 -------------------------------------------------------------------------------
                                 Numerical solver                               
 -------------------------------------------------------------------------------
-(CVXPY) Apr 26 11:17:27 AM: Invoking solver SCIPY  to obtain a solution.
+(CVXPY) Apr 29 06:39:01 PM: Invoking solver SCIPY  to obtain a solution.
 Solver terminated with message: Optimization terminated successfully. (HiGHS Status 7: Optimal)
 -------------------------------------------------------------------------------
                                     Summary                                    
 -------------------------------------------------------------------------------
-(CVXPY) Apr 26 11:17:45 AM: Problem status: optimal
-(CVXPY) Apr 26 11:17:45 AM: Optimal value: 4.100e+01
-(CVXPY) Apr 26 11:17:45 AM: Compilation took 2.519e-02 seconds
-(CVXPY) Apr 26 11:17:45 AM: Solver (including time spent in interface) took 1.730e+01 seconds
+(CVXPY) Apr 29 06:39:18 PM: Problem status: optimal
+(CVXPY) Apr 29 06:39:18 PM: Optimal value: 4.100e+01
+(CVXPY) Apr 29 06:39:18 PM: Compilation took 2.508e-02 seconds
+(CVXPY) Apr 29 06:39:18 PM: Solver (including time spent in interface) took 1.727e+01 seconds
 Optimal value: 41.0
 </pre></div>
 </div>

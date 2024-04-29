@@ -1,9 +1,8 @@
 
-
 <!DOCTYPE html>
 
 
-<html lang="en" data-content_root="" data-theme="light">
+<html lang="en" data-content_root="../../" data-theme="light">
 
   <head>
     <meta charset="utf-8" />
@@ -29,7 +28,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster.custom.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster.bundle.min.css" />
@@ -39,24 +38,23 @@
     <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster-sideTip-light.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster-sideTip-borderless.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/micromodal.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=8fb392e5" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
   <script src="../../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/hoverxref.js"></script>
     <script src="../../_static/js/tooltipster.bundle.min.js"></script>
     <script src="../../_static/js/micromodal.min.js"></script>
-    <script src="../../_static/design-tabs.js"></script>
+    <script src="../../_static/design-tabs.js?v=36754332"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'guide/networks/pcst';</script>
@@ -451,8 +449,8 @@ document.write(`
                 <article class="bd-article">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="prize-collecting-steiner-trees-pcsts">
-<h1>Prize-Collecting Steiner Trees (PCSTs)<a class="headerlink" href="#prize-collecting-steiner-trees-pcsts" title="Permalink to this heading">#</a></h1>
-<p>The PCST is a generalization of the <a class="reference internal" href="steiner-trees.html"><span class="doc std std-doc">Steiner Tree problem</span></a>. In PCST, each vertex has a prize associated with it, and each edge has a cost. The objective is to find a tree that maximizes the difference between the total prize collected from the vertices in the tree and the total cost of the edges used. Unlike the Steiner Tree problem, where you must connect all terminal vertices, in PCST, you can choose to exclude some vertices (even terminal vertices) if the cost of connecting them is too high relative to their prize. The optimization problem is defined as:</p>
+<h1>Prize-Collecting Steiner Trees (PCSTs)<a class="headerlink" href="#prize-collecting-steiner-trees-pcsts" title="Link to this heading">#</a></h1>
+<p>The PCST is a generalization of the <a class="reference internal" href="steiner-trees.html"><span class="std std-doc">Steiner Tree problem</span></a>. In PCST, each vertex has a prize associated with it, and each edge has a cost. The objective is to find a tree that maximizes the difference between the total prize collected from the vertices in the tree and the total cost of the edges used. Unlike the Steiner Tree problem, where you must connect all terminal vertices, in PCST, you can choose to exclude some vertices (even terminal vertices) if the cost of connecting them is too high relative to their prize. The optimization problem is defined as:</p>
 <div class="math notranslate nohighlight">
 \[ \text{argmin}_{x_v, y_e} L(x_v, y_e) = \sum_{e \in E} c_e y_e - \sum_{v \in V} p_v x_v \]</div>
 <p>Where <span class="math notranslate nohighlight">\(c_e\)</span> is the cost of edge <span class="math notranslate nohighlight">\(e\)</span>, <span class="math notranslate nohighlight">\(p_v\)</span> is the prize of vertex <span class="math notranslate nohighlight">\(v\)</span>, <span class="math notranslate nohighlight">\(x_v\)</span> is a binary variable indicating whether vertex <span class="math notranslate nohighlight">\(v\)</span> is included in the tree, and <span class="math notranslate nohighlight">\(y_e\)</span> is a binary variable indicating whether edge <span class="math notranslate nohighlight">\(e\)</span> is included in the tree.</p>

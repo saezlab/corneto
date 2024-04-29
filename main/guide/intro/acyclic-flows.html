@@ -1,9 +1,8 @@
 
-
 <!DOCTYPE html>
 
 
-<html lang="en" data-content_root="" data-theme="light">
+<html lang="en" data-content_root="../../" data-theme="light">
 
   <head>
     <meta charset="utf-8" />
@@ -29,7 +28,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster.custom.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster.bundle.min.css" />
@@ -39,24 +38,23 @@
     <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster-sideTip-light.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster-sideTip-borderless.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/micromodal.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=8fb392e5" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
   <script src="../../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/hoverxref.js"></script>
     <script src="../../_static/js/tooltipster.bundle.min.js"></script>
     <script src="../../_static/js/micromodal.min.js"></script>
-    <script src="../../_static/design-tabs.js"></script>
+    <script src="../../_static/design-tabs.js?v=36754332"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'guide/intro/acyclic-flows';</script>
@@ -451,7 +449,7 @@ document.write(`
                 <article class="bd-article">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="acyclic-flows">
-<h1>Acyclic Flows<a class="headerlink" href="#acyclic-flows" title="Permalink to this heading">#</a></h1>
+<h1>Acyclic Flows<a class="headerlink" href="#acyclic-flows" title="Link to this heading">#</a></h1>
 <p>Many problems in network inference rely on obtaining a directed acyclic graph (DAG) that encodes a specific function. For example, CARNIVAL, a method for inferring signaling networks by propagating changes in activity, identifies a DAG that represents the causal relationships between signaling molecules based on perturbation data.</p>
 <p>This approach is not only interesting in biological problems but also in more general ones. For instance, in Machine Learning, many problems related to representation learning require learning DAG structures. Techniques such as learning Bayesian networks and structural equation models in causal discovery are built upon this concept. In such scenarios, DAGs serve as probabilistic graphical models, encoding a set of random variables and their conditional dependencies. Identifying these structures from data requires learning DAGs, which involves searching over combinatorial structures that represent the data accurately.</p>
 <p>To simplify the modeling of these problems, CORNETO introduces the Acyclic Flow building block.
@@ -508,7 +506,7 @@ Acyclic Flow is an special case of a Flow problem where the flow is constrained 
 </div>
 <p>We are going to use Acyclic flows to create a problem in which any graph with cycles is by definition infeasible. Thus, this problem will search across the space of valid acyclic graphs that can be extracted from the graph.</p>
 <section id="largest-dag-from-a-given-source-and-sink-vertex">
-<h2>Largest DAG from a given source and sink vertex<a class="headerlink" href="#largest-dag-from-a-given-source-and-sink-vertex" title="Permalink to this heading">#</a></h2>
+<h2>Largest DAG from a given source and sink vertex<a class="headerlink" href="#largest-dag-from-a-given-source-and-sink-vertex" title="Link to this heading">#</a></h2>
 <p>To illustrate a practical optimization problem based on acyclic flows, we will extract the largest DAG from a directed graph, from a source/root vertex to a target/terminal vertex. To do this, we need to convert first this graph into a flow problem. Note that since the graph is directed, solutions depend on the selected root node and the direction of edges.</p>
 <p>Let’s say we are interested in finding an acyclic sub-graph from <code class="docutils literal notranslate"><span class="pre">v1</span></code> to <code class="docutils literal notranslate"><span class="pre">v7</span></code>. We need to add two extra edges, one to “inject” flow and one to “remove” flow from the graph. We are not interested in the particular values of the flow, these are just mathematical artifacts to convert the problem into a network flow that can be efficiently handled by CORNETO:</p>
 <div class="cell docutils container">
@@ -592,7 +590,7 @@ v5 2
 </div>
 </section>
 <section id="largest-dag-from-any-source-to-any-sink">
-<h2>Largest DAG from any source to any sink<a class="headerlink" href="#largest-dag-from-any-source-to-any-sink" title="Permalink to this heading">#</a></h2>
+<h2>Largest DAG from any source to any sink<a class="headerlink" href="#largest-dag-from-any-source-to-any-sink" title="Link to this heading">#</a></h2>
 <p>We have used acyclic network flows to find the largest acyclic graph starting and ending in two given vertices. However, there is a more general problem: given a graph, find the largest acyclic sub-graph contained in the graph.</p>
 <p>We can use the same acyclic flow building block to define the problem. The difference is that now we need to add one extra edge per vertex. This edge will inject or remove flow from the graph, but we will let the solver decide which edges are selected for this. By extending this graph with those additional edges, we are reducing the problem of finding the largest acyclic sub-graph to an equivalent network flow problem.</p>
 <div class="cell docutils container">

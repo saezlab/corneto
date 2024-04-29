@@ -1,9 +1,8 @@
 
-
 <!DOCTYPE html>
 
 
-<html lang="en" data-content_root="" data-theme="light">
+<html lang="en" data-content_root="../../" data-theme="light">
 
   <head>
     <meta charset="utf-8" />
@@ -29,7 +28,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster.custom.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster.bundle.min.css" />
@@ -39,24 +38,23 @@
     <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster-sideTip-light.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster-sideTip-borderless.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/micromodal.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=8fb392e5" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
   <script src="../../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/hoverxref.js"></script>
     <script src="../../_static/js/tooltipster.bundle.min.js"></script>
     <script src="../../_static/js/micromodal.min.js"></script>
-    <script src="../../_static/design-tabs.js"></script>
+    <script src="../../_static/design-tabs.js?v=36754332"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'guide/intro/multi-commodity-network-flows';</script>
@@ -451,7 +449,7 @@ document.write(`
                 <article class="bd-article">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="multi-commodity-network-flows">
-<h1>Multi-commodity Network Flows<a class="headerlink" href="#multi-commodity-network-flows" title="Permalink to this heading">#</a></h1>
+<h1>Multi-commodity Network Flows<a class="headerlink" href="#multi-commodity-network-flows" title="Link to this heading">#</a></h1>
 <p>Multi-commodity network flows are a mathematical model used to optimize the simultaneous routing of multiple resources through a single network. These models can be applied in various fields, including logistics, telecommunications, and urban planning to improve efficiency and resource allocation. In our example, we will explore the application of this model using a small network consisting of nodes <strong>A, B, C, D,</strong> and <strong>E</strong>, connected by directed edges with specific capacities: <strong>A-&gt;B</strong>, <strong>A-&gt;D</strong>, <strong>B-&gt;C</strong>, <strong>B-&gt;D</strong>, <strong>C-&gt;E</strong>, <strong>D-&gt;C</strong>, and <strong>D-&gt;E</strong>. The network includes two commodities, with the first aiming to maximize flow from node <strong>A</strong> to node <strong>C</strong>, and the second from node <strong>A</strong> to node <strong>E</strong>. Transporting each commodity through the network has a different profit per edge, and the objective is to maximize the total profit while respecting the capacity constraints of each edge.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -572,30 +570,31 @@ document.write(`
                                      CVXPY                                     
                                      v1.4.3                                    
 ===============================================================================
-(CVXPY) Apr 26 11:16:00 AM: Your problem has 20 variables, 5 constraints, and 0 parameters.
-(CVXPY) Apr 26 11:16:00 AM: It is compliant with the following grammars: DCP, DQCP
-(CVXPY) Apr 26 11:16:00 AM: (If you need to solve this problem multiple times, but with different data, consider using parameters.)
-(CVXPY) Apr 26 11:16:00 AM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
-(CVXPY) Apr 26 11:16:00 AM: Your problem is compiled with the CPP canonicalization backend.
+(CVXPY) Apr 29 06:37:36 PM: Your problem has 20 variables, 5 constraints, and 0 parameters.
+(CVXPY) Apr 29 06:37:36 PM: It is compliant with the following grammars: DCP, DQCP
+(CVXPY) Apr 29 06:37:36 PM: (If you need to solve this problem multiple times, but with different data, consider using parameters.)
+(CVXPY) Apr 29 06:37:36 PM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
+(CVXPY) Apr 29 06:37:36 PM: Your problem is compiled with the CPP canonicalization backend.
 -------------------------------------------------------------------------------
                                   Compilation                                  
 -------------------------------------------------------------------------------
-(CVXPY) Apr 26 11:16:00 AM: Compiling problem (target solver=SCIP).
-(CVXPY) Apr 26 11:16:00 AM: Reduction chain: Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; SCIP
-(CVXPY) Apr 26 11:16:00 AM: Applying reduction Dcp2Cone
-(CVXPY) Apr 26 11:16:00 AM: Applying reduction CvxAttr2Constr
-(CVXPY) Apr 26 11:16:00 AM: Applying reduction ConeMatrixStuffing
-(CVXPY) Apr 26 11:16:00 AM: Applying reduction SCIP
-(CVXPY) Apr 26 11:16:00 AM: Finished problem compilation (took 1.374e-02 seconds).
+(CVXPY) Apr 29 06:37:36 PM: Compiling problem (target solver=SCIP).
+(CVXPY) Apr 29 06:37:36 PM: Reduction chain: Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; SCIP
+(CVXPY) Apr 29 06:37:36 PM: Applying reduction Dcp2Cone
+(CVXPY) Apr 29 06:37:36 PM: Applying reduction CvxAttr2Constr
+(CVXPY) Apr 29 06:37:36 PM: Applying reduction ConeMatrixStuffing
+(CVXPY) Apr 29 06:37:36 PM: Applying reduction SCIP
+(CVXPY) Apr 29 06:37:36 PM: Finished problem compilation (took 1.383e-02 seconds).
 -------------------------------------------------------------------------------
                                 Numerical solver                               
 -------------------------------------------------------------------------------
-(CVXPY) Apr 26 11:16:00 AM: Invoking solver SCIP  to obtain a solution.
+(CVXPY) Apr 29 06:37:36 PM: Invoking solver SCIP  to obtain a solution.
 -------------------------------------------------------------------------------
                                     Summary                                    
 -------------------------------------------------------------------------------
-(CVXPY) Apr 26 11:16:00 AM: Problem status: optimal
+(CVXPY) Apr 29 06:37:36 PM: Problem status: optimal
 presolving:
+(CVXPY) Apr 29 06:37:36 PM: Optimal value: -1.900e+02
    (0.0s) symmetry computation started: requiring (bin +, int +, cont +), (fixed: bin -, int -, cont -)
    (0.0s) no symmetry present (symcode time: 0.00)
 presolving (0 rounds: 0 fast, 0 medium, 0 exhaustive):
@@ -615,9 +614,8 @@ Solving Nodes      : 1
 Primal Bound       : -1.90000000000000e+02 (1 solutions)
 Dual Bound         : -1.90000000000000e+02
 Gap                : 0.00 %
-(CVXPY) Apr 26 11:16:00 AM: Optimal value: -1.900e+02
-(CVXPY) Apr 26 11:16:00 AM: Compilation took 1.374e-02 seconds
-(CVXPY) Apr 26 11:16:00 AM: Solver (including time spent in interface) took 6.855e-03 seconds
+(CVXPY) Apr 29 06:37:36 PM: Compilation took 1.383e-02 seconds
+(CVXPY) Apr 29 06:37:36 PM: Solver (including time spent in interface) took 6.662e-03 seconds
 </pre></div>
 </div>
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Problem(Minimize(Expression(AFFINE, UNKNOWN, ())), [Inequality(Constant(CONSTANT, ZERO, (10, 2))), Inequality(Variable((10, 2), _flow)), Equality(Expression(AFFINE, UNKNOWN, (5, 2)), Constant(CONSTANT, ZERO, ())), Inequality(Expression(AFFINE, UNKNOWN, (10,))), Inequality(Constant(CONSTANT, ZERO, (10,)))])
