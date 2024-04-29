@@ -1,8 +1,9 @@
-from corneto.methods.signaling import signflow, create_flow_graph
-from corneto._graph import Graph
-from typing import Dict, List, Tuple, Union
-from corneto._settings import LOGGER
 import time
+from typing import Dict, List, Tuple, Union
+
+from corneto._graph import Graph
+from corneto._settings import LOGGER
+from corneto.methods.signaling import create_flow_graph, signflow
 
 
 def info(s, show=True):
@@ -133,7 +134,7 @@ def heuristic_carnival(
 def get_result(P, G, condition="c0"):
     V = P.expr["vertex_values_" + condition].value
     E = P.expr["edge_values_" + condition].value
-    return {'V': G.V, 'value': V}, {'E': G.E, 'value': E}
+    return {"V": G.V, "value": V}, {"E": G.E, "value": E}
 
 
 def get_selected_edges(P, G, condition="c0"):

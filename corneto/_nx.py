@@ -1,7 +1,8 @@
+import warnings
+from typing import Any, Dict, Iterable, Optional
+
 from corneto._legacy import ReNet
 from corneto._types import StrOrInt
-from typing import Any, Dict, List, Optional, Iterable, Union
-import warnings
 
 # TODO: Pass default style to plotting methods
 _default_style = {
@@ -79,8 +80,8 @@ def plot(
 ):
     try:
         import matplotlib.pyplot as plt
-        from matplotlib.patches import ArrowStyle
         import networkx as nx
+        from matplotlib.patches import ArrowStyle
     except ImportError:
         raise ImportError("matplotlib and networkx are required for plotting")
 
@@ -94,7 +95,7 @@ def plot(
             pos = nx.nx_pydot.graphviz_layout(G, prog="dot")
         except Exception as err:
             warnings.warn(
-                f"Failed to use graphviz with dot layout: {str(err)}. Using spring_layout instead."
+                f"Failed to use graphviz with dot layout: {err!s}. Using spring_layout instead."
             )
             pos = nx.spring_layout(G)
 
@@ -185,7 +186,7 @@ def to_nxgraph(
     reactions: Optional[Iterable[StrOrInt]] = None,
 ):
     try:
-        from networkx import DiGraph, set_node_attributes, set_edge_attributes
+        from networkx import DiGraph, set_edge_attributes, set_node_attributes
     except ImportError:
         raise ImportError(
             "NetworkX is required to convert a Reaction Network to a networkx graph."

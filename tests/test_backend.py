@@ -1,9 +1,11 @@
-import pytest
 import pathlib
-import numpy as np
-from corneto.backend import PicosBackend, CvxpyBackend, Backend, VarType
-from corneto._graph import Graph
+
 import cvxpy as cp
+import numpy as np
+import pytest
+
+from corneto._graph import Graph
+from corneto.backend import Backend, CvxpyBackend, PicosBackend, VarType
 
 
 @pytest.fixture(params=[CvxpyBackend, PicosBackend])
@@ -95,7 +97,7 @@ def test_delegate_sum_axis1_shape(backend):
     else:
         # Picos assumes keepdims=True
         assert V.shape == (2, 1)
-        
+
 
 def test_opt_delegate_sum_axis0(backend):
     x = backend.Variable("x", (2, 3))
@@ -282,7 +284,6 @@ def test_undirected_flow(backend):
 
 def test_undirected_flow_unbounded(backend):
     from corneto._graph import Graph
-    from corneto import VAR_FLOW
 
     g = Graph()
     g.add_edges([((), "A"), ("A", "B"), ("A", "C"), ("B", "D"), ("C", "D"), ("D", ())])

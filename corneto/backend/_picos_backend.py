@@ -1,8 +1,10 @@
+from typing import Any, List, Optional, Set, Tuple, Union
+
 import numpy as np
-from typing import Set, Any, List, Optional, Tuple, Union
-from corneto._settings import _numpy_array
-from corneto.backend._base import CExpression, CSymbol, Backend, ProblemDef
+
 from corneto._constants import *
+from corneto._settings import _numpy_array
+from corneto.backend._base import Backend, CExpression, CSymbol, ProblemDef
 
 try:
     import picos as pc
@@ -24,10 +26,10 @@ class PicosExpression(CExpression):
 
     def _norm(self, p: int = 2) -> CExpression:
         return pc.Norm(self._expr, p=p)
-    
+
     def _sum(self, axis: Optional[int] = None) -> Any:
         return pc.sum(self._expr, axis=axis)
-    
+
     def _max(self, axis: Optional[int] = None) -> Any:
         raise NotImplementedError()
 

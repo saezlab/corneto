@@ -1,10 +1,11 @@
-import pytest
 import pathlib
-from corneto.methods.steiner import exact_steiner_tree
-from corneto.backend import PicosBackend, CvxpyBackend
-from corneto._graph import BaseGraph
-from corneto.backend import Backend
+
 import numpy as np
+import pytest
+
+from corneto._graph import BaseGraph
+from corneto.backend import Backend, CvxpyBackend, PicosBackend
+from corneto.methods.steiner import exact_steiner_tree
 
 
 @pytest.fixture(params=[CvxpyBackend, PicosBackend])

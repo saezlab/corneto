@@ -1,13 +1,14 @@
 import abc
-from copy import deepcopy
-import numpy as np
-from typing import Any, Optional, Iterable, Set, Tuple, Union, Dict, List
-from corneto._settings import sparsify
-from corneto._constants import *
-from corneto._decorators import jit
-from numbers import Number
 from collections import OrderedDict
+from copy import deepcopy
 from itertools import chain
+from numbers import Number
+from typing import Any, Dict, Iterable, List, Optional, Set, Tuple
+
+import numpy as np
+
+from corneto._constants import *
+from corneto._settings import sparsify
 
 
 def _set(e):
@@ -312,7 +313,7 @@ class BaseGraph(abc.ABC):
             s, t = e
             s = list(s)
             if len(s) == 0:
-                s = f"*_{str(t)}"
+                s = f"*_{t!s}"
                 g.node(s, shape="point")
             elif len(s) == 1:
                 s = str(s[0])
@@ -322,7 +323,7 @@ class BaseGraph(abc.ABC):
                 raise NotImplementedError("Represent- hyperedges as composite edges")
             t = list(t)
             if len(t) == 0:
-                t = f"{str(s)}_*"
+                t = f"{s!s}_*"
                 g.node(t, shape="point")
             elif len(t) == 1:
                 t = str(t[0])

@@ -488,7 +488,7 @@ class ReNet(abc.ABC):
         if isinstance(ids, int) or isinstance(ids, str):
             ids = [ids]
         if not isinstance(ids, list):
-            raise ValueError(f"ids must be a list of ints or strings")
+            raise ValueError("ids must be a list of ints or strings")
         for id in ids:
             if isinstance(id, int):
                 nids.append(id)
@@ -998,7 +998,7 @@ def legacy_graphviz(
         s, t = e
         s = list(s)
         if len(s) == 0:
-            s = f"*_{str(t)}"
+            s = f"*_{t!s}"
             g.node(s, shape="point")
         elif len(s) == 1:
             s = str(s[0])
@@ -1008,7 +1008,7 @@ def legacy_graphviz(
             raise NotImplementedError("Represent- hyperedges as composite edges")
         t = list(t)
         if len(t) == 0:
-            t = f"{str(s)}_*"
+            t = f"{s!s}_*"
             g.node(t, shape="point")
         elif len(t) == 1:
             t = str(t[0])

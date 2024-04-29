@@ -1,12 +1,9 @@
 import sys
 
-from corneto._constants import *
-
 from corneto import _plotting as pl
-from corneto._graph import Graph, Attr, Attributes, EdgeType
+from corneto._constants import *
+from corneto._graph import Attr, Attributes, EdgeType, Graph
 from corneto._util import info
-from corneto.utils import Attr, Attributes
-
 from corneto.backend import DEFAULT_BACKEND, DEFAULT_SOLVER, available_backends
 from corneto.backend import DEFAULT_BACKEND as K
 from corneto.backend import DEFAULT_BACKEND as ops
@@ -20,6 +17,7 @@ from corneto.methods import (
     signaling,
     signflow_constraints,
 )
+from corneto.utils import Attr, Attributes
 
 __all__ = [
     "Attr",
@@ -30,7 +28,7 @@ __all__ = [
     "DEFAULT_BACKEND",
     "available_backends",
     "K",
-    "ops"
+    "ops",
 ]
 
 

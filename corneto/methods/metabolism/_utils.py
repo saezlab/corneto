@@ -1,6 +1,7 @@
 import ast
 import re
 from multiprocessing import Pool, cpu_count
+
 from corneto._settings import LOGGER
 
 _pattern = r"\b(?!and\b|or\b)[A-Za-z0-9_]+\b"
@@ -50,8 +51,10 @@ def _eval_gpr(node, context, func_and, func_or, expression=None):
     elif isinstance(node, ast.Name):
         return context[node.id]
     else:
-        #raise ValueError(f"Unsupported AST node: {type(node).__name__}")
-        LOGGER.warning(f"Unsupported AST node: {type(node).__name__}, expression = {expression}")
+        # raise ValueError(f"Unsupported AST node: {type(node).__name__}")
+        LOGGER.warning(
+            f"Unsupported AST node: {type(node).__name__}, expression = {expression}"
+        )
         return None
 
 

@@ -1,18 +1,17 @@
 from pathlib import Path
 from typing import (
-    List,
-    Iterable,
-    Tuple,
-    Optional,
     Dict,
+    Iterable,
+    List,
+    Optional,
     Set,
+    Tuple,
     Union,
-    TypeVar,
-    Any,
-    TYPE_CHECKING,
 )
-from corneto._types import TupleSIF, CobraModel
+
 import numpy as np
+
+from corneto._types import CobraModel, TupleSIF
 
 
 def _read_sif(
@@ -54,7 +53,9 @@ def _read_sif_iter(
             if has_header and i == 0:
                 continue
             if len(line) <= 2:
-                raise ValueError(f"Invalid SIF line: {line}: expected at least 3 columns")
+                raise ValueError(
+                    f"Invalid SIF line: {line}: expected at least 3 columns"
+                )
             s, d, t = [line[idx] for idx in column_order]
             if discard_self_loops and s == t:
                 continue
@@ -95,7 +96,7 @@ def _get_reaction_species(reactions: Dict[str, Dict[str, int]]) -> Set[str]:
 
 
 def _stoichiometry(
-    reactions: Dict[str, Dict[str, int]]
+    reactions: Dict[str, Dict[str, int]],
 ) -> Tuple[np.ndarray, List[str], List[str]]:
     reactions_ids = list(reactions.keys())
     compounds_ids = list(_get_reaction_species(reactions))
@@ -173,7 +174,7 @@ def import_cobra_model(model: CobraModel) -> Tuple[np.ndarray, np.ndarray, np.nd
                 # Try to create a list
                 import re
 
-                subsys = re.findall("\['(.*?)'\]", subsys)
+                subsys = re.findall(r"\['(.*?)'\]", subsys)
                 if len(subsys) == 0:
                     subsys = rxn.subsystem
             # A list containing a numpy array?
@@ -222,8 +223,7 @@ def import_cobra_model(model: CobraModel) -> Tuple[np.ndarray, np.ndarray, np.nd
 
 
 def _is_url(url):
-    """
-    Determine if the provided string is a valid url
+    """Determine if the provided string is a valid url
     :param url: string
     :return: True if the string is a URL
     """
@@ -243,8 +243,8 @@ def _download(url_file):
 
     if not _is_url(url_file):
         raise ValueError("Invalid url")
-    import tempfile
     import os
+    import tempfile
     from urllib.request import urlopen
 
     ext = pathlib.Path(url_file).suffix

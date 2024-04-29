@@ -1,15 +1,17 @@
+from typing import Dict, Optional, Union
+
+import numpy as np
+
+from corneto import K
+from corneto._graph import BaseGraph
 from corneto.backend._base import (
-    NonZeroIndicator,
-    Indicator,
-    VarType,
-    ProblemDef,
     Backend,
     Direction,
+    Indicator,
+    NonZeroIndicator,
+    ProblemDef,
+    VarType,
 )
-from corneto._graph import BaseGraph
-from typing import Optional, Dict, Union
-from corneto import K
-import numpy as np
 
 
 class FBAProblem(ProblemDef):

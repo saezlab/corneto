@@ -1,5 +1,6 @@
 from functools import wraps
 from typing import Callable
+
 from corneto._settings import LOGGER, USE_NUMBA
 
 
@@ -27,8 +28,7 @@ if USE_NUMBA:
 
 
 def _delegate(func):
-    """
-    A decorator that wraps a function to provide extended functionality
+    """A decorator that wraps a function to provide extended functionality
     when applied within a class. This decorator modifies the behavior
     of the function `func` to handle expression objects and delegate
     calls to their underlying representations, while maintaining a set of
@@ -74,6 +74,7 @@ def _delegate(func):
             pass
     ```
     """
+
     @wraps(func)
     def _wrapper_func(self, *args, **kwargs):
         symbols = set()
@@ -97,9 +98,7 @@ def _delegate(func):
                 # if available. E.g., if function is __add__, checks if the backend
                 # expression has that function and uses it instead, this returns a
                 # new backend expression which is wrapped back to CORNETO expr.
-                return self._create(
-                    f(*args, **kwargs), symbols
-                )
+                return self._create(f(*args, **kwargs), symbols)
         return self._create(func(self, *args, **kwargs), symbols)
 
     return _wrapper_func

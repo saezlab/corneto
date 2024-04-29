@@ -1,13 +1,14 @@
 import abc
-import numpy as np
 import numbers
-from typing import Set, Any, Dict, Iterable, Optional, Tuple, Union, List, Callable
-from corneto._settings import LOGGER, _get_matrix_builder
-from corneto.utils import Attributes
+from typing import Any, Callable, Dict, Iterable, List, Optional, Set, Tuple, Union
+
+import numpy as np
 
 from corneto._constants import *
 from corneto._decorators import _delegate
 from corneto._graph import BaseGraph
+from corneto._settings import LOGGER, _get_matrix_builder
+from corneto.utils import Attributes
 
 
 def _eq_shape(a: np.ndarray, b: np.ndarray) -> bool:
@@ -982,32 +983,25 @@ class Backend(abc.ABC):
             [xor >= x - y, xor >= y - x, xor <= x + y, xor <= 2 - x - y]
         )
 
-    def linear_or(
-        self, x: CSymbol, axis: Optional[int] = None, varname="_linear_or"
-    ):
+    def linear_or(self, x: CSymbol, axis: Optional[int] = None, varname="_linear_or"):
         # Check if the variable is binary, otherwise throw an error
         if x._vartype != VarType.BINARY:
             raise ValueError(f"Variable x has type {x._vartype} instead of BINARY")
         Z = x.sum(axis=axis)
-        Z_norm = Z / x.shape[axis] # between 0-1
+        Z_norm = Z / x.shape[axis]  # between 0-1
         # Create a new binary variable to compute linearized or
         Or = self.Variable(varname, Z.shape, 0, 1, vartype=VarType.BINARY)
         return self.Problem([Or >= Z_norm, Or <= Z])
 
-
-    def linear_and(
-        self, x: CSymbol, axis: Optional[int] = None, varname="_linear_and"
-    ):
+    def linear_and(self, x: CSymbol, axis: Optional[int] = None, varname="_linear_and"):
         # Check if the variable is binary, otherwise throw an error
         if x._vartype != VarType.BINARY:
             raise ValueError(f"Variable x has type {x._vartype} instead of BINARY")
         Z = x.sum(axis=axis)
         N = x.shape[axis]
-        Z_norm = Z / N 
+        Z_norm = Z / N
         And = self.Variable(varname, Z.shape, 0, 1, vartype=VarType.BINARY)
         return self.Problem([And <= Z_norm, And >= Z - N + 1])
-        
-        
 
 
 class NoBackend(Backend):

@@ -1,8 +1,7 @@
 import numpy as np
-from corneto._graph import BaseGraph, EdgeType, Attr
-from corneto.backend import Backend, DEFAULT_BACKEND
-from corneto._settings import sparsify
-from corneto import VarType
+
+from corneto._graph import Attr, BaseGraph, EdgeType
+from corneto.backend import DEFAULT_BACKEND, Backend
 
 
 def exact_steiner_tree(
