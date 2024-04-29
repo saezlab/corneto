@@ -39,7 +39,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster-sideTip-borderless.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/micromodal.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=8fb392e5" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=e238a3f6" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
@@ -475,8 +475,8 @@ document.write(`
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">networkx.algorithms.approximation</span> <span class="kn">import</span> <span class="n">steiner_tree</span>
 
-
 <span class="c1"># Generate a random graph with networkx</span>
+
 
 <span class="k">def</span> <span class="nf">create_random_graph</span><span class="p">(</span><span class="n">n_nodes</span><span class="p">,</span> <span class="n">prob</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
     <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
@@ -485,8 +485,9 @@ document.write(`
     <span class="n">edges_r</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">random_graph</span><span class="o">.</span><span class="n">edges</span><span class="p">())</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">weight</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">weights</span><span class="p">):</span>
         <span class="n">edge</span> <span class="o">=</span> <span class="n">edges_r</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-        <span class="n">random_graph</span><span class="p">[</span><span class="n">edge</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="n">edge</span><span class="p">[</span><span class="mi">1</span><span class="p">]][</span><span class="s1">&#39;weight&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">weight</span>
+        <span class="n">random_graph</span><span class="p">[</span><span class="n">edge</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="n">edge</span><span class="p">[</span><span class="mi">1</span><span class="p">]][</span><span class="s2">&quot;weight&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">weight</span>
     <span class="k">return</span> <span class="n">random_graph</span>
+
 
 <span class="n">random_graph</span> <span class="o">=</span> <span class="n">create_random_graph</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
 </pre></div>
@@ -499,7 +500,7 @@ document.write(`
 
 <span class="n">terminals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">random_graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">stree</span> <span class="o">=</span> <span class="n">steiner_tree</span><span class="p">(</span><span class="n">random_graph</span><span class="p">,</span> <span class="n">terminals</span><span class="p">)</span>
-<span class="n">total_weight</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">random_graph</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">v</span><span class="p">][</span><span class="s1">&#39;weight&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">stree</span><span class="o">.</span><span class="n">edges</span><span class="p">)</span>
+<span class="n">total_weight</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">random_graph</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">v</span><span class="p">][</span><span class="s2">&quot;weight&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">stree</span><span class="o">.</span><span class="n">edges</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cost:&quot;</span><span class="p">,</span> <span class="n">total_weight</span><span class="p">)</span>
 <span class="n">nx</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">stree</span><span class="p">,</span> <span class="n">with_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
@@ -520,6 +521,7 @@ document.write(`
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">corneto</span> <span class="k">as</span> <span class="nn">cn</span>
+
 <span class="n">cn</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -543,14 +545,17 @@ document.write(`
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">corneto._graph</span> <span class="kn">import</span> <span class="n">EdgeType</span>
+
+
 <span class="k">def</span> <span class="nf">to_graph</span><span class="p">(</span><span class="n">nx_graph</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">directed</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="n">G</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">weights</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;weight&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">nx_graph</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">)]</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">nx_graph</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">)]</span>
     <span class="k">for</span> <span class="n">e</span><span class="p">,</span> <span class="n">w</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">nx_graph</span><span class="o">.</span><span class="n">edges</span><span class="p">,</span> <span class="n">weights</span><span class="p">):</span>
         <span class="n">etype</span> <span class="o">=</span> <span class="n">EdgeType</span><span class="o">.</span><span class="n">DIRECTED</span> <span class="k">if</span> <span class="n">directed</span> <span class="k">else</span> <span class="n">EdgeType</span><span class="o">.</span><span class="n">UNDIRECTED</span>
         <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">weight</span><span class="o">=</span><span class="n">w</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">etype</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">G</span>
+
 
 <span class="n">G</span> <span class="o">=</span> <span class="n">to_graph</span><span class="p">(</span><span class="n">random_graph</span><span class="p">)</span>
 <span class="n">G</span><span class="o">.</span><span class="n">shape</span>
@@ -587,8 +592,10 @@ document.write(`
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s1">&#39;SCIPY&#39;</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">G_steiner</span><span class="o">.</span><span class="n">edge_subgraph</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">symbols</span><span class="p">[</span><span class="s1">&#39;_flow_i&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">orphan_edges</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;SCIPY&quot;</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">G_steiner</span><span class="o">.</span><span class="n">edge_subgraph</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">symbols</span><span class="p">[</span><span class="s2">&quot;_flow_i&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">orphan_edges</span><span class="o">=</span><span class="kc">False</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -597,33 +604,33 @@ document.write(`
                                      CVXPY                                     
                                      v1.4.3                                    
 ===============================================================================
-(CVXPY) Apr 29 08:29:12 PM: Your problem has 310 variables, 7 constraints, and 0 parameters.
-(CVXPY) Apr 29 08:29:12 PM: It is compliant with the following grammars: DCP, DQCP
-(CVXPY) Apr 29 08:29:12 PM: (If you need to solve this problem multiple times, but with different data, consider using parameters.)
-(CVXPY) Apr 29 08:29:12 PM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
-(CVXPY) Apr 29 08:29:12 PM: Your problem is compiled with the CPP canonicalization backend.
+(CVXPY) Apr 29 09:38:24 PM: Your problem has 310 variables, 7 constraints, and 0 parameters.
+(CVXPY) Apr 29 09:38:24 PM: It is compliant with the following grammars: DCP, DQCP
+(CVXPY) Apr 29 09:38:24 PM: (If you need to solve this problem multiple times, but with different data, consider using parameters.)
+(CVXPY) Apr 29 09:38:24 PM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
+(CVXPY) Apr 29 09:38:24 PM: Your problem is compiled with the CPP canonicalization backend.
 -------------------------------------------------------------------------------
                                   Compilation                                  
 -------------------------------------------------------------------------------
-(CVXPY) Apr 29 08:29:12 PM: Compiling problem (target solver=SCIPY).
-(CVXPY) Apr 29 08:29:12 PM: Reduction chain: Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; SCIPY
-(CVXPY) Apr 29 08:29:12 PM: Applying reduction Dcp2Cone
-(CVXPY) Apr 29 08:29:12 PM: Applying reduction CvxAttr2Constr
-(CVXPY) Apr 29 08:29:12 PM: Applying reduction ConeMatrixStuffing
-(CVXPY) Apr 29 08:29:12 PM: Applying reduction SCIPY
-(CVXPY) Apr 29 08:29:12 PM: Finished problem compilation (took 1.340e-02 seconds).
+(CVXPY) Apr 29 09:38:24 PM: Compiling problem (target solver=SCIPY).
+(CVXPY) Apr 29 09:38:24 PM: Reduction chain: Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; SCIPY
+(CVXPY) Apr 29 09:38:24 PM: Applying reduction Dcp2Cone
+(CVXPY) Apr 29 09:38:24 PM: Applying reduction CvxAttr2Constr
+(CVXPY) Apr 29 09:38:24 PM: Applying reduction ConeMatrixStuffing
+(CVXPY) Apr 29 09:38:24 PM: Applying reduction SCIPY
+(CVXPY) Apr 29 09:38:24 PM: Finished problem compilation (took 1.359e-02 seconds).
 -------------------------------------------------------------------------------
                                 Numerical solver                               
 -------------------------------------------------------------------------------
-(CVXPY) Apr 29 08:29:12 PM: Invoking solver SCIPY  to obtain a solution.
+(CVXPY) Apr 29 09:38:24 PM: Invoking solver SCIPY  to obtain a solution.
 Solver terminated with message: Optimization terminated successfully. (HiGHS Status 7: Optimal)
 -------------------------------------------------------------------------------
                                     Summary                                    
 -------------------------------------------------------------------------------
-(CVXPY) Apr 29 08:29:46 PM: Problem status: optimal
-(CVXPY) Apr 29 08:29:46 PM: Optimal value: 4.100e+01
-(CVXPY) Apr 29 08:29:46 PM: Compilation took 1.340e-02 seconds
-(CVXPY) Apr 29 08:29:46 PM: Solver (including time spent in interface) took 3.441e+01 seconds
+(CVXPY) Apr 29 09:38:58 PM: Problem status: optimal
+(CVXPY) Apr 29 09:38:58 PM: Optimal value: 4.100e+01
+(CVXPY) Apr 29 09:38:58 PM: Compilation took 1.359e-02 seconds
+(CVXPY) Apr 29 09:38:58 PM: Solver (including time spent in interface) took 3.417e+01 seconds
 </pre></div>
 </div>
 <img alt="../../_images/7ac2b48505a5381dce8da60f48407c921ef447f293d58fdfa4eacc5f29a7aca2.svg" src="../../_images/7ac2b48505a5381dce8da60f48407c921ef447f293d58fdfa4eacc5f29a7aca2.svg" /></div>
@@ -645,9 +652,11 @@ Solver terminated with message: Optimization terminated successfully. (HiGHS Sta
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">P</span><span class="p">,</span> <span class="n">G_steiner</span> <span class="o">=</span> <span class="n">exact_steiner_tree</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">terminals</span><span class="p">,</span> <span class="n">strict_acyclic</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s1">&#39;SCIPY&#39;</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;SCIPY&quot;</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Optimal value:&quot;</span><span class="p">,</span> <span class="n">P</span><span class="o">.</span><span class="n">objectives</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
-<span class="n">G_steiner</span><span class="o">.</span><span class="n">edge_subgraph</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">symbols</span><span class="p">[</span><span class="s1">&#39;_flow_i&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">orphan_edges</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">G_steiner</span><span class="o">.</span><span class="n">edge_subgraph</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">symbols</span><span class="p">[</span><span class="s2">&quot;_flow_i&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">orphan_edges</span><span class="o">=</span><span class="kc">False</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -656,33 +665,33 @@ Solver terminated with message: Optimization terminated successfully. (HiGHS Sta
                                      CVXPY                                     
                                      v1.4.3                                    
 ===============================================================================
-(CVXPY) Apr 29 08:29:46 PM: Your problem has 670 variables, 17 constraints, and 0 parameters.
-(CVXPY) Apr 29 08:29:46 PM: It is compliant with the following grammars: DCP, DQCP
-(CVXPY) Apr 29 08:29:46 PM: (If you need to solve this problem multiple times, but with different data, consider using parameters.)
-(CVXPY) Apr 29 08:29:46 PM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
-(CVXPY) Apr 29 08:29:46 PM: Your problem is compiled with the CPP canonicalization backend.
+(CVXPY) Apr 29 09:38:58 PM: Your problem has 670 variables, 17 constraints, and 0 parameters.
+(CVXPY) Apr 29 09:38:58 PM: It is compliant with the following grammars: DCP, DQCP
+(CVXPY) Apr 29 09:38:58 PM: (If you need to solve this problem multiple times, but with different data, consider using parameters.)
+(CVXPY) Apr 29 09:38:58 PM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
+(CVXPY) Apr 29 09:38:58 PM: Your problem is compiled with the CPP canonicalization backend.
 -------------------------------------------------------------------------------
                                   Compilation                                  
 -------------------------------------------------------------------------------
-(CVXPY) Apr 29 08:29:46 PM: Compiling problem (target solver=SCIPY).
-(CVXPY) Apr 29 08:29:46 PM: Reduction chain: Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; SCIPY
-(CVXPY) Apr 29 08:29:46 PM: Applying reduction Dcp2Cone
-(CVXPY) Apr 29 08:29:46 PM: Applying reduction CvxAttr2Constr
-(CVXPY) Apr 29 08:29:46 PM: Applying reduction ConeMatrixStuffing
-(CVXPY) Apr 29 08:29:46 PM: Applying reduction SCIPY
-(CVXPY) Apr 29 08:29:46 PM: Finished problem compilation (took 2.530e-02 seconds).
+(CVXPY) Apr 29 09:38:58 PM: Compiling problem (target solver=SCIPY).
+(CVXPY) Apr 29 09:38:58 PM: Reduction chain: Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; SCIPY
+(CVXPY) Apr 29 09:38:58 PM: Applying reduction Dcp2Cone
+(CVXPY) Apr 29 09:38:58 PM: Applying reduction CvxAttr2Constr
+(CVXPY) Apr 29 09:38:58 PM: Applying reduction ConeMatrixStuffing
+(CVXPY) Apr 29 09:38:58 PM: Applying reduction SCIPY
+(CVXPY) Apr 29 09:38:58 PM: Finished problem compilation (took 2.576e-02 seconds).
 -------------------------------------------------------------------------------
                                 Numerical solver                               
 -------------------------------------------------------------------------------
-(CVXPY) Apr 29 08:29:46 PM: Invoking solver SCIPY  to obtain a solution.
+(CVXPY) Apr 29 09:38:58 PM: Invoking solver SCIPY  to obtain a solution.
 Solver terminated with message: Optimization terminated successfully. (HiGHS Status 7: Optimal)
 -------------------------------------------------------------------------------
                                     Summary                                    
 -------------------------------------------------------------------------------
-(CVXPY) Apr 29 08:30:04 PM: Problem status: optimal
-(CVXPY) Apr 29 08:30:04 PM: Optimal value: 4.100e+01
-(CVXPY) Apr 29 08:30:04 PM: Compilation took 2.530e-02 seconds
-(CVXPY) Apr 29 08:30:04 PM: Solver (including time spent in interface) took 1.743e+01 seconds
+(CVXPY) Apr 29 09:39:15 PM: Problem status: optimal
+(CVXPY) Apr 29 09:39:15 PM: Optimal value: 4.100e+01
+(CVXPY) Apr 29 09:39:15 PM: Compilation took 2.576e-02 seconds
+(CVXPY) Apr 29 09:39:15 PM: Solver (including time spent in interface) took 1.750e+01 seconds
 Optimal value: 41.0
 </pre></div>
 </div>

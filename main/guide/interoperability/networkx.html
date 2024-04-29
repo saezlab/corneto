@@ -39,7 +39,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster-sideTip-borderless.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/micromodal.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=8fb392e5" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=e238a3f6" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
@@ -484,7 +484,9 @@ document.write(`
 <span class="c1"># Print the paths and their lengths</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Shortest paths from node 1:&quot;</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">target</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">shortest_paths</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Node 1 to node </span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s2">: Path: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2"> with total weight: </span><span class="si">{</span><span class="n">shortest_path_lengths</span><span class="p">[</span><span class="n">target</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;Node 1 to node </span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s2">: Path: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2"> with total weight: </span><span class="si">{</span><span class="n">shortest_path_lengths</span><span class="p">[</span><span class="n">target</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -502,7 +504,7 @@ Node 1 to node 4: Path: [1, 2, 3, 4] with total weight: 4
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a corneto graph</span>
-<span class="kn">import</span> <span class="nn">corneto</span> <span class="k">as</span> <span class="nn">cn</span> 
+<span class="kn">import</span> <span class="nn">corneto</span> <span class="k">as</span> <span class="nn">cn</span>
 
 <span class="n">Gc</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
 <span class="n">Gc</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -525,6 +527,7 @@ Node 1 to node 4: Path: [1, 2, 3, 4] with total weight: 4
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">corneto.contrib.networkx</span> <span class="kn">import</span> <span class="n">corneto_graph_to_networkx</span>
+
 <span class="n">Gcn</span> <span class="o">=</span> <span class="n">corneto_graph_to_networkx</span><span class="p">(</span><span class="n">Gc</span><span class="p">)</span>
 <span class="n">Gcn</span><span class="o">.</span><span class="n">nodes</span><span class="p">()</span>
 </pre></div>
@@ -549,7 +552,9 @@ Node 1 to node 4: Path: [1, 2, 3, 4] with total weight: 4
 <span class="c1"># Print the paths and their lengths</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Shortest paths from node 1:&quot;</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">target</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">shortest_paths</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Node 1 to node </span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s2">: Path: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2"> with total weight: </span><span class="si">{</span><span class="n">shortest_path_lengths</span><span class="p">[</span><span class="n">target</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;Node 1 to node </span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s2">: Path: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2"> with total weight: </span><span class="si">{</span><span class="n">shortest_path_lengths</span><span class="p">[</span><span class="n">target</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -567,9 +572,9 @@ Node 1 to node 4: Path: [1, 2, 3, 4] with total weight: 4
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">G</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
-<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">((),</span> <span class="s1">&#39;A&#39;</span><span class="p">)</span>
-<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">)</span>
-<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s1">&#39;B&#39;</span><span class="p">,</span> <span class="p">())</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">((),</span> <span class="s2">&quot;A&quot;</span><span class="p">)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="p">())</span>
 <span class="n">G</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>

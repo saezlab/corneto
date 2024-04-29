@@ -54,6 +54,7 @@
    ],
    "source": [
     "import corneto as cn\n",
+    "\n",
     "cn.info()"
    ]
   },
@@ -600,10 +601,7 @@
     }
    ],
    "source": [
-    "sif_graph = cn.Graph.from_sif_tuples([\n",
-    "    ('A',  1, 'B'),\n",
-    "    ('A', -1, 'C')\n",
-    "])\n",
+    "sif_graph = cn.Graph.from_sif_tuples([(\"A\", 1, \"B\"), (\"A\", -1, \"C\")])\n",
     "sif_graph.plot()"
    ]
   },
@@ -642,7 +640,7 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "#cn.Graph.from_sif_file()"
+    "# cn.Graph.from_sif_file()"
    ]
   },
   {
@@ -662,7 +660,7 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "G.save('my_graph')"
+    "G.save(\"my_graph\")"
    ]
   },
   {
@@ -761,7 +759,7 @@
     }
    ],
    "source": [
-    "G_c = cn.Graph.load('my_graph.pkl.gz')\n",
+    "G_c = cn.Graph.load(\"my_graph.pkl.gz\")\n",
     "G_c.plot()"
    ]
   },
@@ -944,11 +942,11 @@
    ],
    "source": [
     "G = cn.Graph()\n",
-    "G.add_edge({'A', 'B'}, {'C', 'D'})\n",
-    "G.add_edge('D', {5, 6, 7})\n",
-    "G.add_edge((), 'A')\n",
-    "G.add_edge((), 'B')\n",
-    "G.add_edge('C', ())\n",
+    "G.add_edge({\"A\", \"B\"}, {\"C\", \"D\"})\n",
+    "G.add_edge(\"D\", {5, 6, 7})\n",
+    "G.add_edge((), \"A\")\n",
+    "G.add_edge((), \"B\")\n",
+    "G.add_edge(\"C\", ())\n",
     "G.plot()"
    ]
   },

@@ -61,6 +61,7 @@
    ],
    "source": [
     "import corneto as cn\n",
+    "\n",
     "cn.info()"
    ]
   },
@@ -181,13 +182,12 @@
    "source": [
     "G = cn.Graph.from_sif_tuples(\n",
     "    [\n",
-    "        ('I1',  1, 'N1'), # I1 activates N1\n",
-    "        ('N1',  1, 'M1'), # N1 activates M1\n",
-    "        ('N1',  1, 'M2'), # N1 activaes M2\n",
-    "        ('I2', -1, 'N2'), # I2 inhibits N2\n",
-    "        ('N2', -1, 'M2'), # N2 inhibits M2\n",
-    "        ('N2', -1, 'M1'),  # N2 inhibits M1\n",
-    "        \n",
+    "        (\"I1\", 1, \"N1\"),  # I1 activates N1\n",
+    "        (\"N1\", 1, \"M1\"),  # N1 activates M1\n",
+    "        (\"N1\", 1, \"M2\"),  # N1 activaes M2\n",
+    "        (\"I2\", -1, \"N2\"),  # I2 inhibits N2\n",
+    "        (\"N2\", -1, \"M2\"),  # N2 inhibits M2\n",
+    "        (\"N2\", -1, \"M1\"),  # N2 inhibits M1\n",
     "    ]\n",
     ")\n",
     "G.plot()"
@@ -253,11 +253,11 @@
     "# Positive values correspond to up-regulation and negative values\n",
     "# with down-regulation. The bigger the absolute value is,\n",
     "# the bigger the importance is\n",
-    "measurements = {'M1': 1, 'M2': 1}\n",
+    "measurements = {\"M1\": 1, \"M2\": 1}\n",
     "\n",
     "# Perturbations are the upstream nodes were the signal originates on,\n",
     "# for example, ligands or receptors.\n",
-    "perturbations = {'I1': 1, 'I2': 1}\n",
+    "perturbations = {\"I1\": 1, \"I2\": 1}\n",
     "\n",
     "# We run the `standard` carnival problem. This interface is similar\n",
     "# to the old R function https://saezlab.github.io/CARNIVAL/reference/runVanillaCarnival.html\n",
@@ -505,8 +505,9 @@
     }
    ],
    "source": [
-    "from corneto.methods.carnival import get_result, get_selected_edges\n",
     "import pandas as pd\n",
+    "\n",
+    "from corneto.methods.carnival import get_result, get_selected_edges\n",
     "\n",
     "V, E = get_result(P, Gf)\n",
     "pd.DataFrame(V)"

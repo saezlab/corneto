@@ -39,7 +39,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster-sideTip-borderless.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/micromodal.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=8fb392e5" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=e238a3f6" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
@@ -461,6 +461,7 @@ document.write(`
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">corneto</span> <span class="k">as</span> <span class="nn">cn</span>
+
 <span class="n">cn</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -632,10 +633,7 @@ document.write(`
 <p>CORNETO implements also few adapters to import prior knowledge from other sources as corneto Graphs. For example, when working with signaling networks, one common format is the <code class="docutils literal notranslate"><span class="pre">SIF</span></code> files, which store vertices and edges in triples: <code class="docutils literal notranslate"><span class="pre">Source</span> <span class="pre">Interaction</span> <span class="pre">Target</span></code>, for example <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">-1</span> <span class="pre">B</span></code> to indicate that vertex (e.g. protein) A inhibits protein B. When importing a SIF file, CORNETO creates a graph with the attribute <code class="docutils literal notranslate"><span class="pre">interaction</span></code> which stores the type of interaction between vertices. The method <code class="docutils literal notranslate"><span class="pre">from_sif_tuples</span></code> takes a list of these triplets to generate the graph:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sif_graph</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Graph</span><span class="o">.</span><span class="n">from_sif_tuples</span><span class="p">([</span>
-    <span class="p">(</span><span class="s1">&#39;A&#39;</span><span class="p">,</span>  <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">),</span>
-    <span class="p">(</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">)</span>
-<span class="p">])</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sif_graph</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Graph</span><span class="o">.</span><span class="n">from_sif_tuples</span><span class="p">([(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">)])</span>
 <span class="n">sif_graph</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -664,7 +662,7 @@ document.write(`
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#cn.Graph.from_sif_file()</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># cn.Graph.from_sif_file()</span>
 </pre></div>
 </div>
 </div>
@@ -675,14 +673,14 @@ document.write(`
 <p>The method <code class="docutils literal notranslate"><span class="pre">save</span></code> allows you…</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">G</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;my_graph&#39;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">G</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;my_graph&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">G_c</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Graph</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;my_graph.pkl.gz&#39;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">G_c</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Graph</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;my_graph.pkl.gz&quot;</span><span class="p">)</span>
 <span class="n">G_c</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -697,17 +695,17 @@ document.write(`
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">G</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
-<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">({</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">},</span> <span class="p">{</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;D&#39;</span><span class="p">})</span>
-<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s1">&#39;D&#39;</span><span class="p">,</span> <span class="p">{</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">})</span>
-<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">((),</span> <span class="s1">&#39;A&#39;</span><span class="p">)</span>
-<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">((),</span> <span class="s1">&#39;B&#39;</span><span class="p">)</span>
-<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="p">())</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">({</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="s2">&quot;D&quot;</span><span class="p">})</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="p">{</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">})</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">((),</span> <span class="s2">&quot;A&quot;</span><span class="p">)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">((),</span> <span class="s2">&quot;B&quot;</span><span class="p">)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="p">())</span>
 <span class="n">G</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/7b0efd675a987e24b0eca9c4e9d35bd4ff8ce8df1dd1f2f1533e658fe95f6498.svg" src="../../_images/7b0efd675a987e24b0eca9c4e9d35bd4ff8ce8df1dd1f2f1533e658fe95f6498.svg" /></div>
+<img alt="../../_images/0312ac63a9a53864df5025d90a75eaff60fcf701f5d05b5bc20559fafc27c28d.svg" src="../../_images/0312ac63a9a53864df5025d90a75eaff60fcf701f5d05b5bc20559fafc27c28d.svg" /></div>
 </div>
 </section>
 </section>

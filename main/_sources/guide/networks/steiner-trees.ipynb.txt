@@ -49,8 +49,8 @@
     "import numpy as np\n",
     "from networkx.algorithms.approximation import steiner_tree\n",
     "\n",
-    "\n",
     "# Generate a random graph with networkx\n",
+    "\n",
     "\n",
     "def create_random_graph(n_nodes, prob, seed=0):\n",
     "    np.random.seed(seed)\n",
@@ -59,8 +59,9 @@
     "    edges_r = list(random_graph.edges())\n",
     "    for i, weight in enumerate(weights):\n",
     "        edge = edges_r[i]\n",
-    "        random_graph[edge[0]][edge[1]]['weight'] = weight\n",
+    "        random_graph[edge[0]][edge[1]][\"weight\"] = weight\n",
     "    return random_graph\n",
+    "\n",
     "\n",
     "random_graph = create_random_graph(50, 0.1)"
    ]
@@ -94,7 +95,7 @@
     "\n",
     "terminals = np.random.choice(random_graph.nodes, size=10, replace=False)\n",
     "stree = steiner_tree(random_graph, terminals)\n",
-    "total_weight = sum(random_graph[u][v]['weight'] for u, v in stree.edges)\n",
+    "total_weight = sum(random_graph[u][v][\"weight\"] for u, v in stree.edges)\n",
     "print(\"Cost:\", total_weight)\n",
     "nx.draw(stree, with_labels=True)"
    ]
@@ -150,6 +151,7 @@
    ],
    "source": [
     "import corneto as cn\n",
+    "\n",
     "cn.info()"
    ]
   },
@@ -180,17 +182,20 @@
    ],
    "source": [
     "from corneto._graph import EdgeType\n",
+    "\n",
+    "\n",
     "def to_graph(nx_graph, weights=None, directed=False):\n",
     "    G = cn.Graph()\n",
     "    if weights is None:\n",
-    "        weights = [e[2].get('weight', 0) for e in nx_graph.edges(data=True)]\n",
+    "        weights = [e[2].get(\"weight\", 0) for e in nx_graph.edges(data=True)]\n",
     "    for e, w in zip(nx_graph.edges, weights):\n",
     "        etype = EdgeType.DIRECTED if directed else EdgeType.UNDIRECTED\n",
     "        G.add_edge(e[0], e[1], weight=w, type=etype)\n",
     "    return G\n",
     "\n",
+    "\n",
     "G = to_graph(random_graph)\n",
-    "G.shape\n"
+    "G.shape"
    ]
   },
   {
@@ -493,8 +498,10 @@
     }
    ],
    "source": [
-    "P.solve(solver='SCIPY', verbosity=1)\n",
-    "G_steiner.edge_subgraph(np.where(P.symbols['_flow_i'].value > 0.5)[0]).plot(orphan_edges=False)"
+    "P.solve(solver=\"SCIPY\", verbosity=1)\n",
+    "G_steiner.edge_subgraph(np.where(P.symbols[\"_flow_i\"].value > 0.5)[0]).plot(\n",
+    "    orphan_edges=False\n",
+    ")"
    ]
   },
   {
@@ -780,9 +787,11 @@
    ],
    "source": [
     "P, G_steiner = exact_steiner_tree(G, terminals, strict_acyclic=True)\n",
-    "P.solve(solver='SCIPY', verbosity=1)\n",
+    "P.solve(solver=\"SCIPY\", verbosity=1)\n",
     "print(\"Optimal value:\", P.objectives[0].value)\n",
-    "G_steiner.edge_subgraph(np.where(P.symbols['_flow_i'].value > 0.5)[0]).plot(orphan_edges=False)"
+    "G_steiner.edge_subgraph(np.where(P.symbols[\"_flow_i\"].value > 0.5)[0]).plot(\n",
+    "    orphan_edges=False\n",
+    ")"
    ]
   }
  ],

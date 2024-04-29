@@ -39,7 +39,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster-sideTip-borderless.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/micromodal.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=8fb392e5" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=e238a3f6" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
@@ -453,9 +453,10 @@ document.write(`
 <p>Multi-commodity network flows are a mathematical model used to optimize the simultaneous routing of multiple resources through a single network. These models can be applied in various fields, including logistics, telecommunications, and urban planning to improve efficiency and resource allocation. In our example, we will explore the application of this model using a small network consisting of nodes <strong>A, B, C, D,</strong> and <strong>E</strong>, connected by directed edges with specific capacities: <strong>A-&gt;B</strong>, <strong>A-&gt;D</strong>, <strong>B-&gt;C</strong>, <strong>B-&gt;D</strong>, <strong>C-&gt;E</strong>, <strong>D-&gt;C</strong>, and <strong>D-&gt;E</strong>. The network includes two commodities, with the first aiming to maximize flow from node <strong>A</strong> to node <strong>C</strong>, and the second from node <strong>A</strong> to node <strong>E</strong>. Transporting each commodity through the network has a different profit per edge, and the objective is to maximize the total profit while respecting the capacity constraints of each edge.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">corneto</span> <span class="k">as</span> <span class="nn">cn</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="kn">import</span> <span class="nn">corneto</span> <span class="k">as</span> <span class="nn">cn</span>
 
 <span class="n">cn</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
 </pre></div>
@@ -481,13 +482,13 @@ document.write(`
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">G</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
 <span class="c1"># We create the transportation network, and we add attributes to the edges.</span>
 <span class="c1"># These attributes are the capacity of the edge, and the profit of the edge for the two commodities.</span>
-<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">,</span> <span class="n">capacity</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">profit_c1</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">profit_c2</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;D&#39;</span><span class="p">,</span> <span class="n">capacity</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">profit_c1</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">profit_c2</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s1">&#39;B&#39;</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="n">capacity</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">profit_c1</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">profit_c2</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s1">&#39;B&#39;</span><span class="p">,</span> <span class="s1">&#39;D&#39;</span><span class="p">,</span> <span class="n">capacity</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>  <span class="n">profit_c1</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">profit_c2</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
-<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;E&#39;</span><span class="p">,</span> <span class="n">capacity</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">profit_c1</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">profit_c2</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
-<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s1">&#39;D&#39;</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="n">capacity</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>  <span class="n">profit_c1</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">profit_c2</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
-<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s1">&#39;D&#39;</span><span class="p">,</span> <span class="s1">&#39;E&#39;</span><span class="p">,</span> <span class="n">capacity</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>  <span class="n">profit_c1</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">profit_c2</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="n">capacity</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">profit_c1</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">profit_c2</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="n">capacity</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">profit_c1</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">profit_c2</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="n">capacity</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">profit_c1</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">profit_c2</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="n">capacity</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">profit_c1</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">profit_c2</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="s2">&quot;E&quot;</span><span class="p">,</span> <span class="n">capacity</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">profit_c1</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">profit_c2</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="n">capacity</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">profit_c1</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">profit_c2</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="s2">&quot;E&quot;</span><span class="p">,</span> <span class="n">capacity</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">profit_c1</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">profit_c2</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
 <span class="n">G</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -499,11 +500,11 @@ document.write(`
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># First commodity, routing from A to C</span>
-<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">((),</span> <span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="n">capacity</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
-<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="p">(),</span> <span class="n">capacity</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">((),</span> <span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="n">capacity</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="p">(),</span> <span class="n">capacity</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
 
 <span class="c1"># Second commodity, routing from A to E.</span>
-<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s1">&#39;E&#39;</span><span class="p">,</span> <span class="p">(),</span> <span class="n">capacity</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;E&quot;</span><span class="p">,</span> <span class="p">(),</span> <span class="n">capacity</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
 
 <span class="n">G</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
@@ -514,7 +515,7 @@ document.write(`
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">G</span><span class="o">.</span><span class="n">get_attr_from_edges</span><span class="p">(</span><span class="s1">&#39;capacity&#39;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">G</span><span class="o">.</span><span class="n">get_attr_from_edges</span><span class="p">(</span><span class="s2">&quot;capacity&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -526,7 +527,7 @@ document.write(`
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#P.expr.flow.sum(axis=0).shape</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># P.expr.flow.sum(axis=0).shape</span>
 </pre></div>
 </div>
 </div>
@@ -534,7 +535,7 @@ document.write(`
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We create a flow problem with 2 flows, one per commodity</span>
-<span class="n">P</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">K</span><span class="o">.</span><span class="n">Flow</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">ub</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">get_attr_from_edges</span><span class="p">(</span><span class="s1">&#39;capacity&#39;</span><span class="p">),</span> <span class="n">n_flows</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">shared_bounds</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">P</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">K</span><span class="o">.</span><span class="n">Flow</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">ub</span><span class="o">=</span><span class="n">G</span><span class="o">.</span><span class="n">get_attr_from_edges</span><span class="p">(</span><span class="s2">&quot;capacity&quot;</span><span class="p">),</span> <span class="n">n_flows</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">shared_bounds</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="c1"># NOTE: Using shared bounds links shares the capacity of the edges across flows. It is equivalent to adding this constraint here:</span>
 <span class="c1"># P += P.expressions.flow[:, 0] + P.expressions.flow[:, 1] &lt;= G.get_attr_from_edges(&#39;capacity&#39;)</span>
 <span class="n">P</span><span class="o">.</span><span class="n">expressions</span>
@@ -549,8 +550,8 @@ document.write(`
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">c1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">get_attr_from_edges</span><span class="p">(</span><span class="s1">&#39;profit_c1&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
-<span class="n">c2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">get_attr_from_edges</span><span class="p">(</span><span class="s1">&#39;profit_c2&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">c1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">get_attr_from_edges</span><span class="p">(</span><span class="s2">&quot;profit_c1&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="n">c2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">get_attr_from_edges</span><span class="p">(</span><span class="s2">&quot;profit_c2&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
@@ -570,30 +571,31 @@ document.write(`
                                      CVXPY                                     
                                      v1.4.3                                    
 ===============================================================================
-(CVXPY) Apr 29 08:28:23 PM: Your problem has 20 variables, 5 constraints, and 0 parameters.
-(CVXPY) Apr 29 08:28:23 PM: It is compliant with the following grammars: DCP, DQCP
-(CVXPY) Apr 29 08:28:23 PM: (If you need to solve this problem multiple times, but with different data, consider using parameters.)
-(CVXPY) Apr 29 08:28:23 PM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
-(CVXPY) Apr 29 08:28:23 PM: Your problem is compiled with the CPP canonicalization backend.
+(CVXPY) Apr 29 09:37:34 PM: Your problem has 20 variables, 5 constraints, and 0 parameters.
+(CVXPY) Apr 29 09:37:34 PM: It is compliant with the following grammars: DCP, DQCP
+(CVXPY) Apr 29 09:37:34 PM: (If you need to solve this problem multiple times, but with different data, consider using parameters.)
+(CVXPY) Apr 29 09:37:34 PM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
+(CVXPY) Apr 29 09:37:34 PM: Your problem is compiled with the CPP canonicalization backend.
 -------------------------------------------------------------------------------
                                   Compilation                                  
 -------------------------------------------------------------------------------
-(CVXPY) Apr 29 08:28:23 PM: Compiling problem (target solver=SCIP).
-(CVXPY) Apr 29 08:28:23 PM: Reduction chain: Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; SCIP
-(CVXPY) Apr 29 08:28:23 PM: Applying reduction Dcp2Cone
-(CVXPY) Apr 29 08:28:23 PM: Applying reduction CvxAttr2Constr
-(CVXPY) Apr 29 08:28:23 PM: Applying reduction ConeMatrixStuffing
-(CVXPY) Apr 29 08:28:23 PM: Applying reduction SCIP
-(CVXPY) Apr 29 08:28:23 PM: Finished problem compilation (took 1.286e-02 seconds).
+(CVXPY) Apr 29 09:37:34 PM: Compiling problem (target solver=SCIP).
+(CVXPY) Apr 29 09:37:34 PM: Reduction chain: Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; SCIP
+(CVXPY) Apr 29 09:37:34 PM: Applying reduction Dcp2Cone
+(CVXPY) Apr 29 09:37:34 PM: Applying reduction CvxAttr2Constr
+(CVXPY) Apr 29 09:37:34 PM: Applying reduction ConeMatrixStuffing
+(CVXPY) Apr 29 09:37:34 PM: Applying reduction SCIP
+(CVXPY) Apr 29 09:37:34 PM: Finished problem compilation (took 1.316e-02 seconds).
 -------------------------------------------------------------------------------
                                 Numerical solver                               
 -------------------------------------------------------------------------------
-(CVXPY) Apr 29 08:28:23 PM: Invoking solver SCIP  to obtain a solution.
+(CVXPY) Apr 29 09:37:34 PM: Invoking solver SCIP  to obtain a solution.
 -------------------------------------------------------------------------------
                                     Summary                                    
 -------------------------------------------------------------------------------
-(CVXPY) Apr 29 08:28:23 PM: Problem status: optimal
+(CVXPY) Apr 29 09:37:34 PM: Problem status: optimal
 presolving:
+(CVXPY) Apr 29 09:37:34 PM: Optimal value: -1.900e+02
    (0.0s) symmetry computation started: requiring (bin +, int +, cont +), (fixed: bin -, int -, cont -)
    (0.0s) no symmetry present (symcode time: 0.00)
 presolving (0 rounds: 0 fast, 0 medium, 0 exhaustive):
@@ -613,9 +615,8 @@ Solving Nodes      : 1
 Primal Bound       : -1.90000000000000e+02 (1 solutions)
 Dual Bound         : -1.90000000000000e+02
 Gap                : 0.00 %
-(CVXPY) Apr 29 08:28:23 PM: Optimal value: -1.900e+02
-(CVXPY) Apr 29 08:28:23 PM: Compilation took 1.286e-02 seconds
-(CVXPY) Apr 29 08:28:23 PM: Solver (including time spent in interface) took 6.825e-03 seconds
+(CVXPY) Apr 29 09:37:34 PM: Compilation took 1.316e-02 seconds
+(CVXPY) Apr 29 09:37:34 PM: Solver (including time spent in interface) took 6.588e-03 seconds
 </pre></div>
 </div>
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Problem(Minimize(Expression(AFFINE, UNKNOWN, ())), [Inequality(Constant(CONSTANT, ZERO, (10, 2))), Inequality(Variable((10, 2), _flow)), Equality(Expression(AFFINE, UNKNOWN, (5, 2)), Constant(CONSTANT, ZERO, ())), Inequality(Expression(AFFINE, UNKNOWN, (10,))), Inequality(Constant(CONSTANT, ZERO, (10,)))])
@@ -637,9 +638,11 @@ Gap                : 0.00 %
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_result</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">expressions</span><span class="o">.</span><span class="n">flow</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">G</span><span class="o">.</span><span class="n">E</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Commodity 1&#39;</span><span class="p">,</span> <span class="s1">&#39;Commodity 2&#39;</span><span class="p">])</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_result</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="n">P</span><span class="o">.</span><span class="n">expressions</span><span class="o">.</span><span class="n">flow</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">G</span><span class="o">.</span><span class="n">E</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Commodity 1&quot;</span><span class="p">,</span> <span class="s2">&quot;Commodity 2&quot;</span><span class="p">]</span>
+<span class="p">)</span>
 <span class="n">df_result</span><span class="p">[</span><span class="s2">&quot;total&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_result</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">df_result</span><span class="p">[</span><span class="s2">&quot;capacity&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">get_attr_from_edges</span><span class="p">(</span><span class="s1">&#39;capacity&#39;</span><span class="p">)</span>
+<span class="n">df_result</span><span class="p">[</span><span class="s2">&quot;capacity&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">get_attr_from_edges</span><span class="p">(</span><span class="s2">&quot;capacity&quot;</span><span class="p">)</span>
 <span class="n">df_result</span><span class="p">[</span><span class="s2">&quot;Profit c1&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_result</span><span class="p">[</span><span class="s2">&quot;Commodity 1&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">c1</span>
 <span class="n">df_result</span><span class="p">[</span><span class="s2">&quot;Profit c2&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_result</span><span class="p">[</span><span class="s2">&quot;Commodity 2&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">c2</span>
 <span class="n">df_result</span><span class="p">[</span><span class="s2">&quot;Total profit&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_result</span><span class="p">[</span><span class="s2">&quot;Profit c1&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">df_result</span><span class="p">[</span><span class="s2">&quot;Profit c2&quot;</span><span class="p">]</span>

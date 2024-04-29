@@ -62,8 +62,9 @@
     }
    ],
    "source": [
-    "import corneto as cn\n",
     "import numpy as np\n",
+    "\n",
+    "import corneto as cn\n",
     "\n",
     "cn.info()"
    ]
@@ -302,9 +303,13 @@
    ],
    "source": [
     "Gem = cn.Graph()\n",
-    "Gem.add_edge({\"M1\", \"M2\"}, {\"M5\", \"M6\"}, genes=[\"E6\"], weight=-1, default_lb=0, default_ub=100)\n",
+    "Gem.add_edge(\n",
+    "    {\"M1\", \"M2\"}, {\"M5\", \"M6\"}, genes=[\"E6\"], weight=-1, default_lb=0, default_ub=100\n",
+    ")\n",
     "Gem.add_edge(\"M1\", \"M4\", genes=[], default_lb=-100, default_ub=100)\n",
-    "Gem.add_edge({\"M3\", \"M4\"}, {\"M7\", \"M8\"}, genes=[\"E3\"], weight=1, default_lb=0, default_ub=100)\n",
+    "Gem.add_edge(\n",
+    "    {\"M3\", \"M4\"}, {\"M7\", \"M8\"}, genes=[\"E3\"], weight=1, default_lb=0, default_ub=100\n",
+    ")\n",
     "Gem.add_edge(\"M6\", \"M9\", genes=[\"E7\"], weight=1, default_lb=0, default_ub=100)\n",
     "Gem.add_edge((), \"M1\", genes=[\"E1\", \"E2\"], weight=1, default_lb=-100, default_ub=100)\n",
     "Gem.add_edge((), \"M2\", genes=[\"E5\"], weight=-1, default_lb=-100, default_ub=100)\n",
@@ -334,7 +339,9 @@
     }
    ],
    "source": [
-    "weights = np.array([Gem.get_attr_edge(i).get(\"weight\", 0) for i in range(Gem.num_edges)])\n",
+    "weights = np.array(\n",
+    "    [Gem.get_attr_edge(i).get(\"weight\", 0) for i in range(Gem.num_edges)]\n",
+    ")\n",
     "weights"
    ]
   },
@@ -747,7 +754,9 @@
     }
    ],
    "source": [
-    "Gem.plot(custom_edge_attr=cn.pl.flow_style(P), graph_attr={\"rankdir\": \"LR\", \"center\": \"1\"})"
+    "Gem.plot(\n",
+    "    custom_edge_attr=cn.pl.flow_style(P), graph_attr={\"rankdir\": \"LR\", \"center\": \"1\"}\n",
+    ")"
    ]
   }
  ],

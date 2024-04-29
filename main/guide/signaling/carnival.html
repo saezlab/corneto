@@ -39,7 +39,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster-sideTip-borderless.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/micromodal.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=8fb392e5" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=e238a3f6" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
@@ -468,6 +468,7 @@ document.write(`
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">corneto</span> <span class="k">as</span> <span class="nn">cn</span>
+
 <span class="n">cn</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -493,13 +494,12 @@ document.write(`
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">G</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Graph</span><span class="o">.</span><span class="n">from_sif_tuples</span><span class="p">(</span>
     <span class="p">[</span>
-        <span class="p">(</span><span class="s1">&#39;I1&#39;</span><span class="p">,</span>  <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;N1&#39;</span><span class="p">),</span> <span class="c1"># I1 activates N1</span>
-        <span class="p">(</span><span class="s1">&#39;N1&#39;</span><span class="p">,</span>  <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;M1&#39;</span><span class="p">),</span> <span class="c1"># N1 activates M1</span>
-        <span class="p">(</span><span class="s1">&#39;N1&#39;</span><span class="p">,</span>  <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;M2&#39;</span><span class="p">),</span> <span class="c1"># N1 activaes M2</span>
-        <span class="p">(</span><span class="s1">&#39;I2&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;N2&#39;</span><span class="p">),</span> <span class="c1"># I2 inhibits N2</span>
-        <span class="p">(</span><span class="s1">&#39;N2&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;M2&#39;</span><span class="p">),</span> <span class="c1"># N2 inhibits M2</span>
-        <span class="p">(</span><span class="s1">&#39;N2&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;M1&#39;</span><span class="p">),</span>  <span class="c1"># N2 inhibits M1</span>
-        
+        <span class="p">(</span><span class="s2">&quot;I1&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;N1&quot;</span><span class="p">),</span>  <span class="c1"># I1 activates N1</span>
+        <span class="p">(</span><span class="s2">&quot;N1&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;M1&quot;</span><span class="p">),</span>  <span class="c1"># N1 activates M1</span>
+        <span class="p">(</span><span class="s2">&quot;N1&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;M2&quot;</span><span class="p">),</span>  <span class="c1"># N1 activaes M2</span>
+        <span class="p">(</span><span class="s2">&quot;I2&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;N2&quot;</span><span class="p">),</span>  <span class="c1"># I2 inhibits N2</span>
+        <span class="p">(</span><span class="s2">&quot;N2&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;M2&quot;</span><span class="p">),</span>  <span class="c1"># N2 inhibits M2</span>
+        <span class="p">(</span><span class="s2">&quot;N2&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;M1&quot;</span><span class="p">),</span>  <span class="c1"># N2 inhibits M1</span>
     <span class="p">]</span>
 <span class="p">)</span>
 <span class="n">G</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
@@ -517,11 +517,11 @@ document.write(`
 <span class="c1"># Positive values correspond to up-regulation and negative values</span>
 <span class="c1"># with down-regulation. The bigger the absolute value is,</span>
 <span class="c1"># the bigger the importance is</span>
-<span class="n">measurements</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;M1&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;M2&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+<span class="n">measurements</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;M1&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;M2&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
 
 <span class="c1"># Perturbations are the upstream nodes were the signal originates on,</span>
 <span class="c1"># for example, ligands or receptors.</span>
-<span class="n">perturbations</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;I1&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;I2&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+<span class="n">perturbations</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;I1&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;I2&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
 
 <span class="c1"># We run the `standard` carnival problem. This interface is similar</span>
 <span class="c1"># to the old R function https://saezlab.github.io/CARNIVAL/reference/runVanillaCarnival.html</span>
@@ -530,41 +530,43 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(CORNETO) Apr 29 08:30:05 PM - INFO    : 2/2 inputs mapped to the graph
-(CORNETO) Apr 29 08:30:05 PM - INFO    : 2/2 outputs mapped to the graph
-(CORNETO) Apr 29 08:30:05 PM - INFO    : Pruning the graph with size: V x E = (6, 6)...
-(CORNETO) Apr 29 08:30:05 PM - INFO    : Finished. Final size: V x E = (6, 6).
-(CORNETO) Apr 29 08:30:05 PM - INFO    : 2/2 inputs after pruning.
-(CORNETO) Apr 29 08:30:05 PM - INFO    : 2/2 outputs after pruning.
-(CORNETO) Apr 29 08:30:05 PM - INFO    : Converting into a flow graph...
-(CORNETO) Apr 29 08:30:05 PM - INFO    : Creating a network flow problem...
-(CORNETO) Apr 29 08:30:05 PM - INFO    : Preprocess completed.
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(CORNETO) Apr 29 09:39:17 PM - INFO    : 2/2 inputs mapped to the graph
+(CORNETO) Apr 29 09:39:17 PM - INFO    : 2/2 outputs mapped to the graph
+(CORNETO) Apr 29 09:39:17 PM - INFO    : Pruning the graph with size: V x E = (6, 6)...
+(CORNETO) Apr 29 09:39:17 PM - INFO    : Finished. Final size: V x E = (6, 6).
+(CORNETO) Apr 29 09:39:17 PM - INFO    : 2/2 inputs after pruning.
+(CORNETO) Apr 29 09:39:17 PM - INFO    : 2/2 outputs after pruning.
+(CORNETO) Apr 29 09:39:17 PM - INFO    : Converting into a flow graph...
+(CORNETO) Apr 29 09:39:17 PM - INFO    : Creating a network flow problem...
+(CORNETO) Apr 29 09:39:17 PM - INFO    : Preprocess completed.
 ===============================================================================
                                      CVXPY                                     
                                      v1.4.3                                    
 ===============================================================================
-(CVXPY) Apr 29 08:30:05 PM: Your problem has 86 variables, 20 constraints, and 0 parameters.
-(CVXPY) Apr 29 08:30:05 PM: It is compliant with the following grammars: DCP, DQCP
-(CVXPY) Apr 29 08:30:05 PM: (If you need to solve this problem multiple times, but with different data, consider using parameters.)
-(CVXPY) Apr 29 08:30:05 PM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
-(CVXPY) Apr 29 08:30:05 PM: Your problem is compiled with the CPP canonicalization backend.
+(CVXPY) Apr 29 09:39:17 PM: Your problem has 86 variables, 20 constraints, and 0 parameters.
+(CVXPY) Apr 29 09:39:17 PM: It is compliant with the following grammars: DCP, DQCP
+(CVXPY) Apr 29 09:39:17 PM: (If you need to solve this problem multiple times, but with different data, consider using parameters.)
+(CVXPY) Apr 29 09:39:17 PM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
+(CVXPY) Apr 29 09:39:17 PM: Your problem is compiled with the CPP canonicalization backend.
 -------------------------------------------------------------------------------
                                   Compilation                                  
 -------------------------------------------------------------------------------
-(CVXPY) Apr 29 08:30:05 PM: Compiling problem (target solver=SCIP).
-(CVXPY) Apr 29 08:30:05 PM: Reduction chain: Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; SCIP
-(CVXPY) Apr 29 08:30:05 PM: Applying reduction Dcp2Cone
-(CVXPY) Apr 29 08:30:05 PM: Applying reduction CvxAttr2Constr
-(CVXPY) Apr 29 08:30:05 PM: Applying reduction ConeMatrixStuffing
-(CVXPY) Apr 29 08:30:05 PM: Applying reduction SCIP
-(CVXPY) Apr 29 08:30:05 PM: Finished problem compilation (took 3.132e-02 seconds).
+(CVXPY) Apr 29 09:39:17 PM: Compiling problem (target solver=SCIP).
+(CVXPY) Apr 29 09:39:17 PM: Reduction chain: Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; SCIP
+(CVXPY) Apr 29 09:39:17 PM: Applying reduction Dcp2Cone
+(CVXPY) Apr 29 09:39:17 PM: Applying reduction CvxAttr2Constr
+(CVXPY) Apr 29 09:39:17 PM: Applying reduction ConeMatrixStuffing
+(CVXPY) Apr 29 09:39:17 PM: Applying reduction SCIP
+(CVXPY) Apr 29 09:39:17 PM: Finished problem compilation (took 3.070e-02 seconds).
 -------------------------------------------------------------------------------
                                 Numerical solver                               
 -------------------------------------------------------------------------------
-(CVXPY) Apr 29 08:30:05 PM: Invoking solver SCIP  to obtain a solution.
+(CVXPY) Apr 29 09:39:17 PM: Invoking solver SCIP  to obtain a solution.
+presolving:
 -------------------------------------------------------------------------------
                                     Summary                                    
--------------------------------------------------------------------------------presolving:
+-------------------------------------------------------------------------------
+(CVXPY) Apr 29 09:39:17 PM: Problem status: optimal
 (round 1, fast)       36 del vars, 95 del conss, 0 add conss, 48 chg bounds, 1 chg sides, 23 chg coeffs, 0 upgd conss, 0 impls, 28 clqs
 (round 2, fast)       54 del vars, 129 del conss, 0 add conss, 52 chg bounds, 9 chg sides, 31 chg coeffs, 0 upgd conss, 0 impls, 20 clqs
 (round 3, fast)       63 del vars, 145 del conss, 0 add conss, 52 chg bounds, 11 chg sides, 33 chg coeffs, 0 upgd conss, 0 impls, 18 clqs
@@ -572,7 +574,8 @@ document.write(`
 (round 5, fast)       67 del vars, 151 del conss, 0 add conss, 52 chg bounds, 15 chg sides, 37 chg coeffs, 0 upgd conss, 0 impls, 18 clqs
 (round 6, exhaustive) 67 del vars, 151 del conss, 0 add conss, 52 chg bounds, 15 chg sides, 37 chg coeffs, 40 upgd conss, 0 impls, 18 clqs
    (0.0s) probing cycle finished: starting next cycle
-(round 7, exhaustive) 69 del vars, 151 del conss, 0 add conss, 52 chg bounds, 15 chg sides, 37 chg coeffs, 40 upgd conss, 28 impls, 46 clqs
+(round 7, exhaustive) 69 del vars, 151 del conss, 0 add conss, 52 chg bounds, 15 chg sides, 37 chg coeffs, 40 upgd conss(CVXPY) Apr 29 09:39:17 PM: Optimal value: 7.000e-01
+, 28 impls, 46 clqs
 (round 8, medium)     69 del vars, 155 del conss, 0 add conss, 52 chg bounds, 15 chg sides, 37 chg coeffs, 40 upgd conss, 28 impls, 46 clqs
    (0.0s) probing cycle finished: starting next cycle
    (0.0s) symmetry computation started: requiring (bin +, int +, cont +), (fixed: bin -, int -, cont -)
@@ -595,26 +598,24 @@ transformed objective value is always integral (scale: 0.1)
 Presolving Time: 0.00
 
  time | node  | left  |LP iter|LP it/n|mem/heur|mdpt |vars |cons |rows |cuts |sepa|confs|strbr|  dualbound   | primalbound  |  gap   | compl. 
-p 0.0s|     1 |     0 |     1 |     - |  clique|   0 |  27 |  45 |  42 |   0 |  0 |   0 |   0 |-3.500000e+00 | 1.000000e-01 |    Inf | unknown
-p 0.0s|     1 |     0 |     1 |     - |   locks|   0 |  27 |  45 |  42 |   0 |  0 |   0 |   0 |-3.500000e+00 |-6.000000e-01 | 483.33%| unknown
-p 0.0s|     1 |     0 |     1 |     - | vbounds|   0 |  27 |  46 |  42 |   0 |  0 |   1 |   0 |-3.500000e+00 |-1.600000e+00 | 118.75%| unknown
-p 0.0s|     1 |     0 |     1 |     - | vbounds|   0 |  27 |  47 |  42 |   0 |  0 |   2 |   0 |-3.500000e+00 |-3.200000e+00 |   9.37%| unknown
-  0.0s|     1 |     0 |    15 |     - |  1787k |   0 |  27 |  30 |  42 |   0 |  0 |   8 |   0 |-3.300000e+00 |-3.200000e+00 |   3.13%| unknown
-r 0.0s|     1 |     0 |    15 |     - |rounding|   0 |  27 |  30 |  42 |   0 |  0 |   8 |   0 |-3.300000e+00 |-3.300000e+00 |   0.00%| unknown
-  0.0s|     1 |     0 |    15 |     - |  1788k |   0 |  27 |  30 |  42 |   0 |  0 |   8 |   0 |-3.300000e+00 |-3.300000e+00 |   0.00%| unknown
+p 0.0s|     1 |     0 |     0 |     - |  clique|   0 |  27 |  45 |  42 |   0 |  0 |   0 |   0 |-3.500000e+00 | 1.000000e-01 |    Inf | unknown
+p 0.0s|     1 |     0 |     0 |     - |   locks|   0 |  27 |  45 |  42 |   0 |  0 |   0 |   0 |-3.500000e+00 |-6.000000e-01 | 483.33%| unknown
+p 0.0s|     1 |     0 |     0 |     - | vbounds|   0 |  27 |  45 |  42 |   0 |  0 |   0 |   0 |-3.500000e+00 |-1.600000e+00 | 118.75%| unknown
+p 0.0s|     1 |     0 |     0 |     - | vbounds|   0 |  27 |  47 |  42 |   0 |  0 |   2 |   0 |-3.500000e+00 |-3.200000e+00 |   9.37%| unknown
+  0.0s|     1 |     0 |    23 |     - |  1782k |   0 |  27 |  48 |  42 |   0 |  0 |   7 |   0 |-3.300000e+00 |-3.200000e+00 |   3.13%| unknown
+r 0.0s|     1 |     0 |    23 |     - |rounding|   0 |  27 |  48 |  39 |   0 |  0 |   7 |   0 |-3.300000e+00 |-3.300000e+00 |   0.00%| unknown
+  0.0s|     1 |     0 |    23 |     - |  1783k |   0 |  27 |  48 |  39 |   0 |  0 |   7 |   0 |-3.300000e+00 |-3.300000e+00 |   0.00%| unknown
+  0.0s|     1 |     0 |    23 |     - |  1783k |   0 |  27 |  48 |  39 |   0 |  0 |   7 |   0 |-3.300000e+00 |-3.300000e+00 |   0.00%| unknown
 
 SCIP Status        : problem is solved [optimal solution found]
-Solving Time (sec) : 0.00
+Solving Time (sec) : 0.01
 Solving Nodes      : 1
 Primal Bound       : -3.30000000000000e+00 (5 solutions)
 Dual Bound         : -3.30000000000000e+00
 Gap                : 0.00 %
-
-(CVXPY) Apr 29 08:30:05 PM: Problem status: optimal
-(CVXPY) Apr 29 08:30:05 PM: Optimal value: 7.000e-01
-(CVXPY) Apr 29 08:30:05 PM: Compilation took 3.132e-02 seconds
-(CVXPY) Apr 29 08:30:05 PM: Solver (including time spent in interface) took 1.449e-02 seconds
-(CORNETO) Apr 29 08:30:05 PM - INFO    : Finished in 0.07 s.
+(CVXPY) Apr 29 09:39:17 PM: Compilation took 3.070e-02 seconds
+(CVXPY) Apr 29 09:39:17 PM: Solver (including time spent in interface) took 1.804e-02 seconds
+(CORNETO) Apr 29 09:39:17 PM - INFO    : Finished in 0.07 s.
 </pre></div>
 </div>
 </div>
@@ -646,8 +647,9 @@ Gap                : 0.00 %
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">corneto.methods.carnival</span> <span class="kn">import</span> <span class="n">get_result</span><span class="p">,</span> <span class="n">get_selected_edges</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="kn">from</span> <span class="nn">corneto.methods.carnival</span> <span class="kn">import</span> <span class="n">get_result</span><span class="p">,</span> <span class="n">get_selected_edges</span>
 
 <span class="n">V</span><span class="p">,</span> <span class="n">E</span> <span class="o">=</span> <span class="n">get_result</span><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="n">Gf</span><span class="p">)</span>
 <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">V</span><span class="p">)</span>
@@ -680,8 +682,8 @@ Gap                : 0.00 %
   <tbody>
     <tr>
       <th>0</th>
-      <td>N1</td>
-      <td>0.0</td>
+      <td>N2</td>
+      <td>-1.0</td>
     </tr>
     <tr>
       <th>1</th>
@@ -690,22 +692,22 @@ Gap                : 0.00 %
     </tr>
     <tr>
       <th>2</th>
-      <td>I2</td>
+      <td>I1</td>
       <td>1.0</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>N2</td>
-      <td>-1.0</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>M1</td>
+      <td>I2</td>
       <td>1.0</td>
     </tr>
     <tr>
+      <th>4</th>
+      <td>N1</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
       <th>5</th>
-      <td>I1</td>
+      <td>M1</td>
       <td>1.0</td>
     </tr>
     <tr>

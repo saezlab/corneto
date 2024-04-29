@@ -39,7 +39,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster-sideTip-borderless.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/micromodal.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=8fb392e5" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=e238a3f6" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
@@ -465,8 +465,9 @@ document.write(`
 <p>Rather than linearly mapping gene expression to metabolic flux activity, iMAT finds a steady-state flux distribution that aligns with the activity of highly expressed genes, minimizing the metabolic flux through reactions whose enzymes depend on lowly expressed genes. This is crucial because, in many biological systems, gene expression doesn’t directly translate to enzymatic activity. The resulting optimized flux distribution is also in harmony with the metabolic model’s stoichiometric and thermodynamic constraints.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">corneto</span> <span class="k">as</span> <span class="nn">cn</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">import</span> <span class="nn">corneto</span> <span class="k">as</span> <span class="nn">cn</span>
 
 <span class="n">cn</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
 </pre></div>
@@ -490,9 +491,13 @@ document.write(`
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Gem</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
-<span class="n">Gem</span><span class="o">.</span><span class="n">add_edge</span><span class="p">({</span><span class="s2">&quot;M1&quot;</span><span class="p">,</span> <span class="s2">&quot;M2&quot;</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;M5&quot;</span><span class="p">,</span> <span class="s2">&quot;M6&quot;</span><span class="p">},</span> <span class="n">genes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;E6&quot;</span><span class="p">],</span> <span class="n">weight</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">default_lb</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">default_ub</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">Gem</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span>
+    <span class="p">{</span><span class="s2">&quot;M1&quot;</span><span class="p">,</span> <span class="s2">&quot;M2&quot;</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;M5&quot;</span><span class="p">,</span> <span class="s2">&quot;M6&quot;</span><span class="p">},</span> <span class="n">genes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;E6&quot;</span><span class="p">],</span> <span class="n">weight</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">default_lb</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">default_ub</span><span class="o">=</span><span class="mi">100</span>
+<span class="p">)</span>
 <span class="n">Gem</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;M1&quot;</span><span class="p">,</span> <span class="s2">&quot;M4&quot;</span><span class="p">,</span> <span class="n">genes</span><span class="o">=</span><span class="p">[],</span> <span class="n">default_lb</span><span class="o">=-</span><span class="mi">100</span><span class="p">,</span> <span class="n">default_ub</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
-<span class="n">Gem</span><span class="o">.</span><span class="n">add_edge</span><span class="p">({</span><span class="s2">&quot;M3&quot;</span><span class="p">,</span> <span class="s2">&quot;M4&quot;</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;M7&quot;</span><span class="p">,</span> <span class="s2">&quot;M8&quot;</span><span class="p">},</span> <span class="n">genes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;E3&quot;</span><span class="p">],</span> <span class="n">weight</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">default_lb</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">default_ub</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">Gem</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span>
+    <span class="p">{</span><span class="s2">&quot;M3&quot;</span><span class="p">,</span> <span class="s2">&quot;M4&quot;</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;M7&quot;</span><span class="p">,</span> <span class="s2">&quot;M8&quot;</span><span class="p">},</span> <span class="n">genes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;E3&quot;</span><span class="p">],</span> <span class="n">weight</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">default_lb</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">default_ub</span><span class="o">=</span><span class="mi">100</span>
+<span class="p">)</span>
 <span class="n">Gem</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;M6&quot;</span><span class="p">,</span> <span class="s2">&quot;M9&quot;</span><span class="p">,</span> <span class="n">genes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;E7&quot;</span><span class="p">],</span> <span class="n">weight</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">default_lb</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">default_ub</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
 <span class="n">Gem</span><span class="o">.</span><span class="n">add_edge</span><span class="p">((),</span> <span class="s2">&quot;M1&quot;</span><span class="p">,</span> <span class="n">genes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;E1&quot;</span><span class="p">,</span> <span class="s2">&quot;E2&quot;</span><span class="p">],</span> <span class="n">weight</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">default_lb</span><span class="o">=-</span><span class="mi">100</span><span class="p">,</span> <span class="n">default_ub</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
 <span class="n">Gem</span><span class="o">.</span><span class="n">add_edge</span><span class="p">((),</span> <span class="s2">&quot;M2&quot;</span><span class="p">,</span> <span class="n">genes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;E5&quot;</span><span class="p">],</span> <span class="n">weight</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">default_lb</span><span class="o">=-</span><span class="mi">100</span><span class="p">,</span> <span class="n">default_ub</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
@@ -506,11 +511,13 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/5b572f011bdaf826106697ae16ecadb3e0ff5a4bd81ae225a115f4bf9e56ae53.svg" src="../../_images/5b572f011bdaf826106697ae16ecadb3e0ff5a4bd81ae225a115f4bf9e56ae53.svg" /></div>
+<img alt="../../_images/1c68cbcba399c99099ffd6dd90cf0c2a7ebfa4f85cf8af176af7249a38ad99ad.svg" src="../../_images/1c68cbcba399c99099ffd6dd90cf0c2a7ebfa4f85cf8af176af7249a38ad99ad.svg" /></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">Gem</span><span class="o">.</span><span class="n">get_attr_edge</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Gem</span><span class="o">.</span><span class="n">num_edges</span><span class="p">)])</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+    <span class="p">[</span><span class="n">Gem</span><span class="o">.</span><span class="n">get_attr_edge</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Gem</span><span class="o">.</span><span class="n">num_edges</span><span class="p">)]</span>
+<span class="p">)</span>
 <span class="n">weights</span>
 </pre></div>
 </div>
@@ -543,17 +550,19 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/b7331ad29ff1ecde6294e5a0a89c3f72fbb26e924a824938b99474c57cff7e2e.svg" src="../../_images/b7331ad29ff1ecde6294e5a0a89c3f72fbb26e924a824938b99474c57cff7e2e.svg" /></div>
+<img alt="../../_images/6fcfab15b7f3adea5741ec1eb95231ed85c0dff38951eae92fa8cfe0186bc310.svg" src="../../_images/6fcfab15b7f3adea5741ec1eb95231ed85c0dff38951eae92fa8cfe0186bc310.svg" /></div>
 </div>
 <p>We can make the plot to look more like the image from the original paper by drawing the reactions with fluxes above a certain threshold with a wider line:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Gem</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">custom_edge_attr</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">flow_style</span><span class="p">(</span><span class="n">P</span><span class="p">),</span> <span class="n">graph_attr</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;rankdir&quot;</span><span class="p">:</span> <span class="s2">&quot;LR&quot;</span><span class="p">,</span> <span class="s2">&quot;center&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">})</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Gem</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">custom_edge_attr</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">flow_style</span><span class="p">(</span><span class="n">P</span><span class="p">),</span> <span class="n">graph_attr</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;rankdir&quot;</span><span class="p">:</span> <span class="s2">&quot;LR&quot;</span><span class="p">,</span> <span class="s2">&quot;center&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">}</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/7d51afb160f63cb72df323a55c7f6b4d57dbccbd0120e59abc2f30407c7dfed9.svg" src="../../_images/7d51afb160f63cb72df323a55c7f6b4d57dbccbd0120e59abc2f30407c7dfed9.svg" /></div>
+<img alt="../../_images/d0fa3d5571854e11361849a8851536b6fdd6ffebd7b613ba43f46be4cbdd3339.svg" src="../../_images/d0fa3d5571854e11361849a8851536b6fdd6ffebd7b613ba43f46be4cbdd3339.svg" /></div>
 </div>
 </section>
 

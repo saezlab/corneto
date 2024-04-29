@@ -39,7 +39,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster-sideTip-borderless.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/micromodal.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=8fb392e5" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=e238a3f6" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
@@ -453,7 +453,6 @@ document.write(`
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">cobra.io</span> <span class="kn">import</span> <span class="n">load_model</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="n">model</span> <span class="o">=</span> <span class="n">load_model</span><span class="p">(</span><span class="s2">&quot;textbook&quot;</span><span class="p">)</span>
 <span class="nb">len</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">metabolites</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">reactions</span><span class="p">)</span>
@@ -469,6 +468,7 @@ document.write(`
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">corneto</span> <span class="k">as</span> <span class="nn">cn</span>
+
 <span class="n">cn</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -544,13 +544,14 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/06b2ba1a22c06d38621725f6d59f71569af6fd58a42c5ddf2174b7527b2467dc.svg" src="../../_images/06b2ba1a22c06d38621725f6d59f71569af6fd58a42c5ddf2174b7527b2467dc.svg" /></div>
+<img alt="../../_images/d574bd4391f4902980766e024e5ab84cf180ee526b23e5c12d1c04a961e7172d.svg" src="../../_images/d574bd4391f4902980766e024e5ab84cf180ee526b23e5c12d1c04a961e7172d.svg" /></div>
 </div>
 <p>Now we are going to see how to use specialized building blocks from CORNETO to automatically add indicators for the presence of reactions in a model. Indicators are binary variables associated to a continuous variable: when the indicator is 0, the continuous variable is 0; and when the indicator is 1, the continuous variable is unconstrained.</p>
 <p>By creating indicators for flow, we can try for example to minimize the number of reactions with flux in the model, by minimizing the total number of ones in the indicator vector.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">corneto.backend._base</span> <span class="kn">import</span> <span class="n">Indicator</span>
+
 <span class="c1"># Automatically create a new indicator variable for the flow</span>
 <span class="c1"># If the indicator is 0, the flow is blocked, if it is 1, the flow is unblocked (can take any value within bounds, including 0)</span>
 <span class="n">P</span> <span class="o">+=</span> <span class="n">Indicator</span><span class="p">(</span><span class="s2">&quot;unblocked_flow&quot;</span><span class="p">)</span>
@@ -601,7 +602,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/33915196ad30c40d52df4c562efbb4fb0c8cc1e266a825168b29e84b5f2c2868.svg" src="../../_images/33915196ad30c40d52df4c562efbb4fb0c8cc1e266a825168b29e84b5f2c2868.svg" /></div>
+<img alt="../../_images/a8d1f2f08087916c13de6abe0dd21ef66e03f75a00aea6911a6fd466e1cce86c.svg" src="../../_images/a8d1f2f08087916c13de6abe0dd21ef66e03f75a00aea6911a6fd466e1cce86c.svg" /></div>
 </div>
 </section>
 <section id="sparse-fba-with-min-flux">

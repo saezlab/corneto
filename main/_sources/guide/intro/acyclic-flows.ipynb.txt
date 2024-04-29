@@ -52,8 +52,9 @@
     }
    ],
    "source": [
-    "import corneto as cn\n",
     "import numpy as np\n",
+    "\n",
+    "import corneto as cn\n",
     "\n",
     "cn.info()"
    ]
@@ -213,20 +214,22 @@
    ],
    "source": [
     "G_ex = cn.Graph()\n",
-    "G_ex.add_edges([\n",
-    "    ('v1','v2'),\n",
-    "    ('v1','v7'),\n",
-    "    ('v3','v1'),\n",
-    "    ('v2','v4'),\n",
-    "    ('v4','v6'),\n",
-    "    ('v4','v7'),\n",
-    "    ('v5','v6'),\n",
-    "    ('v6','v7'),\n",
-    "    ('v7','v2'),\n",
-    "    ('v2','v5'),\n",
-    "    ('v3','v6'),\n",
-    "    ('v5','v1')\n",
-    "])\n",
+    "G_ex.add_edges(\n",
+    "    [\n",
+    "        (\"v1\", \"v2\"),\n",
+    "        (\"v1\", \"v7\"),\n",
+    "        (\"v3\", \"v1\"),\n",
+    "        (\"v2\", \"v4\"),\n",
+    "        (\"v4\", \"v6\"),\n",
+    "        (\"v4\", \"v7\"),\n",
+    "        (\"v5\", \"v6\"),\n",
+    "        (\"v6\", \"v7\"),\n",
+    "        (\"v7\", \"v2\"),\n",
+    "        (\"v2\", \"v5\"),\n",
+    "        (\"v3\", \"v6\"),\n",
+    "        (\"v5\", \"v1\"),\n",
+    "    ]\n",
+    ")\n",
     "G_ex.plot()"
    ]
   },
@@ -413,8 +416,8 @@
    ],
    "source": [
     "G = G_ex.copy()\n",
-    "G.add_edge((), 'v1')\n",
-    "G.add_edge('v7', ())\n",
+    "G.add_edge((), \"v1\")\n",
+    "G.add_edge(\"v7\", ())\n",
     "G.plot()"
    ]
   },
@@ -894,7 +897,7 @@
    "outputs": [],
    "source": [
     "lb = np.zeros(G.ne)\n",
-    "ub = 10*np.ones(G.ne)\n",
+    "ub = 10 * np.ones(G.ne)\n",
     "\n",
     "# We will add a negative lower bound for\n",
     "# the dummy edges that we added before\n",
