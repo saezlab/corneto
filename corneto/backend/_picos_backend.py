@@ -17,19 +17,19 @@ class PicosExpression(CExpression):
     def _create_proxy_expr(
         self, expr: Any, symbols: Optional[Set["CSymbol"]] = None
     ) -> "PicosExpression":
-        # if symbols is not None:
-        #    return PicosExpression(expr, self._proxy_symbols | symbols)
-        # return PicosExpression(expr, self._proxy_symbols)
         return PicosExpression(expr, symbols)
 
     def _elementwise_mul(self, other: Any) -> Any:
         return self._expr ^ other
 
     def _norm(self, p: int = 2) -> CExpression:
-        return pc.expressions.exp_norm.Norm(self._expr, p=p)
+        return pc.Norm(self._expr, p=p)
     
     def _sum(self, axis: Optional[int] = None) -> Any:
-        return pc.expressions.sum(self._expr, axis=axis)
+        return pc.sum(self._expr, axis=axis)
+    
+    def _max(self, axis: Optional[int] = None) -> Any:
+        raise NotImplementedError()
 
     @property
     def value(self) -> np.ndarray:
@@ -97,7 +97,7 @@ class PicosBackend(Backend):
             v = pc.BinaryVariable(name, shape)
         else:
             v = pc.RealVariable(name, shape, lower=lb, upper=ub)
-        return PicosSymbol(v, name, lb, ub)
+        return PicosSymbol(v, name, lb, ub, vartype=vartype)
 
     def _solve(
         self,

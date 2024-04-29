@@ -24,20 +24,19 @@ class CvxpyExpression(CExpression):
     def _create_proxy_expr(
         self, expr: Any, symbols: Optional[Set["CSymbol"]] = None
     ) -> "CvxpyExpression":
-        # TODO: Move to upper class
-        # if symbols is not None:
-        #    return CvxpyExpression(expr, self._proxy_symbols | symbols)
-        # return CvxpyExpression(expr, self._proxy_symbols)
         return CvxpyExpression(expr, symbols)
 
     def _elementwise_mul(self, other: Any) -> Any:
         return cp.multiply(self._expr, other)
 
-    def _norm(self, p: int = 2) -> CExpression:
+    def _norm(self, p: int = 2) -> Any:
         return cp.norm(self._expr, p=p)
     
     def _sum(self, axis: Optional[int] = None) -> Any:
         return cp.sum(self._expr, axis=axis)
+    
+    def _max(self, axis: Optional[int] = None) -> Any:
+        return cp.max(self._expr, axis=axis)
 
     @property
     def value(self) -> np.ndarray:

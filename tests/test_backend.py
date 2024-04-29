@@ -1,7 +1,7 @@
 import pytest
 import pathlib
 import numpy as np
-from corneto.backend import PicosBackend, CvxpyBackend, Backend
+from corneto.backend import PicosBackend, CvxpyBackend, Backend, VarType
 from corneto._graph import Graph
 import cvxpy as cp
 
@@ -69,6 +69,56 @@ def test_cvxpy_convex_apply():
     assert np.all(np.array(x.value) > np.array([-1e-6, 0.62, 0.36, -1e-6, -1e-6]))
 
 
+def test_delegate_multiply_shape(backend):
+    V = backend.Variable(shape=(2, 3))
+    V = V.multiply(np.ones((2, 3)))
+    assert V.shape == (2, 3)
+
+
+def test_delegate_sum_axis0_shape(backend):
+    V = backend.Variable(shape=(2, 3))
+    V = V.sum(axis=0)
+    if len(V.shape) == 1:
+        # Cvxpy assumes keepdims=False
+        assert V.shape == (3,)
+    else:
+        # Picos assumes keepdims=True
+        assert V.shape == (1, 3)
+
+
+def test_delegate_sum_axis1_shape(backend):
+    V = backend.Variable(shape=(2, 3))
+    V = V.sum(axis=1)
+    if len(V.shape) == 1:
+        # Cvxpy assumes keepdims=False
+        assert V.shape == (2,)
+    else:
+        # Picos assumes keepdims=True
+        assert V.shape == (2, 1)
+        
+
+def test_opt_delegate_sum_axis0(backend):
+    x = backend.Variable("x", (2, 3))
+    e = x.sum(axis=0)
+    P = backend.Problem()
+    P += x <= 10
+    esum = e[0] + e[1] + e[2]
+    P.add_objectives(esum, weights=-1)
+    P.solve()
+    assert np.isclose(esum.value, 60)
+
+
+def test_opt_delegate_sum_axis1(backend):
+    x = backend.Variable("x", (2, 3))
+    e = x.sum(axis=1)
+    P = backend.Problem()
+    P += x <= 10
+    esum = e[0] + e[1]
+    P.add_objectives(esum, weights=-1)
+    P.solve()
+    assert np.isclose(esum.value, 60)
+
+
 def test_cexpression_name(backend):
     x = backend.Variable("x")
     e = x <= 10
@@ -116,7 +166,7 @@ def test_register(backend):
     P = backend.Problem()
     x = backend.Variable("x", lb=-10, ub=10)
     P += x >= 0
-    P.register("1-x", 1-x)
+    P.register("1-x", 1 - x)
     assert "1-x" in P.expressions
 
 
@@ -124,15 +174,14 @@ def test_register_merge(backend):
     P1 = backend.Problem()
     x = backend.Variable("x", lb=-10, ub=10)
     P1 += x >= 0
-    P1.register("1-x", 1-x)
+    P1.register("1-x", 1 - x)
     P2 = backend.Problem()
     y = backend.Variable("y", lb=-10, ub=10)
     P2 += y >= 0
-    P2.register("1-y", 1-y)
+    P2.register("1-y", 1 - y)
     P = P1.merge(P2)
     assert "1-x" in P.expressions
     assert "1-y" in P.expressions
-
 
 
 def test_symbol_only_in_objective(backend):
@@ -176,6 +225,48 @@ def test_rmatmul_symbols(backend):
     x = backend.Variable("x", A.shape)
     P.add_objectives(x @ A, inplace=True)
     assert "x" in P.symbols
+
+
+def test_linearized_or_axis0(backend):
+    P = backend.Problem()
+    X = backend.Variable("X", (2, 3), vartype=VarType.BINARY)
+    P += backend.linear_or(X, axis=0, varname="v_or")
+    # Force X to have at least a 1 in the first column
+    P += P.expr.v_or[0] == 1
+    P.add_objectives(sum(X[:, 0]))
+    P.solve()
+    assert np.isclose(np.sum(X[:, 0].value), 1.0)
+
+
+def test_linearized_or_axis1(backend):
+    P = backend.Problem()
+    X = backend.Variable("X", (2, 3), vartype=VarType.BINARY)
+    P += backend.linear_or(X, axis=1, varname="v_or")
+    # Force X to have at least a 1 in the first row
+    P += P.expr.v_or[0] == 1
+    P.add_objectives(sum(X[0, :]))
+    P.solve()
+    assert np.isclose(np.sum(X[0, :].value), 1.0)
+
+
+def test_linearized_and_axis0(backend):
+    P = backend.Problem()
+    X = backend.Variable("X", (2, 3), vartype=VarType.BINARY)
+    P += backend.linear_and(X, axis=0, varname="v_and")
+    P += P.expr.v_and[0] == 1
+    P.add_objectives(sum(X[:, 0]))
+    P.solve()
+    assert np.isclose(np.sum(X[:, 0].value), 2.0)
+
+
+def test_linearized_and_axis1(backend):
+    P = backend.Problem()
+    X = backend.Variable("X", (2, 3), vartype=VarType.BINARY)
+    P += backend.linear_and(X, axis=1, varname="v_and")
+    P += P.expr.v_and[0] == 1
+    P.add_objectives(sum(X[0, :]))
+    P.solve()
+    assert np.isclose(np.sum(X[0, :].value), 3.0)
 
 
 def test_undirected_flow(backend):

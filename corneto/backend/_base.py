@@ -22,11 +22,11 @@ def _eq_shape(a: np.ndarray, b: np.ndarray) -> bool:
 def _identical_columns(array):
     # Get the first column as a reference column
     ref_column = array[:, 0]
-    
+
     # Compare all columns to the reference column
     # np.all will check if all elements in the result are True along axis 0 (down the rows)
     are_columns_identical = np.all(array == ref_column[:, np.newaxis], axis=0)
-    
+
     # np.all on the result checks if all columns are identical to the reference column
     return np.all(are_columns_identical)
 
@@ -108,7 +108,7 @@ class CExpression(abc.ABC):
     @_delegate
     def norm(self, p: int = 2) -> "CExpression":
         return self._norm(p=p)
-    
+
     @abc.abstractmethod
     def _sum(self, axis: Optional[int] = None) -> Any:
         pass
@@ -116,6 +116,14 @@ class CExpression(abc.ABC):
     @_delegate
     def sum(self, axis: Optional[int] = None) -> "CExpression":
         return self._sum(axis=axis)
+
+    @abc.abstractmethod
+    def _max(self, axis: Optional[int] = None) -> Any:
+        pass
+
+    @_delegate
+    def max(self, axis: Optional[int] = None) -> "CExpression":
+        return self._max(axis=axis)
 
     @_delegate
     def __getitem__(self, item) -> "CExpression":  # type: ignore
@@ -722,9 +730,13 @@ class Backend(abc.ABC):
         if shared_bounds and n_flows > 1:
             # check num dims of lb
             if len(shape) > 1 and shape[1] > 1 and not _identical_columns(lb):
-                raise ValueError("shared_bounds=True cannot be used when lower bounds are not identical across flows")
+                raise ValueError(
+                    "shared_bounds=True cannot be used when lower bounds are not identical across flows"
+                )
             if len(shape) > 1 and shape[1] > 1 and not _identical_columns(ub):
-                raise ValueError("shared_bounds=True cannot be used when upper bounds are not identical across flows")
+                raise ValueError(
+                    "shared_bounds=True cannot be used when upper bounds are not identical across flows"
+                )
             S = F.sum(axis=1)
             P += S <= ub[:, 0]
             P += S >= lb[:, 0]
@@ -969,6 +981,33 @@ class Backend(abc.ABC):
         return self.Problem(
             [xor >= x - y, xor >= y - x, xor <= x + y, xor <= 2 - x - y]
         )
+
+    def linear_or(
+        self, x: CSymbol, axis: Optional[int] = None, varname="_linear_or"
+    ):
+        # Check if the variable is binary, otherwise throw an error
+        if x._vartype != VarType.BINARY:
+            raise ValueError(f"Variable x has type {x._vartype} instead of BINARY")
+        Z = x.sum(axis=axis)
+        Z_norm = Z / x.shape[axis] # between 0-1
+        # Create a new binary variable to compute linearized or
+        Or = self.Variable(varname, Z.shape, 0, 1, vartype=VarType.BINARY)
+        return self.Problem([Or >= Z_norm, Or <= Z])
+
+
+    def linear_and(
+        self, x: CSymbol, axis: Optional[int] = None, varname="_linear_and"
+    ):
+        # Check if the variable is binary, otherwise throw an error
+        if x._vartype != VarType.BINARY:
+            raise ValueError(f"Variable x has type {x._vartype} instead of BINARY")
+        Z = x.sum(axis=axis)
+        N = x.shape[axis]
+        Z_norm = Z / N 
+        And = self.Variable(varname, Z.shape, 0, 1, vartype=VarType.BINARY)
+        return self.Problem([And <= Z_norm, And >= Z - N + 1])
+        
+        
 
 
 class NoBackend(Backend):
