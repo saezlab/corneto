@@ -80,6 +80,18 @@ networkx = ["networkx"]
 matplotlib = ["matplotlib"]
 
 
+[tool.ruff]
+ignore-init-module-imports = true
+fix = true
+select = ["E", "F", "W", "I", "D", "RUF"]
+
+[tool.ruff.flake8-quotes]
+docstring-quotes = "double"
+
+[tool.ruff.pydocstyle]
+convention = "google"
+
+
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
