@@ -98,7 +98,7 @@ We use `pytest` for running our automated tests. To run tests, use Poetry to exe
 poetry run pytest
 ```
 
-This command will run all test files in your project that follow the `test_*.py` or `*_test.py` naming conventions, as recognized by `pytest`.
+This command will run all test files in your project that follow the `test_*.py` naming convention, as recognized by `pytest`.
 
 ### Writing Tests
 
