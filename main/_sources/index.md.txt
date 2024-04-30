@@ -5,7 +5,7 @@
 :width: 320px
 ```
 
-<h3 style="text-align: center; margin-top: 20px;"> Unified Omics-Driven Framework for Network Inference </h3>
+<h3 style="text-align: center; margin-top: 20px;"> Unified Framework for Omics-Driven Network Inference </h3>
 
 CORNETO (Constraint-based Optimization for the Reconstruction of NETworks from Omics) is a package for unified biological network inference and contextualisation from prior knowledge, developed and maintained by the [Saez-Rodriguez Lab](https://saezlab.github.io/) at Heidelberg University.
 
