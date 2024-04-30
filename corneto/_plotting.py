@@ -1,7 +1,9 @@
-from typing import Any, Dict, Optional, Literal
-from corneto._graph import BaseGraph, Attr, EdgeType
-from corneto.backend._base import EXPR_NAME_FLOW
+from typing import Any, Dict, Literal, Optional
+
 import numpy as np
+
+from corneto._graph import Attr, BaseGraph, EdgeType
+from corneto.backend._base import EXPR_NAME_FLOW
 
 
 def clip_quantiles(arr, q):
@@ -14,7 +16,7 @@ def clip_quantiles(arr, q):
 
 def vertex_style(
     P,
-    G, # TODO: G should not be required
+    G,  # TODO: G should not be required
     vertex_var: str = "vertex_values",
     negative_color: str = "dodgerblue4",
     positive_color: str = "firebrick4",

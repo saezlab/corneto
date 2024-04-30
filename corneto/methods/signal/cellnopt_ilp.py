@@ -1,8 +1,10 @@
-import corneto as cn
 import re
+from typing import Literal, Optional
+
 import numpy as np
+
+import corneto as cn
 from corneto.backend._base import EXPR_NAME_FLOW
-from typing import Optional, Literal
 
 
 def clip_quantiles(arr, q):
@@ -65,8 +67,7 @@ def get_interactions(G):
 
 
 def get_AND_gate_nodes(G):
-    """
-    Get the indices of nodes that represent AND gates in the graph G.
+    """Get the indices of nodes that represent AND gates in the graph G.
 
     Parameters:
     - G (Graph): The input graph.
@@ -82,8 +83,7 @@ def get_AND_gate_nodes(G):
 
 
 def get_incidence_matrices_of_edges(G, as_dataframe=False):
-    """
-    Get the mapping matrices A, At, Ah from the graph G.
+    """Get the mapping matrices A, At, Ah from the graph G.
 
     Parameters:
     - G: The graph object.
@@ -107,8 +107,7 @@ def get_incidence_matrices_of_edges(G, as_dataframe=False):
 
 
 def get_egdes_with_head(G):
-    """
-    Get the indices of edges with a head node.
+    """Get the indices of edges with a head node.
 
     Parameters:
         G (graph): The input graph.
@@ -125,7 +124,6 @@ def get_inhibited_nodes(G, exp_list):
     """Returns an array, with shape = (len(G.V), len(exp_list)), where each column is a boolean array
     indicating if the node is inhibited in the corresponding experiment.
     """
-
     V_is_inhibited = np.full((len(G.V), len(exp_list)), False)
 
     for exp, iexp in zip(exp_list, range(len(exp_list))):
@@ -272,7 +270,6 @@ def cellnoptILP(G, exp_list, solver=None, alpha_flow=1e-3, verbose=False):
     # This is for general nodes that are not AND gates
     #
     for exp, iexp in zip(exp_list, range(len(exp_list))):
-
         is_regular_node = np.logical_and(~V_is_and, ~V_is_inhibited[:, iexp])
 
         P += (

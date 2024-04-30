@@ -80,14 +80,16 @@ networkx = ["networkx"]
 matplotlib = ["matplotlib"]
 
 [tool.ruff]
-ignore-init-module-imports = true
 fix = true
+
+[tool.ruff.lint]
+ignore-init-module-imports = true
 select = ["E", "F", "W", "I", "D", "RUF"]
 
-[tool.ruff.flake8-quotes]
+[tool.ruff.lint.flake8-quotes]
 docstring-quotes = "double"
 
-[tool.ruff.pydocstyle]
+[tool.ruff.lint.pydocstyle]
 convention = "google"
 
 [build-system]

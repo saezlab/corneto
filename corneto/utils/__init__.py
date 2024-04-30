@@ -1,7 +1,8 @@
-from corneto.utils._attr import Attr, Attributes
+import importlib
 import re
 from pathlib import Path
-import importlib
+
+from corneto.utils._attr import Attr, Attributes
 
 
 def get_library_version(lib_name):

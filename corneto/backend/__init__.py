@@ -1,3 +1,4 @@
+import corneto._settings as s
 from corneto.backend._base import (
     Backend,
     NoBackend,
@@ -5,7 +6,6 @@ from corneto.backend._base import (
 )
 from corneto.backend._cvxpy_backend import CvxpyBackend
 from corneto.backend._picos_backend import PicosBackend
-import corneto._settings as s
 
 supported_backends = [CvxpyBackend(), PicosBackend()]
 

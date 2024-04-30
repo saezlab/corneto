@@ -3,10 +3,9 @@
 # For the full list of built-in configuration values, see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
-import sys
 import os
+import sys
 from pathlib import Path
-
 
 # import pydata_sphinx_theme
 # from sphinx.application import Sphinx
@@ -25,7 +24,7 @@ author = "Pablo Rodriguez-Mier"
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
-    #"myst_parser",
+    # "myst_parser",
     "myst_nb",
     "sphinx_design",
     "sphinx.ext.autodoc",
@@ -36,7 +35,7 @@ extensions = [
     "sphinx.ext.autosummary",
     "sphinxcontrib.mermaid",
     "sphinx.ext.intersphinx",
-    'sphinx.ext.doctest',
+    "sphinx.ext.doctest",
     "sphinx_favicon",
     "hoverxref.extension",
     "sphinx_multiversion",
@@ -50,7 +49,7 @@ myst_enable_extensions = [
     "dollarmath",
     "html_image",
     "html_admonition",
-    "substitution"
+    "substitution",
 ]
 
 html_context = {
@@ -70,6 +69,7 @@ typehints_defaults = "braces"
 
 
 import corneto
+
 myst_substitutions = {
     "version": corneto.__version__,
 }
@@ -126,7 +126,7 @@ html_theme_options = {
         "json_url": "https://saezlab.github.io/corneto/main/_static/switcher.json",
         "version_match": corneto.__version__,
     },
-    "navbar_start": ["navbar-logo", "version-switcher"]
+    "navbar_start": ["navbar-logo", "version-switcher"],
 }
 
 intersphinx_mapping = {

@@ -40,7 +40,7 @@ def get_latest_version(
         if match:
             version = match.group(1)
             return version
-    except Exception as e:
+    except Exception:
         return None
 
 
@@ -49,8 +49,6 @@ def _support_html_output(force_html: bool = False):
     # and https://github.com/tqdm/tqdm/blob/0bb91857eca0d4aea08f66cf1c8949abe0cd6b7a/tqdm/notebook.py#L38
     try:
         from IPython import get_ipython
-        from IPython.core.display import display
-        from IPython.display import HTML
 
         ipy = get_ipython()
         if ipy is None:
@@ -115,7 +113,7 @@ def _get_info() -> Dict[str, Dict]:
 
         info["graphviz_version"]["message"] = f"v{graphviz.__version__}"
         info["graphviz_version"]["value"] = graphviz.__version__
-    except Exception as e:
+    except Exception:
         pass
     info["repo_url"] = {
         "title": "Repository",
@@ -189,7 +187,7 @@ def _info():
     if DEFAULT_BACKEND:
         print("Default backend (corneto.K):", str(DEFAULT_BACKEND))
         print(
-            f"Available solvers for {str(DEFAULT_BACKEND)}:",
+            f"Available solvers for {DEFAULT_BACKEND!s}:",
             ", ".join([s for s in DEFAULT_BACKEND.available_solvers()]),
         )
     else:

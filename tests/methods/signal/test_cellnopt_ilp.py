@@ -1,7 +1,6 @@
-import corneto as cn
 import numpy as np
 
-
+import corneto as cn
 from corneto.methods.signal.cellnopt_ilp import cellnoptILP
 
 
@@ -23,7 +22,6 @@ def get_test_graph_1():
 
 
 def test_cellnoptILP_AND():
-
     G1 = get_test_graph_1()
 
     # RAS is only active iff both EGF and TNFa are active -> we need to identify the AND gate
@@ -66,7 +64,6 @@ def test_cellnoptILP_AND():
 
 
 def test_cellnoptILP_OR():
-
     G1 = get_test_graph_1()
 
     # RAS is only active iff both EGF and TNFa are active -> we need to identify the AND gate

@@ -1,8 +1,9 @@
 import logging
 import os
 import sys
-import numpy as np
 from importlib.util import find_spec
+
+import numpy as np
 
 LOGGER = logging.getLogger("__corneto__")
 LOGGER.setLevel(logging.INFO)

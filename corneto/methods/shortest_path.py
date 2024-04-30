@@ -1,10 +1,11 @@
-import numpy as np
-from corneto._graph import BaseGraph, EdgeType, Attr
-from corneto.backend import Backend, DEFAULT_BACKEND
-from corneto.backend._base import Indicator, DEFAULT_UB
-from corneto import VarType
 from typing import Any, Optional
+
+import numpy as np
+
+from corneto._graph import BaseGraph
 from corneto._settings import LOGGER
+from corneto.backend import DEFAULT_BACKEND, Backend
+from corneto.backend._base import DEFAULT_UB, Indicator
 
 
 def shortest_path(

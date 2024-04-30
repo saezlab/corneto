@@ -1,12 +1,60 @@
-import corneto as cn
-from corneto._graph import BaseGraph
-from corneto._types import NxGraph, NxDiGraph
-from corneto.utils import import_optional_module, Attr
-from corneto._graph import EdgeType
+"""This module enables conversion between Corneto and NetworkX graph representations.
+
+It offers functions to transform Corneto graphs to NetworkX graphs and back,
+and a class that interfaces with NetworkX to utilize its features directly on
+Corneto graphs through transparent conversions.
+
+The module employs lazy loading for NetworkX, optimizing load times and memory
+when NetworkX is not immediately needed.
+
+Functions:
+    corneto_graph_to_networkx(G, skip_unsupported_edges=False):
+        Converts a Corneto graph to a NetworkX graph, supporting directed and
+        undirected edges, with an option to skip unsupported edge types.
+    networkx_to_corneto_graph(G):
+        Converts a NetworkX graph to a Corneto graph, maintaining edge data.
+
+Classes:
+    NetworkXWrapper:
+        Wraps NetworkX, providing dynamic access to attributes and methods.
+        Automatically converts Corneto graphs for NetworkX methods, allowing
+        seamless integration.
+
+Example Usage:
+    # Convert Corneto graph to NetworkX
+    G_corneto = cn.Graph()
+    G_corneto.add_edge(1, 2)
+    G_networkx = corneto_graph_to_networkx(G_corneto)
+
+    # Use NetworkX function on a Corneto graph via the wrapper
+    networkx.shortest_path(corneto_graph_to_networkx(G_corneto), source=1, target=2)
+
+Note:
+    Assumes 'corneto' library availability with specific structure. Designed for
+    basic edge types; does not support hybrid or hypergraphs unless skipped.
+"""
+
 from typing import Union
+
+import corneto as cn
+from corneto._graph import BaseGraph, EdgeType
+from corneto._types import NxDiGraph, NxGraph
+from corneto.utils import Attr, import_optional_module
 
 
 def corneto_graph_to_networkx(G: BaseGraph, skip_unsupported_edges: bool = False):
+    """Converts a Corneto graph to a NetworkX graph.
+
+    Args:
+        G (BaseGraph): The Corneto graph to convert.
+        skip_unsupported_edges (bool): If True, skip hyperedges and other unsupported edge types. Defaults to False.
+
+    Returns:
+        Union[NxGraph, NxDiGraph]: A NetworkX graph.
+
+    Raises:
+        ValueError: If the graph contains hyperedges or unsupported hybrid graph types.
+    """
     nx = import_optional_module("networkx")
     dir_edges = []
     undir_edges = []
@@ -42,6 +90,14 @@ def corneto_graph_to_networkx(G: BaseGraph, skip_unsupported_edges: bool = False
 
 
 def networkx_to_corneto_graph(G: Union[NxGraph, NxDiGraph]):
+    """Converts a NetworkX graph to a Corneto graph.
+
+    Args:
+        G (Union[NxGraph, NxDiGraph]): The NetworkX graph to convert.
+
+    Returns:
+        cn.Graph: A Corneto graph.
+    """
     Gc = cn.Graph()
     for edge in G.edges():
         e_data = G.get_edge_data(edge[0], edge[1], default=dict())
@@ -50,13 +106,27 @@ def networkx_to_corneto_graph(G: Union[NxGraph, NxDiGraph]):
 
 
 class NetworkXWrapper:
+    """Wrapper class to interface between NetworkX and Corneto graph types.
+
+    This class dynamically imports NetworkX when needed and converts Corneto graph arguments
+    to NetworkX graphs for function calls.
+    """
+
     def __init__(self):
+        """Initializes the NetworkX wrapper."""
         self.networkx = None
 
     def __getattr__(self, name):
+        """Dynamically handles attribute accesses and method calls on the NetworkX module.
+
+        Args:
+            name (str): The attribute name to fetch from NetworkX.
+
+        Returns:
+            Any: The attribute or wrapped method from the NetworkX library.
+        """
         if self.networkx is None:
             self.networkx = import_optional_module("networkx")
-        # This method is called whenever an attribute is accessed
         original_attr = getattr(self.networkx, name)
 
         if callable(original_attr):

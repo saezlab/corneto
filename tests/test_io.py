@@ -1,5 +1,7 @@
-import pytest
 import pathlib
+
+import pytest
+
 
 def test_read_sif():
     from corneto._io import _read_sif
@@ -25,9 +27,9 @@ def test_read_sif():
 
 def test_load_compressed_gem():
     from corneto._io import _load_compressed_gem
+
     file = pathlib.Path(__file__).parent.joinpath("gem", "mitocore.xz")
     S, R, M = _load_compressed_gem(file)
     assert S.shape == (441, 555)
     assert R.shape == (555,)
     assert M.shape == (441,)
-

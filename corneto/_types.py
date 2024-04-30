@@ -1,6 +1,7 @@
-from typing import TYPE_CHECKING, FrozenSet, Tuple, Union, Any, TypeVar
-from corneto._settings import LOGGER
 import importlib
+from typing import TYPE_CHECKING, Any, FrozenSet, Tuple, TypeVar, Union
+
+from corneto._settings import LOGGER
 
 Edge = Tuple[FrozenSet[Any], FrozenSet[Any]]
 StrOrInt = Union[str, int]

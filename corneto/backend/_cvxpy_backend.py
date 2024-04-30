@@ -1,15 +1,15 @@
-from typing import Set, Any, List, Optional, Tuple, Union
+from typing import Any, List, Optional, Set, Tuple, Union
+
+import numpy as np
+
+from corneto._constants import *
+from corneto._settings import LOGGER
 from corneto.backend._base import (
+    Backend,
     CExpression,
     CSymbol,
     ProblemDef,
-    Backend,
-    _delegate,
 )
-import numpy as np
-from corneto._constants import *
-from corneto._settings import LOGGER
-
 
 try:
     import cvxpy as cp
@@ -31,10 +31,10 @@ class CvxpyExpression(CExpression):
 
     def _norm(self, p: int = 2) -> Any:
         return cp.norm(self._expr, p=p)
-    
+
     def _sum(self, axis: Optional[int] = None) -> Any:
         return cp.sum(self._expr, axis=axis)
-    
+
     def _max(self, axis: Optional[int] = None) -> Any:
         return cp.max(self._expr, axis=axis)
 

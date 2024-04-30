@@ -20,9 +20,10 @@ from typing import (
 )
 
 import numpy as np
-from corneto._types import Edge, CobraModel, NxDiGraph, NxGraph
-from corneto._util import unique_iter
+
 from corneto._io import import_cobra_model
+from corneto._types import CobraModel, Edge, NxDiGraph, NxGraph
+from corneto._util import unique_iter
 from corneto.utils import Attr, Attributes
 
 T = TypeVar("T")
@@ -57,7 +58,8 @@ def _tpl(elements: Union[Any, Iterable[Any]]) -> Tuple[Any, ...]:
 
 class BaseGraph(abc.ABC):
     """BaseGraph class for graphs or hypergraphs with directed/undirected/mixed
-    and self edges"""
+    and self edges
+    """
 
     def __init__(self, default_edge_type: EdgeType = EdgeType.DIRECTED) -> None:
         """Initialize BaseGraph with default edge type.
@@ -647,7 +649,7 @@ class Graph(BaseGraph):
     default_edge_type
         Default edge type :class:`~corneto._graph.EdgeType`.
 
-    Examples
+    Examples:
     --------
     >>> graph = corneto.Graph()
     >>> graph.add_edge(1, 2)
@@ -688,7 +690,7 @@ class Graph(BaseGraph):
     ) -> int:
         sv = frozenset(source)
         tv = frozenset(target)
-        #uv = sv | tv
+        # uv = sv | tv
         edge = (sv, tv)
         self._edges.append(edge)
         idx = len(self._edges) - 1
