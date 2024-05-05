@@ -399,6 +399,42 @@ def test_acyclic_flow_undirected_edge(backend):
     assert np.allclose(sol, vsol1) or np.allclose(sol, vsol2)
 
 
+def test_feasible_loop(backend):
+    G = Graph()
+    G.add_edge((), 'A')
+    G.add_edge('A', ())
+    G.add_edge('A', 'B')
+    G.add_edge('B', 'A')
+    G.add_edge((), 'B')
+    G.add_edge('B', ())
+    P = backend.Flow(G)
+    P += P.expr.flow[2] >= 1
+    P += P.expr.flow[3] >= 1
+    if isinstance(backend, PicosBackend):
+        P.solve(solver="glpk")
+    else:
+        P.solve()
+    assert np.sum(P.expr.flow.value) >= 2
+
+
+def test_acyclic_unfeasible_loop(backend):
+    G = Graph()
+    G.add_edge((), 'A')
+    G.add_edge('A', ())
+    G.add_edge('A', 'B')
+    G.add_edge('B', 'A')
+    G.add_edge((), 'B')
+    G.add_edge('B', ())
+    P = backend.AcyclicFlow(G)
+    P += P.expr.with_flow[2] == 1
+    P += P.expr.with_flow[3] == 1
+    if isinstance(backend, PicosBackend):
+        P.solve(solver="glpk", primals=False)
+    else:
+        P.solve()
+    assert np.all(P.expr.flow.value == None)
+
+
 @pytest.mark.skip(reason="Only a small subset of solvers support this")
 def test_l2_norm(backend):
     x = np.array([1, 2])

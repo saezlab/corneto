@@ -768,6 +768,10 @@ class Backend(abc.ABC):
     ) -> ProblemDef:
         if not varname:
             varname = VAR_FLOW
+        if isinstance(lb, list):
+            lb = np.array(lb)
+        if isinstance(ub, list):
+            ub = np.array(ub)
         if not isinstance(lb, np.ndarray):
             lb = np.array([lb] * g.num_edges)
         if not isinstance(ub, np.ndarray):
@@ -820,8 +824,8 @@ class Backend(abc.ABC):
             e_ix = np.array([i for i, (s, t) in e_pos if len(s) > 0 and len(t) > 0])
             edges = [g.get_edge(i) for i in e_ix]
             # Get the index of the source / target vertices of the edge
-            s_idx = np.array([vix[list(s)[0]] for (s, _) in edges])
-            t_idx = np.array([vix[list(t)[0]] for (_, t) in edges])
+            s_idx = np.array([vix[next(iter(s))] for (s, _) in edges])
+            t_idx = np.array([vix[next(iter(t))] for (_, t) in edges])
             # The layer position in a DAG of the target vertex of the edge
             # has to be greater than the source vertex, otherwise Ip (pos flow) has to be 0
             if len(e_ix) > 0:
@@ -837,8 +841,8 @@ class Backend(abc.ABC):
             e_ix = np.array([i for i, (s, t) in e_neg if len(s) > 0 and len(t) > 0])
             edges = [g.get_edge(i) for i in e_ix]
             # Get the index of the source / target vertices of the edge
-            s_idx = np.array([vix[list(s)[0]] for (s, _) in edges])
-            t_idx = np.array([vix[list(t)[0]] for (_, t) in edges])
+            s_idx = np.array([vix[next(iter(s))] for (s, _) in edges])
+            t_idx = np.array([vix[next(iter(t))] for (_, t) in edges])
             if len(e_ix) > 0:
                 P += L[s_idx] - L[t_idx] >= In[e_ix] + (1 - g.num_vertices) * (
                     1 - In[e_ix]
