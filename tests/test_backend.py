@@ -401,12 +401,12 @@ def test_acyclic_flow_undirected_edge(backend):
 
 def test_feasible_loop(backend):
     G = Graph()
-    G.add_edge((), 'A')
-    G.add_edge('A', ())
-    G.add_edge('A', 'B')
-    G.add_edge('B', 'A')
-    G.add_edge((), 'B')
-    G.add_edge('B', ())
+    G.add_edge((), "A")
+    G.add_edge("A", ())
+    G.add_edge("A", "B")
+    G.add_edge("B", "A")
+    G.add_edge((), "B")
+    G.add_edge("B", ())
     P = backend.Flow(G)
     P += P.expr.flow[2] >= 1
     P += P.expr.flow[3] >= 1
@@ -419,12 +419,12 @@ def test_feasible_loop(backend):
 
 def test_acyclic_unfeasible_loop(backend):
     G = Graph()
-    G.add_edge((), 'A')
-    G.add_edge('A', ())
-    G.add_edge('A', 'B')
-    G.add_edge('B', 'A')
-    G.add_edge((), 'B')
-    G.add_edge('B', ())
+    G.add_edge((), "A")
+    G.add_edge("A", ())
+    G.add_edge("A", "B")
+    G.add_edge("B", "A")
+    G.add_edge((), "B")
+    G.add_edge("B", ())
     P = backend.AcyclicFlow(G)
     P += P.expr.with_flow[2] == 1
     P += P.expr.with_flow[3] == 1
