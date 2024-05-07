@@ -379,8 +379,7 @@ def signflow(
     )
 
 
-def expand_graph_for_flows(G:BaseGraph,
-                        exp_list):
+def expand_graph_for_flows(G: BaseGraph, exp_list):
     """Add edges to the perturbed and measured nodes in graph G to make flow possible."""
     G1 = G.copy()
     output_names = list(

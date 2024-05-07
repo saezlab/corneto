@@ -22,6 +22,7 @@ from corneto.methods.signal._util import (
     get_incidence_matrices_of_edges,
 )
 
+
 def clip_quantiles(arr, q):
     if q < 0 or q > 1:
         raise ValueError(f"Clipping value must be between 0 and 1, got {q}")
