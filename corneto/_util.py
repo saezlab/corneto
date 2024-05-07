@@ -143,12 +143,14 @@ def info():
 
     if supports_html():
         import base64
+        from importlib.resources import files
 
-        import pkg_resources
         from IPython.core.display import display
         from IPython.display import HTML
 
-        logo_path = pkg_resources.resource_filename(__name__, "resources/logo.png")
+        # logo_path = pkg_resources.resource_filename(__name__, "resources/logo.png")
+        logo_path = files("corneto").joinpath("resources/logo.png")
+
         with open(logo_path, "rb") as f:
             img_bytes = f.read()
         b64img = base64.b64encode(img_bytes).decode("utf-8")
