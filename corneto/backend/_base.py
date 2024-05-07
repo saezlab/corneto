@@ -751,6 +751,140 @@ class Backend(abc.ABC):
         P.register(alias_flow, F)
         return P
 
+    def Acyclic(
+        self,
+        g: BaseGraph,
+        P: ProblemDef,
+        indicator_positive_var_name: str = None,
+        indicator_negative_var_name: str = None,
+        acyclic_var_name: str = VAR_DAG,
+        max_parents: Optional[Union[int, Dict[Any, int]]] = None,
+        vertex_lb_dist: Optional[np.ndarray] = None
+    ) -> ProblemDef:
+        """Create acyclic constraints.
+
+        This function creates acyclic constraints. The acyclic constraints
+        ensure that the selected edges are acyclic, i.e. there are no cycles in the graph.
+
+        Parameters:
+        ----------
+        g : BaseGraph
+            The graph that defines the problem.
+        P : ProblemDef
+            The problem definition.
+        indicator_positive_var_name : str
+            The name of the indicator variable, i.e. which edge are selected. By default EXPR_NAME_FLOW_IPOS.
+        indicator_negative_var_name : str, optional
+            The name of the indicator variable for negative flows, by default None.
+            In case a negative flow appears, the source and target nodes of the edge are reversed.
+            For example, A->B with positive flow implies order(B) > order(A),
+            with negative flow it implies order(A) > order(B).
+        acyclic_var_name : str, optional
+            The name of the acyclic variable, by default VAR_DAG.
+        max_parents : Optional[Union[int, Dict[Any, int]]], optional
+            The maximum number of parents per node. If an integer is provided, the maximum number
+            of parents is the same for all nodes. If a dictionary is provided, the maximum number
+            of parents can be different for each node. By default None.
+        vertex_lb_dist : Optional[np.ndarray], optional
+            The lower bound distribution of the vertices. By default None.
+
+        Returns:
+        -------
+        ProblemDef
+            The problem definition with acyclic constraints.
+
+        Raises:
+        ------
+        NotImplementedError
+            If hyperedges are used.
+        """
+        for s, t in g.E:
+            if len(s) > 1 or len(t) > 1:
+                raise NotImplementedError("Hyperedges not supported")
+        if isinstance(max_parents, int):
+            max_parents = {v: max_parents for v in g.vertices}
+        Ip = In = None
+        if indicator_positive_var_name is not None and indicator_negative_var_name is not None:
+            Ip = P.expressions[indicator_positive_var_name]
+            In = P.expressions[indicator_negative_var_name]
+            I = Ip + In
+        elif indicator_positive_var_name is not None:
+            Ip = P.expressions[indicator_positive_var_name]
+            I = Ip
+        elif indicator_negative_var_name is not None:
+            In = P.expressions[indicator_negative_var_name]
+            I = In
+        else:
+            raise ValueError("At least one indicator variable name is required")
+
+        # Limit the number of parents per node, if requested
+        if max_parents is not None:
+            # Get indexes of edges vi->vj for all vi
+            for v, max in max_parents.items():
+                edges_idx = [i for i, _ in g.in_edges(v)]
+                if len(edges_idx) > 0:
+                    # Sum selected parent edges
+                    P += np.ones((len(edges_idx),)) @ I[edges_idx] <= max
+        # detect the number of DAG layers to add
+        if len(I.shape) == 1:
+            n_order = 1
+        else:
+            n_order = I.shape[1]
+        
+        # Create a DAG layer num for each vertex
+        L = self.Variable(acyclic_var_name, (g.num_vertices,n_order), 0, g.num_vertices - 1)
+        vix = {v: i for i, v in enumerate(g.vertices)}
+        for i_order in range(n_order):
+            if n_order == 1:
+                Ip_i_order = Ip
+                In_i_order = In
+            else:
+                if Ip is not None:
+                    Ip_i_order = Ip[:,i_order]
+                if In is not None:
+                    In_i_order = In[:,i_order]
+
+            # These constraints are not compatible with hyperedges
+            if Ip is not None:
+                # Get edges s->t that can have a positive flow
+                # check if Ip has ub field
+                if hasattr(Ip, "ub"):
+                    e_pos = [(i, g.get_edge(i)) for i in np.flatnonzero(Ip.ub > 0)]
+                    e_ix = np.array([i for i, (s, t) in e_pos if len(s) > 0 and len(t) > 0])
+                else:
+                    e_ix = np.array([i for i, (s, t) in enumerate(g.E) if len(s) > 0 and len(t) > 0])
+                edges = [g.get_edge(i) for i in e_ix]
+                # Get the index of the source / target vertices of the edge
+                s_idx = np.array([vix[list(s)[0]] for (s, _) in edges])
+                t_idx = np.array([vix[list(t)[0]] for (_, t) in edges])
+                # The layer position in a DAG of the target vertex of the edge
+                # has to be greater than the source vertex, otherwise Ip (pos flow) has to be 0
+                if len(e_ix) > 0:
+                    P += L[t_idx,i_order] - L[s_idx,i_order] >= Ip_i_order[e_ix] + (1 - g.num_vertices) * (
+                        1 - Ip_i_order[e_ix]
+                    )
+                    P += L[t_idx,i_order] - L[s_idx,i_order] <= g.num_vertices - 1
+            if In is not None:
+                # NOTE: Negative flows eq. to reversed directed edge
+                # Get edges s->t that can have a positive flow
+                if hasattr(In, "lb"):
+                    e_neg = [(i, g.get_edge(i)) for i in np.flatnonzero(In.lb < 0)]
+                    e_ix = np.array([i for i, (s, t) in e_neg if len(s) > 0 and len(t) > 0])
+                else:
+                    e_ix = np.array([i for i, (s, t) in enumerate(g.E) if len(s) > 0 and len(t) > 0])
+                edges = [g.get_edge(i) for i in e_ix]
+                # Get the index of the source / target vertices of the edge
+                s_idx = np.array([vix[list(s)[0]] for (s, _) in edges])
+                t_idx = np.array([vix[list(t)[0]] for (_, t) in edges])
+                if len(e_ix) > 0:
+                    P += L[s_idx,i_order] - L[t_idx,i_order] >= In_i_order[e_ix] + (1 - g.num_vertices) * (
+                        1 - In_i_order[e_ix]
+                    )
+                    P += L[s_idx,i_order] - L[t_idx,i_order] <= g.num_vertices - 1
+            # TODO: Raise error if hypergraph
+        return P
+
+
     def AcyclicFlow(
         self,
         g: BaseGraph,

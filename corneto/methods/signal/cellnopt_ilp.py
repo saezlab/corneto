@@ -22,7 +22,6 @@ from corneto.methods.signal._util import (
     get_incidence_matrices_of_edges,
 )
 
-
 def clip_quantiles(arr, q):
     if q < 0 or q > 1:
         raise ValueError(f"Clipping value must be between 0 and 1, got {q}")
@@ -254,7 +253,7 @@ def cellnoptILP(G, exp_list, solver=None, alpha_flow=1e-3, verbose=False):
 
 def report_solution_tables(G, exp_list, P):
     """Print the solution of the ILP model as tables.
-    
+
     PARAMETERS:
     - G: corneto.Graph object
     - exp_list: dictionary of experiments
@@ -278,7 +277,7 @@ def report_solution_tables(G, exp_list, P):
 
 def plot_solution_network_active_edges(G, P, iexp):
     """Plot the network with active edges.
-    
+
     PARAMETERS:
     - G: corneto.Graph object
     - P: solution of the ILP model

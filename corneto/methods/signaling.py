@@ -377,3 +377,25 @@ def signflow(
         ub_loss=ub_loss,
         lb_loss=lb_loss,
     )
+
+
+def expand_graph_for_flows(G:BaseGraph,
+                        exp_list):
+    """Add edges to the perturbed and measured nodes in graph G to make flow possible."""
+    G1 = G.copy()
+    output_names = list(
+        {key for exp in exp_list.values() for key in exp["output"].keys()}
+    )
+    input_names = list(
+        {key for exp in exp_list.values() for key in exp["input"].keys()}
+    )
+
+    output_names = list(set(output_names))
+    input_names = list(set(input_names))
+
+    for node in output_names:
+        G1.add_edge(node, ())
+    for node in input_names:
+        G1.add_edge((), node)
+
+    return G1

@@ -20,8 +20,12 @@ def vertex_style(
     vertex_var: str = "vertex_values",
     negative_color: str = "dodgerblue4",
     positive_color: str = "firebrick4",
+    condition: Optional[int] = 0,
 ):
-    v_values = np.array(P.expr[vertex_var].value)
+    if len(P.expr[vertex_var].value.shape) == 1:
+        v_values = np.array(P.expr[vertex_var].value)
+    else:
+        v_values = np.array(P.expr[vertex_var].value[:,condition])
     vertex_attrs = dict()
     for vn, v in zip(G.V, v_values):
         vertex_attrs[vn] = dict()
@@ -41,8 +45,13 @@ def edge_style(
     edge_var: str = "edge_values",
     negative_color: str = "dodgerblue4",
     positive_color: str = "firebrick4",
+    condition: Optional[int] = 0,
 ):
-    e_values = np.array(P.expr[edge_var].value)
+
+    if len(P.expr[edge_var].value.shape) == 1:
+        e_values = np.array(P.expr[edge_var].value)
+    else:
+        e_values = np.array(P.expr[edge_var].value[:,condition])
     edge_attrs = dict()
     for i, v in enumerate(e_values):
         if abs(v) > 0:

@@ -25,8 +25,6 @@ def get_incidence_matrices_of_edges(G, as_dataframe=False):
     return At, Ah
 
 
-
-
 def get_egdes_with_head(G):
     """Get the indices of edges with a head node.
 
@@ -39,7 +37,6 @@ def get_egdes_with_head(G):
     At, Ah = get_incidence_matrices_of_edges(G)
     edges_with_head = np.flatnonzero(np.sum(np.abs(Ah), axis=0) > 0)
     return edges_with_head
-
 
 
 def get_interactions(G):
@@ -63,6 +60,7 @@ def get_AND_gate_nodes(G):
     V_is_and = [bool(pattern.match(v)) for v in G.V]
 
     return np.array(V_is_and)
+
 
 def get_inhibited_nodes(G, exp_list):
     """Returns an array, with shape = (len(G.V), len(exp_list)), where each column is a boolean array
@@ -96,7 +94,6 @@ def presolve_report(G, exp_list):
     print(interaction)
     print("Edges with head:")
     print(edges_with_head)
-
 
 
 def check_exp_graph_consistency(G, exp_list):

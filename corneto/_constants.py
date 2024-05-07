@@ -9,7 +9,7 @@ EXPR_NAME_FLOW = "flow"
 EXPR_NAME_FLOW_IPOS = "positive_flow"
 EXPR_NAME_FLOW_INEG = "negative_flow"
 
-
+VAR_DAG = "_dag_layer"
 class Solver(str, Enum):
     GUROBI = "gurobi"
     COIN_OR_CBC = "cbc"
