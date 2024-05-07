@@ -44,20 +44,35 @@ def get_latest_version(
         return None
 
 
-def _support_html_output(force_html: bool = False):
-    # from https://github.com/tqdm/tqdm/blob/master/tqdm/autonotebook.py
-    # and https://github.com/tqdm/tqdm/blob/0bb91857eca0d4aea08f66cf1c8949abe0cd6b7a/tqdm/notebook.py#L38
-    try:
-        from IPython import get_ipython
+class DisplayInspector:
+    # From: https://stackoverflow.com/questions/70768390/detecting-if-ipython-notebook-is-outputting-to-a-terminal
+    """Objects that display as HTML or text."""
 
-        ipy = get_ipython()
-        if ipy is None:
-            return False
-        if "IPKernelApp" not in get_ipython().config:
-            return False
-        return True
-    except:
+    def __init__(self) -> None:
+        self.status = None
+
+    def _repr_html_(self) -> str:
+        self.status = "HTML"
+        return ""
+
+    def __repr__(self) -> str:
+        self.status = "Plain"
+        return ""
+
+
+def supports_html() -> bool:
+    # From: https://stackoverflow.com/questions/70768390/detecting-if-ipython-notebook-is-outputting-to-a-terminal
+    import sys
+
+    """Test whether current runtime supports HTML."""
+    if "IPython" not in sys.modules or "IPython.display" not in sys.modules:
         return False
+
+    from IPython.display import display
+
+    inspector = DisplayInspector()
+    display(inspector)
+    return inspector.status == "HTML"
 
 
 def _get_info() -> Dict[str, Dict]:
@@ -126,7 +141,7 @@ def _get_info() -> Dict[str, Dict]:
 def info():
     info = _get_info()
 
-    if _support_html_output():
+    if supports_html():
         import base64
 
         import pkg_resources
