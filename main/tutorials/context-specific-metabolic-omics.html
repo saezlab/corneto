@@ -411,7 +411,8 @@ document.write(`
 <h1>Context-specific metabolic model from transcriptomics data<a class="headerlink" href="#context-specific-metabolic-model-from-transcriptomics-data" title="Link to this heading">#</a></h1>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
 <span class="kn">import</span> <span class="nn">corneto</span> <span class="k">as</span> <span class="nn">cn</span>
 
@@ -591,7 +592,7 @@ document.write(`
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">corneto.methods.metabolism._utils</span> <span class="kn">import</span> <span class="n">get_unique_genes</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">corneto.methods.metabolism</span> <span class="kn">import</span> <span class="n">evaluate_gpr_expression</span><span class="p">,</span> <span class="n">get_unique_genes</span>
 
 <span class="n">genes</span> <span class="o">=</span> <span class="n">get_unique_genes</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">startswith</span><span class="o">=</span><span class="s2">&quot;b&quot;</span><span class="p">)</span>
 <span class="nb">len</span><span class="p">(</span><span class="n">genes</span><span class="p">)</span>
@@ -796,9 +797,7 @@ document.write(`
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">corneto.methods.metabolism._utils</span> <span class="kn">import</span> <span class="n">evaluate_gpr_expression</span>
-
-<span class="n">values</span> <span class="o">=</span> <span class="n">df_expr</span><span class="p">[[</span><span class="s2">&quot;gene&quot;</span><span class="p">,</span> <span class="s2">&quot;score&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;gene&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()[</span><span class="s2">&quot;score&quot;</span><span class="p">]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">values</span> <span class="o">=</span> <span class="n">df_expr</span><span class="p">[[</span><span class="s2">&quot;gene&quot;</span><span class="p">,</span> <span class="s2">&quot;score&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;gene&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()[</span><span class="s2">&quot;score&quot;</span><span class="p">]</span>
 <span class="n">e</span> <span class="o">=</span> <span class="n">evaluate_gpr_expression</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">get_attr_from_edges</span><span class="p">(</span><span class="s2">&quot;GPR&quot;</span><span class="p">),</span> <span class="n">values</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -806,9 +805,7 @@ document.write(`
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-
-<span class="kn">from</span> <span class="nn">corneto.methods.metabolism.fba</span> <span class="kn">import</span> <span class="n">multicondition_imat</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">corneto.methods.metabolism.fba</span> <span class="kn">import</span> <span class="n">multicondition_imat</span>
 
 <span class="n">P</span> <span class="o">=</span> <span class="n">multicondition_imat</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
 <span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;SCIP&quot;</span><span class="p">)</span>
