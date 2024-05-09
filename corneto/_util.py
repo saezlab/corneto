@@ -102,7 +102,7 @@ def _get_info() -> Dict[str, Dict]:
         "value": available_backends(),
     }
     info["default_backend"] = {
-        "title": "Default backend (corneto.K)",
+        "title": "Default backend (corneto.opt)",
         "message": "No backend detected, please install CVXPY or PICOS",
         "value": None,
     }

@@ -13,12 +13,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Ensures all history is fetched for sphinx-multiversion to detect all tags and branches
+          fetch-depth: 0
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: '3.11'
 
@@ -45,8 +45,23 @@ jobs:
           git config --local user.name "GitHub Action"
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs/_build/html
-          keep_files: false
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git fetch origin gh-pages
+          git checkout gh-pages || git checkout --orphan gh-pages
+          # Get the name of the branch that triggered the workflow
+          BRANCH_NAME=${GITHUB_REF#refs/heads/}
+          echo "Deploying documentation for branch: $BRANCH_NAME"
+  
+          # Removing old files
+          rm -rf "./$BRANCH_NAME"
+          mkdir -p "./$BRANCH_NAME"
+  
+          # Copying new files
+          cp -r "docs/_build/html/$BRANCH_NAME/." "./$BRANCH_NAME/"
+  
+          # Adding changes to git
+          git add .
+          git commit -m "Update docs for branch $BRANCH_NAME"
+          git push -u origin gh-pages
