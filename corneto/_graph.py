@@ -493,7 +493,25 @@ class BaseGraph(abc.ABC):
         return self.subgraph(reachable)
 
     def plot(self, **kwargs):
-        return self.to_graphviz(**kwargs)
+        Gv = self.to_graphviz(**kwargs)
+        try:
+            return Gv
+        except Exception as e:
+            from corneto._settings import LOGGER
+            from corneto._util import supports_html
+
+            LOGGER.warning(f"SVG+XML rendering failed: {e}.")
+            # Detect if HTML support
+            if supports_html():
+                from corneto.contrib._util import dot_vizjs_html
+
+                class _VizJS:
+                    def _repr_html_(self):
+                        return dot_vizjs_html(Gv)
+
+                return _VizJS()
+            else:
+                raise e
 
     def to_graphviz(self, **kwargs):
         from corneto._plotting import to_graphviz

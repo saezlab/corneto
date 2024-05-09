@@ -1,4 +1,4 @@
-def dot_vizjs(
+def dot_vizjs_html(
     dot_input,
     container_id=None,
     viz_js_url=None,
@@ -7,15 +7,6 @@ def dot_vizjs(
 ):
     import base64
     import uuid
-
-    try:
-        from IPython.display import HTML, display
-    except ImportError as e:
-        raise ImportError(
-            "IPython is not installed but is required for displaying the output "
-            "directly in Jupyter notebooks. Please install IPython with "
-            "`pip install ipython`."
-        ) from e
 
     # Generate a random container ID if none is provided
     if container_id is None:
@@ -40,15 +31,17 @@ def dot_vizjs(
 
     # Base64 encode the DOT content to safely embed it in HTML/JavaScript
     dot_string_base64 = base64.b64encode(dot_string.encode()).decode("utf-8")
-    if vizjs_version:
+    if vizjs_version is not None:
         vizjs_version = f"@{vizjs_version}"
+    else:
+        vizjs_version = ""
     # Setting default URLs if custom URLs are not provided
     if not viz_js_url:
         viz_js_url = f"https://unpkg.com/viz.js{vizjs_version}/viz.js"
     if not full_render_js_url:
         full_render_js_url = f"https://unpkg.com/viz.js{vizjs_version}/full.render.js"
 
-    html_code = f"""
+    return f"""
     <div id='{container_id}'></div> <!-- Container to display the graph -->
     <script>
     function loadScript(url, callback) {{
@@ -81,4 +74,31 @@ def dot_vizjs(
     renderGraph("{dot_string_base64}");
     </script>
     """
-    display(HTML(html_code))
+
+
+def dot_vizjs(
+    dot_input,
+    container_id=None,
+    viz_js_url=None,
+    full_render_js_url=None,
+    vizjs_version=None,
+):
+    html_code = dot_vizjs_html(
+        dot_input,
+        container_id=container_id,
+        viz_js_url=viz_js_url,
+        full_render_js_url=full_render_js_url,
+        vizjs_version=vizjs_version,
+    )
+
+    try:
+        from IPython.display import HTML, display
+
+        display(HTML(html_code))
+
+    except ImportError as e:
+        raise ImportError(
+            "IPython is not installed but is required for displaying the output "
+            "directly in Jupyter notebooks. Please install IPython with "
+            "`pip install ipython`."
+        ) from e
