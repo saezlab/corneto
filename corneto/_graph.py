@@ -495,6 +495,8 @@ class BaseGraph(abc.ABC):
     def plot(self, **kwargs):
         Gv = self.to_graphviz(**kwargs)
         try:
+            # Check if the object is able to produce a MIME bundle
+            Gv._repr_mimebundle_()
             return Gv
         except Exception as e:
             from corneto._settings import LOGGER
