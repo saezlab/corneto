@@ -381,16 +381,7 @@ class ProblemDef:
         return self._direction
 
     def copy(self) -> "ProblemDef":
-        # TODO: Fix copy! add tests
-        return ProblemDef(
-            self._backend,
-            self._constraints,
-            self._objectives,
-            self._expressions,
-            self._weights,
-            self._direction,
-            self._graph,
-        )
+        raise NotImplementedError()
 
     def _add(self, other: Any, inplace: bool = False):
         if isinstance(other, ProblemDef):
