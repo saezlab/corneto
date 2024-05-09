@@ -202,7 +202,7 @@ def _info():
         ", ".join([str(e) + f" v{e.version()}" for e in available_backends()]),
     )
     if DEFAULT_BACKEND:
-        print("Default backend (corneto.K):", str(DEFAULT_BACKEND))
+        print("Default backend (corneto.opt):", str(DEFAULT_BACKEND))
         print(
             f"Available solvers for {DEFAULT_BACKEND!s}:",
             ", ".join([s for s in DEFAULT_BACKEND.available_solvers()]),
