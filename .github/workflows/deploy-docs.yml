@@ -32,38 +32,28 @@ jobs:
 
       - name: Build Docs with sphinx-multiversion
         run: |
-          poetry run sphinx-multiversion docs docs/_build/html
+          # Create a temporary directory
+          TEMP_DIR=$(mktemp -d)
+          echo "Temporary directory is $TEMP_DIR"
+          poetry run sphinx-multiversion docs $TEMP_DIR
       
       - name: Create Redirection HTML
         run: |
-          echo '<meta http-equiv="refresh" content="0; URL='https://saezlab.github.io/corneto/main'" />' > docs/_build/html/index.html
-  
-      - name: Prepare Deployment
-        run: |
-          touch ./docs/_build/html/.nojekyll
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
+          echo '<meta http-equiv="refresh" content="0; URL='https://saezlab.github.io/corneto/main'" />' > $TEMP_DIR/index.html
 
       - name: Deploy to GitHub Pages
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          
-          # Create a temporary directory
-          TEMP_DIR=$(mktemp -d)
-          echo "Temporary directory is $TEMP_DIR"
-          
-          # Build and prepare all the files first
-          mkdir -p "$TEMP_DIR/$BRANCH_NAME"
-          cp -r "docs/_build/html/." "$TEMP_DIR/$BRANCH_NAME/"
+          touch $TEMP_DIR/.nojekyll
           
           # Now checkout to gh-pages
           git fetch origin gh-pages
           git checkout gh-pages || git checkout --orphan gh-pages
   
           # Clean existing files for the branch and copy new ones
-          rm -rf "./$BRANCH_NAME"
-          cp -r "$TEMP_DIR/$BRANCH_NAME/." "./$BRANCH_NAME/"
+          rm -rf "$BRANCH_NAME"
+          cp -r "$TEMP_DIR/$BRANCH_NAME" "$BRANCH_NAME"
   
           # Adding changes to git
           git add .
