@@ -482,14 +482,14 @@ document.write(`
             </td>
             <td>
             <table>
-                <tr><td>Installed version:</td><td style='text-align:left'>v1.0.0.dev0 (up to date)</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.4.3, PICOS v2.4.17</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CLARABEL, CVXOPT, ECOS, ECOS_BB, GLPK, GLPK_MI, OSQP, SCIP, SCIPY, SCS</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.3</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href=https://github.com/saezlab/corneto>https://github.com/saezlab/corneto</a></td></tr>
+                <tr><td>Installed version:</td><td style='text-align:left'>v1.0.0.dev0 (up to date)</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.5.1, PICOS v2.4.17</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CLARABEL, CVXOPT, ECOS, ECOS_BB, GLPK, GLPK_MI, OSQP, SCIP, SCIPY, SCS</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.3</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href=https://github.com/saezlab/corneto>https://github.com/saezlab/corneto</a></td></tr>
             </table>
             </td>
         </tr>
         </table></div></div>
 </div>
-<section id="a-toy-example">
-<h2>A toy example<a class="headerlink" href="#a-toy-example" title="Link to this heading">#</a></h2>
+<section id="a-quick-example">
+<h2>A quick example<a class="headerlink" href="#a-quick-example" title="Link to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">G</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Graph</span><span class="o">.</span><span class="n">from_sif_tuples</span><span class="p">(</span>
@@ -530,50 +530,48 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(CORNETO) May 09 09:35:02 AM - INFO    : 2/2 inputs mapped to the graph
-(CORNETO) May 09 09:35:02 AM - INFO    : 2/2 outputs mapped to the graph
-(CORNETO) May 09 09:35:02 AM - INFO    : Pruning the graph with size: V x E = (6, 6)...
-(CORNETO) May 09 09:35:02 AM - INFO    : Finished. Final size: V x E = (6, 6).
-(CORNETO) May 09 09:35:02 AM - INFO    : 2/2 inputs after pruning.
-(CORNETO) May 09 09:35:02 AM - INFO    : 2/2 outputs after pruning.
-(CORNETO) May 09 09:35:02 AM - INFO    : Converting into a flow graph...
-(CORNETO) May 09 09:35:02 AM - INFO    : Creating a network flow problem...
-(CORNETO) May 09 09:35:02 AM - INFO    : Preprocess completed.
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(CORNETO) May 12 10:41:15 AM - INFO    : 2/2 inputs mapped to the graph
+(CORNETO) May 12 10:41:15 AM - INFO    : 2/2 outputs mapped to the graph
+(CORNETO) May 12 10:41:15 AM - INFO    : Pruning the graph with size: V x E = (6, 6)...
+(CORNETO) May 12 10:41:15 AM - INFO    : Finished. Final size: V x E = (6, 6).
+(CORNETO) May 12 10:41:15 AM - INFO    : 2/2 inputs after pruning.
+(CORNETO) May 12 10:41:15 AM - INFO    : 2/2 outputs after pruning.
+(CORNETO) May 12 10:41:15 AM - INFO    : Converting into a flow graph...
+(CORNETO) May 12 10:41:15 AM - INFO    : Creating a network flow problem...
+(CORNETO) May 12 10:41:15 AM - INFO    : Preprocess completed.
 ===============================================================================
                                      CVXPY                                     
-                                     v1.4.3                                    
+                                     v1.5.1                                    
 ===============================================================================
-(CVXPY) May 09 09:35:02 AM: Your problem has 86 variables, 20 constraints, and 0 parameters.
-(CVXPY) May 09 09:35:02 AM: It is compliant with the following grammars: DCP, DQCP
-(CVXPY) May 09 09:35:02 AM: (If you need to solve this problem multiple times, but with different data, consider using parameters.)
-(CVXPY) May 09 09:35:02 AM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
-(CVXPY) May 09 09:35:02 AM: Your problem is compiled with the CPP canonicalization backend.
+(CVXPY) May 12 10:41:15 AM: Your problem has 86 variables, 197 constraints, and 0 parameters.
+(CVXPY) May 12 10:41:15 AM: It is compliant with the following grammars: DCP, DQCP
+(CVXPY) May 12 10:41:15 AM: (If you need to solve this problem multiple times, but with different data, consider using parameters.)
+(CVXPY) May 12 10:41:15 AM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
+(CVXPY) May 12 10:41:15 AM: Your problem is compiled with the CPP canonicalization backend.
 -------------------------------------------------------------------------------
                                   Compilation                                  
 -------------------------------------------------------------------------------
-(CVXPY) May 09 09:35:02 AM: Compiling problem (target solver=SCIP).
-(CVXPY) May 09 09:35:02 AM: Reduction chain: Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; SCIP
-(CVXPY) May 09 09:35:02 AM: Applying reduction Dcp2Cone
-(CVXPY) May 09 09:35:02 AM: Applying reduction CvxAttr2Constr
-(CVXPY) May 09 09:35:02 AM: Applying reduction ConeMatrixStuffing
-(CVXPY) May 09 09:35:02 AM: Applying reduction SCIP
-(CVXPY) May 09 09:35:03 AM: Finished problem compilation (took 3.014e-02 seconds).
+(CVXPY) May 12 10:41:15 AM: Compiling problem (target solver=SCIP).
+(CVXPY) May 12 10:41:15 AM: Reduction chain: Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; SCIP
+(CVXPY) May 12 10:41:15 AM: Applying reduction Dcp2Cone
+(CVXPY) May 12 10:41:15 AM: Applying reduction CvxAttr2Constr
+(CVXPY) May 12 10:41:15 AM: Applying reduction ConeMatrixStuffing
+(CVXPY) May 12 10:41:15 AM: Applying reduction SCIP
+(CVXPY) May 12 10:41:15 AM: Finished problem compilation (took 3.480e-02 seconds).
 -------------------------------------------------------------------------------
                                 Numerical solver                               
 -------------------------------------------------------------------------------
-(CVXPY) May 09 09:35:03 AM: Invoking solver SCIP  to obtain a solution.
--------------------------------------------------------------------------------
-                                    Summary                                    
--------------------------------------------------------------------------------presolving:
+(CVXPY) May 12 10:41:15 AM: Invoking solver SCIP  to obtain a solution.
+presolving:
 (round 1, fast)       36 del vars, 95 del conss, 0 add conss, 48 chg bounds, 1 chg sides, 23 chg coeffs, 0 upgd conss, 0 impls, 28 clqs
-(round 2, fast)       54 del vars, 132 del conss, 0 add conss, 53 chg bounds, 10 chg sides, 32 chg coeffs, 0 upgd conss, 0 impls, 20 clqs
-(round 3, fast)       61 del vars, 145 del conss, 0 add conss, 53 chg bounds, 12 chg sides, 34 chg coeffs, 0 upgd conss, 0 impls, 18 clqs
-(round 4, fast)       64 del vars, 147 del conss, 0 add conss, 53 chg bounds, 16 chg sides, 38 chg coeffs, 0 upgd conss, 0 impls, 18 clqs
-(round 5, fast)       66 del vars, 151 del conss, 0 add conss, 53 chg bounds, 16 chg sides, 38 chg coeffs, 0 upgd conss, 0 impls, 18 clqs
-(round 6, exhaustive) 66 del vars, 151 del conss, 0 add conss, 53 chg bounds, 16 chg sides, 38 chg coeffs, 40 upgd conss, 0 impls, 18 clqs
+(round 2, fast)       54 del vars, 129 del conss, 0 add conss, 52 chg bounds, 9 chg sides, 31 chg coeffs, 0 upgd conss, 0 impls, 20 clqs
+(round 3, fast)       63 del vars, 145 del conss, 0 add conss, 52 chg bounds, 11 chg sides, 33 chg coeffs, 0 upgd conss, 0 impls, 18 clqs
+(round 4, fast)       65 del vars, 147 del conss, 0 add conss, 52 chg bounds, 15 chg sides, 37 chg coeffs, 0 upgd conss, 0 impls, 18 clqs
+(round 5, fast)       67 del vars, 151 del conss, 0 add conss, 52 chg bounds, 15 chg sides, 37 chg coeffs, 0 upgd conss, 0 impls, 18 clqs
+(round 6, exhaustive) 67 del vars, 151 del conss, 0 add conss, 52 chg bounds, 15 chg sides, 37 chg coeffs, 40 upgd conss, 0 impls, 18 clqs
    (0.0s) probing cycle finished: starting next cycle
-(round 7, exhaustive) 68 del vars, 151 del conss, 0 add conss, 53 chg bounds, 16 chg sides, 38 chg coeffs, 40 upgd conss, 28 impls, 46 clqs
-(round 8, medium)     68 del vars, 155 del conss, 0 add conss, 53 chg bounds, 16 chg sides, 38 chg coeffs, 40 upgd conss, 28 impls, 46 clqs
+(round 7, exhaustive) 69 del vars, 151 del conss, 0 add conss, 52 chg bounds, 15 chg sides, 37 chg coeffs, 40 upgd conss, 28 impls, 46 clqs
+(round 8, medium)     69 del vars, 155 del conss, 0 add conss, 52 chg bounds, 15 chg sides, 37 chg coeffs, 40 upgd conss, 28 impls, 46 clqs
    (0.0s) probing cycle finished: starting next cycle
    (0.0s) symmetry computation started: requiring (bin +, int +, cont +), (fixed: bin -, int -, cont -)
    (0.0s) symmetry computation finished: 2 generators found (max: 1500, log10 of symmetry group size: 0.6) (symcode time: 0.00)
@@ -582,9 +580,9 @@ dynamic symmetry handling statistics:
    orbital reduction:         no components
    lexicographic reduction:   no permutations
 handled 1 out of 1 symmetry components
-(round 9, exhaustive) 68 del vars, 155 del conss, 3 add conss, 53 chg bounds, 16 chg sides, 38 chg coeffs, 40 upgd conss, 28 impls, 46 clqs
+(round 9, exhaustive) 69 del vars, 155 del conss, 3 add conss, 52 chg bounds, 15 chg sides, 37 chg coeffs, 40 upgd conss, 28 impls, 46 clqs
 presolving (10 rounds: 10 fast, 5 medium, 4 exhaustive):
- 68 deleted vars, 155 deleted constraints, 3 added constraints, 53 tightened bounds, 0 added holes, 16 changed sides, 38 changed coefficients
+ 69 deleted vars, 155 deleted constraints, 3 added constraints, 52 tightened bounds, 0 added holes, 15 changed sides, 37 changed coefficients
  28 implications, 46 cliques
 presolved problem has 27 variables (19 bin, 0 int, 0 impl, 8 cont) and 45 constraints
      16 constraints of type &lt;varbound&gt;
@@ -595,46 +593,86 @@ transformed objective value is always integral (scale: 0.1)
 Presolving Time: 0.00
 
  time | node  | left  |LP iter|LP it/n|mem/heur|mdpt |vars |cons |rows |cuts |sepa|confs|strbr|  dualbound   | primalbound  |  gap   | compl. 
-p 0.0s|     1 |     0 |     2 |     - |  clique|   0 |  27 |  45 |  42 |   0 |  0 |   0 |   0 |-3.500000e+00 | 1.000000e-01 |    Inf | unknown
-p 0.0s|     1 |     0 |     2 |     - |   locks|   0 |  27 |  45 |  42 |   0 |  0 |   0 |   0 |-3.500000e+00 |-6.000000e-01 | 483.33%| unknown
-p 0.0s|     1 |     0 |     2 |     - | vbounds|   0 |  27 |  45 |  42 |   0 |  0 |   0 |   0 |-3.500000e+00 |-1.600000e+00 | 118.75%| unknown
-p 0.0s|     1 |     0 |     2 |     - | vbounds|   0 |  27 |  46 |  42 |   0 |  0 |   1 |   0 |-3.500000e+00 |-3.200000e+00 |   9.37%| unknown
-  0.0s|     1 |     0 |    17 |     - |  1787k |   0 |  27 |  29 |  42 |   0 |  0 |   7 |   0 |-3.300000e+00 |-3.200000e+00 |   3.13%| unknown
-r 0.0s|     1 |     0 |    17 |     - |rounding|   0 |  27 |  29 |  42 |   0 |  0 |   7 |   0 |-3.300000e+00 |-3.300000e+00 |   0.00%| unknown
-  0.0s|     1 |     0 |    17 |     - |  1788k |   0 |  27 |  29 |  42 |   0 |  0 |   7 |   0 |-3.300000e+00 |-3.300000e+00 |   0.00%| unknown
+p 0.0s|     1 |     0 |     1 |     - |  clique|   0 |  27 |  45 |  42 |   0 |  0 |   0 |   0 |-3.500000e+00 | 1.000000e-01 |    Inf | unknown
+p 0.0s|     1 |     0 |     1 |     - |   locks|   0 |  27 |  45 |  42 |   0 |  0 |   0 |   0 |-3.500000e+00 |-6.000000e-01 | 483.33%| unknown
+p 0.0s|     1 |     0 |     1 |     - | vbounds|   0 |  27 |  46 |  42 |   0 |  0 |   1 |   0 |-3.500000e+00 |-1.600000e+00 | 118.75%| unknown
+p 0.0s|     1 |     0 |     1 |     - | vbounds|   0 |  27 |  48 |  42 |   0 |  0 |   3 |   0 |-3.500000e+00 |-3.200000e+00 |   9.37%| unknown
+  0.0s|     1 |     0 |    25 |     - |  1784k |   0 |  27 |  49 |  42 |   0 |  0 |   8 |   0 |-3.300000e+00 |-3.200000e+00 |   3.13%| unknown
+r 0.0s|     1 |     0 |    25 |     - |rounding|   0 |  27 |  49 |  39 |   0 |  0 |   8 |   0 |-3.300000e+00 |-3.300000e+00 |   0.00%| unknown
+  0.0s|     1 |     0 |    25 |     - |  1784k |   0 |  27 |  49 |  39 |   0 |  0 |   8 |   0 |-3.300000e+00 |-3.300000e+00 |   0.00%| unknown
+  0.0s|     1 |     0 |    25 |     - |  1784k |   0 |  27 |  49 |  39 |   0 |  0 |   8 |   0 |-3.300000e+00 |-3.300000e+00 |   0.00%| unknown
 
 SCIP Status        : problem is solved [optimal solution found]
-Solving Time (sec) : 0.00
+Solving Time (sec) : 0.01
 Solving Nodes      : 1
 Primal Bound       : -3.30000000000000e+00 (5 solutions)
 Dual Bound         : -3.30000000000000e+00
 Gap                : 0.00 %
-
-(CVXPY) May 09 09:35:03 AM: Problem status: optimal
-(CVXPY) May 09 09:35:03 AM: Optimal value: 7.000e-01
-(CVXPY) May 09 09:35:03 AM: Compilation took 3.014e-02 seconds
-(CVXPY) May 09 09:35:03 AM: Solver (including time spent in interface) took 1.395e-02 seconds
-(CORNETO) May 09 09:35:03 AM - INFO    : Finished in 0.07 s.
+-------------------------------------------------------------------------------
+                                    Summary                                    
+-------------------------------------------------------------------------------
+(CVXPY) May 12 10:41:15 AM: Problem status: optimal
+(CVXPY) May 12 10:41:15 AM: Optimal value: 7.000e-01
+(CVXPY) May 12 10:41:15 AM: Compilation took 3.480e-02 seconds
+(CVXPY) May 12 10:41:15 AM: Solver (including time spent in interface) took 2.185e-02 seconds
+(CORNETO) May 12 10:41:15 AM - INFO    : Finished in 0.08 s.
 </pre></div>
 </div>
 </div>
 </div>
+<p>The carnival problem has two objectives <code class="docutils literal notranslate"><span class="pre">P.objectives</span></code>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">P.objectives[0]</span></code>: the error of fitting the measurements (Transcription Factors)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">P.objectives[1]</span></code>: the size of the network</p></li>
+</ul>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">P</span><span class="o">.</span><span class="n">objectives</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We can check the error. Values larger than 0 indicate that</span>
+<span class="c1"># some TF or measurement was not selected.</span>
+<span class="n">P</span><span class="o">.</span><span class="n">objectives</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>7.0
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([0.])
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># The method for plotting will be simplified in next versions</span>
-<span class="n">G</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Variables that are defined by CARNIVAL</span>
+<span class="n">P</span><span class="o">.</span><span class="n">expr</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_flow&#39;: Variable((14,), _flow),
+ &#39;_flow_ipos&#39;: Variable((14,), _flow_ipos, boolean=True),
+ &#39;species_inhibited_c0&#39;: Variable((10,), species_inhibited_c0, boolean=True),
+ &#39;reaction_sends_activation_c0&#39;: Variable((14,), reaction_sends_activation_c0, boolean=True),
+ &#39;species_activated_c0&#39;: Variable((10,), species_activated_c0, boolean=True),
+ &#39;reaction_sends_inhibition_c0&#39;: Variable((14,), reaction_sends_inhibition_c0, boolean=True),
+ &#39;dag_layer_position_c0&#39;: Variable((10,), dag_layer_position_c0),
+ &#39;flow&#39;: Variable((14,), _flow),
+ &#39;edge_values_c0&#39;: Expression(AFFINE, UNKNOWN, (14,)),
+ &#39;vertex_values_c0&#39;: Expression(AFFINE, UNKNOWN, (10,))}
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Gf</span><span class="o">.</span><span class="n">plot_values</span><span class="p">(</span><span class="n">vertex_values</span><span class="o">=</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">vertex_values_c0</span><span class="p">,</span> <span class="n">edge_values</span><span class="o">=</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">edge_values_c0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/443cf7bd4db35676d58fdb902fcfd857934e3a7c2731577a6acf2f279d44b8b3.svg" src="../../_images/443cf7bd4db35676d58fdb902fcfd857934e3a7c2731577a6acf2f279d44b8b3.svg" /></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">G</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
     <span class="n">custom_edge_attr</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">edge_style</span><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="n">edge_var</span><span class="o">=</span><span class="s2">&quot;edge_values_c0&quot;</span><span class="p">),</span>
     <span class="n">custom_vertex_attr</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">vertex_style</span><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="n">Gf</span><span class="p">,</span> <span class="n">vertex_var</span><span class="o">=</span><span class="s2">&quot;vertex_values_c0&quot;</span><span class="p">),</span>
 <span class="p">)</span>
@@ -681,32 +719,32 @@ Gap                : 0.00 %
   <tbody>
     <tr>
       <th>0</th>
-      <td>N1</td>
-      <td>0.0</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>I1</td>
-      <td>1.0</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>I2</td>
-      <td>1.0</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>N2</td>
-      <td>-1.0</td>
-    </tr>
-    <tr>
-      <th>4</th>
       <td>M2</td>
       <td>1.0</td>
     </tr>
     <tr>
-      <th>5</th>
+      <th>1</th>
+      <td>N2</td>
+      <td>-1.0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>N1</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>I2</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>4</th>
       <td>M1</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>I1</td>
       <td>1.0</td>
     </tr>
     <tr>
@@ -845,7 +883,172 @@ Gap                : 0.00 %
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/ce2f5af01bd2077bfb3fcf71b46af3f583eeee1c7a3227111de5a9c77fdf40f5.svg" src="../../_images/ce2f5af01bd2077bfb3fcf71b46af3f583eeee1c7a3227111de5a9c77fdf40f5.svg" /></div>
+<img alt="../../_images/a18af31210c20b9afdc10fc3443dfc3ddab9d41d7f88310804f0f80d84116ddc.svg" src="../../_images/a18af31210c20b9afdc10fc3443dfc3ddab9d41d7f88310804f0f80d84116ddc.svg" /></div>
+</div>
+</section>
+<section id="fast-carnival">
+<h2>Fast carnival<a class="headerlink" href="#fast-carnival" title="Link to this heading">#</a></h2>
+<p>For larger problems, and when a fast solver is not available, we provide a heuristic version of CARNIVAL that uses a greedy algorithm to solve the problem faster. However, solutions are not optimal and the final size of the networks cannot be controlled, but provides a good approximation of the optimal solution.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">corneto.methods</span> <span class="kn">import</span> <span class="n">fast_carnival</span>
+<span class="kn">from</span> <span class="nn">corneto.methods.carnival</span> <span class="kn">import</span> <span class="n">read_dataset</span>
+
+<span class="n">G</span><span class="p">,</span> <span class="n">dict_data</span> <span class="o">=</span> <span class="n">read_dataset</span><span class="p">(</span><span class="s2">&quot;carnival_example.zip&quot;</span><span class="p">)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(4931, 13157)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dict_data</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;EGFR&#39;: (&#39;P&#39;, -1),
+ &#39;AEBP1&#39;: (&#39;M&#39;, -1),
+ &#39;CREB3&#39;: (&#39;M&#39;, 1),
+ &#39;EGR3&#39;: (&#39;M&#39;, -1),
+ &#39;ELK1&#39;: (&#39;M&#39;, -1),
+ &#39;FOSL2&#39;: (&#39;M&#39;, -1),
+ &#39;FOXA3&#39;: (&#39;M&#39;, 1),
+ &#39;FOXE1&#39;: (&#39;M&#39;, 1),
+ &#39;HIPK2&#39;: (&#39;M&#39;, 1),
+ &#39;HOXA2&#39;: (&#39;M&#39;, 1),
+ &#39;HOXB7&#39;: (&#39;M&#39;, -1),
+ &#39;HOXD3&#39;: (&#39;M&#39;, 1),
+ &#39;KDM5C&#39;: (&#39;M&#39;, -1),
+ &#39;KDM5D&#39;: (&#39;M&#39;, 1),
+ &#39;KLF2&#39;: (&#39;M&#39;, -1),
+ &#39;NEUROD1&#39;: (&#39;M&#39;, -1),
+ &#39;NFATC4&#39;: (&#39;M&#39;, -1),
+ &#39;NFYB&#39;: (&#39;M&#39;, -1),
+ &#39;NHLH2&#39;: (&#39;M&#39;, 1),
+ &#39;PLAGL2&#39;: (&#39;M&#39;, -1),
+ &#39;RUNX2&#39;: (&#39;M&#39;, -1),
+ &#39;SIRT1&#39;: (&#39;M&#39;, 1),
+ &#39;SUPT20H&#39;: (&#39;M&#39;, 1),
+ &#39;TBX20&#39;: (&#39;M&#39;, -1),
+ &#39;TET1&#39;: (&#39;M&#39;, 1),
+ &#39;ZBTB4&#39;: (&#39;M&#39;, -1)}
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">c_inputs</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">dict_data</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;P&quot;</span><span class="p">}</span>
+<span class="n">c_outputs</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">dict_data</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;M&quot;</span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Gc</span><span class="p">,</span> <span class="n">selected_edges</span><span class="p">,</span> <span class="n">paths</span><span class="p">,</span> <span class="n">stats</span><span class="p">,</span> <span class="n">errors</span> <span class="o">=</span> <span class="n">fast_carnival</span><span class="p">(</span>
+    <span class="n">G</span><span class="p">,</span> <span class="n">c_inputs</span><span class="p">,</span> <span class="n">c_outputs</span><span class="p">,</span> <span class="n">restricted_search</span><span class="o">=</span><span class="kc">False</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1/1 inputs mapped to the graph
+16/25 outputs mapped to the graph
+Pruning the graph with size: V x E = (4931, 13157)...
+Finished. Final size: V x E = (1182, 5789).
+NEUROD1 (L4), ELK1 (L3), NFYB (L3), SIRT1 (L3), RUNX2 (L3), AEBP1 (L3), HIPK2 (L3), NFATC4 (L3), HOXB7 (L4), ZBTB4 (L4)
+L1  :      1 iters, 0.00 s.
+L2  :     41 iters, 0.00 s.
+ &gt; -EGFR -&gt; +CRK -&gt; +MAPK8 -&gt; +SIRT1
+ &gt; -EGFR -&gt; +CRK -&gt; +MAPK8 -&gt; -NFATC4
+ &gt; -EGFR -&gt; -PTPN1 -&gt; +ABL1 -&gt; +HIPK2
+ &gt; -EGFR -&gt; -PRKDC -&gt; -MAPK8 -&gt; -ELK1
+   ! conflict: -EGFR/-MAPK8 != -EGFR/+MAPK8
+ &gt; -EGFR -&gt; -MAP2K1 -&gt; -MAPK1 -&gt; -ELK1
+ &gt; -EGFR -&gt; -MAP2K1 -&gt; -MAPK1 -&gt; -AEBP1
+ &gt; -EGFR -&gt; -MAP2K1 -&gt; -MAPK3 -&gt; -RUNX2
+L3  :    316 iters, 0.01 s.
+ &gt; -EGFR -&gt; -STAT1 -&gt; +CREBBP -&gt; ... -&gt; -NFYB
+ &gt; -EGFR -&gt; -PIK3R1 -&gt; -RAC1 -&gt; ... -&gt; -NEUROD1
+ &gt; -EGFR -&gt; -PTPN1 -&gt; +ABL1 -&gt; ... -&gt; -ZBTB4
+ &gt; -EGFR -&gt; -ERBB2 -&gt; +CDK1 -&gt; ... -&gt; -HOXB7
+Finished (0.18 s)
+ &gt; Number of selected edges: 26
+ &gt; Total iterations: 2287
+ &gt; Detected loops: 255
+ &gt; Conflicts: 1
+Total error: 15
+Number of selected edges: 26
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">node_values</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">node_values</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="n">G_sol</span> <span class="o">=</span> <span class="n">Gc</span><span class="o">.</span><span class="n">edge_subgraph</span><span class="p">(</span><span class="n">selected_edges</span><span class="p">)</span>
+
+<span class="n">V</span> <span class="o">=</span> <span class="n">G_sol</span><span class="o">.</span><span class="n">V</span>
+<span class="n">vertex_values</span> <span class="o">=</span> <span class="p">[</span><span class="n">node_values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">V</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">errors</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;AEBP1&#39;: 0,
+ &#39;CREB3&#39;: 1,
+ &#39;EGR3&#39;: 1,
+ &#39;ELK1&#39;: 0,
+ &#39;FOSL2&#39;: 1,
+ &#39;FOXA3&#39;: 1,
+ &#39;FOXE1&#39;: 1,
+ &#39;HIPK2&#39;: 0,
+ &#39;HOXA2&#39;: 1,
+ &#39;HOXB7&#39;: 0,
+ &#39;HOXD3&#39;: 1,
+ &#39;KDM5C&#39;: 1,
+ &#39;KDM5D&#39;: 1,
+ &#39;KLF2&#39;: 1,
+ &#39;NEUROD1&#39;: 0,
+ &#39;NFATC4&#39;: 0,
+ &#39;NFYB&#39;: 0,
+ &#39;NHLH2&#39;: 1,
+ &#39;PLAGL2&#39;: 1,
+ &#39;RUNX2&#39;: 0,
+ &#39;SIRT1&#39;: 0,
+ &#39;SUPT20H&#39;: 1,
+ &#39;TBX20&#39;: 1,
+ &#39;TET1&#39;: 1,
+ &#39;ZBTB4&#39;: 0}
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">G_sol</span><span class="o">.</span><span class="n">plot_values</span><span class="p">(</span><span class="n">vertex_values</span><span class="o">=</span><span class="n">vertex_values</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/a611717058041567090a4563f14a2f8125974cc83a7f80508687554b10f489ef.svg" src="../../_images/a611717058041567090a4563f14a2f8125974cc83a7f80508687554b10f489ef.svg" /></div>
 </div>
 </section>
 </section>
@@ -896,7 +1099,8 @@ Gap                : 0.00 %
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-toy-example">A toy example</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-quick-example">A quick example</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fast-carnival">Fast carnival</a></li>
 </ul>
   </nav></div>
 

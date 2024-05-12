@@ -475,7 +475,7 @@ document.write(`
             </td>
             <td>
             <table>
-                <tr><td>Installed version:</td><td style='text-align:left'>v1.0.0.dev0 (up to date)</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.4.3, PICOS v2.4.17</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CLARABEL, CVXOPT, ECOS, ECOS_BB, GLPK, GLPK_MI, OSQP, SCIP, SCIPY, SCS</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.3</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href=https://github.com/saezlab/corneto>https://github.com/saezlab/corneto</a></td></tr>
+                <tr><td>Installed version:</td><td style='text-align:left'>v1.0.0.dev0 (up to date)</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.5.1, PICOS v2.4.17</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CLARABEL, CVXOPT, ECOS, ECOS_BB, GLPK, GLPK_MI, OSQP, SCIP, SCIPY, SCS</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.3</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href=https://github.com/saezlab/corneto>https://github.com/saezlab/corneto</a></td></tr>
             </table>
             </td>
         </tr>
@@ -680,7 +680,7 @@ document.write(`
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">G_c</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Graph</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;my_graph.pkl.gz&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">G_c</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Graph</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;my_graph.pkl.xz&quot;</span><span class="p">)</span>
 <span class="n">G_c</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -691,12 +691,12 @@ document.write(`
 </section>
 <section id="hypergraphs">
 <h2>Hypergraphs<a class="headerlink" href="#hypergraphs" title="Link to this heading">#</a></h2>
-<p>Graphs in corneto support also hyper-edges connecting sets of vertices, something which is not supported by <code class="docutils literal notranslate"><span class="pre">networkx</span></code>. This is very useful to model more complex prior knowledge, such as metabolic networks, where edges are reactions connecting multiple vertices (reactants and products), e.g., <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">+</span> <span class="pre">B</span> <span class="pre">-&gt;</span> <span class="pre">C</span> <span class="pre">+</span> <span class="pre">D</span></code>:</p>
+<p>Graphs in corneto support also hyper-edges connecting sets of vertices, something which is not supported by <code class="docutils literal notranslate"><span class="pre">networkx</span></code>. This is very useful to model more complex prior knowledge, such as metabolic networks, where edges are reactions connecting multiple vertices (reactants and products), e.g., <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">+</span> <span class="pre">B</span> <span class="pre">-&gt;</span> <span class="pre">C</span> <span class="pre">+</span> <span class="pre">D</span></code>, <code class="docutils literal notranslate"><span class="pre">D</span> <span class="pre">-&gt;</span> <span class="pre">E</span> <span class="pre">+</span> <span class="pre">F</span></code>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">G</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
 <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">({</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="s2">&quot;D&quot;</span><span class="p">})</span>
-<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="p">{</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">})</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;E&quot;</span><span class="p">,</span> <span class="s2">&quot;F&quot;</span><span class="p">})</span>
 <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">((),</span> <span class="s2">&quot;A&quot;</span><span class="p">)</span>
 <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">((),</span> <span class="s2">&quot;B&quot;</span><span class="p">)</span>
 <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="p">())</span>
@@ -705,7 +705,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/7b0efd675a987e24b0eca9c4e9d35bd4ff8ce8df1dd1f2f1533e658fe95f6498.svg" src="../../_images/7b0efd675a987e24b0eca9c4e9d35bd4ff8ce8df1dd1f2f1533e658fe95f6498.svg" /></div>
+<img alt="../../_images/63f3a2b874cab567a4ef5c2bac08bba3eb04b2e306901c8340c376d63c555673.svg" src="../../_images/63f3a2b874cab567a4ef5c2bac08bba3eb04b2e306901c8340c376d63c555673.svg" /></div>
 </div>
 </section>
 </section>

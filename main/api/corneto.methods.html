@@ -451,9 +451,52 @@ document.write(`
 <section id="module-corneto.methods.carnival">
 <span id="corneto-methods-carnival-module"></span><h2>corneto.methods.carnival module<a class="headerlink" href="#module-corneto.methods.carnival" title="Link to this heading">#</a></h2>
 <dl class="py function">
-<dt class="sig sig-object py" id="corneto.methods.carnival.info">
-<span class="sig-prename descclassname"><span class="pre">corneto.methods.carnival.</span></span><span class="sig-name descname"><span class="pre">info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.carnival.info" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="corneto.methods.carnival.read_dataset">
+<span class="sig-prename descclassname"><span class="pre">corneto.methods.carnival.</span></span><span class="sig-name descname"><span class="pre">read_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">zip_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.carnival.read_dataset" title="Link to this definition">#</a></dt>
+<dd><p>Extracts and processes a graph and its vertex attributes from a zipped dataset.</p>
+<p>The function reads two CSV files from a specified zipfile: ‘pkn.csv’ and ‘data.csv’.
+The ‘pkn.csv’ contains graph edges with three columns: ‘source’, ‘interaction’,
+and ‘target’. The ‘interaction’ column uses integers to denote the type of
+interaction (1 for activation, -1 for inhibition). The ‘data.csv’ file contains
+vertex attributes with three columns: ‘vertex’, ‘value’, and ‘type’, where ‘value’
+can be a continuous measure such as from a t-statistic in differential expression,
+and ‘type’ categorizes vertices as either inputs (‘P’ for perturbation) or outputs
+(‘M’ for measurement).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>zip_path</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The file path to the zip file containing the dataset.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>A tuple containing:</dt><dd><ul class="simple">
+<li><p>Graph: A graph object initialized with edges from ‘pkn.csv’. Each edge is
+defined by a source, a target, and an interaction type.</p></li>
+<li><p>dict: A dictionary mapping each protein (vertex) to a tuple of (‘type’,
+‘value’), where ‘type’ is either ‘P’ or ‘M’ and ‘value’ represents the
+continuous state of the protein.</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)">tuple</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/exceptions.html#FileNotFoundError" title="(in Python v3.12)"><strong>FileNotFoundError</strong></a> – If the zip file cannot be found at the provided path.</p></li>
+<li><p><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/exceptions.html#KeyError" title="(in Python v3.12)"><strong>KeyError</strong></a> – If expected columns are missing in the CSV files, indicating incorrect
+    or incomplete data.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">graph</span><span class="p">,</span> <span class="n">vertex_attrs</span> <span class="o">=</span> <span class="n">read_dataset</span><span class="p">(</span><span class="s1">&#39;path/to/dataset.zip&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>  <span class="c1"># Shape of the imported graph ([vertices, edges])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">vertex_attrs</span><span class="p">)</span> <span class="c1"># Displays protein attributes</span>
+</pre></div>
+</div>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="corneto.methods.carnival.runVanillaCarnival">
@@ -486,14 +529,14 @@ document.write(`
 
 <dl class="py function">
 <dt class="sig sig-object py" id="corneto.methods.carnival.heuristic_carnival">
-<span class="sig-prename descclassname"><span class="pre">corneto.methods.carnival.</span></span><span class="sig-name descname"><span class="pre">heuristic_carnival</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">priorKnowledgeNetwork</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">perturbations</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measurements</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">full_bfs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prune</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.carnival.heuristic_carnival" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">corneto.methods.carnival.</span></span><span class="sig-name descname"><span class="pre">heuristic_carnival</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">priorKnowledgeNetwork</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">perturbations</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measurements</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">restricted_search</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prune</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_edges</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.carnival.heuristic_carnival" title="Link to this definition">#</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>priorKnowledgeNetwork</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.12)"><em>List</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.12)"><em>Tuple</em></a><em>] </em><em>| </em><a class="hxr-hoverxref hxr-tooltip reference internal" href="corneto.html#corneto.Graph" title="corneto._graph.Graph"><em>Graph</em></a>)</p></li>
 <li><p><strong>perturbations</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.12)"><em>Dict</em></a>)</p></li>
 <li><p><strong>measurements</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.12)"><em>Dict</em></a>)</p></li>
-<li><p><strong>full_bfs</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>)</p></li>
+<li><p><strong>restricted_search</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>)</p></li>
 <li><p><strong>prune</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>)</p></li>
 </ul>
 </dd>
@@ -502,12 +545,12 @@ document.write(`
 
 <dl class="py function">
 <dt class="sig sig-object py" id="corneto.methods.carnival.get_result">
-<span class="sig-prename descclassname"><span class="pre">corneto.methods.carnival.</span></span><span class="sig-name descname"><span class="pre">get_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">P</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">condition</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'c0'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.carnival.get_result" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">corneto.methods.carnival.</span></span><span class="sig-name descname"><span class="pre">get_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">P</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">condition</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'c0'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_dummies</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.carnival.get_result" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="corneto.methods.carnival.get_selected_edges">
-<span class="sig-prename descclassname"><span class="pre">corneto.methods.carnival.</span></span><span class="sig-name descname"><span class="pre">get_selected_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">P</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">condition</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'c0'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.carnival.get_selected_edges" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">corneto.methods.carnival.</span></span><span class="sig-name descname"><span class="pre">get_selected_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">P</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">condition</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'c0'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_dummies</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.carnival.get_selected_edges" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
@@ -517,7 +560,7 @@ document.write(`
 
 <dl class="py function">
 <dt class="sig sig-object py" id="corneto.methods.carnival.bfs_search">
-<span class="sig-prename descclassname"><span class="pre">corneto.methods.carnival.</span></span><span class="sig-name descname"><span class="pre">bfs_search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">final_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">queue_max_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subset_edges</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.carnival.bfs_search" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">corneto.methods.carnival.</span></span><span class="sig-name descname"><span class="pre">bfs_search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">final_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">queue_max_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subset_edges</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_edges</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.carnival.bfs_search" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 </section>
@@ -716,7 +759,7 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#subpackages">Subpackages</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#submodules">Submodules</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-corneto.methods.carnival">corneto.methods.carnival module</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.carnival.info"><code class="docutils literal notranslate"><span class="pre">info()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.carnival.read_dataset"><code class="docutils literal notranslate"><span class="pre">read_dataset()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.carnival.runVanillaCarnival"><code class="docutils literal notranslate"><span class="pre">runVanillaCarnival()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.carnival.runInverseCarnival"><code class="docutils literal notranslate"><span class="pre">runInverseCarnival()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.carnival.heuristic_carnival"><code class="docutils literal notranslate"><span class="pre">heuristic_carnival()</span></code></a></li>

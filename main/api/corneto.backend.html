@@ -477,6 +477,34 @@ document.write(`
 <dl class="py method">
 <dt class="sig sig-object py" id="corneto.backend.Backend.Variable">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Variable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lb</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ub</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vartype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">VarType.CONTINUOUS</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.backend.Backend.Variable" title="Link to this definition">#</a></dt>
+<dd><p>Create a variable for optimization.</p>
+<p>This method defines an optimization variable with optional bounds, type, and
+additional graph-related properties.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>Optional</em><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>]</em>) – The name of the variable. Defaults to None.</p></li>
+<li><p><strong>shape</strong> (<em>Optional</em><em>[</em><em>Tuple</em><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>...</em><em>]</em><em>]</em>) – The shape of the variable as a tuple. Defaults to None.</p></li>
+<li><p><strong>lb</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>np.ndarray</em><em>]</em><em>]</em>) – The lower bound of the variable.
+Can be a scalar or an array. Defaults to None.</p></li>
+<li><p><strong>ub</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>np.ndarray</em><em>]</em><em>]</em>) – The upper bound of the variable.
+Can be a scalar or an array. Defaults to None.</p></li>
+<li><p><strong>vartype</strong> (<a class="hxr-hoverxref hxr-tooltip reference internal" href="#corneto.backend.VarType" title="corneto.backend.VarType"><em>VarType</em></a>) – The type of the variable (e.g., continuous, integer).
+Defaults to VarType.CONTINUOUS.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The created variable symbol, to be used in further expressions or constraints.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>CSymbol</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.backend.Backend.Parameter">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Parameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.backend.Backend.Parameter" title="Link to this definition">#</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">CSymbol</span></code></span></p>
@@ -485,9 +513,7 @@ document.write(`
 <dd class="field-even"><ul class="simple">
 <li><p><strong>name</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
 <li><p><strong>shape</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.12)"><em>Tuple</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>...</em><em>] </em><em>| </em><em>None</em>)</p></li>
-<li><p><strong>lb</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em> | </em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>ndarray</em></a><em> | </em><em>None</em>)</p></li>
-<li><p><strong>ub</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em> | </em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>ndarray</em></a><em> | </em><em>None</em>)</p></li>
-<li><p><strong>vartype</strong> (<a class="hxr-hoverxref hxr-tooltip reference internal" href="#corneto.backend.VarType" title="corneto._constants.VarType"><em>VarType</em></a>)</p></li>
+<li><p><strong>value</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><em>Any</em></a>)</p></li>
 </ul>
 </dd>
 </dl>
@@ -537,26 +563,6 @@ document.write(`
 <li><p><strong>warm_start</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>)</p></li>
 <li><p><strong>verbosity</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>)</p></li>
 </ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="corneto.backend.Backend.Constant">
-<span class="sig-name descname"><span class="pre">Constant</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#corneto.backend.Backend.Constant" title="Link to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">CSymbol</span></code></span></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="corneto.backend.Backend.Parameter">
-<span class="sig-name descname"><span class="pre">Parameter</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#corneto.backend.Backend.Parameter" title="Link to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">CSymbol</span></code></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -751,6 +757,34 @@ document.write(`
 <dl class="py method">
 <dt class="sig sig-object py" id="corneto.backend.CvxpyBackend.Variable">
 <span class="sig-name descname"><span class="pre">Variable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lb</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ub</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vartype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">VarType.CONTINUOUS</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.backend.CvxpyBackend.Variable" title="Link to this definition">#</a></dt>
+<dd><p>Create a variable for optimization.</p>
+<p>This method defines an optimization variable with optional bounds, type, and
+additional graph-related properties.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>Optional</em><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>]</em>) – The name of the variable. Defaults to None.</p></li>
+<li><p><strong>shape</strong> (<em>Optional</em><em>[</em><em>Tuple</em><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>...</em><em>]</em><em>]</em>) – The shape of the variable as a tuple. Defaults to None.</p></li>
+<li><p><strong>lb</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>np.ndarray</em><em>]</em><em>]</em>) – The lower bound of the variable.
+Can be a scalar or an array. Defaults to None.</p></li>
+<li><p><strong>ub</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>np.ndarray</em><em>]</em><em>]</em>) – The upper bound of the variable.
+Can be a scalar or an array. Defaults to None.</p></li>
+<li><p><strong>vartype</strong> (<a class="hxr-hoverxref hxr-tooltip reference internal" href="#corneto.backend.VarType" title="corneto.backend.VarType"><em>VarType</em></a>) – The type of the variable (e.g., continuous, integer).
+Defaults to VarType.CONTINUOUS.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The created variable symbol, to be used in further expressions or constraints.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>CSymbol</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.backend.CvxpyBackend.Parameter">
+<span class="sig-name descname"><span class="pre">Parameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.backend.CvxpyBackend.Parameter" title="Link to this definition">#</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">CSymbol</span></code></span></p>
@@ -759,9 +793,7 @@ document.write(`
 <dd class="field-even"><ul class="simple">
 <li><p><strong>name</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
 <li><p><strong>shape</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.12)"><em>Tuple</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>...</em><em>] </em><em>| </em><em>None</em>)</p></li>
-<li><p><strong>lb</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em> | </em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>ndarray</em></a><em> | </em><em>None</em>)</p></li>
-<li><p><strong>ub</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em> | </em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>ndarray</em></a><em> | </em><em>None</em>)</p></li>
-<li><p><strong>vartype</strong> (<a class="hxr-hoverxref hxr-tooltip reference internal" href="#corneto.backend.VarType" title="corneto._constants.VarType"><em>VarType</em></a>)</p></li>
+<li><p><strong>value</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><em>Any</em></a>)</p></li>
 </ul>
 </dd>
 </dl>
@@ -816,7 +848,36 @@ document.write(`
 
 <dl class="py method">
 <dt class="sig sig-object py" id="corneto.backend.PicosBackend.Variable">
-<span class="sig-name descname"><span class="pre">Variable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lb</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ub</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vartype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">VarType.CONTINUOUS</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.backend.PicosBackend.Variable" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">Variable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lb</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ub</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vartype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">VarType.CONTINUOUS</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.backend.PicosBackend.Variable" title="Link to this definition">#</a></dt>
+<dd><p>Create a variable for optimization.</p>
+<p>This method defines an optimization variable with optional bounds, type, and
+additional graph-related properties.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>Optional</em><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>]</em>) – The name of the variable. Defaults to None.</p></li>
+<li><p><strong>shape</strong> (<em>Optional</em><em>[</em><em>Tuple</em><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>...</em><em>]</em><em>]</em>) – The shape of the variable as a tuple. Defaults to None.</p></li>
+<li><p><strong>lb</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>np.ndarray</em><em>]</em><em>]</em>) – The lower bound of the variable.
+Can be a scalar or an array. Defaults to None.</p></li>
+<li><p><strong>ub</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>np.ndarray</em><em>]</em><em>]</em>) – The upper bound of the variable.
+Can be a scalar or an array. Defaults to None.</p></li>
+<li><p><strong>vartype</strong> (<a class="hxr-hoverxref hxr-tooltip reference internal" href="#corneto.backend.VarType" title="corneto.backend.VarType"><em>VarType</em></a>) – The type of the variable (e.g., continuous, integer).
+Defaults to VarType.CONTINUOUS.</p></li>
+<li><p><strong>variable</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The created variable symbol, to be used in further expressions or constraints.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>CSymbol</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.backend.PicosBackend.Parameter">
+<span class="sig-name descname"><span class="pre">Parameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.backend.PicosBackend.Parameter" title="Link to this definition">#</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">CSymbol</span></code></span></p>
@@ -825,9 +886,7 @@ document.write(`
 <dd class="field-even"><ul class="simple">
 <li><p><strong>name</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
 <li><p><strong>shape</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.12)"><em>Tuple</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>...</em><em>] </em><em>| </em><em>None</em>)</p></li>
-<li><p><strong>lb</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em> | </em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>ndarray</em></a><em> | </em><em>None</em>)</p></li>
-<li><p><strong>ub</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em> | </em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>ndarray</em></a><em> | </em><em>None</em>)</p></li>
-<li><p><strong>vartype</strong> (<a class="hxr-hoverxref hxr-tooltip reference internal" href="#corneto.backend.VarType" title="corneto._constants.VarType"><em>VarType</em></a>)</p></li>
+<li><p><strong>value</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><em>Any</em></a>)</p></li>
 </ul>
 </dd>
 </dl>
@@ -891,11 +950,10 @@ document.write(`
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.Backend.get_symbols"><code class="docutils literal notranslate"><span class="pre">Backend.get_symbols()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.Backend.available_solvers"><code class="docutils literal notranslate"><span class="pre">Backend.available_solvers()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.Backend.Variable"><code class="docutils literal notranslate"><span class="pre">Backend.Variable()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.Backend.Parameter"><code class="docutils literal notranslate"><span class="pre">Backend.Parameter()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.Backend.Problem"><code class="docutils literal notranslate"><span class="pre">Backend.Problem()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.Backend.build"><code class="docutils literal notranslate"><span class="pre">Backend.build()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.Backend.solve"><code class="docutils literal notranslate"><span class="pre">Backend.solve()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.Backend.Constant"><code class="docutils literal notranslate"><span class="pre">Backend.Constant()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.Backend.Parameter"><code class="docutils literal notranslate"><span class="pre">Backend.Parameter()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.Backend.Flow"><code class="docutils literal notranslate"><span class="pre">Backend.Flow()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.Backend.AcyclicFlow"><code class="docutils literal notranslate"><span class="pre">Backend.AcyclicFlow()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.Backend.Indicator"><code class="docutils literal notranslate"><span class="pre">Backend.Indicator()</span></code></a></li>
@@ -915,6 +973,7 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.CvxpyBackend"><code class="docutils literal notranslate"><span class="pre">CvxpyBackend</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.CvxpyBackend.available_solvers"><code class="docutils literal notranslate"><span class="pre">CvxpyBackend.available_solvers()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.CvxpyBackend.Variable"><code class="docutils literal notranslate"><span class="pre">CvxpyBackend.Variable()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.CvxpyBackend.Parameter"><code class="docutils literal notranslate"><span class="pre">CvxpyBackend.Parameter()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.CvxpyBackend.build"><code class="docutils literal notranslate"><span class="pre">CvxpyBackend.build()</span></code></a></li>
 </ul>
 </li>
@@ -922,6 +981,7 @@ document.write(`
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.PicosBackend.available_solvers"><code class="docutils literal notranslate"><span class="pre">PicosBackend.available_solvers()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.PicosBackend.build"><code class="docutils literal notranslate"><span class="pre">PicosBackend.build()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.PicosBackend.Variable"><code class="docutils literal notranslate"><span class="pre">PicosBackend.Variable()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.PicosBackend.Parameter"><code class="docutils literal notranslate"><span class="pre">PicosBackend.Parameter()</span></code></a></li>
 </ul>
 </li>
 </ul>

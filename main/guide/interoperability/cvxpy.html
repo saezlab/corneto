@@ -473,7 +473,7 @@ document.write(`
             </td>
             <td>
             <table>
-                <tr><td>Installed version:</td><td style='text-align:left'>v1.0.0.dev0 (up to date)</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.4.3, PICOS v2.4.17</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CLARABEL, CVXOPT, ECOS, ECOS_BB, GLPK, GLPK_MI, OSQP, SCIP, SCIPY, SCS</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.3</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href=https://github.com/saezlab/corneto>https://github.com/saezlab/corneto</a></td></tr>
+                <tr><td>Installed version:</td><td style='text-align:left'>v1.0.0.dev0 (up to date)</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.5.1, PICOS v2.4.17</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CLARABEL, CVXOPT, ECOS, ECOS_BB, GLPK, GLPK_MI, OSQP, SCIP, SCIPY, SCS</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.3</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href=https://github.com/saezlab/corneto>https://github.com/saezlab/corneto</a></td></tr>
             </table>
             </td>
         </tr>
@@ -500,27 +500,27 @@ document.write(`
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>===============================================================================
                                      CVXPY                                     
-                                     v1.4.3                                    
+                                     v1.5.1                                    
 ===============================================================================
-(CVXPY) May 09 09:33:12 AM: Your problem has 5 variables, 2 constraints, and 0 parameters.
-(CVXPY) May 09 09:33:12 AM: It is compliant with the following grammars: DCP, DQCP
-(CVXPY) May 09 09:33:12 AM: (If you need to solve this problem multiple times, but with different data, consider using parameters.)
-(CVXPY) May 09 09:33:12 AM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
-(CVXPY) May 09 09:33:12 AM: Your problem is compiled with the CPP canonicalization backend.
+(CVXPY) May 12 10:39:02 AM: Your problem has 5 variables, 6 constraints, and 0 parameters.
+(CVXPY) May 12 10:39:02 AM: It is compliant with the following grammars: DCP, DQCP
+(CVXPY) May 12 10:39:02 AM: (If you need to solve this problem multiple times, but with different data, consider using parameters.)
+(CVXPY) May 12 10:39:02 AM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
+(CVXPY) May 12 10:39:02 AM: Your problem is compiled with the CPP canonicalization backend.
 -------------------------------------------------------------------------------
                                   Compilation                                  
 -------------------------------------------------------------------------------
-(CVXPY) May 09 09:33:12 AM: Compiling problem (target solver=OSQP).
-(CVXPY) May 09 09:33:12 AM: Reduction chain: CvxAttr2Constr -&gt; Qp2SymbolicQp -&gt; QpMatrixStuffing -&gt; OSQP
-(CVXPY) May 09 09:33:12 AM: Applying reduction CvxAttr2Constr
-(CVXPY) May 09 09:33:12 AM: Applying reduction Qp2SymbolicQp
-(CVXPY) May 09 09:33:12 AM: Applying reduction QpMatrixStuffing
-(CVXPY) May 09 09:33:12 AM: Applying reduction OSQP
-(CVXPY) May 09 09:33:12 AM: Finished problem compilation (took 9.516e-03 seconds).
+(CVXPY) May 12 10:39:02 AM: Compiling problem (target solver=OSQP).
+(CVXPY) May 12 10:39:02 AM: Reduction chain: CvxAttr2Constr -&gt; Qp2SymbolicQp -&gt; QpMatrixStuffing -&gt; OSQP
+(CVXPY) May 12 10:39:02 AM: Applying reduction CvxAttr2Constr
+(CVXPY) May 12 10:39:02 AM: Applying reduction Qp2SymbolicQp
+(CVXPY) May 12 10:39:02 AM: Applying reduction QpMatrixStuffing
+(CVXPY) May 12 10:39:02 AM: Applying reduction OSQP
+(CVXPY) May 12 10:39:02 AM: Finished problem compilation (took 1.841e-02 seconds).
 -------------------------------------------------------------------------------
                                 Numerical solver                               
 -------------------------------------------------------------------------------
-(CVXPY) May 09 09:33:12 AM: Invoking solver OSQP  to obtain a solution.
+(CVXPY) May 12 10:39:02 AM: Invoking solver OSQP  to obtain a solution.
 -----------------------------------------------------------------
            OSQP v0.6.3  -  Operator Splitting QP Solver
               (c) Bartolomeo Stellato,  Goran Banjac
@@ -538,24 +538,24 @@ settings: linear system solver = qdldl,
           warm start: on, polish: on, time_limit: off
 
 iter   objective    pri res    dua res    rho        time
-   1  -5.2220e+00   3.68e+00   1.70e+02   1.00e-01   5.25e-05s
- 150   6.9994e-01   1.96e-05   7.82e-06   4.77e+00   1.30e-04s
-plsh   7.0000e-01   1.95e-30   0.00e+00   --------   2.06e-04s
+   1  -5.2220e+00   3.68e+00   1.70e+02   1.00e-01   4.30e-05s
+ 150   6.9994e-01   1.96e-05   7.82e-06   4.77e+00   9.02e-05s
+plsh   7.0000e-01   1.95e-30   0.00e+00   --------   1.17e-04s
 
 status:               solved
 solution polish:      successful
 number of iterations: 150
 optimal objective:    0.7000
-run time:             2.06e-04s
+run time:             1.17e-04s
 optimal rho estimate: 9.81e+00
 
 -------------------------------------------------------------------------------
                                     Summary                                    
 -------------------------------------------------------------------------------
-(CVXPY) May 09 09:33:12 AM: Problem status: optimal
-(CVXPY) May 09 09:33:12 AM: Optimal value: -3.000e-01
-(CVXPY) May 09 09:33:12 AM: Compilation took 9.516e-03 seconds
-(CVXPY) May 09 09:33:12 AM: Solver (including time spent in interface) took 1.462e-03 seconds
+(CVXPY) May 12 10:39:02 AM: Problem status: optimal
+(CVXPY) May 12 10:39:02 AM: Optimal value: -3.000e-01
+(CVXPY) May 12 10:39:02 AM: Compilation took 1.841e-02 seconds
+(CVXPY) May 12 10:39:02 AM: Solver (including time spent in interface) took 1.473e-03 seconds
 </pre></div>
 </div>
 </div>
