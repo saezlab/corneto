@@ -34,25 +34,25 @@ jobs:
         run: |
           # Create a temporary directory
           TEMP_DIR=$(mktemp -d)
+          chmod 777 $TEMP_DIR
+          echo "TEMP_DIR=$TEMP_DIR" >> $GITHUB_ENV
           echo "Temporary directory is $TEMP_DIR"
           poetry run sphinx-multiversion docs $TEMP_DIR
-      
-      - name: Create Redirection HTML
-        run: |
+          touch $TEMP_DIR/.nojekyll
           echo '<meta http-equiv="refresh" content="0; URL='https://saezlab.github.io/corneto/main'" />' > $TEMP_DIR/index.html
-
+          
       - name: Deploy to GitHub Pages
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          touch $TEMP_DIR/.nojekyll
           
           # Now checkout to gh-pages
           git fetch origin gh-pages
           git checkout gh-pages || git checkout --orphan gh-pages
   
           # Clean existing files for the branch and copy new ones
-          rm -rf "$BRANCH_NAME"
+          echo "Removing current folder content: $BRANCH_NAME"
+          rm -rf "./$BRANCH_NAME"
           cp -r "$TEMP_DIR/$BRANCH_NAME" "$BRANCH_NAME"
   
           # Adding changes to git
@@ -64,3 +64,4 @@ jobs:
           # rm -rf "$TEMP_DIR"
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
