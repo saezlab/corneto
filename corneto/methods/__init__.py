@@ -1,3 +1,4 @@
+from corneto.methods.carnival import heuristic_carnival as fast_carnival
 from corneto.methods.carnival import runInverseCarnival, runVanillaCarnival
 from corneto.methods.shortest_path import shortest_path, solve_shortest_path
 from corneto.methods.signaling import (

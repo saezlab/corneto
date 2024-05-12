@@ -502,9 +502,10 @@ class BaseGraph(abc.ABC):
             from corneto._settings import LOGGER
             from corneto._util import supports_html
 
-            LOGGER.warning(f"SVG+XML rendering failed: {e}.")
+            LOGGER.debug(f"SVG+XML rendering failed: {e}.")
             # Detect if HTML support
             if supports_html():
+                LOGGER.debug("Falling back to Viz.js rendering.")
                 from corneto.contrib._util import dot_vizjs_html
 
                 class _VizJS:
@@ -513,7 +514,38 @@ class BaseGraph(abc.ABC):
 
                 return _VizJS()
             else:
+                LOGGER.debug("HTML rendering not supported.")
                 raise e
+
+    def plot_values(
+        self, vertex_values=None, edge_values=None, vertex_props=None, edge_props=None
+    ):
+        from corneto._plotting import (
+            create_graphviz_edge_attributes,
+            create_graphviz_vertex_attributes,
+        )
+
+        vertex_props = vertex_props or {}
+        edge_props = edge_props or {}
+        vertex_drawing_props = None
+        if vertex_values is not None:
+            # Check if vertices has an attribute value to do vertices.value
+            if hasattr(vertex_values, "value"):
+                vertex_values = vertex_values.value
+            vertex_drawing_props = create_graphviz_vertex_attributes(
+                list(self.V), vertex_values=vertex_values, **vertex_props
+            )
+        edge_drawing_props = None
+        if edge_values is not None:
+            if hasattr(edge_values, "value"):
+                edge_values = edge_values.value
+            edge_drawing_props = create_graphviz_edge_attributes(
+                edge_values=edge_values, **edge_props
+            )
+        return self.plot(
+            custom_edge_attr=edge_drawing_props,
+            custom_vertex_attr=vertex_drawing_props,
+        )
 
     def to_graphviz(self, **kwargs):
         from corneto._plotting import to_graphviz
@@ -552,15 +584,18 @@ class BaseGraph(abc.ABC):
     def save(self, filename: str, compressed: Optional[bool] = True) -> None:
         import pickle
 
+        if not filename:
+            raise ValueError("Filename must not be empty.")
+
         if not filename.endswith(".pkl"):
             filename += ".pkl"
 
         if compressed:
-            import gzip
+            import lzma
 
-            if not filename.endswith(".gz"):
-                filename += ".gz"
-            with gzip.open(filename, "wb") as f:
+            if not filename.endswith(".xz"):
+                filename += ".xz"
+            with lzma.open(filename, "wb", preset=9) as f:
                 pickle.dump(self, f)
         else:
             with open(filename, "wb") as f:
@@ -573,20 +608,27 @@ class BaseGraph(abc.ABC):
         if filename.endswith(".gz"):
             import gzip
 
-            with open(filename, "rb") as f:
-                first_two_bytes = f.read(2)
-            if first_two_bytes != b"\x1f\x8b":
-                from corneto._settings import LOGGER
+            opener = gzip.open
+        elif filename.endswith(".bz2"):
+            import bz2
 
-                LOGGER.warning(
-                    f"""The file {filename} has a .gz extension but does not 
-                    appear to be a valid gzip file."""
-                )
-            with gzip.open(filename, "rb") as f:
-                return pickle.load(f)
+            opener = bz2.open
+        elif filename.endswith(".xz"):
+            import lzma
+
+            opener = lzma.open
+        elif filename.endswith(".zip"):
+            import zipfile
+
+            def opener(file, mode="r"):
+                # Supports only reading the first file in a zip archive
+                with zipfile.ZipFile(file, "r") as z:
+                    return z.open(z.namelist()[0], mode=mode)
         else:
-            with open(filename, "rb") as f:
-                return pickle.load(f)
+            opener = open
+
+        with opener(filename, "rb") as f:
+            return pickle.load(f)
 
     def reachability_analysis(
         self,

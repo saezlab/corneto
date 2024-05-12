@@ -1,5 +1,6 @@
 import abc
 import numbers
+from numbers import Number
 from typing import Any, Callable, Dict, Iterable, List, Optional, Set, Tuple, Union
 
 import numpy as np
@@ -30,6 +31,12 @@ def _identical_columns(array):
 
     # np.all on the result checks if all columns are identical to the reference column
     return np.all(are_columns_identical)
+
+
+def _get_unique_name(prefix: str = "_var") -> str:
+    from uuid import uuid4
+
+    return prefix + hex(hash(uuid4()))
 
 
 class CExpression(abc.ABC):
@@ -73,7 +80,7 @@ class CExpression(abc.ABC):
 
     @property
     @abc.abstractmethod
-    def value(self) -> np.ndarray:
+    def value(self) -> Union[Number, np.ndarray]:
         pass
 
     @property
@@ -228,15 +235,43 @@ class CSymbol(CExpression):
         self,
         expr: Any,
         name: str,
-        lb: Optional[Union[float, np.ndarray]] = None,
-        ub: Optional[Union[float, np.ndarray]] = None,
+        shape: Optional[Tuple[int, ...]] = None,
+        lb: Optional[Union[Number, np.ndarray]] = None,
+        ub: Optional[Union[Number, np.ndarray]] = None,
         vartype: VarType = VarType.CONTINUOUS,
+        variable: bool = True,
     ) -> None:
+        """Create a symbol.
+
+        This method defines an optimization symbol with optional bounds, type, and
+        additional graph-related properties. Symbols can be variables, parameters
+        or constants.
+
+        Args:
+            name (Optional[str]): The name of the symbol. Defaults to None.
+            expr (Any): The expression of the symbol.
+            shape (Optional[Tuple[int, ...]]): The shape of the symbol as a tuple. Defaults to None.
+            lb (Optional[Union[float, np.ndarray]]): The lower bound of the symbol.
+                Can be a scalar or an array. Defaults to None.
+            ub (Optional[Union[float, np.ndarray]]): The upper bound of the symbol.
+                Can be a scalar or an array. Defaults to None.
+            vartype (VarType): The type of the symbol (e.g., continuous, integer).
+                Defaults to VarType.CONTINUOUS.
+            variable (bool): Whether the symbol is a variable or not. Defaults to True.
+
+        Returns:
+            CSymbol: The created symbol, to be used in further expressions or constraints.
+        """
         super().__init__(expr)
         lb_r: Optional[np.ndarray] = None
         ub_r: Optional[np.ndarray] = None
         self._provided_lb = lb
         self._provided_ub = ub
+
+        if shape is None:
+            shape = ()  # type: ignore
+        self._shape = shape
+        self._is_variable = variable
 
         if lb is None:
             if vartype == VarType.CONTINUOUS:
@@ -302,6 +337,22 @@ class CSymbol(CExpression):
     @property
     def name(self) -> str:
         return self._name
+
+    @property
+    def shape(self) -> Tuple[int, ...]:
+        return self._shape
+
+    @property
+    def value(self) -> Any:
+        return self._expr.value
+
+    @value.setter
+    def value(self, value: Any) -> None:
+        self._expr.value = value
+
+    @property
+    def is_variable(self) -> bool:
+        return self._is_variable
 
 
 class ProblemDef:
@@ -457,7 +508,7 @@ class ProblemDef:
         e.update(other._expressions)
         w = self._weights + other._weights
         o = self._objectives + other._objectives
-        # TODO: generalize for any subclass of ProblemDef
+        # TODO: Subclasses of ProblemDef not supported
         return self.__class__(b, c, o, e, w)
 
     def register(
@@ -474,7 +525,6 @@ class ProblemDef:
         constraints: Union[CExpression, List[CExpression]],
         inplace: bool = True,
     ) -> "ProblemDef":
-        # TODO: Auto-load symbols from expressions
         if not isinstance(constraints, list):
             constraints = [constraints]
         for c in constraints:
@@ -594,6 +644,33 @@ class Backend(abc.ABC):
         ub: Optional[Union[float, np.ndarray]] = None,
         vartype: VarType = VarType.CONTINUOUS,
     ) -> CSymbol:
+        """Create a variable for optimization.
+
+        This method defines an optimization variable with optional bounds, type, and
+        additional graph-related properties.
+
+        Args:
+            name (Optional[str]): The name of the variable. Defaults to None.
+            shape (Optional[Tuple[int, ...]]): The shape of the variable as a tuple. Defaults to None.
+            lb (Optional[Union[float, np.ndarray]]): The lower bound of the variable.
+                Can be a scalar or an array. Defaults to None.
+            ub (Optional[Union[float, np.ndarray]]): The upper bound of the variable.
+                Can be a scalar or an array. Defaults to None.
+            vartype (VarType): The type of the variable (e.g., continuous, integer).
+                Defaults to VarType.CONTINUOUS.
+
+        Returns:
+            CSymbol: The created variable symbol, to be used in further expressions or constraints.
+        """
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def Parameter(
+        self,
+        name: Optional[str] = None,
+        shape: Optional[Tuple[int, ...]] = None,
+        value: Any = None,
+    ) -> CSymbol:
         raise NotImplementedError()
 
     def Problem(
@@ -678,12 +755,6 @@ class Backend(abc.ABC):
     ):
         raise NotImplementedError()
 
-    def Constant(self) -> CSymbol:
-        raise NotImplementedError()
-
-    def Parameter(self) -> CSymbol:
-        raise NotImplementedError()
-
     def Flow(
         self,
         g: BaseGraph,
@@ -716,7 +787,7 @@ class Backend(abc.ABC):
                 lb = np.tile(lb, (n_flows, 1)).T
             if isinstance(ub, np.ndarray) and len(ub.shape) == 1:
                 ub = np.tile(ub, (n_flows, 1)).T
-        F = self.Variable(varname, shape, lb, ub)
+        F = self.Variable(name=varname, shape=shape, lb=lb, ub=ub)
         A = self._sparse(g.get_vertex_incidence_matrix_as_lists(values=values))
         P = self.Problem(A @ F == 0)
         if shared_bounds and n_flows > 1:

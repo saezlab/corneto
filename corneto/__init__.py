@@ -23,6 +23,23 @@ from corneto.methods import (
 from corneto.utils import Attr, Attributes
 
 
+def get_version():
+    import os
+    import re
+
+    here = os.path.abspath(os.path.dirname(__file__))
+    pyproject_path = os.path.join(here, "..", "pyproject.toml")
+
+    with open(pyproject_path, "r") as f:
+        content = f.read()
+
+    # Regex to find the version number
+    match = re.search(r'^version\s*=\s*"([^"]+)"', content, re.M)
+    if match:
+        return match.group(1)
+    raise RuntimeError("Version not found in pyproject.toml.")
+
+
 class DeprecatedBackend:
     def __init__(self, backend):
         self._backend = backend
@@ -36,7 +53,7 @@ class DeprecatedBackend:
         return getattr(self._backend, attr)
 
 
-# Wrapping the backend instance with the DeprecatedBackend
+# This way of accessing the backend is deprecated
 K = DeprecatedBackend(opt)
 ops = DeprecatedBackend(opt)
 
@@ -56,8 +73,14 @@ __all__ = [
 
 import_sif = Graph.from_sif
 
-__version__ = "1.0.0.dev0"
+try:
+    # Python 3.8 and newer
+    from importlib.metadata import version
+except ImportError:
+    # Python < 3.8
+    from importlib_metadata import version
 
+__version__ = version("corneto")
 
 sys.modules.update({f"{__name__}.{m}": globals()[m] for m in ["pl"]})
 

@@ -71,6 +71,20 @@ def test_cvxpy_convex_apply():
     assert np.all(np.array(x.value) > np.array([-1e-6, 0.62, 0.36, -1e-6, -1e-6]))
 
 
+def test_sum_expr_shape(backend):
+    A = backend.Variable(shape=(2, 3))
+    B = backend.Variable(shape=(2, 3))
+    C = A + B
+    assert C.shape == (2, 3)
+
+
+def test_mul_expr_shape(backend):
+    A = backend.Variable(shape=(2, 3))
+    B = np.ones((3, 2))
+    C = A @ B
+    assert C.shape == (2, 2)
+
+
 def test_delegate_multiply_shape(backend):
     V = backend.Variable(shape=(2, 3))
     V = V.multiply(np.ones((2, 3)))
@@ -211,6 +225,33 @@ def test_picos_custom_expr_symbols():
     x = backend.Variable("x", (A.shape[1],))
     P.add_objectives(abs(A @ x - b), inplace=True)
     assert "x" in P.symbols
+
+
+def test_parameter(backend):
+    P = backend.Problem()
+    x = backend.Variable("x")
+    p = backend.Parameter("p")
+    P += x >= p
+    # Change value after the constraint was created
+    p.value = 2
+    P.add_objectives(x)
+    P.solve()
+    assert np.isclose(x.value, 2)
+
+
+def test_parameter_cvxpy():
+    backend = CvxpyBackend()
+    P = backend.Problem()
+    x = backend.Variable("x")
+    p = backend.Parameter("p")
+    P += x >= p
+    p.value = 2
+    P.add_objectives(x)
+    P.solve()
+    assert np.isclose(x.value, 2)
+    p.value = 3
+    P.solve()
+    assert np.isclose(x.value, 3)
 
 
 def test_matmul_symbols(backend):

@@ -1,10 +1,17 @@
+from numbers import Number
 from typing import Any, List, Optional, Set, Tuple, Union
 
 import numpy as np
 
 from corneto._constants import *
 from corneto._settings import _numpy_array
-from corneto.backend._base import Backend, CExpression, CSymbol, ProblemDef
+from corneto.backend._base import (
+    Backend,
+    CExpression,
+    CSymbol,
+    ProblemDef,
+    _get_unique_name,
+)
 
 try:
     import picos as pc
@@ -56,11 +63,32 @@ class PicosSymbol(CSymbol, PicosExpression):
         self,
         expr: Any,
         name: str,
-        lb: Optional[Union[float, np.ndarray]] = None,
-        ub: Optional[Union[float, np.ndarray]] = None,
+        shape: Optional[Tuple[int, ...]] = None,
+        lb: Optional[Union[Number, np.ndarray]] = None,
+        ub: Optional[Union[Number, np.ndarray]] = None,
         vartype: VarType = VarType.CONTINUOUS,
+        variable: bool = True,
     ) -> None:
-        super().__init__(expr, name, lb, ub, vartype)
+        super().__init__(
+            expr, name, shape=shape, lb=lb, ub=ub, vartype=vartype, variable=variable
+        )
+
+    @CSymbol.value.setter
+    def value(self, value: Any) -> None:
+        param = pc.Constant(self._name, value=value, shape=self._shape)
+        self._expr.__dict__.clear()
+        self._expr.__dict__.update(param.__dict__)
+        if hasattr(self._expr, "__slots__"):
+            for slot in self.__slots__:
+                setattr(self, slot, getattr(param, slot, None))
+        # Warn about limitations of this approach
+        from corneto._settings import LOGGER
+
+        LOGGER.warn(
+            "PICOS Parameters are immutable, changing the value of a parameter "
+            "is only partially supported, but changing it after after the "
+            "problem is solved will not have any effect."
+        )
 
 
 class PicosBackend(Backend):
@@ -85,9 +113,10 @@ class PicosBackend(Backend):
         self,
         name: Optional[str] = None,
         shape: Optional[Tuple[int, ...]] = None,
-        lb: Optional[Union[float, np.ndarray]] = None,
-        ub: Optional[Union[float, np.ndarray]] = None,
+        lb: Optional[Union[Number, np.ndarray]] = None,
+        ub: Optional[Union[Number, np.ndarray]] = None,
         vartype: VarType = VarType.CONTINUOUS,
+        variable: bool = True,
     ) -> CSymbol:
         if shape is None:
             shape = ()  # type: ignore
@@ -99,7 +128,21 @@ class PicosBackend(Backend):
             v = pc.BinaryVariable(name, shape)
         else:
             v = pc.RealVariable(name, shape, lower=lb, upper=ub)
-        return PicosSymbol(v, name, lb, ub, vartype=vartype)
+        return PicosSymbol(
+            v, name, shape=shape, lb=lb, ub=ub, vartype=vartype, variable=variable
+        )
+
+    def Parameter(
+        self,
+        name: Optional[str] = None,
+        shape: Optional[Tuple[int, ...]] = None,
+        value: Any = None,
+    ) -> CSymbol:
+        shape = shape or ()
+        value = value or 0
+        name = name or _get_unique_name()
+        param = pc.Constant(name, value=value, shape=shape)
+        return PicosSymbol(param, name, shape=shape, variable=False)
 
     def _solve(
         self,
