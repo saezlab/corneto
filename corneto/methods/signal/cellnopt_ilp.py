@@ -13,7 +13,7 @@
 from typing import Literal, Optional
 
 import numpy as np
-from _util import get_AND_gate_nodes, get_inhibited_nodes, get_interactions
+from corneto.methods.signal._util import get_AND_gate_nodes, get_inhibited_nodes, get_interactions
 
 import corneto as cn
 from corneto.backend._base import EXPR_NAME_FLOW

@@ -761,10 +761,11 @@ class Backend(abc.ABC):
         max_parents: Optional[Union[int, Dict[Any, int]]] = None,
         vertex_lb_dist: Optional[np.ndarray] = None,
     ) -> ProblemDef:
-        """Create acyclic constraints.
+        """Create acyclicity constraint.
 
-        This function creates acyclic constraints. The acyclic constraints
-        ensure that the selected edges are acyclic, i.e. there are no cycles in the graph.
+        This function creates acyclicity constraints. The acyclic constraints
+        ensure that the selected edges are acyclic, i.e. there are no cycles in the graph on the given property. 
+        Acyclicity can be applied e.g. over the flow constrains or over the signal property. 
 
         Parameters:
         ----------
