@@ -833,39 +833,41 @@ class Backend(abc.ABC):
         self,
         g: BaseGraph,
         P: ProblemDef,
-        indicator_positive_var_name: str = None,
-        indicator_negative_var_name: str = None,
+        indicator_positive_var_name: Optional[str] = None,
+        indicator_negative_var_name: Optional[str] = None,
         acyclic_var_name: str = VAR_DAG,
         max_parents: Optional[Union[int, Dict[Any, int]]] = None,
         vertex_lb_dist: Optional[np.ndarray] = None,
+        vertex_ub_dist: Optional[np.ndarray] = None,
     ) -> ProblemDef:
-        """Create acyclicity constraint.
+        """Create Acyclicity Constraint.
 
-        This function creates acyclicity constraints. The acyclic constraints
-        ensure that the selected edges are acyclic, i.e. there are no cycles in the graph on the given property. 
-        Acyclicity can be applied e.g. over the flow constrains or over the signal property. 
+        This function creates acyclicity constraints, ensuring that the selected edges
+        form an acyclic graph, meaning there are no cycles on the given property.
+        Acyclicity can be applied, for example, over flow constraints or signal properties.
 
-        Parameters:
+        Parameters
         ----------
         g : BaseGraph
             The graph that defines the problem.
         P : ProblemDef
             The problem definition.
         indicator_positive_var_name : str
-            The name of the indicator variable, i.e. which edge are selected. By default EXPR_NAME_FLOW_IPOS.
+            The name of the indicator variable, i.e., which edges are selected.
+            Default is EXPR_NAME_FLOW_IPOS.
         indicator_negative_var_name : str, optional
-            The name of the indicator variable for negative flows, by default None.
-            In case a negative flow appears, the source and target nodes of the edge are reversed.
-            For example, A->B with positive flow implies order(B) > order(A),
-            with negative flow it implies order(A) > order(B).
+            The name of the indicator variable for negative flows. Default is None.
+            If a negative flow appears, the source and target nodes of the edge are reversed.
+            For example, A->B with positive flow implies order(B) > order(A), with negative
+            flow it implies order(A) > order(B).
         acyclic_var_name : str, optional
-            The name of the acyclic variable, by default VAR_DAG.
+            The name of the acyclic variable. Default is VAR_DAG.
         max_parents : Optional[Union[int, Dict[Any, int]]], optional
-            The maximum number of parents per node. If an integer is provided, the maximum number
-            of parents is the same for all nodes. If a dictionary is provided, the maximum number
-            of parents can be different for each node. By default None.
+            The maximum number of parents per node. If an integer is provided, the maximum
+            number of parents is the same for all nodes. If a dictionary is provided, the
+            maximum number of parents can be different for each node. Default is None.
         vertex_lb_dist : Optional[np.ndarray], optional
-            The lower bound distribution of the vertices. By default None.
+            The lower bound distribution of the vertices. Default is None.
 
         Returns:
         -------
