@@ -40,6 +40,12 @@ class PicosExpression(CExpression):
     def _max(self, axis: Optional[int] = None) -> Any:
         raise NotImplementedError()
 
+    def _hstack(self, other: CExpression) -> Any:
+        return self._expr & other
+
+    def _vstack(self, other: CExpression) -> Any:
+        return self._expr // other
+
     @property
     def value(self) -> np.ndarray:
         return self._expr.value

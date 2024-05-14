@@ -135,6 +135,36 @@ def test_opt_delegate_sum_axis1(backend):
     assert np.isclose(esum.value, 60)
 
 
+def test_hstack_expression_matrix(backend):
+    x = backend.Variable("x", (2, 2))
+    y = backend.Variable("y", (2, 3))
+    z = x.hstack(y)
+    assert z.shape == (2, 5)
+
+
+def test_vstack_expression_matrix(backend):
+    x = backend.Variable("x", (2, 2))
+    y = backend.Variable("y", (3, 2))
+    z = x.vstack(y)
+    assert z.shape == (5, 2)
+
+
+def test_hstack_backend(backend):
+    x = backend.Variable("x", (1, 3))
+    y = backend.Variable("y", (1, 6))
+    z = backend.Variable("z", (1, 1))
+    t = backend.hstack([x, y, z])
+    assert t.shape == (1, 10)
+
+
+def test_vstack_backend(backend):
+    x = backend.Variable("x", (3, 1))
+    y = backend.Variable("y", (6, 1))
+    z = backend.Variable("z", (1, 1))
+    t = backend.vstack([x, y, z])
+    assert t.shape == (10, 1)
+
+
 def test_cexpression_name(backend):
     x = backend.Variable("x")
     e = x <= 10

@@ -59,9 +59,6 @@ jobs:
           git add .
           git commit -m "Update docs for branch $BRANCH_NAME" --allow-empty
           git push -u origin gh-pages
-          
-          # Optionally, remove the temporary directory (not necessary on CI environments)
-          # rm -rf "$TEMP_DIR"
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             BRANCH_NAME: ${{ github.head_ref || github.ref_name }}

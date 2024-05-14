@@ -40,6 +40,12 @@ class CvxpyExpression(CExpression):
     def _max(self, axis: Optional[int] = None) -> Any:
         return cp.max(self._expr, axis=axis)
 
+    def _hstack(self, other: CExpression) -> Any:
+        return cp.hstack([self._expr, other])
+
+    def _vstack(self, other: CExpression) -> Any:
+        return cp.vstack([self._expr, other])
+
     @property
     def value(self) -> np.ndarray:
         return self._expr.value
@@ -169,10 +175,17 @@ class CvxpyBackend(Backend):
                 cfg = options.get("mosek_params", dict())
                 cfg.update({"mioMaxTime": float(max_seconds)})
                 options["mosek_params"] = cfg
-            elif s == "SCIPY":
+            elif s == "SCIPY" or s == "HIGHS":
                 cfg = options.get("scipy_options", dict())
                 cfg.update({"time_limit": float(max_seconds), "disp": verbosity > 0})
                 options["scipy_options"] = cfg
+            else:
+                # Warning that a mapping is not available, check backend documentation
+                LOGGER.warn(f"""max_seconds parameter mapping for {s} not found.
+                            Please refer to the backend documentation for more
+                            information. For example, using CVXPY with GUROBI solver,
+                            the parameter TimeLimit can be directly passed with
+                            `problem.solve(solver='GUROBI', TimeLimit=max_seconds)`""")
 
         P.solve(solver=s, verbose=verbosity > 0, warm_start=warm_start, **options)
         return P

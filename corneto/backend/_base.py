@@ -110,6 +110,22 @@ class CExpression(abc.ABC):
         return self._elementwise_mul(other)
 
     @abc.abstractmethod
+    def _hstack(self, other: "CExpression") -> Any:
+        pass
+
+    @_delegate
+    def hstack(self, other: "CExpression") -> "CExpression":
+        return self._hstack(other)
+
+    @abc.abstractmethod
+    def _vstack(self, other: "CExpression") -> Any:
+        pass
+
+    @_delegate
+    def vstack(self, other: "CExpression") -> "CExpression":
+        return self._vstack(other)
+
+    @abc.abstractmethod
     def _norm(self, p: int = 2) -> Any:
         pass
 
@@ -468,7 +484,7 @@ class ProblemDef:
     def solve(
         self,
         solver: Optional[Union[str, Solver]] = None,
-        max_seconds: int = None,
+        max_seconds: Optional[int] = None,
         warm_start: bool = False,
         verbosity: int = 0,
         **options,
@@ -1049,25 +1065,60 @@ class Backend(abc.ABC):
             [xor >= x - y, xor >= y - x, xor <= x + y, xor <= 2 - x - y]
         )
 
-    def linear_or(self, x: CSymbol, axis: Optional[int] = None, varname="_linear_or"):
-        # Check if the variable is binary, otherwise throw an error
-        if x._vartype != VarType.BINARY:
+    def linear_or(self, x: CExpression, axis: Optional[int] = None, varname="or"):
+        # Check if the variable has a vartype and is binary
+        if hasattr(x, "_vartype") and x._vartype != VarType.BINARY:
             raise ValueError(f"Variable x has type {x._vartype} instead of BINARY")
+        else:
+            for s in x._proxy_symbols:
+                if s._vartype != VarType.BINARY:
+                    # Show warning only
+                    LOGGER.warn(
+                        f"Variable {s.name} has type {s._vartype}, expression is assumed to be binary"
+                    )
+                    break
+
         Z = x.sum(axis=axis)
         Z_norm = Z / x.shape[axis]  # between 0-1
         # Create a new binary variable to compute linearized or
         Or = self.Variable(varname, Z.shape, 0, 1, vartype=VarType.BINARY)
         return self.Problem([Or >= Z_norm, Or <= Z])
 
-    def linear_and(self, x: CSymbol, axis: Optional[int] = None, varname="_linear_and"):
+    def linear_and(self, x: CExpression, axis: Optional[int] = None, varname="and"):
         # Check if the variable is binary, otherwise throw an error
-        if x._vartype != VarType.BINARY:
+        if hasattr(x, "_vartype") and x._vartype != VarType.BINARY:
             raise ValueError(f"Variable x has type {x._vartype} instead of BINARY")
+        else:
+            for s in x._proxy_symbols:
+                if s._vartype != VarType.BINARY:
+                    # Show warning only
+                    LOGGER.warn(
+                        f"Variable {s.name} has type {s._vartype}, expression is assumed to be binary"
+                    )
+                    break
         Z = x.sum(axis=axis)
         N = x.shape[axis]
         Z_norm = Z / N
         And = self.Variable(varname, Z.shape, 0, 1, vartype=VarType.BINARY)
         return self.Problem([And <= Z_norm, And >= Z - N + 1])
+
+    def vstack(self, arg_list: Iterable[CSymbol]):
+        v = None
+        for a in arg_list:
+            if v is None:
+                v = a
+            else:
+                v = v.vstack(a)
+        return v
+
+    def hstack(self, arg_list: Iterable[CSymbol]):
+        h = None
+        for a in arg_list:
+            if h is None:
+                h = a
+            else:
+                h = h.hstack(a)
+        return h
 
 
 class NoBackend(Backend):
