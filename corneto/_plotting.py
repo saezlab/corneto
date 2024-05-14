@@ -1,4 +1,4 @@
-from typing import Any, Dict, Literal, Optional
+from typing import Any, Dict, List, Literal, Optional, Union
 
 import numpy as np
 
@@ -22,20 +22,10 @@ def vertex_style(
     positive_color: str = "firebrick4",
     condition: Optional[int] = 0,
 ):
-    if len(P.expr[vertex_var].value.shape) == 1:
-        v_values = np.array(P.expr[vertex_var].value)
-    else:
-        v_values = np.array(P.expr[vertex_var].value[:, condition])
-    vertex_attrs = dict()
-    for vn, v in zip(G.V, v_values):
-        vertex_attrs[vn] = dict()
-        if v > 0:
-            vertex_attrs[vn]["color"] = positive_color
-            vertex_attrs[vn]["penwidth"] = "2"
-        elif v < 0:
-            vertex_attrs[vn]["color"] = negative_color
-            vertex_attrs[vn]["penwidth"] = "2"
-    return vertex_attrs
+    v_values = np.array(P.expr[vertex_var].value)
+    return create_graphviz_vertex_attributes(
+        G.V, v_values, negative_color=negative_color, positive_color=positive_color
+    )
 
 
 def edge_style(
@@ -47,10 +37,29 @@ def edge_style(
     positive_color: str = "firebrick4",
     condition: Optional[int] = 0,
 ):
-    if len(P.expr[edge_var].value.shape) == 1:
-        e_values = np.array(P.expr[edge_var].value)
-    else:
-        e_values = np.array(P.expr[edge_var].value[:, condition])
+    e_values = P.expr[edge_var].value
+    if e_values is None:
+        raise ValueError(
+            f"""Variable {edge_var} in the problem, but values are None.
+            Has the problem been solved?"""
+        )
+    return create_graphviz_edge_attributes(
+        e_values,
+        max_edge_width=max_edge_width,
+        min_edge_width=min_edge_width,
+        negative_color=negative_color,
+        positive_color=positive_color,
+    )
+
+
+def create_graphviz_edge_attributes(
+    edge_values: Union[List, np.ndarray],
+    max_edge_width: float = 5,
+    min_edge_width: float = 0.25,
+    negative_color: str = "dodgerblue4",
+    positive_color: str = "firebrick4",
+):
+    e_values = np.array(edge_values)
     edge_attrs = dict()
     for i, v in enumerate(e_values):
         if abs(v) > 0:
@@ -65,6 +74,30 @@ def edge_style(
         else:
             edge_attrs[i]["color"] = "black"
     return edge_attrs
+
+
+def create_graphviz_vertex_attributes(
+    graph_vertices: List,
+    vertex_values: Union[List, np.ndarray],
+    negative_color: str = "dodgerblue4",
+    positive_color: str = "firebrick4",
+):
+    v_values = np.array(vertex_values)
+    if len(v_values) != len(graph_vertices):
+        raise ValueError(
+            f"""Length of vertex_values ({len(v_values)}) does not match the number
+            of vertices ({len(graph_vertices)})"""
+        )
+    vertex_attrs = dict()
+    for vn, v in zip(graph_vertices, v_values):
+        vertex_attrs[vn] = dict()
+        if v > 0:
+            vertex_attrs[vn]["color"] = positive_color
+            vertex_attrs[vn]["penwidth"] = "2"
+        elif v < 0:
+            vertex_attrs[vn]["color"] = negative_color
+            vertex_attrs[vn]["penwidth"] = "2"
+    return vertex_attrs
 
 
 def flow_style(

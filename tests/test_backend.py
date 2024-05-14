@@ -71,6 +71,20 @@ def test_cvxpy_convex_apply():
     assert np.all(np.array(x.value) > np.array([-1e-6, 0.62, 0.36, -1e-6, -1e-6]))
 
 
+def test_sum_expr_shape(backend):
+    A = backend.Variable(shape=(2, 3))
+    B = backend.Variable(shape=(2, 3))
+    C = A + B
+    assert C.shape == (2, 3)
+
+
+def test_mul_expr_shape(backend):
+    A = backend.Variable(shape=(2, 3))
+    B = np.ones((3, 2))
+    C = A @ B
+    assert C.shape == (2, 2)
+
+
 def test_delegate_multiply_shape(backend):
     V = backend.Variable(shape=(2, 3))
     V = V.multiply(np.ones((2, 3)))
@@ -119,6 +133,36 @@ def test_opt_delegate_sum_axis1(backend):
     P.add_objectives(esum, weights=-1)
     P.solve()
     assert np.isclose(esum.value, 60)
+
+
+def test_hstack_expression_matrix(backend):
+    x = backend.Variable("x", (2, 2))
+    y = backend.Variable("y", (2, 3))
+    z = x.hstack(y)
+    assert z.shape == (2, 5)
+
+
+def test_vstack_expression_matrix(backend):
+    x = backend.Variable("x", (2, 2))
+    y = backend.Variable("y", (3, 2))
+    z = x.vstack(y)
+    assert z.shape == (5, 2)
+
+
+def test_hstack_backend(backend):
+    x = backend.Variable("x", (1, 3))
+    y = backend.Variable("y", (1, 6))
+    z = backend.Variable("z", (1, 1))
+    t = backend.hstack([x, y, z])
+    assert t.shape == (1, 10)
+
+
+def test_vstack_backend(backend):
+    x = backend.Variable("x", (3, 1))
+    y = backend.Variable("y", (6, 1))
+    z = backend.Variable("z", (1, 1))
+    t = backend.vstack([x, y, z])
+    assert t.shape == (10, 1)
 
 
 def test_cexpression_name(backend):
@@ -211,6 +255,33 @@ def test_picos_custom_expr_symbols():
     x = backend.Variable("x", (A.shape[1],))
     P.add_objectives(abs(A @ x - b), inplace=True)
     assert "x" in P.symbols
+
+
+def test_parameter(backend):
+    P = backend.Problem()
+    x = backend.Variable("x")
+    p = backend.Parameter("p")
+    P += x >= p
+    # Change value after the constraint was created
+    p.value = 2
+    P.add_objectives(x)
+    P.solve()
+    assert np.isclose(x.value, 2)
+
+
+def test_parameter_cvxpy():
+    backend = CvxpyBackend()
+    P = backend.Problem()
+    x = backend.Variable("x")
+    p = backend.Parameter("p")
+    P += x >= p
+    p.value = 2
+    P.add_objectives(x)
+    P.solve()
+    assert np.isclose(x.value, 2)
+    p.value = 3
+    P.solve()
+    assert np.isclose(x.value, 3)
 
 
 def test_matmul_symbols(backend):
@@ -397,6 +468,42 @@ def test_acyclic_flow_undirected_edge(backend):
     vsol1 = [1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0]
     vsol2 = [1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0]
     assert np.allclose(sol, vsol1) or np.allclose(sol, vsol2)
+
+
+def test_feasible_loop(backend):
+    G = Graph()
+    G.add_edge((), "A")
+    G.add_edge("A", ())
+    G.add_edge("A", "B")
+    G.add_edge("B", "A")
+    G.add_edge((), "B")
+    G.add_edge("B", ())
+    P = backend.Flow(G)
+    P += P.expr.flow[2] >= 1
+    P += P.expr.flow[3] >= 1
+    if isinstance(backend, PicosBackend):
+        P.solve(solver="glpk")
+    else:
+        P.solve()
+    assert np.sum(P.expr.flow.value) >= 2
+
+
+def test_acyclic_unfeasible_loop(backend):
+    G = Graph()
+    G.add_edge((), "A")
+    G.add_edge("A", ())
+    G.add_edge("A", "B")
+    G.add_edge("B", "A")
+    G.add_edge((), "B")
+    G.add_edge("B", ())
+    P = backend.AcyclicFlow(G)
+    P += P.expr.with_flow[2] == 1
+    P += P.expr.with_flow[3] == 1
+    if isinstance(backend, PicosBackend):
+        P.solve(solver="glpk", primals=False)
+    else:
+        P.solve()
+    assert np.all(P.expr.flow.value == None)
 
 
 @pytest.mark.skip(reason="Only a small subset of solvers support this")

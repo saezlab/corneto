@@ -12,11 +12,11 @@ CORNETO (Constraint-based Optimization for the Reconstruction of NETworks from O
 The library is designed with minimal dependencies and is easily extendable, making it a powerful tool for both end-users and developers. To install CORNETO with open-source mathematical solvers (HIGHs and SCIP), use the following command:
 
 ```
-# To install the development version, use:
-pip install git+https://github.com/saezlab/corneto.git@dev
+# To install the development version, including the open-source solvers HIGHs and SCIP, use:
+pip install git+https://github.com/saezlab/corneto.git#egg=corneto[os]
 
-# For the latest stable release, use:
-pip install corneto
+# If you have a license for Gurobi (free for academic use), you can install it with:
+pip install gurobipy
 ```
 
 **Version**: {{version}}

@@ -18,30 +18,18 @@ readme = "README.md"
 repository = "https://github.com/saezlab/corneto/"
 homepage = "https://github.com/saezlab/corneto/"
 packages = [
-    { include = "corneto"},
+    { include = "corneto" },
 ]
+exclude = ["**/tests", "**/docs"]
 
 [tool.poetry.dependencies]
 python = ">=3.9 <4"
-numpy = ">=1.22"
-# Backends
-cvxpy = {version = "^1.3.2", optional = true}
-PICOS = {version = "^2.4.1", optional = true}
-# PyPI available solvers (more supported through third party packages, e.g. CPLEX, MOSEK, ...)
-cylp = {version = "^0.92.2", optional = true}
-scipy = {version = "^1.13.0", optional = true}
-pyscipopt = {version = "^5.0.0", optional = true}
-gurobipy = {version = "^11.0.1",  optional = true}
-# Contrib
-networkx = {version = ">=3.0", optional = true}
-omnipath = {version = "^1.0.8", optional = true}
-decoupler = {version = "^1.6.0", optional = true}
-cobra = {version = "^0.29.0", optional = true}
-# Additional deps
-matplotlib = {version = ">=3.6.3", optional = true}
+numpy = ">=1.15"
+cvxpy-base = {version = "^1.5.0", optional = true}
+scipy = {version = ">=1.11.0", optional = true}
 
 [tool.poetry.group.dev.dependencies]
-scipy = ">=1.12.0"
+scipy = ">=1.11.0"
 pyscipopt = "^5.0.0"
 graphviz = "^0.20.1"
 cobra = "^0.29.0"
@@ -70,13 +58,8 @@ pre-commit = "^3.7.0"
 pydocstyle = "^6.3.0"
 
 [tool.poetry.extras]
-recommended = ["cvxpy", "scipy", "gurobipy", "matplotlib"]
-os = ["cvxpy", "pyscipopt", "scipy"]
-gurobi = ["cvxpy", "gurobipy"]
-cvxpy = ["cvxpy"]
-picos = ["PICOS"]
-networkx = ["networkx"]
-matplotlib = ["matplotlib"]
+highs = ["cvxpy-base"]
+os = ["cvxpy-base", "scipy", "pyscipopt"]
 
 [tool.ruff]
 fix = true

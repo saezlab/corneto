@@ -1,3 +1,4 @@
+from numbers import Number
 from typing import Any, List, Optional, Set, Tuple, Union
 
 import numpy as np
@@ -9,6 +10,7 @@ from corneto.backend._base import (
     CExpression,
     CSymbol,
     ProblemDef,
+    _get_unique_name,
 )
 
 try:
@@ -38,6 +40,12 @@ class CvxpyExpression(CExpression):
     def _max(self, axis: Optional[int] = None) -> Any:
         return cp.max(self._expr, axis=axis)
 
+    def _hstack(self, other: CExpression) -> Any:
+        return cp.hstack([self._expr, other])
+
+    def _vstack(self, other: CExpression) -> Any:
+        return cp.vstack([self._expr, other])
+
     @property
     def value(self) -> np.ndarray:
         return self._expr.value
@@ -48,11 +56,15 @@ class CvxpySymbol(CSymbol, CvxpyExpression):
         self,
         expr: Any,
         name: str,
-        lb: Optional[Union[float, np.ndarray]] = None,
-        ub: Optional[Union[float, np.ndarray]] = None,
+        shape: Optional[Tuple[int, ...]] = None,
+        lb: Optional[Union[Number, np.ndarray]] = None,
+        ub: Optional[Union[Number, np.ndarray]] = None,
         vartype: VarType = VarType.CONTINUOUS,
+        variable: bool = True,
     ) -> None:
-        super().__init__(expr, name, lb, ub, vartype)
+        super().__init__(
+            expr, name, shape=shape, lb=lb, ub=ub, vartype=vartype, variable=variable
+        )
 
 
 class CvxpyBackend(Backend):
@@ -71,26 +83,32 @@ class CvxpyBackend(Backend):
         self,
         name: Optional[str] = None,
         shape: Optional[Tuple[int, ...]] = None,
-        lb: Optional[Union[float, np.ndarray]] = None,
-        ub: Optional[Union[float, np.ndarray]] = None,
+        lb: Optional[Union[Number, np.ndarray]] = None,
+        ub: Optional[Union[Number, np.ndarray]] = None,
         vartype: VarType = VarType.CONTINUOUS,
     ) -> CSymbol:
         if vartype == VarType.BINARY:
             lb, ub = None, None
-
-        if not name:
-            from uuid import uuid4
-
-            name = "_v" + hex(hash(uuid4()))
-        if shape is None:
-            shape = ()  # type: ignore
+        shape = shape or ()
+        name = name or _get_unique_name()
         if vartype == VarType.INTEGER:
             v = cp.Variable(shape, name=name, integer=True)
         elif vartype == VarType.BINARY:
             v = cp.Variable(shape, name=name, boolean=True)
         else:
             v = cp.Variable(shape, name=name)
-        return CvxpySymbol(v, name, lb, ub, vartype)
+        return CvxpySymbol(v, name, shape=shape, lb=lb, ub=ub, vartype=vartype)
+
+    def Parameter(
+        self,
+        name: Optional[str] = None,
+        shape: Optional[Tuple[int, ...]] = None,
+        value: Any = None,
+    ) -> CSymbol:
+        shape = shape or ()
+        name = name or _get_unique_name()
+        param = cp.Parameter(shape=shape, name=name, value=value)
+        return CvxpySymbol(param, name, shape=shape, variable=False)
 
     def build(self, p: ProblemDef) -> Any:
         raise NotImplementedError()
@@ -157,10 +175,17 @@ class CvxpyBackend(Backend):
                 cfg = options.get("mosek_params", dict())
                 cfg.update({"mioMaxTime": float(max_seconds)})
                 options["mosek_params"] = cfg
-            elif s == "SCIPY":
+            elif s == "SCIPY" or s == "HIGHS":
                 cfg = options.get("scipy_options", dict())
                 cfg.update({"time_limit": float(max_seconds), "disp": verbosity > 0})
                 options["scipy_options"] = cfg
+            else:
+                # Warning that a mapping is not available, check backend documentation
+                LOGGER.warn(f"""max_seconds parameter mapping for {s} not found.
+                            Please refer to the backend documentation for more
+                            information. For example, using CVXPY with GUROBI solver,
+                            the parameter TimeLimit can be directly passed with
+                            `problem.solve(solver='GUROBI', TimeLimit=max_seconds)`""")
 
         P.solve(solver=s, verbose=verbosity > 0, warm_start=warm_start, **options)
         return P

@@ -13,12 +13,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Ensures all history is fetched for sphinx-multiversion to detect all tags and branches
+          fetch-depth: 0
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: '3.11'
 
@@ -32,21 +32,33 @@ jobs:
 
       - name: Build Docs with sphinx-multiversion
         run: |
-          poetry run sphinx-multiversion docs docs/_build/html
-      
-      - name: Create Redirection HTML
+          # Create a temporary directory
+          TEMP_DIR=$(mktemp -d)
+          chmod 777 $TEMP_DIR
+          echo "TEMP_DIR=$TEMP_DIR" >> $GITHUB_ENV
+          echo "Temporary directory is $TEMP_DIR"
+          poetry run sphinx-multiversion docs $TEMP_DIR
+          touch $TEMP_DIR/.nojekyll
+          echo '<meta http-equiv="refresh" content="0; URL='https://saezlab.github.io/corneto/main'" />' > $TEMP_DIR/index.html
+          
+      - name: Deploy to GitHub Pages
         run: |
-          echo '<meta http-equiv="refresh" content="0; URL='https://saezlab.github.io/corneto/main'" />' > docs/_build/html/index.html
-  
-      - name: Prepare Deployment
-        run: |
-          touch ./docs/_build/html/.nojekyll
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs/_build/html
-          keep_files: true
+          
+          # Now checkout to gh-pages
+          git fetch origin gh-pages
+          git checkout gh-pages || git checkout --orphan gh-pages
+  
+          # Clean existing files for the branch and copy new ones
+          echo "Removing current folder content: $BRANCH_NAME"
+          rm -rf "./$BRANCH_NAME"
+          cp -r "$TEMP_DIR/$BRANCH_NAME" "$BRANCH_NAME"
+  
+          # Adding changes to git
+          git add .
+          git commit -m "Update docs for branch $BRANCH_NAME" --allow-empty
+          git push -u origin gh-pages
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            BRANCH_NAME: ${{ github.head_ref || github.ref_name }}

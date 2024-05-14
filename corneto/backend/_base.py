@@ -1,5 +1,6 @@
 import abc
 import numbers
+from numbers import Number
 from typing import Any, Callable, Dict, Iterable, List, Optional, Set, Tuple, Union
 
 import numpy as np
@@ -30,6 +31,12 @@ def _identical_columns(array):
 
     # np.all on the result checks if all columns are identical to the reference column
     return np.all(are_columns_identical)
+
+
+def _get_unique_name(prefix: str = "_var") -> str:
+    from uuid import uuid4
+
+    return prefix + hex(hash(uuid4()))
 
 
 class CExpression(abc.ABC):
@@ -73,7 +80,7 @@ class CExpression(abc.ABC):
 
     @property
     @abc.abstractmethod
-    def value(self) -> np.ndarray:
+    def value(self) -> Union[Number, np.ndarray]:
         pass
 
     @property
@@ -101,6 +108,22 @@ class CExpression(abc.ABC):
     @_delegate
     def multiply(self, other: Any) -> "CExpression":
         return self._elementwise_mul(other)
+
+    @abc.abstractmethod
+    def _hstack(self, other: "CExpression") -> Any:
+        pass
+
+    @_delegate
+    def hstack(self, other: "CExpression") -> "CExpression":
+        return self._hstack(other)
+
+    @abc.abstractmethod
+    def _vstack(self, other: "CExpression") -> Any:
+        pass
+
+    @_delegate
+    def vstack(self, other: "CExpression") -> "CExpression":
+        return self._vstack(other)
 
     @abc.abstractmethod
     def _norm(self, p: int = 2) -> Any:
@@ -228,15 +251,43 @@ class CSymbol(CExpression):
         self,
         expr: Any,
         name: str,
-        lb: Optional[Union[float, np.ndarray]] = None,
-        ub: Optional[Union[float, np.ndarray]] = None,
+        shape: Optional[Tuple[int, ...]] = None,
+        lb: Optional[Union[Number, np.ndarray]] = None,
+        ub: Optional[Union[Number, np.ndarray]] = None,
         vartype: VarType = VarType.CONTINUOUS,
+        variable: bool = True,
     ) -> None:
+        """Create a symbol.
+
+        This method defines an optimization symbol with optional bounds, type, and
+        additional graph-related properties. Symbols can be variables, parameters
+        or constants.
+
+        Args:
+            name (Optional[str]): The name of the symbol. Defaults to None.
+            expr (Any): The expression of the symbol.
+            shape (Optional[Tuple[int, ...]]): The shape of the symbol as a tuple. Defaults to None.
+            lb (Optional[Union[float, np.ndarray]]): The lower bound of the symbol.
+                Can be a scalar or an array. Defaults to None.
+            ub (Optional[Union[float, np.ndarray]]): The upper bound of the symbol.
+                Can be a scalar or an array. Defaults to None.
+            vartype (VarType): The type of the symbol (e.g., continuous, integer).
+                Defaults to VarType.CONTINUOUS.
+            variable (bool): Whether the symbol is a variable or not. Defaults to True.
+
+        Returns:
+            CSymbol: The created symbol, to be used in further expressions or constraints.
+        """
         super().__init__(expr)
         lb_r: Optional[np.ndarray] = None
         ub_r: Optional[np.ndarray] = None
         self._provided_lb = lb
         self._provided_ub = ub
+
+        if shape is None:
+            shape = ()  # type: ignore
+        self._shape = shape
+        self._is_variable = variable
 
         if lb is None:
             if vartype == VarType.CONTINUOUS:
@@ -302,6 +353,22 @@ class CSymbol(CExpression):
     @property
     def name(self) -> str:
         return self._name
+
+    @property
+    def shape(self) -> Tuple[int, ...]:
+        return self._shape
+
+    @property
+    def value(self) -> Any:
+        return self._expr.value
+
+    @value.setter
+    def value(self, value: Any) -> None:
+        self._expr.value = value
+
+    @property
+    def is_variable(self) -> bool:
+        return self._is_variable
 
 
 class ProblemDef:
@@ -381,16 +448,7 @@ class ProblemDef:
         return self._direction
 
     def copy(self) -> "ProblemDef":
-        # TODO: Fix copy! add tests
-        return ProblemDef(
-            self._backend,
-            self._constraints,
-            self._objectives,
-            self._expressions,
-            self._weights,
-            self._direction,
-            self._graph,
-        )
+        raise NotImplementedError()
 
     def _add(self, other: Any, inplace: bool = False):
         if isinstance(other, ProblemDef):
@@ -426,7 +484,7 @@ class ProblemDef:
     def solve(
         self,
         solver: Optional[Union[str, Solver]] = None,
-        max_seconds: int = None,
+        max_seconds: Optional[int] = None,
         warm_start: bool = False,
         verbosity: int = 0,
         **options,
@@ -466,7 +524,7 @@ class ProblemDef:
         e.update(other._expressions)
         w = self._weights + other._weights
         o = self._objectives + other._objectives
-        # TODO: generalize for any subclass of ProblemDef
+        # TODO: Subclasses of ProblemDef not supported
         return self.__class__(b, c, o, e, w)
 
     def register(
@@ -483,7 +541,6 @@ class ProblemDef:
         constraints: Union[CExpression, List[CExpression]],
         inplace: bool = True,
     ) -> "ProblemDef":
-        # TODO: Auto-load symbols from expressions
         if not isinstance(constraints, list):
             constraints = [constraints]
         for c in constraints:
@@ -603,6 +660,33 @@ class Backend(abc.ABC):
         ub: Optional[Union[float, np.ndarray]] = None,
         vartype: VarType = VarType.CONTINUOUS,
     ) -> CSymbol:
+        """Create a variable for optimization.
+
+        This method defines an optimization variable with optional bounds, type, and
+        additional graph-related properties.
+
+        Args:
+            name (Optional[str]): The name of the variable. Defaults to None.
+            shape (Optional[Tuple[int, ...]]): The shape of the variable as a tuple. Defaults to None.
+            lb (Optional[Union[float, np.ndarray]]): The lower bound of the variable.
+                Can be a scalar or an array. Defaults to None.
+            ub (Optional[Union[float, np.ndarray]]): The upper bound of the variable.
+                Can be a scalar or an array. Defaults to None.
+            vartype (VarType): The type of the variable (e.g., continuous, integer).
+                Defaults to VarType.CONTINUOUS.
+
+        Returns:
+            CSymbol: The created variable symbol, to be used in further expressions or constraints.
+        """
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def Parameter(
+        self,
+        name: Optional[str] = None,
+        shape: Optional[Tuple[int, ...]] = None,
+        value: Any = None,
+    ) -> CSymbol:
         raise NotImplementedError()
 
     def Problem(
@@ -687,12 +771,6 @@ class Backend(abc.ABC):
     ):
         raise NotImplementedError()
 
-    def Constant(self) -> CSymbol:
-        raise NotImplementedError()
-
-    def Parameter(self) -> CSymbol:
-        raise NotImplementedError()
-
     def Flow(
         self,
         g: BaseGraph,
@@ -725,7 +803,7 @@ class Backend(abc.ABC):
                 lb = np.tile(lb, (n_flows, 1)).T
             if isinstance(ub, np.ndarray) and len(ub.shape) == 1:
                 ub = np.tile(ub, (n_flows, 1)).T
-        F = self.Variable(varname, shape, lb, ub)
+        F = self.Variable(name=varname, shape=shape, lb=lb, ub=ub)
         A = self._sparse(g.get_vertex_incidence_matrix_as_lists(values=values))
         P = self.Problem(A @ F == 0)
         if shared_bounds and n_flows > 1:
@@ -915,6 +993,10 @@ class Backend(abc.ABC):
     ) -> ProblemDef:
         if not varname:
             varname = VAR_FLOW
+        if isinstance(lb, list):
+            lb = np.array(lb)
+        if isinstance(ub, list):
+            ub = np.array(ub)
         if not isinstance(lb, np.ndarray):
             lb = np.array([lb] * g.num_edges)
         if not isinstance(ub, np.ndarray):
@@ -967,8 +1049,8 @@ class Backend(abc.ABC):
             e_ix = np.array([i for i, (s, t) in e_pos if len(s) > 0 and len(t) > 0])
             edges = [g.get_edge(i) for i in e_ix]
             # Get the index of the source / target vertices of the edge
-            s_idx = np.array([vix[list(s)[0]] for (s, _) in edges])
-            t_idx = np.array([vix[list(t)[0]] for (_, t) in edges])
+            s_idx = np.array([vix[next(iter(s))] for (s, _) in edges])
+            t_idx = np.array([vix[next(iter(t))] for (_, t) in edges])
             # The layer position in a DAG of the target vertex of the edge
             # has to be greater than the source vertex, otherwise Ip (pos flow) has to be 0
             if len(e_ix) > 0:
@@ -984,8 +1066,8 @@ class Backend(abc.ABC):
             e_ix = np.array([i for i, (s, t) in e_neg if len(s) > 0 and len(t) > 0])
             edges = [g.get_edge(i) for i in e_ix]
             # Get the index of the source / target vertices of the edge
-            s_idx = np.array([vix[list(s)[0]] for (s, _) in edges])
-            t_idx = np.array([vix[list(t)[0]] for (_, t) in edges])
+            s_idx = np.array([vix[next(iter(s))] for (s, _) in edges])
+            t_idx = np.array([vix[next(iter(t))] for (_, t) in edges])
             if len(e_ix) > 0:
                 P += L[s_idx] - L[t_idx] >= In[e_ix] + (1 - g.num_vertices) * (
                     1 - In[e_ix]
@@ -1130,25 +1212,60 @@ class Backend(abc.ABC):
             [xor >= x - y, xor >= y - x, xor <= x + y, xor <= 2 - x - y]
         )
 
-    def linear_or(self, x: CSymbol, axis: Optional[int] = None, varname="_linear_or"):
-        # Check if the variable is binary, otherwise throw an error
-        if x._vartype != VarType.BINARY:
+    def linear_or(self, x: CExpression, axis: Optional[int] = None, varname="or"):
+        # Check if the variable has a vartype and is binary
+        if hasattr(x, "_vartype") and x._vartype != VarType.BINARY:
             raise ValueError(f"Variable x has type {x._vartype} instead of BINARY")
+        else:
+            for s in x._proxy_symbols:
+                if s._vartype != VarType.BINARY:
+                    # Show warning only
+                    LOGGER.warn(
+                        f"Variable {s.name} has type {s._vartype}, expression is assumed to be binary"
+                    )
+                    break
+
         Z = x.sum(axis=axis)
         Z_norm = Z / x.shape[axis]  # between 0-1
         # Create a new binary variable to compute linearized or
         Or = self.Variable(varname, Z.shape, 0, 1, vartype=VarType.BINARY)
         return self.Problem([Or >= Z_norm, Or <= Z])
 
-    def linear_and(self, x: CSymbol, axis: Optional[int] = None, varname="_linear_and"):
+    def linear_and(self, x: CExpression, axis: Optional[int] = None, varname="and"):
         # Check if the variable is binary, otherwise throw an error
-        if x._vartype != VarType.BINARY:
+        if hasattr(x, "_vartype") and x._vartype != VarType.BINARY:
             raise ValueError(f"Variable x has type {x._vartype} instead of BINARY")
+        else:
+            for s in x._proxy_symbols:
+                if s._vartype != VarType.BINARY:
+                    # Show warning only
+                    LOGGER.warn(
+                        f"Variable {s.name} has type {s._vartype}, expression is assumed to be binary"
+                    )
+                    break
         Z = x.sum(axis=axis)
         N = x.shape[axis]
         Z_norm = Z / N
         And = self.Variable(varname, Z.shape, 0, 1, vartype=VarType.BINARY)
         return self.Problem([And <= Z_norm, And >= Z - N + 1])
+
+    def vstack(self, arg_list: Iterable[CSymbol]):
+        v = None
+        for a in arg_list:
+            if v is None:
+                v = a
+            else:
+                v = v.vstack(a)
+        return v
+
+    def hstack(self, arg_list: Iterable[CSymbol]):
+        h = None
+        for a in arg_list:
+            if h is None:
+                h = a
+            else:
+                h = h.hstack(a)
+        return h
 
 
 class NoBackend(Backend):

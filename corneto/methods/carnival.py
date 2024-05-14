@@ -13,9 +13,64 @@ from corneto.methods.signal._util import (
 from corneto.methods.signaling import create_flow_graph, signflow
 
 
-def info(s, show=True):
+def _info(s, show=True):
     if show:
         LOGGER.info(s)
+
+
+def read_dataset(zip_path):
+    """Extracts and processes a graph and its vertex attributes from a zipped dataset.
+
+    The function reads two CSV files from a specified zipfile: 'pkn.csv' and 'data.csv'.
+    The 'pkn.csv' contains graph edges with three columns: 'source', 'interaction',
+    and 'target'. The 'interaction' column uses integers to denote the type of
+    interaction (1 for activation, -1 for inhibition). The 'data.csv' file contains
+    vertex attributes with three columns: 'vertex', 'value', and 'type', where 'value'
+    can be a continuous measure such as from a t-statistic in differential expression,
+    and 'type' categorizes vertices as either inputs ('P' for perturbation) or outputs
+    ('M' for measurement).
+
+    Args:
+        zip_path (str): The file path to the zip file containing the dataset.
+
+    Returns:
+        tuple: A tuple containing:
+            - Graph: A graph object initialized with edges from 'pkn.csv'. Each edge is
+              defined by a source, a target, and an interaction type.
+            - dict: A dictionary mapping each protein (vertex) to a tuple of ('type',
+              'value'), where 'type' is either 'P' or 'M' and 'value' represents the
+              continuous state of the protein.
+
+    Raises:
+        FileNotFoundError: If the zip file cannot be found at the provided path.
+        KeyError: If expected columns are missing in the CSV files, indicating incorrect
+                  or incomplete data.
+
+    Example:
+        >>> graph, vertex_attrs = read_dataset('path/to/dataset.zip')
+        >>> print(graph.shape)  # Shape of the imported graph ([vertices, edges])
+        >>> print(vertex_attrs) # Displays protein attributes
+    """
+    import zipfile
+
+    import pandas as pd
+
+    from corneto import Graph
+
+    with zipfile.ZipFile(zip_path, "r") as z:
+        with z.open("pkn.csv") as pkn, z.open("data.csv") as data:
+            df_pkn = pd.read_csv(pkn)
+            df_data = pd.read_csv(data)
+
+    # Convert pkn.csv rows to tuples and create a graph from them
+    tpl = [tuple(x) for x in df_pkn.itertuples(index=False)]
+    G = Graph.from_sif_tuples(tpl)
+
+    # Process the 'data.csv' for vertex attributes
+    df_data["type"] = df_data["type"].replace({"input": "P", "output": "M"})
+    data_dict = dict(zip(df_data["vertex"], zip(df_data["type"], df_data["value"])))
+
+    return G, data_dict
 
 
 # TODO: Return a problem, which is associated to the carnival graph
@@ -53,25 +108,25 @@ def runVanillaCarnival(
     outputs = set(measurements.keys())
     c_inputs = V.intersection(inputs)
     c_outputs = V.intersection(outputs)
-    info(f"{len(c_inputs)}/{len(inputs)} inputs mapped to the graph", show=verbose)
-    info(f"{len(c_outputs)}/{len(outputs)} outputs mapped to the graph", show=verbose)
-    info(f"Pruning the graph with size: V x E = {G.shape}...", show=verbose)
+    _info(f"{len(c_inputs)}/{len(inputs)} inputs mapped to the graph", show=verbose)
+    _info(f"{len(c_outputs)}/{len(outputs)} outputs mapped to the graph", show=verbose)
+    _info(f"Pruning the graph with size: V x E = {G.shape}...", show=verbose)
     Gp = G.prune(list(c_inputs), list(c_outputs))
-    info(f"Finished. Final size: V x E = {Gp.shape}.", show=verbose)
+    _info(f"Finished. Final size: V x E = {Gp.shape}.", show=verbose)
     V = set(Gp.vertices)
     cp_inputs = {input: v for input, v in perturbations.items() if input in V}
     cp_outputs = {output: v for output, v in measurements.items() if output in V}
-    info(f"{len(cp_inputs)}/{len(c_inputs)} inputs after pruning.", show=verbose)
-    info(f"{len(cp_outputs)}/{len(c_outputs)} outputs after pruning.", show=verbose)
-    info("Converting into a flow graph...", show=verbose)
+    _info(f"{len(cp_inputs)}/{len(c_inputs)} inputs after pruning.", show=verbose)
+    _info(f"{len(cp_outputs)}/{len(c_outputs)} outputs after pruning.", show=verbose)
+    _info("Converting into a flow graph...", show=verbose)
     Gf = create_flow_graph(Gp, conditions)
-    info("Creating a network flow problem...", show=verbose)
+    _info("Creating a network flow problem...", show=verbose)
     P = signflow(Gf, conditions, l0_penalty_vertices=betaWeight, **kwargs)
-    info("Preprocess completed.", show=verbose)
+    _info("Preprocess completed.", show=verbose)
     if solve:
         P.solve(solver=solver, **backend_options)
     end = time.time() - start
-    info(f"Finished in {end:.2f} s.", show=verbose)
+    _info(f"Finished in {end:.2f} s.", show=verbose)
     return P, Gf
 
 
@@ -100,9 +155,11 @@ def heuristic_carnival(
     priorKnowledgeNetwork: Union[List[Tuple], Graph],
     perturbations: Dict,
     measurements: Dict,
-    full_bfs: bool = False,
+    restricted_search: bool = False,
     prune: bool = True,
     verbose=True,
+    max_time=None,
+    max_edges=None,
 ):
     if isinstance(priorKnowledgeNetwork, List):
         G = Graph.from_sif_tuples(priorKnowledgeNetwork)
@@ -123,6 +180,8 @@ def heuristic_carnival(
         if verbose:
             print(f"Pruning the graph with size: V x E = {G.shape}...")
         Gp = G.prune(list(inputs), list(outputs))
+        if verbose:
+            print(f"Finished. Final size: V x E = {Gp.shape}.")
     V = set(Gp.V)
     inputs = V.intersection(perts)
     outputs = V.intersection(meas)
@@ -130,26 +189,54 @@ def heuristic_carnival(
     inputs_p = {k: perturbations[k] for k in inputs}
     outputs_p = {k: measurements[k] for k in outputs}
     selected_edges = None
-    if not full_bfs:
+    if restricted_search:
         selected_edges = reachability_graph(Gp, inputs_p, outputs_p, verbose=verbose)
-    selected_edges, paths, _ = bfs_search(
-        Gp, inputs_p, outputs_p, subset_edges=selected_edges
+    selected_edges, paths, stats = bfs_search(
+        Gp,
+        inputs_p,
+        outputs_p,
+        subset_edges=selected_edges,
+        max_time=max_time,
+        max_edges=max_edges,
+        verbose=verbose,
     )
-    return Gp, selected_edges, paths
+    # Estimate error, using inputs and outputs and comparing to what was selected
+    predicted_values = {p[0]: p[1][p[0]][1] for p in paths}
+    errors = dict()
+    for k, v in measurements.items():
+        error = abs(v - predicted_values.get(k, 0))
+        errors[k] = error
+    total_error = sum(errors.values())
+    if verbose:
+        print(f"Total error: {total_error}")
+        print(f"Number of selected edges: {len(selected_edges)}")
+    return Gp, selected_edges, paths, stats, errors
 
 
-def get_result(P, G, condition="c0"):
+def get_result(P, G, condition="c0", exclude_dummies=True):
     V = P.expr["vertex_values_" + condition].value
     E = P.expr["edge_values_" + condition].value
-    return {"V": G.V, "value": V}, {"E": G.E, "value": E}
+    d_vertices = {"V": G.V, "value": V}
+    d_edges = {"E": G.E, "value": E}
+    return d_vertices, d_edges
 
 
-def get_selected_edges(P, G, condition="c0"):
+def get_selected_edges(P, G, condition="c0", exclude_dummies=True):
     # Get the indexes of the edges whose value is not zero
     E = P.expr["edge_values_" + condition].value
     selected_edges = []
     for i, v in enumerate(E):
         if v != 0:
+            # Check if the edge contains a
+            # vertex starting with "_"
+            if exclude_dummies:
+                s, t = G.get_edge(i)
+                s = list(s)
+                t = list(t)
+                if len(s) > 0 and s[0].startswith("_"):
+                    continue
+                if len(t) > 0 and t[0].startswith("_"):
+                    continue
             selected_edges.append(i)
     return selected_edges
 
@@ -245,7 +332,7 @@ def reachability_graph(
         if early_stop and len(unreached_outputs) == 0:
             break
     if verbose:
-        print(f"Finished ({len(selected_edges)} selected edges).")
+        print(f"Finished reachability analysis ({len(selected_edges)} selected edges).")
     return selected_edges
 
 
@@ -274,7 +361,14 @@ def _str_path_nodes(a):
 
 
 def bfs_search(
-    G, initial_dict, final_dict, queue_max_size=None, subset_edges=None, verbose=True
+    G,
+    initial_dict,
+    final_dict,
+    max_time=None,
+    queue_max_size=None,
+    subset_edges=None,
+    max_edges=None,
+    verbose=True,
 ):
     Q = []
     reached = set()
@@ -294,6 +388,10 @@ def bfs_search(
         Q.append((k, {k: (0, w, None)}))
     start = time.time()
     while len(Q) > 0 and not exit:
+        if max_time is not None and time.time() - start > max_time:
+            if verbose:
+                print("Timeout reached.")
+            break
         current = Q.pop(0)
         n, v = current
         if v[n][0] > last_level:
@@ -316,6 +414,7 @@ def bfs_search(
             pos, w, _ = nv[n]
             value = w * val
             nv[nt] = (pos + 1, value, i)
+            # State = (vertex, (dist. from source, value=+1/-1, edge index))
             new_state = (nt, nv)
             # Check if the vertex is in the goal set
             if nt not in reached:
@@ -340,6 +439,11 @@ def bfs_search(
                         for (_, _, edge_idx) in nv.values()
                         if edge_idx is not None
                     )
+                    if max_edges is not None and len(selected_edges) >= max_edges:
+                        if verbose:
+                            print("Max edges reached.")
+                        exit = True
+                        break
 
             if len(reached) >= len(final_dict):
                 exit = True
@@ -357,6 +461,7 @@ def bfs_search(
         stats["iters"] += 1
     if verbose:
         print(f"Finished ({time.time() - start:.2f} s)")
+        print(f" > Number of selected edges: {len(selected_edges)}")
         print(f" > Total iterations: {stats['iters']}")
         print(f" > Detected loops: {stats['loops']}")
         print(f" > Conflicts: {stats['conflicts']}")

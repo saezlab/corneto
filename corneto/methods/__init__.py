@@ -1,3 +1,4 @@
+from corneto.methods.carnival import heuristic_carnival as fast_carnival
 from corneto.methods.carnival import (
     runCARNIVAL_AcyclicFlow,
     runCARNIVAL_Flow_Acyclic,

@@ -44,20 +44,35 @@ def get_latest_version(
         return None
 
 
-def _support_html_output(force_html: bool = False):
-    # from https://github.com/tqdm/tqdm/blob/master/tqdm/autonotebook.py
-    # and https://github.com/tqdm/tqdm/blob/0bb91857eca0d4aea08f66cf1c8949abe0cd6b7a/tqdm/notebook.py#L38
-    try:
-        from IPython import get_ipython
+class DisplayInspector:
+    # From: https://stackoverflow.com/questions/70768390/detecting-if-ipython-notebook-is-outputting-to-a-terminal
+    """Objects that display as HTML or text."""
 
-        ipy = get_ipython()
-        if ipy is None:
-            return False
-        if "IPKernelApp" not in get_ipython().config:
-            return False
-        return True
-    except:
+    def __init__(self) -> None:
+        self.status = None
+
+    def _repr_html_(self) -> str:
+        self.status = "HTML"
+        return ""
+
+    def __repr__(self) -> str:
+        self.status = "Plain"
+        return ""
+
+
+def supports_html() -> bool:
+    # From: https://stackoverflow.com/questions/70768390/detecting-if-ipython-notebook-is-outputting-to-a-terminal
+    import sys
+
+    """Test whether current runtime supports HTML."""
+    if "IPython" not in sys.modules or "IPython.display" not in sys.modules:
         return False
+
+    from IPython.display import display
+
+    inspector = DisplayInspector()
+    display(inspector)
+    return inspector.status == "HTML"
 
 
 def _get_info() -> Dict[str, Dict]:
@@ -87,7 +102,7 @@ def _get_info() -> Dict[str, Dict]:
         "value": available_backends(),
     }
     info["default_backend"] = {
-        "title": "Default backend (corneto.K)",
+        "title": "Default backend (corneto.opt)",
         "message": "No backend detected, please install CVXPY or PICOS",
         "value": None,
     }
@@ -126,14 +141,16 @@ def _get_info() -> Dict[str, Dict]:
 def info():
     info = _get_info()
 
-    if _support_html_output():
+    if supports_html():
         import base64
+        from importlib.resources import files
 
-        import pkg_resources
         from IPython.core.display import display
         from IPython.display import HTML
 
-        logo_path = pkg_resources.resource_filename(__name__, "resources/logo.png")
+        # logo_path = pkg_resources.resource_filename(__name__, "resources/logo.png")
+        logo_path = files("corneto").joinpath("resources/logo.png")
+
         with open(logo_path, "rb") as f:
             img_bytes = f.read()
         b64img = base64.b64encode(img_bytes).decode("utf-8")
@@ -185,7 +202,7 @@ def _info():
         ", ".join([str(e) + f" v{e.version()}" for e in available_backends()]),
     )
     if DEFAULT_BACKEND:
-        print("Default backend (corneto.K):", str(DEFAULT_BACKEND))
+        print("Default backend (corneto.opt):", str(DEFAULT_BACKEND))
         print(
             f"Available solvers for {DEFAULT_BACKEND!s}:",
             ", ".join([s for s in DEFAULT_BACKEND.available_solvers()]),
