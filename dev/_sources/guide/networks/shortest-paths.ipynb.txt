@@ -1,0 +1,205 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "f2d7b3c9",
+   "metadata": {},
+   "source": [
+    "# Shortest paths\n",
+    "\n",
+    "In network analysis, finding the shortest path between two nodes is often done using algorithms like Dijkstra's, Bellman-Ford, Floyd-Warshall, A-star, etc. However, these methods are particularly designed for the specific case of finding shortest paths and cannot be easily adapted for other tasks. Also, they have particular assumptions, for example, Dijkstra doesn't work with negative weights, and Bellman-Ford doesn't work with negative cycles.\n",
+    "\n",
+    "CORNETO isn't just another library for shortest paths. Instead, CORNETO allows you to model shortest-path problems using constrained optimization. This means that you have a flexible framework to formulate and solve these problems, making CORNETO a versatile tool. By converting a graph into a network flow problem, CORNETO can easily handle shortest path problems that are solved by any LP and ILP solver, or you can use this problem to build more advanced ones. \n",
+    "\n",
+    "```{note}\n",
+    "Please note that formulating the shortest path as an LP problem isn't always the best approach. LP solvers might be slower than dedicated algorithms like Dijkstra's or Bellman-Ford for simpler cases, especially when there's no need for the added flexibility of LP.\n",
+    "```\n",
+    "\n",
+    "In this tutorial, we will see how to use CORNETO to solve shortest-path problems and find a solution using an LP solver."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "9d72f881",
+   "metadata": {},
+   "source": [
+    "## Creating a weighted graph"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "a1684e94",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import numpy as np\n",
+    "\n",
+    "import corneto as cn\n",
+    "\n",
+    "cn.info()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "04821794",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "G = cn.Graph()\n",
+    "G.add_edge(\"A\", \"B\", weight=1)\n",
+    "G.add_edge(\"A\", \"C\", weight=1)\n",
+    "G.add_edge(\"B\", \"D\", weight=1)\n",
+    "G.add_edge(\"C\", \"E\", weight=1)\n",
+    "G.add_edge(\"E\", \"F\", weight=1)\n",
+    "G.add_edge(\"D\", \"F\", weight=1)\n",
+    "G.add_edge(\"F\", \"G\", weight=1)\n",
+    "G.plot()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "73e20804",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from corneto.methods import solve_shortest_path\n",
+    "\n",
+    "# TODO: a graph problem should have the graph attached to it...\n",
+    "edges, P, Gc = solve_shortest_path(G, \"A\", \"G\", solver=\"SCIPY\")\n",
+    "Gc.edge_subgraph(edges).plot(orphan_edges=False)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "84b362ad",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "P.objectives[0].value"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a9f2b17b",
+   "metadata": {},
+   "source": [
+    "## Random graphs"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "3979ec50",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Create a function that generates a shortest path problem on a random graph created with networkx\n",
+    "import networkx as nx\n",
+    "\n",
+    "\n",
+    "def create_random_graph(n, m=3, seed=None, directed=True):\n",
+    "    G = nx.barabasi_albert_graph(n, m, seed=seed)\n",
+    "    vertices = list(G.nodes())\n",
+    "    # Add random weights to the edges\n",
+    "    for u, v in G.edges():\n",
+    "        G[u][v][\"weight\"] = np.random.uniform(1, 10)  # np.random.randint(1, 20)\n",
+    "    s, t = np.random.choice(vertices, 2, replace=False)\n",
+    "    if directed:\n",
+    "        G = G.to_directed()\n",
+    "    return G, s, t\n",
+    "\n",
+    "\n",
+    "G, s, t = create_random_graph(5000)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "13cb798a",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "nx.shortest_path(G, s, t, weight=\"weight\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "c1feed1c",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "nx.shortest_path_length(G, s, t, weight=\"weight\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "903e5215",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "Gc = cn.Graph.from_networkx(G)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "3f2310c6",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "sol, Ps, Gcs = solve_shortest_path(Gc, s, t, solver=\"SCIPY\")\n",
+    "Ps.objectives[0].value"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "b46314a7",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "Gcs.edge_subgraph(sol).plot(orphan_edges=True)"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.10.10"
+  },
+  "toc": {
+   "base_numbering": 1,
+   "nav_menu": {},
+   "number_sections": true,
+   "sideBar": true,
+   "skip_h1_title": false,
+   "title_cell": "Table of Contents",
+   "title_sidebar": "Contents",
+   "toc_cell": false,
+   "toc_position": {},
+   "toc_section_display": true,
+   "toc_window_display": false
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
