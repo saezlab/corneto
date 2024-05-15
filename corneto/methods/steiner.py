@@ -5,7 +5,7 @@ from corneto._graph import Attr, BaseGraph, EdgeType
 from corneto.backend import DEFAULT_BACKEND, Backend
 
 
-def __exact_steiner_tree(
+def _exact_steiner_tree(
     G: BaseGraph,
     terminals,
     edge_weights=None,
@@ -108,6 +108,7 @@ def exact_steiner_tree(
     tolerance=1e-3,
     strict_acyclic=False,
     flow_name=VAR_FLOW,
+    out_flow_edge_type=EdgeType.UNDIRECTED,
     backend: Backend = DEFAULT_BACKEND,
 ):
     prized_nodes, prizes = [], []
@@ -137,7 +138,7 @@ def exact_steiner_tree(
     ids = []
     for v in terminals:
         if v != root:
-            idx = Gc.add_edge(v, (), type=EdgeType.UNDIRECTED)
+            idx = Gc.add_edge(v, (), type=out_flow_edge_type)
             ids.append(idx)  # terminal -> () (sink node, remove flow)
             dummy_edges[v] = idx
     ids = np.array(ids)
