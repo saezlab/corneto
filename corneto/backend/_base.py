@@ -764,8 +764,8 @@ class Backend(abc.ABC):
         """Create acyclicity constraint.
 
         This function creates acyclicity constraints. The acyclic constraints
-        ensure that the selected edges are acyclic, i.e. there are no cycles in the graph on the given property. 
-        Acyclicity can be applied e.g. over the flow constrains or over the signal property. 
+        ensure that the selected edges are acyclic, i.e. there are no cycles in the graph on the given property.
+        Acyclicity can be applied e.g. over the flow constrains or over the signal property.
 
         Parameters:
         ----------
