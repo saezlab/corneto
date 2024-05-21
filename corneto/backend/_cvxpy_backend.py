@@ -40,11 +40,28 @@ class CvxpyExpression(CExpression):
     def _max(self, axis: Optional[int] = None) -> Any:
         return cp.max(self._expr, axis=axis)
 
-    def _hstack(self, other: CExpression) -> Any:
-        return cp.hstack([self._expr, other])
+    def _hstack(self, other: Any) -> Any:
+        a = self._expr
+        b = other
+        # If vector, for hstack assume is a column vector
+        # if len(a.shape) == 1:
+        #    a = cp.reshape(a, (a.shape[0], 1))
+        # if len(b.shape) == 1:
+        #    b = cp.reshape(b, (b.shape[0], 1))
+        return cp.hstack([a, b])
 
-    def _vstack(self, other: CExpression) -> Any:
-        return cp.vstack([self._expr, other])
+    def _vstack(self, other: Any) -> Any:
+        a = self._expr
+        b = other
+        # If vector, for vstack assume is a row vector
+        if len(a.shape) == 1:
+            a = cp.reshape(a, (1, a.shape[0]))
+        if len(b.shape) == 1:
+            b = cp.reshape(b, (1, b.shape[0]))
+        return cp.vstack([a, b])
+
+    def _reshape(self, shape: Tuple[int, ...]) -> Any:
+        return cp.reshape(self._expr, shape)
 
     @property
     def value(self) -> np.ndarray:

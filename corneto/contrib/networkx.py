@@ -34,59 +34,57 @@ Note:
     basic edge types; does not support hybrid or hypergraphs unless skipped.
 """
 
-from typing import Union
+from typing import Callable, Optional, Union
 
 import corneto as cn
-from corneto._graph import BaseGraph, EdgeType
+from corneto._graph import BaseGraph
 from corneto._types import NxDiGraph, NxGraph
 from corneto.utils import Attr, import_optional_module
 
 
-def corneto_graph_to_networkx(G: BaseGraph, skip_unsupported_edges: bool = False):
-    """Converts a Corneto graph to a NetworkX graph.
-
-    Args:
-        G (BaseGraph): The Corneto graph to convert.
-        skip_unsupported_edges (bool): If True, skip hyperedges and other unsupported edge types. Defaults to False.
-
-    Returns:
-        Union[NxGraph, NxDiGraph]: A NetworkX graph.
-
-    Raises:
-        ValueError: If the graph contains hyperedges or unsupported hybrid graph types.
-    """
+def corneto_graph_to_networkx(
+    G: BaseGraph,
+    skip_unsupported_edges: bool = False,
+    graph_class: Optional[Callable] = None,
+    copy_attributes: bool = True,
+):
     nx = import_optional_module("networkx")
-    dir_edges = []
-    undir_edges = []
-    for i, (s, t) in G.edges():
-        if len(s) > 1 or len(t) > 1:
-            if skip_unsupported_edges:
-                continue
-            else:
-                raise ValueError("Hyperedges are not supported by NetworkX")
-        attr = G.get_attr_edge(i)
-        etype = attr.get_attr(Attr.EDGE_TYPE)
-        if etype == EdgeType.DIRECTED:
-            dir_edges.append(i)
-        elif etype == EdgeType.UNDIRECTED:
-            undir_edges.append(i)
-    if len(dir_edges) == 0 and len(undir_edges) > 0:
-        Gnx = nx.Graph()
-    elif len(dir_edges) > 0 and len(undir_edges) == 0:
-        Gnx = nx.DiGraph()
+    if graph_class is not None:
+        Gx = graph_class()
     else:
-        raise ValueError("Hybrid graphs are not supported by NetworkX")
-    for i, (s, t) in G.edges():
-        attr = G.get_attr_edge(i)
-        if len(s) == 0 or len(t) == 0:
-            if skip_unsupported_edges:
-                continue
+        gtype = None
+        for attr in G.get_attr_edges():
+            etype = attr.get_attr(Attr.EDGE_TYPE)
+            if gtype is None:
+                gtype = etype
             else:
-                raise ValueError("Edges with no source or target are not supported")
-        s = list(s)[0]
-        t = list(t)[0]
-        Gnx.add_edge(s, t, **attr)
-    return Gnx
+                if etype != gtype:
+                    raise ValueError(
+                        "Hybrid graphs are not supported by NetworkX. "
+                        "Please provide `graph_class` as either nx.Graph or nx.DiGraph."
+                    )
+        if gtype == cn.EdgeType.DIRECTED:
+            Gx = nx.DiGraph()
+        else:
+            Gx = nx.Graph()
+    for i, (source, target) in G.edges():
+        source_vertex, target_vertex = None, None
+        if source:
+            source = list(source)
+            source_vertex = source[0]
+            if len(source) > 1 and not skip_unsupported_edges:
+                raise ValueError(f"Edge {i} has {len(source)} source vertices")
+        if target:
+            target = list(target)
+            target_vertex = target[0]
+            if len(target) > 1 and not skip_unsupported_edges:
+                raise ValueError(f"Edge {i} has {len(source)} source vertices")
+        props = dict()
+        if copy_attributes:
+            props = G.get_attr_edge(i)
+        if source_vertex and target_vertex:
+            Gx.add_edge(source_vertex, target_vertex, **props)
+    return Gx
 
 
 def networkx_to_corneto_graph(G: Union[NxGraph, NxDiGraph]):

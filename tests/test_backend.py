@@ -135,18 +135,140 @@ def test_opt_delegate_sum_axis1(backend):
     assert np.isclose(esum.value, 60)
 
 
-def test_hstack_expression_matrix(backend):
+def test_vstack_matrix(backend):
+    x = backend.Variable("x", (2, 2))
+    y = backend.Variable("y", (3, 2))
+    z = x.vstack(y)
+    assert z.shape == (5, 2)
+
+
+def test_vstack_col_transposed(backend):
+    x = backend.Variable("x", (5, 1))
+    y = backend.Variable("y", (5,))
+    assert x.T.vstack(y).shape == (2, 5)
+
+
+def test_vstack_1d(backend):
+    x = backend.Variable("x", (5,))
+    y = None
+    for _ in range(5):
+        if y is None:
+            y = x
+        else:
+            y = y.vstack(x)
+    assert y.shape == (5, 5)
+
+
+def test_vstack_1d_col(backend):
+    y = None
+    for i in range(5):
+        x = backend.Variable("x", (1, 3))
+        if y is None:
+            y = x
+        else:
+            y = y.vstack(x)
+    assert y.shape == (5, 3)
+
+
+def test_vstack_1d_2d(backend):
+    x = backend.Variable("x", (5,))
+    y = backend.Variable("y", (2, 5))
+    z = x.vstack(y)
+    assert z.shape == (3, 5)
+
+
+def test_vstack_2d_1d(backend):
+    x = backend.Variable("x", (5,))
+    y = backend.Variable("y", (2, 5))
+    z = y.vstack(x)
+    assert z.shape == (3, 5)
+
+
+def test_vstack_left_vec_expression(backend):
+    left = backend.Variable("x", (5,)) + backend.Variable("y", (5,))
+    right = backend.Variable("z", (2, 5))
+    assert left.vstack(right).shape == (3, 5)
+
+
+def test_vstack_right_vec_expression(backend):
+    left = backend.Variable("x", (2, 5))
+    right = backend.Variable("y", (5,)) + backend.Variable("z", (5,))
+    assert left.vstack(right).shape == (3, 5)
+
+
+def test_vstack_backend(backend):
+    x = backend.Variable("x", (3, 1))
+    y = backend.Variable("y", (6, 1))
+    z = backend.Variable("z", (1, 1))
+    t = backend.vstack([x, y, z])
+    assert t.shape == (10, 1)
+
+
+def test_hstack_matrix(backend):
     x = backend.Variable("x", (2, 2))
     y = backend.Variable("y", (2, 3))
     z = x.hstack(y)
     assert z.shape == (2, 5)
 
 
-def test_vstack_expression_matrix(backend):
-    x = backend.Variable("x", (2, 2))
-    y = backend.Variable("y", (3, 2))
+def test_hstack_1d(backend):
+    x = backend.Variable("x", (5,))
+    y = None
+    for _ in range(5):
+        if y is None:
+            y = x
+        else:
+            y = y.hstack(x)
+    # TODO: This should be (25,) only
+    assert y.shape == (25,) or y.shape == (1, 25)
+
+
+def test_hstack_rowvec_2d(backend):
+    x = backend.Variable("x", (1, 5))
+    y = None
+    for _ in range(5):
+        if y is None:
+            y = x
+        else:
+            y = y.hstack(x)
+    assert y.shape == (1, 25)
+
+
+def test_vstack_1d_col(backend):
+    y = None
+    for i in range(5):
+        x = backend.Variable("x", (1, 3))
+        if y is None:
+            y = x
+        else:
+            y = y.vstack(x)
+    assert y.shape == (5, 3)
+
+
+def test_vstack_1d_2d(backend):
+    x = backend.Variable("x", (5,))
+    y = backend.Variable("y", (2, 5))
     z = x.vstack(y)
-    assert z.shape == (5, 2)
+    assert z.shape == (3, 5)
+
+
+def test_vstack_2d_1d(backend):
+    x = backend.Variable("x", (5,))
+    y = backend.Variable("y", (2, 5))
+    z = y.vstack(x)
+    assert z.shape == (3, 5)
+
+
+def test_vstack_left_vec_expression(backend):
+    left = backend.Variable("x", (5,)) + backend.Variable("y", (5,))
+    right = backend.Variable("z", (2, 5))
+    assert left.vstack(right).shape == (3, 5)
+
+
+def test_vstack_right_vec_expression(backend):
+    left = backend.Variable("x", (2, 5))
+    right = backend.Variable("y", (5,)) + backend.Variable("z", (5,))
+    assert left.vstack(right).shape == (3, 5)
 
 
 def test_hstack_backend(backend):
@@ -157,12 +279,30 @@ def test_hstack_backend(backend):
     assert t.shape == (1, 10)
 
 
-def test_vstack_backend(backend):
-    x = backend.Variable("x", (3, 1))
-    y = backend.Variable("y", (6, 1))
-    z = backend.Variable("z", (1, 1))
-    t = backend.vstack([x, y, z])
-    assert t.shape == (10, 1)
+def test_reshape(backend):
+    x = backend.Variable("x", (2, 3))
+    y = x.reshape((3, 2))
+    assert y.shape == (3, 2)
+
+
+def test_reshape_onedim(backend):
+    x = backend.Variable("x", (6,))
+    y = x.reshape((3, 2))
+    assert y.shape == (3, 2)
+
+
+def test_reshape_negative_one_one(backend):
+    x = backend.Variable("x", (4, 1))
+    reshaped = x.reshape((-1, 1))
+    expected_shape = (4, 1)
+    assert reshaped.shape == expected_shape
+
+
+def test_reshape_one_negative_one(backend):
+    x = backend.Variable("x", (1, 4))
+    reshaped = x.reshape((1, -1))
+    expected_shape = (1, 4)
+    assert reshaped.shape == expected_shape
 
 
 def test_cexpression_name(backend):

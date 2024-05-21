@@ -126,6 +126,59 @@ class CExpression(abc.ABC):
         return self._vstack(other)
 
     @abc.abstractmethod
+    def _reshape(self, shape: Tuple[int, ...]) -> "CExpression":
+        pass
+
+    @_delegate
+    def reshape(self, shape: Union[int, Tuple[int, ...]]) -> "CExpression":
+        this_shape = self.shape
+        num_elements = 1
+        for dim in this_shape:
+            num_elements *= dim
+
+        # Convert single int shape to tuple
+        if isinstance(shape, int):
+            shape = (shape,)
+
+        # Validate the input shape
+        if shape.count(-1) > 1:
+            raise ValueError("Only one dimension can be -1")
+        if any(dim < -1 for dim in shape):
+            raise ValueError("Invalid shape: dimensions must be positive or -1")
+
+        # Handle the case where shape is (-1,) or -1 to flatten the array
+        if shape == (-1,):
+            return self._reshape((num_elements,))
+
+        # General case: if -1 is present, calculate the corresponding dimension
+        if -1 in shape:
+            new_shape = []
+            unknown_index = shape.index(-1)
+            known_size = 1
+
+            for i, dim in enumerate(shape):
+                if i != unknown_index:
+                    known_size *= dim
+                new_shape.append(dim)
+
+            # Check that total elements match
+            if num_elements % known_size != 0:
+                raise ValueError("The total size of the new array must be unchanged")
+
+            new_shape[unknown_index] = num_elements // known_size
+            return self._reshape(tuple(new_shape))
+
+        # Check total size is ok
+        new_num_elements = 1
+        for dim in shape:
+            new_num_elements *= dim
+
+        if new_num_elements != num_elements:
+            raise ValueError("The total size of the new array must be unchanged")
+
+        return self._reshape(shape)
+
+    @abc.abstractmethod
     def _norm(self, p: int = 2) -> Any:
         pass
 
@@ -148,6 +201,11 @@ class CExpression(abc.ABC):
     @_delegate
     def max(self, axis: Optional[int] = None) -> "CExpression":
         return self._max(axis=axis)
+
+    # These delegated methods are invoked directly in the backend
+    # and wrapped thanks to the _delegate decorator. If a new
+    # backend has a different behavior, provide an abstract method
+    # as in the previous cases.
 
     @_delegate
     def __getitem__(self, item) -> "CExpression":  # type: ignore
@@ -283,6 +341,7 @@ class CSymbol(CExpression):
         ub_r: Optional[np.ndarray] = None
         self._provided_lb = lb
         self._provided_ub = ub
+        setattr(expr, "_csymbol_shape", shape)
 
         if shape is None:
             shape = ()  # type: ignore
@@ -1214,7 +1273,9 @@ class Backend(abc.ABC):
             [xor >= x - y, xor >= y - x, xor <= x + y, xor <= 2 - x - y]
         )
 
-    def linear_or(self, x: CExpression, axis: Optional[int] = None, varname="or"):
+    def linear_or(
+        self, x: CExpression, axis: Optional[int] = None, varname="or"
+    ) -> ProblemDef:
         # Check if the variable has a vartype and is binary
         if hasattr(x, "_vartype") and x._vartype != VarType.BINARY:
             raise ValueError(f"Variable x has type {x._vartype} instead of BINARY")
@@ -1233,7 +1294,9 @@ class Backend(abc.ABC):
         Or = self.Variable(varname, Z.shape, 0, 1, vartype=VarType.BINARY)
         return self.Problem([Or >= Z_norm, Or <= Z])
 
-    def linear_and(self, x: CExpression, axis: Optional[int] = None, varname="and"):
+    def linear_and(
+        self, x: CExpression, axis: Optional[int] = None, varname="and"
+    ) -> ProblemDef:
         # Check if the variable is binary, otherwise throw an error
         if hasattr(x, "_vartype") and x._vartype != VarType.BINARY:
             raise ValueError(f"Variable x has type {x._vartype} instead of BINARY")
@@ -1251,7 +1314,7 @@ class Backend(abc.ABC):
         And = self.Variable(varname, Z.shape, 0, 1, vartype=VarType.BINARY)
         return self.Problem([And <= Z_norm, And >= Z - N + 1])
 
-    def vstack(self, arg_list: Iterable[CSymbol]):
+    def vstack(self, arg_list: Iterable[CExpression]) -> CExpression:
         v = None
         for a in arg_list:
             if v is None:
@@ -1260,7 +1323,7 @@ class Backend(abc.ABC):
                 v = v.vstack(a)
         return v
 
-    def hstack(self, arg_list: Iterable[CSymbol]):
+    def hstack(self, arg_list: Iterable[CExpression]) -> CExpression:
         h = None
         for a in arg_list:
             if h is None:

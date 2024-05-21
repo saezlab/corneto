@@ -28,60 +28,9 @@ if USE_NUMBA:
 
 
 def _delegate(func):
-    """A decorator that wraps a function to provide extended functionality
-    when applied within a class. This decorator modifies the behavior
-    of the function `func` to handle expression objects and delegate
-    calls to their underlying representations, while maintaining a set of
-    symbols associated with the expression objects.
-
-    The primary use of this decorator is to allow mathematical and
-    operational transformations on proxy objects (like expressions in a
-    symbolic or algebraic framework) that abstract underlying complex
-    behaviors (like algebraic expressions handled by a computational backend
-    such as PICOS or CVXPY).
-
-    Parameters:
-    func (Callable): The function to be wrapped. This function should be
-                     a method of a class that handles expressions. It is
-                     expected to operate on instances of the class and
-                     potentially other similar objects.
-
-    Returns:
-    Callable: A wrapper function `_wrapper_func` that takes the same arguments as `func`.
-              This function intercepts calls to `func`, updates and manages symbols,
-              and delegates operations to the underlying computational backend if possible.
-
-    Decorators:
-    @wraps(func): This decorator is used to preserve the name, docstring, and other
-                  attributes of the original function `func`.
-
-    Usage:
-    To use this decorator, apply it to methods in a class that represents expressions,
-    where such methods need to interact with the underlying computational or symbolic
-    representation of those expressions. The decorator handles conversion and delegation
-    logic, facilitating the interaction with more complex backends transparently.
-
-    Example:
-    ```python
-    class Expression:
-        def _create(self, expr, symbols):
-            # Implementation details...
-            pass
-
-        @_delegate
-        def __add__(self, other):
-            # Additional functionality can be inserted here.
-            pass
-    ```
-    """
-
     @wraps(func)
     def _wrapper_func(self, *args, **kwargs):
         symbols = set()
-        # if hasattr(self, '_proxy_symbols'):
-        #    symbols.update(self._proxy_symbols)
-        # if getattr(self, 'is_symbol', lambda: False)():
-        #    symbols.add(self)
         if len(args) > 0:
             # Function is providing 'other' expression
             if hasattr(args[0], "_expr"):
@@ -89,7 +38,10 @@ def _delegate(func):
                 symbols.update(args[0]._proxy_symbols)
                 if getattr(args[0], "is_symbol", lambda: False)():
                     symbols.add(args[0])
-                args[0] = args[0]._expr  # symbol is lost
+                # Extract the original backend symbol
+                args[0] = args[0]._expr
+                # Attach the list of original symbols to the backend expression
+                setattr(args[0], "_proxy_symbols", symbols)
         if hasattr(self._expr, func.__name__):
             # Check if its callable
             f = getattr(self._expr, func.__name__)

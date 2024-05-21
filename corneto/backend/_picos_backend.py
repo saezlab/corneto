@@ -19,6 +19,35 @@ except ImportError:
     pc = None
 
 
+def _get_shape(a: Any):
+    if hasattr(a, "_csymbol_shape"):
+        return a._csymbol_shape
+    if hasattr(a, "_expr"):
+        return (
+            a._expr._csymbol_shape
+            if hasattr(a._expr, "_csymbol_shape")
+            else a._expr.shape
+        )
+    if hasattr(a, "shape"):
+        return a.shape
+    return ()
+
+
+def _infer_shape(c: Any):
+    shape = _get_shape(c)
+    if len(shape) == 2 and (shape[0] == 1 or shape[1] == 1):
+        # This is the problematic case, as any transformation
+        # using PICOS will result in a 2D array.
+        if hasattr(c, "_proxy_symbols"):
+            for s in c._proxy_symbols:
+                # If there is some original symbol used in the expression
+                # with ndim 1, we assume the original shape was 1D.
+                s_shape = _get_shape(s)
+                if len(s_shape) == 1:
+                    return (shape[0],)
+    return shape
+
+
 class PicosExpression(CExpression):
     def __init__(self, expr: Any, symbols: Optional[Set["CSymbol"]] = None) -> None:
         super().__init__(expr, symbols)
@@ -40,11 +69,34 @@ class PicosExpression(CExpression):
     def _max(self, axis: Optional[int] = None) -> Any:
         raise NotImplementedError()
 
-    def _hstack(self, other: CExpression) -> Any:
-        return self._expr & other
+    def _hstack(self, other: Any) -> Any:
+        a = self._expr
+        b = other
+        # PICOS assumes vectors are column vectors.
+        # For hstack, if 1 dim, we assume is a row vector.
+        a_shape = _infer_shape(self)
+        b_shape = _infer_shape(other)
+        if len(a_shape) == 1 and a.shape[1] == 1:
+            a = a.T
+        if len(b_shape) == 1 and b.shape[1] == 1:
+            b = b.T
+        return a & b
 
-    def _vstack(self, other: CExpression) -> Any:
-        return self._expr // other
+    def _vstack(self, other: Any) -> Any:
+        a = self._expr
+        b = other
+        # PICOS assumes vectors are column vectors.
+        # We need to keep track of the original dim.
+        a_shape = _infer_shape(self)
+        b_shape = _infer_shape(other)
+        if len(a_shape) == 1:
+            a = a.reshaped((1, a_shape[0]))
+        if len(b_shape) == 1:
+            b = b.reshaped((1, b_shape[0]))
+        return a // b
+
+    def _reshape(self, shape: Tuple[int, ...]) -> Any:
+        return self._expr.reshaped(shape)
 
     @property
     def value(self) -> np.ndarray:

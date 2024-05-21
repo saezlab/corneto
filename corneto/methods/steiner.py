@@ -108,7 +108,8 @@ def exact_steiner_tree(
     tolerance=1e-3,
     strict_acyclic=False,
     flow_name=VAR_FLOW,
-    out_flow_edge_type=EdgeType.UNDIRECTED,
+    in_flow_edge_type=EdgeType.DIRECTED,
+    out_flow_edge_type=EdgeType.DIRECTED,
     backend: Backend = DEFAULT_BACKEND,
 ):
     prized_nodes, prizes = [], []
@@ -132,7 +133,7 @@ def exact_steiner_tree(
     Gc = G.copy()
     # TODO: If graph is directed, edges for inflow/outflow should be reversible
     eidx = Gc.add_edge(
-        (), root, type=EdgeType.UNDIRECTED
+        (), root, type=in_flow_edge_type
     )  # () -> root (input flow, source flow node)
     dummy_edges[root] = eidx
     ids = []
@@ -237,8 +238,12 @@ def create_exact_multi_steiner_tree(
 
     # We create a linking binary vector computing the or of the selected edges
     vars = [big_P.expr[f"{flow_name}{i}_i"][:num_edges] for i in range(len(conditions))]
+    for v in vars:
+        print(v.shape)
     I = backend.vstack(vars)
+    print("I", I.shape)
     big_P += backend.linear_or(I, axis=0, varname="is_unblocked")
+    print("OR", big_P.expr.is_unblocked.shape)
     # big_P.register("is_unblocked", v_or)
     big_P.add_objectives(sum(big_P.expr.is_unblocked), weights=lam)
     return big_P

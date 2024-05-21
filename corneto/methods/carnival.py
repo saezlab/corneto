@@ -506,14 +506,7 @@ def runCARNIVAL_AcyclicFlow(
 
     for exp, iexp in zip(exp_list, range(len(exp_list))):
         # Edge cannot activate or inhibit downstream vertices if it is not carrying flow
-        P += (
-            Eact[:, iexp]
-            + Einh[
-                :,
-                iexp,
-            ]
-            <= P.expr.with_flow
-        )
+        P += Eact[:, iexp] + Einh[:, iexp] <= P.expr.with_flow
 
         P += Eact[edges_with_head, iexp] <= (Ah.T @ Va)[edges_with_head, iexp].multiply(
             interaction[edges_with_head] > 0
