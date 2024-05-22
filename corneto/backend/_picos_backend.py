@@ -76,10 +76,11 @@ class PicosExpression(CExpression):
         # For hstack, if 1 dim, we assume is a row vector.
         a_shape = _infer_shape(self)
         b_shape = _infer_shape(other)
-        if len(a_shape) == 1 and a.shape[1] == 1:
-            a = a.T
-        if len(b_shape) == 1 and b.shape[1] == 1:
-            b = b.T
+        # If both are 1-dim vecs, concatenate on columns
+        if len(a_shape) == 1 and len(b_shape) == 1:
+            a = a.reshaped((1, a_shape[0]))
+            b = b.reshaped((1, b_shape[0]))
+            return a & b
         return a & b
 
     def _vstack(self, other: Any) -> Any:

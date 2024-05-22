@@ -41,14 +41,7 @@ class CvxpyExpression(CExpression):
         return cp.max(self._expr, axis=axis)
 
     def _hstack(self, other: Any) -> Any:
-        a = self._expr
-        b = other
-        # If vector, for hstack assume is a column vector
-        # if len(a.shape) == 1:
-        #    a = cp.reshape(a, (a.shape[0], 1))
-        # if len(b.shape) == 1:
-        #    b = cp.reshape(b, (b.shape[0], 1))
-        return cp.hstack([a, b])
+        return cp.hstack([self._expr, other])
 
     def _vstack(self, other: Any) -> Any:
         a = self._expr

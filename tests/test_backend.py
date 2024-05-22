@@ -196,12 +196,34 @@ def test_vstack_right_vec_expression(backend):
     assert left.vstack(right).shape == (3, 5)
 
 
+def test_vstack_invalid_left(backend):
+    left = backend.Variable("y", (1, 5))
+    right = backend.Variable("x", (5,))
+    with pytest.raises(Exception):
+        left.T.vstack(right)
+
+
+def test_vstack_invalid_right(backend):
+    left = backend.Variable("x", (5,))
+    right = backend.Variable("y", (1, 5))
+    with pytest.raises(Exception):
+        left.vstack(right.T)
+
+
 def test_vstack_backend(backend):
     x = backend.Variable("x", (3, 1))
     y = backend.Variable("y", (6, 1))
     z = backend.Variable("z", (1, 1))
     t = backend.vstack([x, y, z])
     assert t.shape == (10, 1)
+
+
+def test_vstack_backend_1d(backend):
+    x = backend.Variable("x", (3,))
+    y = backend.Variable("y", (3,))
+    z = backend.Variable("z", (3,))
+    t = backend.vstack([x, y, z])
+    assert t.shape == (3, 3)
 
 
 def test_hstack_matrix(backend):
@@ -234,38 +256,27 @@ def test_hstack_rowvec_2d(backend):
     assert y.shape == (1, 25)
 
 
-def test_vstack_1d_col(backend):
-    y = None
-    for i in range(5):
-        x = backend.Variable("x", (1, 3))
-        if y is None:
-            y = x
-        else:
-            y = y.vstack(x)
-    assert y.shape == (5, 3)
-
-
-def test_vstack_1d_2d(backend):
+def test_invalid_hstack_1d_2d(backend):
     x = backend.Variable("x", (5,))
-    y = backend.Variable("y", (2, 5))
-    z = x.vstack(y)
-    assert z.shape == (3, 5)
+    y = backend.Variable("y", (1, 5))
+    with pytest.raises(Exception):
+        x.hstack(y)
 
 
-def test_vstack_2d_1d(backend):
+def test_hstack_2d_1d(backend):
     x = backend.Variable("x", (5,))
-    y = backend.Variable("y", (2, 5))
-    z = y.vstack(x)
-    assert z.shape == (3, 5)
+    y = backend.Variable("y", (1, 5))
+    z = y.hstack(x)
+    assert z.shape == (1, 10)
 
 
-def test_vstack_left_vec_expression(backend):
+def test_hstack_left_vec_expression(backend):
     left = backend.Variable("x", (5,)) + backend.Variable("y", (5,))
     right = backend.Variable("z", (2, 5))
     assert left.vstack(right).shape == (3, 5)
 
 
-def test_vstack_right_vec_expression(backend):
+def test_hstack_right_vec_expression(backend):
     left = backend.Variable("x", (2, 5))
     right = backend.Variable("y", (5,)) + backend.Variable("z", (5,))
     assert left.vstack(right).shape == (3, 5)
