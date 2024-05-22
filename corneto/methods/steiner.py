@@ -180,9 +180,15 @@ def exact_steiner_tree(
         P += F[ids] >= 10 / (len(terminals) + 1)  # Force all terminals to be present
     else:
         id_edge_prized = np.array([dummy_edges[v] for v in prized_nodes])
-        P += K.NonZeroIndicator(F, indexes=id_edge_prized, tolerance=tolerance)
+        P += K.NonZeroIndicator(
+            F,
+            indexes=id_edge_prized,
+            tolerance=tolerance,
+            suffix_pos="_nz_ipos",
+            suffix_neg="_nz_ineg",
+        )
         I_prized_selected = (
-            P.symbols[f"{flow_name}_ipos"] + P.symbols[f"{flow_name}_ineg"]
+            P.symbols[f"{flow_name}_nz_ipos"] + P.symbols[f"{flow_name}_nz_ineg"]
         )
         P.add_objectives(np.array(prizes) @ I_prized_selected, weights=-1)
 
