@@ -69,14 +69,14 @@ File [0;32m~/work/corneto/corneto/corneto/backend/_base.py:810[0m, in [0;36mB
 [1;32m    817[0m [43m    [49m[38;5;241;43m*[39;49m[38;5;241;43m*[39;49m[43moptions[49m[43m,[49m
 [1;32m    818[0m [43m[49m[43m)[49m
 
-File [0;32m~/work/corneto/corneto/corneto/backend/_cvxpy_backend.py:169[0m, in [0;36mCvxpyBackend._solve[0;34m(self, p, objective, solver, max_seconds, warm_start, verbosity, **options)[0m
-[1;32m    167[0m solvers [38;5;241m=[39m cp[38;5;241m.[39minstalled_solvers()
-[1;32m    168[0m [38;5;28;01mif[39;00m s [38;5;129;01mis[39;00m [38;5;129;01mnot[39;00m [38;5;28;01mNone[39;00m [38;5;129;01mand[39;00m s [38;5;129;01mnot[39;00m [38;5;129;01min[39;00m solvers:
-[0;32m--> 169[0m     [38;5;28;01mraise[39;00m [38;5;167;01mValueError[39;00m(
-[1;32m    170[0m         [38;5;124mf[39m[38;5;124m"[39m[38;5;124mSolver [39m[38;5;132;01m{[39;00ms[38;5;132;01m}[39;00m[38;5;124m is not installed/supported, supported solvers are: [39m[38;5;132;01m{[39;00msolvers[38;5;132;01m}[39;00m[38;5;124m"[39m
-[1;32m    171[0m     )
-[1;32m    172[0m [38;5;66;03m# TODO: Implement parameter mapping for solvers and backends[39;00m
-[1;32m    173[0m [38;5;28;01mif[39;00m max_seconds [38;5;129;01mis[39;00m [38;5;129;01mnot[39;00m [38;5;28;01mNone[39;00m:
+File [0;32m~/work/corneto/corneto/corneto/backend/_cvxpy_backend.py:162[0m, in [0;36mCvxpyBackend._solve[0;34m(self, p, objective, solver, max_seconds, warm_start, verbosity, **options)[0m
+[1;32m    160[0m solvers [38;5;241m=[39m cp[38;5;241m.[39minstalled_solvers()
+[1;32m    161[0m [38;5;28;01mif[39;00m s [38;5;129;01mis[39;00m [38;5;129;01mnot[39;00m [38;5;28;01mNone[39;00m [38;5;129;01mand[39;00m s [38;5;129;01mnot[39;00m [38;5;129;01min[39;00m solvers:
+[0;32m--> 162[0m     [38;5;28;01mraise[39;00m [38;5;167;01mValueError[39;00m(
+[1;32m    163[0m         [38;5;124mf[39m[38;5;124m"[39m[38;5;124mSolver [39m[38;5;132;01m{[39;00ms[38;5;132;01m}[39;00m[38;5;124m is not installed/supported, supported solvers are: [39m[38;5;132;01m{[39;00msolvers[38;5;132;01m}[39;00m[38;5;124m"[39m
+[1;32m    164[0m     )
+[1;32m    165[0m [38;5;66;03m# TODO: Implement parameter mapping for solvers and backends[39;00m
+[1;32m    166[0m [38;5;28;01mif[39;00m max_seconds [38;5;129;01mis[39;00m [38;5;129;01mnot[39;00m [38;5;28;01mNone[39;00m:
 
 [0;31mValueError[0m: Solver GUROBI is not installed/supported, supported solvers are: ['CLARABEL', 'CVXOPT', 'ECOS', 'ECOS_BB', 'GLPK', 'GLPK_MI', 'OSQP', 'SCIP', 'SCIPY', 'SCS']
 

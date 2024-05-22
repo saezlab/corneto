@@ -605,25 +605,25 @@ document.write(`
                                      CVXPY                                     
                                      v1.5.1                                    
 ===============================================================================
-(CVXPY) May 21 03:50:28 PM: Your problem has 310 variables, 680 constraints, and 0 parameters.
-(CVXPY) May 21 03:50:28 PM: It is compliant with the following grammars: DCP, DQCP
-(CVXPY) May 21 03:50:28 PM: (If you need to solve this problem multiple times, but with different data, consider using parameters.)
-(CVXPY) May 21 03:50:28 PM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
-(CVXPY) May 21 03:50:28 PM: Your problem is compiled with the CPP canonicalization backend.
+(CVXPY) May 22 01:59:24 PM: Your problem has 310 variables, 680 constraints, and 0 parameters.
+(CVXPY) May 22 01:59:24 PM: It is compliant with the following grammars: DCP, DQCP
+(CVXPY) May 22 01:59:24 PM: (If you need to solve this problem multiple times, but with different data, consider using parameters.)
+(CVXPY) May 22 01:59:24 PM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
+(CVXPY) May 22 01:59:24 PM: Your problem is compiled with the CPP canonicalization backend.
 -------------------------------------------------------------------------------
                                   Compilation                                  
 -------------------------------------------------------------------------------
-(CVXPY) May 21 03:50:28 PM: Compiling problem (target solver=SCIP).
-(CVXPY) May 21 03:50:28 PM: Reduction chain: Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; SCIP
-(CVXPY) May 21 03:50:28 PM: Applying reduction Dcp2Cone
-(CVXPY) May 21 03:50:28 PM: Applying reduction CvxAttr2Constr
-(CVXPY) May 21 03:50:28 PM: Applying reduction ConeMatrixStuffing
-(CVXPY) May 21 03:50:28 PM: Applying reduction SCIP
-(CVXPY) May 21 03:50:28 PM: Finished problem compilation (took 1.401e-02 seconds).
+(CVXPY) May 22 01:59:24 PM: Compiling problem (target solver=SCIP).
+(CVXPY) May 22 01:59:24 PM: Reduction chain: Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; SCIP
+(CVXPY) May 22 01:59:24 PM: Applying reduction Dcp2Cone
+(CVXPY) May 22 01:59:24 PM: Applying reduction CvxAttr2Constr
+(CVXPY) May 22 01:59:24 PM: Applying reduction ConeMatrixStuffing
+(CVXPY) May 22 01:59:24 PM: Applying reduction SCIP
+(CVXPY) May 22 01:59:24 PM: Finished problem compilation (took 1.386e-02 seconds).
 -------------------------------------------------------------------------------
                                 Numerical solver                               
 -------------------------------------------------------------------------------
-(CVXPY) May 21 03:50:28 PM: Invoking solver SCIP  to obtain a solution.
+(CVXPY) May 22 01:59:24 PM: Invoking solver SCIP  to obtain a solution.
 presolving:
 (round 1, fast)       13 del vars, 342 del conss, 0 add conss, 315 chg bounds, 0 chg sides, 0 chg coeffs, 0 upgd conss, 0 impls, 0 clqs
 (round 2, fast)       22 del vars, 342 del conss, 0 add conss, 315 chg bounds, 0 chg sides, 0 chg coeffs, 0 upgd conss, 0 impls, 0 clqs
@@ -647,7 +647,7 @@ presolved problem has 288 variables (145 bin, 0 int, 0 impl, 143 cont) and 339 c
       1 constraints of type &lt;setppc&gt;
      48 constraints of type &lt;linear&gt;
 transformed objective value is always integral (scale: 1)
-Presolving Time: 0.01
+Presolving Time: 0.00
 
  time | node  | left  |LP iter|LP it/n|mem/heur|mdpt |vars |cons |rows |cuts |sepa|confs|strbr|  dualbound   | primalbound  |  gap   | compl. 
 p 0.0s|     1 |     0 |   115 |     - |   locks|   0 | 288 | 339 | 339 |   0 |  0 |   0 |   0 | 0.000000e+00 | 6.870000e+02 |    Inf | unknown
@@ -701,7 +701,7 @@ r 0.0s|     1 |     0 |   497 |     - |simplero|   0 | 288 | 339 | 339 |   0 |  
   0.4s|     1 |     0 |  2040 |     - |    10M |   0 | 288 | 339 | 426 | 157 | 42 |   0 |   0 | 3.340426e+01 | 5.300000e+01 |  58.66%| unknown
   0.5s|     1 |     0 |  2070 |     - |    10M |   0 | 288 | 339 | 431 | 162 | 43 |   0 |   0 | 3.340995e+01 | 5.300000e+01 |  58.64%| unknown
   0.5s|     1 |     0 |  2086 |     - |    10M |   0 | 288 | 339 | 437 | 168 | 44 |   0 |   0 | 3.341025e+01 | 5.300000e+01 |  58.63%| unknown
-  0.5s|     1 |     0 |  2106 |     - |    10M |   0 | 288 | 339 | 441 | 172 | 45 |   0 |   0 | 3.341140e+01 | 5.300000e+01 |  58.63%| unknown
+  0.6s|     1 |     0 |  2106 |     - |    10M |   0 | 288 | 339 | 441 | 172 | 45 |   0 |   0 | 3.341140e+01 | 5.300000e+01 |  58.63%| unknown
   0.6s|     1 |     0 |  2117 |     - |    10M |   0 | 288 | 339 | 429 | 177 | 46 |   0 |   0 | 3.341336e+01 | 5.300000e+01 |  58.62%| unknown
   0.6s|     1 |     0 |  2121 |     - |    10M |   0 | 288 | 339 | 432 | 180 | 47 |   0 |   0 | 3.341343e+01 | 5.300000e+01 |  58.62%| unknown
   0.6s|     1 |     0 |  2147 |     - |    10M |   0 | 288 | 339 | 435 | 183 | 48 |   0 |   0 | 3.341428e+01 | 5.300000e+01 |  58.61%| unknown
@@ -712,7 +712,7 @@ r 0.0s|     1 |     0 |   497 |     - |simplero|   0 | 288 | 339 | 339 |   0 |  
   0.8s|     1 |     0 |  2173 |     - |    10M |   0 | 288 | 339 | 421 | 191 | 53 |   0 |   0 | 3.341606e+01 | 5.300000e+01 |  58.61%| unknown
 d 0.8s|     1 |     0 |  2878 |     - |farkasdi|   0 | 288 | 339 | 421 |   0 | 53 |   0 |   0 | 3.341606e+01 | 4.900000e+01 |  46.64%| unknown
 d 0.8s|     1 |     0 |  2954 |     - |farkasdi|   0 | 288 | 339 | 421 |   0 | 53 |   0 |   0 | 3.341606e+01 | 4.400000e+01 |  31.67%| unknown
-L 0.9s|     1 |     0 |  3068 |     - |    rens|   0 | 288 | 339 | 421 | 191 | 53 |   0 |   0 | 3.341606e+01 | 4.300000e+01 |  28.68%| unknown
+L 1.0s|     1 |     0 |  3068 |     - |    rens|   0 | 288 | 339 | 421 | 191 | 53 |   0 |   0 | 3.341606e+01 | 4.300000e+01 |  28.68%| unknown
  time | node  | left  |LP iter|LP it/n|mem/heur|mdpt |vars |cons |rows |cuts |sepa|confs|strbr|  dualbound   | primalbound  |  gap   | compl. 
   1.0s|     1 |     0 |  3068 |     - |    11M |   0 | 288 | 339 | 421 | 191 | 53 |   0 |   0 | 3.341606e+01 | 4.300000e+01 |  28.68%| unknown
   1.0s|     1 |     0 |  3068 |     - |    11M |   0 | 288 | 339 | 421 | 191 | 53 |   0 |   0 | 3.341606e+01 | 4.300000e+01 |  28.68%| unknown
@@ -727,15 +727,15 @@ L 3.1s|   201 |   151 | 15906 |  69.2 |crossove|  21 | 288 | 334 | 399 |1132 |  
   5.3s|   500 |   388 | 41238 |  78.5 |    26M |  21 | 288 | 363 | 406 |2876 |  2 |  58 | 461 | 3.569818e+01 | 4.200000e+01 |  17.65%|  18.88%
   6.0s|   600 |   438 | 48449 |  77.4 |    27M |  21 | 288 | 371 | 414 |3664 |  5 |  72 | 467 | 3.589782e+01 | 4.200000e+01 |  17.00%|  21.02%
   6.8s|   700 |   496 | 55278 |  76.1 |    27M |  23 | 288 | 371 | 423 |4283 |  2 |  73 | 474 | 3.606494e+01 | 4.200000e+01 |  16.46%|  22.67%
-  7.6s|   800 |   552 | 63005 |  76.3 |    28M |  25 | 288 | 371 | 426 |5046 |  2 |  75 | 485 | 3.619668e+01 | 4.200000e+01 |  16.03%|  24.48%
+  7.7s|   800 |   552 | 63005 |  76.3 |    28M |  25 | 288 | 371 | 426 |5046 |  2 |  75 | 485 | 3.619668e+01 | 4.200000e+01 |  16.03%|  24.48%
   7.9s|   900 |   606 | 67077 |  72.3 |    28M |  25 | 288 | 370 | 431 |5240 |  0 |  78 | 492 | 3.632900e+01 | 4.200000e+01 |  15.61%|  26.53%
  time | node  | left  |LP iter|LP it/n|mem/heur|mdpt |vars |cons |rows |cuts |sepa|confs|strbr|  dualbound   | primalbound  |  gap   | compl. 
   8.2s|  1000 |   660 | 71410 |  69.4 |    28M |  25 | 288 | 373 | 430 |5498 |  0 |  84 | 498 | 3.656061e+01 | 4.200000e+01 |  14.88%|  28.09%
   8.5s|  1100 |   720 | 75926 |  67.2 |    30M |  28 | 288 | 373 | 396 |5749 |  2 |  88 | 499 | 3.667087e+01 | 4.200000e+01 |  14.53%|  29.10%
-  8.8s|  1200 |   774 | 80197 |  65.2 |    30M |  28 | 288 | 374 | 442 |6051 |  8 |  92 | 508 | 3.667087e+01 | 4.200000e+01 |  14.53%|  29.89%
-  9.1s|  1300 |   838 | 84668 |  63.6 |    31M |  28 | 288 | 375 | 438 |6271 |  2 |  95 | 515 | 3.673913e+01 | 4.200000e+01 |  14.32%|  30.45%
-  9.5s|  1400 |   888 | 89337 |  62.4 |    31M |  33 | 288 | 375 | 427 |6648 |  1 |  95 | 516 | 3.692692e+01 | 4.200000e+01 |  13.74%|  31.11%
-r 9.7s|  1460 |   642 | 91671 |  61.4 |ziroundi|  33 | 288 | 379 | 441 |6820 |  2 | 100 | 518 | 3.694039e+01 | 4.100000e+01 |  10.99%|  39.05%
+  8.9s|  1200 |   774 | 80197 |  65.2 |    30M |  28 | 288 | 374 | 442 |6051 |  8 |  92 | 508 | 3.667087e+01 | 4.200000e+01 |  14.53%|  29.89%
+  9.2s|  1300 |   838 | 84668 |  63.6 |    31M |  28 | 288 | 375 | 438 |6271 |  2 |  95 | 515 | 3.673913e+01 | 4.200000e+01 |  14.32%|  30.45%
+  9.6s|  1400 |   888 | 89337 |  62.4 |    31M |  33 | 288 | 375 | 427 |6648 |  1 |  95 | 516 | 3.692692e+01 | 4.200000e+01 |  13.74%|  31.11%
+r 9.8s|  1460 |   642 | 91671 |  61.4 |ziroundi|  33 | 288 | 379 | 441 |6820 |  2 | 100 | 518 | 3.694039e+01 | 4.100000e+01 |  10.99%|  39.05%
   9.8s|  1500 |   646 | 92518 |  60.3 |    31M |  33 | 288 | 379 | 436 |6902 |  1 | 100 | 518 | 3.694039e+01 | 4.100000e+01 |  10.99%|  39.60%
  10.0s|  1600 |   672 | 94905 |  58.1 |    31M |  33 | 288 | 379 | 437 |7094 |  2 | 102 | 519 | 3.702133e+01 | 4.100000e+01 |  10.75%|  40.41%
  10.2s|  1700 |   690 | 96613 |  55.6 |    31M |  33 | 288 | 384 | 438 |7185 |  2 | 107 | 519 | 3.704513e+01 | 4.100000e+01 |  10.68%|  42.00%
@@ -744,20 +744,20 @@ r 9.7s|  1460 |   642 | 91671 |  61.4 |ziroundi|  33 | 288 | 379 | 441 |6820 |  
  10.6s|  2000 |   726 |102052 |  50.0 |    31M |  33 | 288 | 390 | 430 |7517 |  2 | 116 | 523 | 3.706469e+01 | 4.100000e+01 |  10.62%|  45.65%
  10.7s|  2100 |   734 |103965 |  48.5 |    31M |  33 | 288 | 391 | 400 |7642 |  0 | 117 | 524 | 3.711633e+01 | 4.100000e+01 |  10.46%|  46.38%
  10.9s|  2200 |   754 |105916 |  47.2 |    31M |  33 | 288 | 392 | 422 |7774 |  1 | 118 | 526 | 3.717277e+01 | 4.100000e+01 |  10.30%|  47.80%
- 10.9s|  2300 |   758 |106834 |  45.6 |    31M |  33 | 288 | 392 | 431 |7807 |  1 | 120 | 527 | 3.717277e+01 | 4.100000e+01 |  10.30%|  48.27%
+ 11.0s|  2300 |   758 |106834 |  45.6 |    31M |  33 | 288 | 392 | 431 |7807 |  1 | 120 | 527 | 3.717277e+01 | 4.100000e+01 |  10.30%|  48.27%
  time | node  | left  |LP iter|LP it/n|mem/heur|mdpt |vars |cons |rows |cuts |sepa|confs|strbr|  dualbound   | primalbound  |  gap   | compl. 
  11.0s|  2400 |   756 |108012 |  44.2 |    31M |  34 | 288 | 392 | 394 |7871 |  1 | 122 | 530 | 3.722356e+01 | 4.100000e+01 |  10.15%|  49.32%
  11.2s|  2500 |   758 |110597 |  43.4 |    31M |  34 | 288 | 392 | 405 |8051 |  2 | 123 | 531 | 3.726690e+01 | 4.100000e+01 |  10.02%|  50.86%
  11.3s|  2600 |   758 |111932 |  42.3 |    31M |  34 | 288 | 395 | 408 |8070 |  2 | 129 | 535 | 3.727273e+01 | 4.100000e+01 |  10.00%|  52.12%
- 11.4s|  2700 |   766 |114122 |  41.5 |    31M |  34 | 288 | 395 | 421 |8174 |  0 | 135 | 535 | 3.729089e+01 | 4.100000e+01 |   9.95%|  53.25%
+ 11.5s|  2700 |   766 |114122 |  41.5 |    31M |  34 | 288 | 395 | 421 |8174 |  0 | 135 | 535 | 3.729089e+01 | 4.100000e+01 |   9.95%|  53.25%
  11.6s|  2800 |   770 |115754 |  40.6 |    31M |  34 | 288 | 395 | 434 |8308 |  0 | 136 | 535 | 3.730722e+01 | 4.100000e+01 |   9.90%|  53.67%
  11.8s|  2900 |   780 |117900 |  40.0 |    31M |  34 | 288 | 395 | 419 |8459 |  0 | 138 | 537 | 3.731818e+01 | 4.100000e+01 |   9.87%|  54.71%
  11.9s|  3000 |   776 |119853 |  39.3 |    31M |  34 | 288 | 395 | 414 |8589 |  1 | 139 | 540 | 3.736112e+01 | 4.100000e+01 |   9.74%|  55.99%
- 12.0s|  3100 |   780 |121910 |  38.7 |    31M |  34 | 288 | 395 | 415 |8747 |  2 | 140 | 541 | 3.740066e+01 | 4.100000e+01 |   9.62%|  56.71%
+ 12.1s|  3100 |   780 |121910 |  38.7 |    31M |  34 | 288 | 395 | 415 |8747 |  2 | 140 | 541 | 3.740066e+01 | 4.100000e+01 |   9.62%|  56.71%
  12.2s|  3200 |   764 |123732 |  38.0 |    31M |  34 | 288 | 396 | 441 |8853 |  1 | 141 | 542 | 3.760828e+01 | 4.100000e+01 |   9.02%|  58.52%
  12.3s|  3300 |   754 |125494 |  37.4 |    32M |  34 | 288 | 396 | 421 |8950 |  2 | 143 | 542 | 3.766299e+01 | 4.100000e+01 |   8.86%|  59.62%
  12.5s|  3400 |   732 |127786 |  37.0 |    32M |  34 | 288 | 399 | 434 |9127 |  0 | 147 | 542 | 3.775000e+01 | 4.100000e+01 |   8.61%|  61.33%
- 12.5s|  3500 |   716 |129147 |  36.3 |    32M |  34 | 288 | 399 | 414 |9174 |  1 | 147 | 542 | 3.775157e+01 | 4.100000e+01 |   8.60%|  62.37%
+ 12.6s|  3500 |   716 |129147 |  36.3 |    32M |  34 | 288 | 399 | 414 |9174 |  1 | 147 | 542 | 3.775157e+01 | 4.100000e+01 |   8.60%|  62.37%
  12.7s|  3600 |   702 |130999 |  35.8 |    32M |  34 | 288 | 399 | 439 |9293 |  0 | 147 | 542 | 3.777922e+01 | 4.100000e+01 |   8.53%|  63.58%
  12.8s|  3700 |   692 |132309 |  35.2 |    32M |  34 | 288 | 400 | 418 |9393 |  0 | 148 | 543 | 3.778982e+01 | 4.100000e+01 |   8.49%|  64.28%
  12.9s|  3800 |   678 |134000 |  34.7 |    32M |  34 | 288 | 400 | 425 |9442 |  1 | 148 | 545 | 3.786189e+01 | 4.100000e+01 |   8.29%|  65.26%
@@ -772,24 +772,24 @@ r 9.7s|  1460 |   642 | 91671 |  61.4 |ziroundi|  33 | 288 | 379 | 441 |6820 |  
  13.8s|  4600 |   542 |146062 |  31.3 |    32M |  34 | 288 | 412 | 430 |  10k|  1 | 167 | 577 | 3.813379e+01 | 4.100000e+01 |   7.52%|  73.61%
  13.9s|  4700 |   514 |147495 |  30.9 |    32M |  34 | 288 | 412 | 426 |  10k|  0 | 168 | 583 | 3.817586e+01 | 4.100000e+01 |   7.40%|  75.33%
  14.0s|  4800 |   494 |149374 |  30.7 |    32M |  34 | 288 | 412 | 410 |  10k|  0 | 168 | 586 | 3.829369e+01 | 4.100000e+01 |   7.07%|  76.78%
- 14.1s|  4900 |   470 |150640 |  30.3 |    32M |  34 | 288 | 412 | 435 |  10k|  0 | 168 | 589 | 3.829717e+01 | 4.100000e+01 |   7.06%|  77.83%
+ 14.0s|  4900 |   470 |150640 |  30.3 |    32M |  34 | 288 | 412 | 435 |  10k|  0 | 168 | 589 | 3.829717e+01 | 4.100000e+01 |   7.06%|  77.83%
  14.1s|  5000 |   434 |151894 |  30.0 |    32M |  34 | 288 | 412 | 418 |  10k|  0 | 168 | 595 | 3.836446e+01 | 4.100000e+01 |   6.87%|  79.64%
  14.2s|  5100 |   418 |153162 |  29.6 |    32M |  34 | 288 | 412 | 440 |  10k|  1 | 168 | 599 | 3.838528e+01 | 4.100000e+01 |   6.81%|  80.72%
  14.3s|  5200 |   404 |154211 |  29.3 |    32M |  34 | 288 | 414 | 412 |  10k|  1 | 170 | 608 | 3.843067e+01 | 4.100000e+01 |   6.69%|  81.67%
- 14.4s|  5300 |   376 |155576 |  29.0 |    32M |  34 | 288 | 410 | 410 |  10k|  1 | 170 | 613 | 3.843551e+01 | 4.100000e+01 |   6.67%|  82.73%
+ 14.3s|  5300 |   376 |155576 |  29.0 |    32M |  34 | 288 | 410 | 410 |  10k|  1 | 170 | 613 | 3.843551e+01 | 4.100000e+01 |   6.67%|  82.73%
  time | node  | left  |LP iter|LP it/n|mem/heur|mdpt |vars |cons |rows |cuts |sepa|confs|strbr|  dualbound   | primalbound  |  gap   | compl. 
- 14.5s|  5400 |   346 |157124 |  28.7 |    32M |  34 | 288 | 410 | 431 |  10k|  0 | 171 | 618 | 3.843790e+01 | 4.100000e+01 |   6.67%|  84.03%
+ 14.4s|  5400 |   346 |157124 |  28.7 |    32M |  34 | 288 | 410 | 431 |  10k|  0 | 171 | 618 | 3.843790e+01 | 4.100000e+01 |   6.67%|  84.03%
  14.5s|  5500 |   322 |158520 |  28.5 |    32M |  34 | 288 | 408 | 436 |  10k|  0 | 173 | 623 | 3.859626e+01 | 4.100000e+01 |   6.23%|  85.29%
  14.6s|  5600 |   256 |159844 |  28.2 |    32M |  34 | 288 | 408 | 417 |  10k|  0 | 173 | 623 | 3.866704e+01 | 4.100000e+01 |   6.03%|  88.86%
  14.7s|  5700 |   224 |161060 |  27.9 |    32M |  34 | 288 | 406 | 416 |  10k|  0 | 173 | 626 | 3.879340e+01 | 4.100000e+01 |   5.69%|  90.10%
- 14.8s|  5800 |   186 |162331 |  27.6 |    32M |  34 | 288 | 406 | 428 |  10k|  1 | 175 | 628 | 3.891748e+01 | 4.100000e+01 |   5.35%|  92.57%
+ 14.7s|  5800 |   186 |162331 |  27.6 |    32M |  34 | 288 | 406 | 428 |  10k|  1 | 175 | 628 | 3.891748e+01 | 4.100000e+01 |   5.35%|  92.57%
  14.8s|  5900 |   146 |163520 |  27.4 |    32M |  34 | 288 | 406 | 425 |  10k|  0 | 175 | 635 | 3.901409e+01 | 4.100000e+01 |   5.09%|  93.77%
  14.9s|  6000 |   108 |164822 |  27.1 |    32M |  34 | 288 | 406 | 420 |  10k|  0 | 175 | 639 | 3.902481e+01 | 4.100000e+01 |   5.06%|  94.92%
  15.0s|  6100 |    68 |166069 |  26.9 |    32M |  34 | 288 | 406 | 603 |  10k|  0 | 175 | 648 | 3.916924e+01 | 4.100000e+01 |   4.67%|  96.40%
- 15.1s|  6200 |    28 |167592 |  26.7 |    32M |  34 | 288 | 405 | 498 |  10k|  0 | 175 | 650 | 3.930665e+01 | 4.100000e+01 |   4.31%|  98.77%
+ 15.0s|  6200 |    28 |167592 |  26.7 |    32M |  34 | 288 | 405 | 498 |  10k|  0 | 175 | 650 | 3.930665e+01 | 4.100000e+01 |   4.31%|  98.77%
 
 SCIP Status        : problem is solved [optimal solution found]
-Solving Time (sec) : 15.10
+Solving Time (sec) : 15.08
 Solving Nodes      : 6230
 Primal Bound       : +4.10000000000000e+01 (779 solutions)
 Dual Bound         : +4.10000000000000e+01
@@ -797,10 +797,10 @@ Gap                : 0.00 %
 -------------------------------------------------------------------------------
                                     Summary                                    
 -------------------------------------------------------------------------------
-(CVXPY) May 21 03:50:43 PM: Problem status: optimal
-(CVXPY) May 21 03:50:43 PM: Optimal value: 4.100e+01
-(CVXPY) May 21 03:50:43 PM: Compilation took 1.401e-02 seconds
-(CVXPY) May 21 03:50:43 PM: Solver (including time spent in interface) took 1.513e+01 seconds
+(CVXPY) May 22 01:59:39 PM: Problem status: optimal
+(CVXPY) May 22 01:59:39 PM: Optimal value: 4.100e+01
+(CVXPY) May 22 01:59:39 PM: Compilation took 1.386e-02 seconds
+(CVXPY) May 22 01:59:39 PM: Solver (including time spent in interface) took 1.512e+01 seconds
 </pre></div>
 </div>
 <img alt="../../_images/fb84df82963bdb2e503ff50ad0612e3a9d1b45b48662dfbf5acf4c133d711c5e.svg" src="../../_images/fb84df82963bdb2e503ff50ad0612e3a9d1b45b48662dfbf5acf4c133d711c5e.svg" /></div>
@@ -835,33 +835,33 @@ Gap                : 0.00 %
                                      CVXPY                                     
                                      v1.5.1                                    
 ===============================================================================
-(CVXPY) May 21 03:50:43 PM: Your problem has 670 variables, 1990 constraints, and 0 parameters.
-(CVXPY) May 21 03:50:43 PM: It is compliant with the following grammars: DCP, DQCP
-(CVXPY) May 21 03:50:43 PM: (If you need to solve this problem multiple times, but with different data, consider using parameters.)
-(CVXPY) May 21 03:50:43 PM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
-(CVXPY) May 21 03:50:43 PM: Your problem is compiled with the CPP canonicalization backend.
+(CVXPY) May 22 01:59:39 PM: Your problem has 670 variables, 1990 constraints, and 0 parameters.
+(CVXPY) May 22 01:59:39 PM: It is compliant with the following grammars: DCP, DQCP
+(CVXPY) May 22 01:59:39 PM: (If you need to solve this problem multiple times, but with different data, consider using parameters.)
+(CVXPY) May 22 01:59:39 PM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
+(CVXPY) May 22 01:59:39 PM: Your problem is compiled with the CPP canonicalization backend.
 -------------------------------------------------------------------------------
                                   Compilation                                  
 -------------------------------------------------------------------------------
-(CVXPY) May 21 03:50:43 PM: Compiling problem (target solver=SCIPY).
-(CVXPY) May 21 03:50:43 PM: Reduction chain: Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; SCIPY
-(CVXPY) May 21 03:50:43 PM: Applying reduction Dcp2Cone
-(CVXPY) May 21 03:50:43 PM: Applying reduction CvxAttr2Constr
-(CVXPY) May 21 03:50:43 PM: Applying reduction ConeMatrixStuffing
-(CVXPY) May 21 03:50:43 PM: Applying reduction SCIPY
-(CVXPY) May 21 03:50:43 PM: Finished problem compilation (took 2.707e-02 seconds).
+(CVXPY) May 22 01:59:39 PM: Compiling problem (target solver=SCIPY).
+(CVXPY) May 22 01:59:39 PM: Reduction chain: Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; SCIPY
+(CVXPY) May 22 01:59:39 PM: Applying reduction Dcp2Cone
+(CVXPY) May 22 01:59:39 PM: Applying reduction CvxAttr2Constr
+(CVXPY) May 22 01:59:39 PM: Applying reduction ConeMatrixStuffing
+(CVXPY) May 22 01:59:39 PM: Applying reduction SCIPY
+(CVXPY) May 22 01:59:39 PM: Finished problem compilation (took 2.617e-02 seconds).
 -------------------------------------------------------------------------------
                                 Numerical solver                               
 -------------------------------------------------------------------------------
-(CVXPY) May 21 03:50:43 PM: Invoking solver SCIPY  to obtain a solution.
+(CVXPY) May 22 01:59:39 PM: Invoking solver SCIPY  to obtain a solution.
 Solver terminated with message: Optimization terminated successfully. (HiGHS Status 7: Optimal)
 -------------------------------------------------------------------------------
                                     Summary                                    
 -------------------------------------------------------------------------------
-(CVXPY) May 21 03:51:02 PM: Problem status: optimal
-(CVXPY) May 21 03:51:02 PM: Optimal value: 4.100e+01
-(CVXPY) May 21 03:51:02 PM: Compilation took 2.707e-02 seconds
-(CVXPY) May 21 03:51:02 PM: Solver (including time spent in interface) took 1.852e+01 seconds
+(CVXPY) May 22 01:59:57 PM: Problem status: optimal
+(CVXPY) May 22 01:59:57 PM: Optimal value: 4.100e+01
+(CVXPY) May 22 01:59:57 PM: Compilation took 2.617e-02 seconds
+(CVXPY) May 22 01:59:57 PM: Solver (including time spent in interface) took 1.842e+01 seconds
 Optimal value: 41.000000000002665
 </pre></div>
 </div>
