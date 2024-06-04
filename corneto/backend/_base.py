@@ -1123,7 +1123,13 @@ class Backend(abc.ABC):
 
 class NoBackend(Backend):
     def __init__(self) -> None:
-        self._error = "No backend available. Please install on of the supported backends, e.g. `pip install cvxpy`."
+        self._error = (
+            "No backend found. You can install one of the "
+            "supported backend by `pip install cvxpy` or `pip install picos`."
+        )
+
+    def __bool__(self) -> bool:
+        return False
 
     def _load(self):
         return None
