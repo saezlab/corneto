@@ -352,7 +352,8 @@ def plot_solution_network_active_edges(G, P, iexp):
     )
 
 
-def plot_fitness(G, exp_list, P, measured_only=False):
+
+def plot_fitness(G, exp_list, P, measured_only=False,**kwargs):
     """Plot the fitness of the model simulation vs measurements.
 
     PARAMETERS:
@@ -360,6 +361,7 @@ def plot_fitness(G, exp_list, P, measured_only=False):
     - exp_list: dictionary of experiments
     - P: solution of the ILP model
     - measured_only: if True, plot only the measured nodes, otherwise plot all nodes
+    - **kwargs arguments are passed to subplots and figures of matplotlib
 
     TODO: there are some assumptions, like the first experiment is the reference experiment and it is called 'exp0'
     """
@@ -374,10 +376,10 @@ def plot_fitness(G, exp_list, P, measured_only=False):
     # depending on the flag measured_only, we can plot only the measured nodes or all nodes
     if measured_only:
         fig, axs = plt.subplots(
-            N_exps - 1, len(output_names), figsize=(20, 5), squeeze=False
+            N_exps - 1, len(output_names), squeeze=False, **kwargs
         )
     else:
-        fig, axs = plt.subplots(N_exps - 1, N_nodes, figsize=(20, 5), squeeze=False)
+        fig, axs = plt.subplots(N_exps - 1, N_nodes,  squeeze=False, **kwargs)
 
     fig.tight_layout(pad=0.0)
 
@@ -396,9 +398,8 @@ def plot_fitness(G, exp_list, P, measured_only=False):
                         P.expr.vertex_value.value[imarker_inG, 0],
                         min(P.expr.vertex_value.value[imarker_inG, iexp], 1),
                     ],
-                    label=G.V[imarker_inG],
-                    color="blue",
-                    linestyle="-",
+                    "bo-",
+                    label=G.V[imarker_inG]
                 )
 
                 if G.V[imarker_inG] in exp_list[exp]["output"].keys():
@@ -410,7 +411,7 @@ def plot_fitness(G, exp_list, P, measured_only=False):
                         ],
                         "ro-",
                     )
-                axs[iexp - 1, imarker].set_ylim([-0.01, 1.1])
+                axs[iexp - 1, imarker].set_ylim([-0.05, 1.1])
                 if iexp == 1:
                     axs[iexp - 1, imarker].set_title(G.V[imarker_inG])
                 if imarker == 0:
@@ -423,9 +424,10 @@ def plot_fitness(G, exp_list, P, measured_only=False):
                         P.expr.vertex_value.value[imarker, 0],
                         min(P.expr.vertex_value.value[imarker, iexp], 1),
                     ],
+                    "bo-",
                     label=G.V[imarker],
-                    color="blue",
-                    linestyle="-",
+                    #color="blue",
+                    #linestyle="o-",
                 )
 
                 if G.V[imarker] in exp_list[exp]["output"].keys():
@@ -437,7 +439,7 @@ def plot_fitness(G, exp_list, P, measured_only=False):
                         ],
                         "ro-",
                     )
-                axs[iexp - 1, imarker].set_ylim([-0.01, 1.1])
+                axs[iexp - 1, imarker].set_ylim([-0.05, 1.1])
                 if iexp == 1:
                     axs[iexp - 1, imarker].set_title(G.V[imarker])
                 if imarker == 0:
@@ -445,17 +447,18 @@ def plot_fitness(G, exp_list, P, measured_only=False):
 
     plt.show()
 
-def collect_field_into_matrix(experiments,field_name = 'input'):
+
+def collect_field_into_matrix(experiments, field_name="input"):
     """Collects the field_name values into matrix.
 
-    Collects the field_name values (input, inhibition etc) from a dictionary 
+    Collects the field_name values (input, inhibition etc) from a dictionary
     of experiments and returns them as a numpy array.
 
     PARAMETERS:
     - experiments: dictionary of experiments containing input values
     - field_name: name of the field to collect (default: 'input')
 
-    RETURNS:
+    Returns:
     - input_matrix: numpy array of input values
     - input_vars: list of unique input variable names
 
@@ -465,7 +468,7 @@ def collect_field_into_matrix(experiments,field_name = 'input'):
     for exp in experiments.values():
         # ensure field_name exists
         if field_name not in exp:
-            raise ValueError('Field name (' + field_name + ')  not found in experiment')
+            raise ValueError("Field name (" + field_name + ")  not found in experiment")
         input_vars.update(exp[field_name].keys())
 
     input_vars = sorted(input_vars)  # Sorting to keep a consistent order
@@ -481,6 +484,7 @@ def collect_field_into_matrix(experiments,field_name = 'input'):
 
     return input_matrix, input_vars
 
+
 def plot_data(exp_list):
     """Plot the data.
 
@@ -494,19 +498,21 @@ def plot_data(exp_list):
 
     # Ensure that all experiments have the input and output variables
     for exp in exp_list.values():
-        if 'input' not in exp:
-            raise ValueError('Input not found in experiment')
-        if 'output' not in exp:
-            raise ValueError('Output not found in experiment')
-    
+        if "input" not in exp:
+            raise ValueError("Input not found in experiment")
+        if "output" not in exp:
+            raise ValueError("Output not found in experiment")
+
     # Collect the input and output variables
-    input_matrix, input_vars = collect_field_into_matrix(exp_list, 'input')
-    output_matrix, output_vars = collect_field_into_matrix(exp_list, 'output')
+    input_matrix, input_vars = collect_field_into_matrix(exp_list, "input")
+    output_matrix, output_vars = collect_field_into_matrix(exp_list, "output")
 
     # Check if inhibition is present in any of the experiments
-    inhibition_present = any('inhibition' in exp for exp in exp_list.values())
+    inhibition_present = any("inhibition" in exp for exp in exp_list.values())
     if inhibition_present:
-        inhibition_matrix, inhibition_vars = collect_field_into_matrix(exp_list, 'inhibition')
+        inhibition_matrix, inhibition_vars = collect_field_into_matrix(
+            exp_list, "inhibition"
+        )
         perturbation_matrix = np.hstack((input_matrix, inhibition_matrix))
         perturbation_vars = input_vars + inhibition_vars
     else:
@@ -515,9 +521,9 @@ def plot_data(exp_list):
 
     # Create the figure
     # Set colors: input colors are blue, inhibition colors are red
-    perturbation_colors = ['blue'] * len(input_vars)
+    perturbation_colors = ["blue"] * len(input_vars)
     if inhibition_present:
-        perturbation_colors += ['red'] * len(inhibition_vars)
+        perturbation_colors += ["red"] * len(inhibition_vars)
 
     fig, axs = plt.subplots(N_exps - 1, len(output_vars) + 1, squeeze=False)
 
@@ -536,8 +542,8 @@ def plot_data(exp_list):
             axs[iexp - 1, imarker].plot(
                 [0, 10],
                 [
-                    exp_list["exp0"]["output"][imarker_name],
-                    exp_list[exp]["output"][imarker_name],
+                    output_matrix[0, imarker],
+                    output_matrix[iexp, imarker]
                 ],
                 "ro-",
             )
@@ -552,17 +558,21 @@ def plot_data(exp_list):
             else:
                 axs[iexp - 1, imarker].set_yticks([])
 
-        # Plot perturbation 
+        # Plot perturbation
         axs[iexp - 1, len(output_vars)].bar(
-            range(len(perturbation_vars)), perturbation_matrix[iexp], color=perturbation_colors
+            range(len(perturbation_vars)),
+            perturbation_matrix[iexp],
+            color=perturbation_colors,
         )
         if iexp == N_exps - 1:
             axs[iexp - 1, len(output_vars)].set_xticks(range(len(perturbation_vars)))
-            axs[iexp - 1, len(output_vars)].set_xticklabels(perturbation_vars, rotation=45)
+            axs[iexp - 1, len(output_vars)].set_xticklabels(
+                perturbation_vars, rotation=45
+            )
         else:
             # No xtick label
             axs[iexp - 1, len(output_vars)].set_xticks([])
-        
+
         axs[iexp - 1, len(output_vars)].set_ylim([-0.01, 1.1])
         axs[iexp - 1, len(output_vars)].set_yticks([])
         if iexp == 1:
