@@ -404,9 +404,11 @@ def plot_fitness(G, exp_list, P, measured_only=False, **kwargs):
 
     # depending on the flag measured_only, we can plot only the measured nodes or all nodes
     if measured_only:
-        fig, axs = plt.subplots(N_exps - 1, len(output_names)+1, squeeze=False, **kwargs)
+        fig, axs = plt.subplots(
+            N_exps - 1, len(output_names) + 1, squeeze=False, **kwargs
+        )
     else:
-        fig, axs = plt.subplots(N_exps - 1, N_nodes+1, squeeze=False, **kwargs)
+        fig, axs = plt.subplots(N_exps - 1, N_nodes + 1, squeeze=False, **kwargs)
 
     fig.tight_layout(pad=0.0)
 
@@ -494,8 +496,8 @@ def plot_fitness(G, exp_list, P, measured_only=False, **kwargs):
             color=perturbation_colors,
         )
         if iexp == N_exps - 1:
-            axs[iexp - 1, len(output_vars)].set_xticks(range(len(perturbation_vars)))
-            axs[iexp - 1, len(output_vars)].set_xticklabels(
+            axs[iexp - 1, plot_location)].set_xticks(range(len(perturbation_vars)))
+            axs[iexp - 1, plot_location].set_xticklabels(
                 perturbation_vars, rotation=45
             )
         else:
@@ -508,7 +510,6 @@ def plot_fitness(G, exp_list, P, measured_only=False, **kwargs):
             axs[iexp - 1, plot_location].set_title("Pert.")
 
     plt.show()
-
 
 
 def collect_field_into_matrix(experiments, field_name="input"):
