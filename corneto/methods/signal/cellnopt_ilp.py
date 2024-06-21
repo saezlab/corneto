@@ -496,7 +496,7 @@ def plot_fitness(G, exp_list, P, measured_only=False, **kwargs):
             color=perturbation_colors,
         )
         if iexp == N_exps - 1:
-            axs[iexp - 1, plot_location)].set_xticks(range(len(perturbation_vars)))
+            axs[iexp - 1, plot_location].set_xticks(range(len(perturbation_vars)))
             axs[iexp - 1, plot_location].set_xticklabels(
                 perturbation_vars, rotation=45
             )
