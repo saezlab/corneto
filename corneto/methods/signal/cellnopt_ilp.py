@@ -483,7 +483,12 @@ def plot_fitness(G, exp_list, P, measured_only=False, **kwargs):
                 else:
                     axs[iexp - 1, imarker].set_yticks([])
         # Plot perturbation
-        axs[iexp - 1, len(output_vars)].bar(
+        if measured_only:
+            plot_location = len(output_names)
+        else:
+            plot_location = N_nodes
+
+        axs[iexp - 1, plot_location].bar(
             range(len(perturbation_vars)),
             perturbation_matrix[iexp],
             color=perturbation_colors,
@@ -495,12 +500,12 @@ def plot_fitness(G, exp_list, P, measured_only=False, **kwargs):
             )
         else:
             # No xtick label
-            axs[iexp - 1, len(output_vars)].set_xticks([])
+            axs[iexp - 1, plot_location].set_xticks([])
 
-        axs[iexp - 1, len(output_vars)].set_ylim([-0.01, 1.1])
-        axs[iexp - 1, len(output_vars)].set_yticks([])
+        axs[iexp - 1, plot_location].set_ylim([-0.01, 1.1])
+        axs[iexp - 1, plot_location].set_yticks([])
         if iexp == 1:
-            axs[iexp - 1, len(output_vars)].set_title("Pert.")
+            axs[iexp - 1, plot_location].set_title("Pert.")
 
     plt.show()
 
