@@ -20,15 +20,12 @@ _cvxpy_mip_solvers = ["GUROBI", "CPLEX", "SCIP", "SCIPY", "CBC", "GLPK_MI"]
 _picos_mip_solvers = ["gurobi", "cplex", "scip", "glpk"]
 
 
-DEFAULT_BACKEND: Backend = (
-    available_backends()[0] if len(available_backends()) > 0 else NoBackend()
-)
+DEFAULT_BACKEND, = available_backends()[:1] or (NoBackend(),)
 DEFAULT_SOLVER = None
 
 if not DEFAULT_BACKEND:
-    s.LOGGER.warn(
-        "None of the supported backends found. You can install the default backend with `pip install cvxpy`."
-    )
+    s.LOGGER.warn(DEFAULT_BACKEND._error)
+
 else:
     if isinstance(DEFAULT_BACKEND, CvxpyBackend):
         from cvxpy import installed_solvers
