@@ -364,3 +364,28 @@ def test_prune_directed():
         type=EdgeType.DIRECTED,
     )
     assert set(G.prune(["E"], ["K"]).V) == {"E", "F", "H", "K"}
+
+
+def test_graph_hash():
+    G = Graph()
+    G.add_edges(
+        [
+            ("A", "B"),
+            ("A", "C"),
+            ("A", "D"),
+            ("D", "C"),
+            ("D", "E"),
+            ("B", "E"),
+            ("E", "F"),
+            ("A", "F"),
+        ],
+        type=EdgeType.DIRECTED,
+    )
+    h1 = G.hash()
+    G.add_edge("F", "G")
+    h2 = G.hash()
+    G._edge_attr[0]["x"] = ""
+    h3 = G.hash()
+    assert h1 != h2
+    assert h1 != h3
+    assert h2 != h3

@@ -1,4 +1,5 @@
 import abc
+import pickle
 from collections import OrderedDict
 from copy import deepcopy
 from enum import Enum
@@ -23,7 +24,7 @@ import numpy as np
 
 from corneto._io import import_cobra_model
 from corneto._types import CobraModel, Edge, NxDiGraph, NxGraph
-from corneto._util import unique_iter
+from corneto._util import obj_content_hash, unique_iter
 from corneto.utils import Attr, Attributes
 
 T = TypeVar("T")
@@ -174,6 +175,9 @@ class BaseGraph(abc.ABC):
     @property
     def num_edges(self) -> int:
         return self._num_edges()
+
+    def hash(self) -> str:
+        return obj_content_hash(self)
 
     def get_attr_edge(self, index: int) -> Attributes:
         return self._get_edge_attributes(index)
@@ -357,13 +361,15 @@ class BaseGraph(abc.ABC):
         self,
         source: Union[Any, Iterable[Any]],
         target: Union[Any, Iterable[Any]],
-        type: EdgeType = EdgeType.DIRECTED,
+        type: Optional[EdgeType] = EdgeType.DIRECTED,
         edge_source_attr: Optional[Attributes] = None,
         edge_target_attr: Optional[Attributes] = None,
         **kwargs,
     ) -> int:
         # In self loops, or hyperedges with partial self loops
         # important to have dupl. vertices!. E.g {A: -1, A: 1} A (-1)->(1) A
+        if type is None:
+            type = self._default_edge_type
         ve_s = Graph._extract_ve_attr(source)  # {vertex: value}
         ve_t = Graph._extract_ve_attr(target)
         if edge_source_attr is None:
@@ -582,8 +588,6 @@ class BaseGraph(abc.ABC):
         return g
 
     def save(self, filename: str, compressed: Optional[bool] = True) -> None:
-        import pickle
-
         if not filename:
             raise ValueError("Filename must not be empty.")
 
@@ -603,8 +607,6 @@ class BaseGraph(abc.ABC):
 
     @staticmethod
     def load(filename: str) -> "BaseGraph":
-        import pickle
-
         if filename.endswith(".gz"):
             import gzip
 

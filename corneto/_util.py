@@ -1,3 +1,5 @@
+import hashlib
+import pickle
 from collections import OrderedDict
 from itertools import filterfalse
 from typing import Any, Callable, Dict, Iterable, Optional, Set, TypeVar
@@ -6,6 +8,13 @@ import numpy as np
 from numpy.linalg import svd
 
 T = TypeVar("T")
+
+
+def obj_content_hash(obj) -> str:
+    obj_serialized = pickle.dumps(obj)
+    hash_obj = hashlib.sha256()
+    hash_obj.update(obj_serialized)
+    return hash_obj.hexdigest()
 
 
 def unique_iter(
