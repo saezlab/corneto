@@ -1,5 +1,6 @@
 import hashlib
 import pickle
+import os
 from collections import OrderedDict
 from itertools import filterfalse
 from typing import Any, Callable, Dict, Iterable, Optional, Set, TypeVar
@@ -139,6 +140,12 @@ def _get_info() -> Dict[str, Dict]:
         info["graphviz_version"]["value"] = graphviz.__version__
     except Exception:
         pass
+
+    info["installed_path"] = {
+        "title": "Installed path",
+        "message": os.path.dirname(__file__),
+        "value": os.path.dirname(__file__)
+    }
     info["repo_url"] = {
         "title": "Repository",
         "message": "https://github.com/saezlab/corneto",
