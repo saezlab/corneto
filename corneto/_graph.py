@@ -699,8 +699,13 @@ class BaseGraph(abc.ABC):
     @staticmethod
     def from_networkx(G: Union[NxGraph, NxDiGraph]):
         Gc = Graph()
+        is_directed = G.is_directed()
         for edge in G.edges():
             e_data = G.get_edge_data(edge[0], edge[1], default=dict())
+            if is_directed:
+                e_data[Attr.EDGE_TYPE.value] = EdgeType.DIRECTED.value
+            else:
+                e_data[Attr.EDGE_TYPE.value] = EdgeType.UNDIRECTED.value
             Gc.add_edge(edge[0], edge[1], **e_data)
         return Gc
 

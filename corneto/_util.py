@@ -1,6 +1,6 @@
 import hashlib
-import pickle
 import os
+import pickle
 from collections import OrderedDict
 from itertools import filterfalse
 from typing import Any, Callable, Dict, Iterable, Optional, Set, TypeVar
@@ -144,7 +144,7 @@ def _get_info() -> Dict[str, Dict]:
     info["installed_path"] = {
         "title": "Installed path",
         "message": os.path.dirname(__file__),
-        "value": os.path.dirname(__file__)
+        "value": os.path.dirname(__file__),
     }
     info["repo_url"] = {
         "title": "Repository",
