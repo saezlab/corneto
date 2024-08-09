@@ -1,10 +1,11 @@
-# CORNETO: A Unified Framework for Omics-Driven Network Inference <img src="https://github.com/pablormier/resources/raw/main/images/logos/corneto-logo-512px.png" align="right" height="200" alt="logo">
+# CORNETO: Unified knowledge-driven network inference from omics <img src="https://github.com/pablormier/resources/raw/main/images/logos/corneto-logo-512px.png" align="right" height="200" alt="logo">
 <!-- badges: start -->
 [![main](https://github.com/saezlab/corneto/actions/workflows/unit-tests.yml/badge.svg)](https://github.com/saezlab/corneto/actions)
 <!-- badges: end -->
-CORNETO (Constraint-based Optimization for the Reconstruction of NETworks from Omics) is a unified network inference framework implemented in Python designed to bring together many common network inference problems in biology. Through constraint programming, CORNETO transforms these problems into unified mathematical representations using flow networks, offering modular building blocks for diverse applications. It accommodates a wide range of network inference problems, from basic analyses like shortest paths or Steiner trees for Protein-Protein Interactions (PPIs), to more advance problems such as contextualising signalling networks from directed signed prior knowledge networks or inferring metabolic networks from Genome-Scale Metabolic Network models, effectively harnessing the capabilities of Flux Balance Analysis.
 
-> **NOTE**: This is an early preview of the library, which includes a very limited subset of methods for signalling, and an early version of the API to build optimization problems. We're currently working towards having a final version including additional and novel methods, as well as full support for Flux Balance Analysis (FBA)
+> **⚠️ Disclaimer**: This is an early preview of the CORNETO library. **CORNETO is under active development and has not yet reached a stable release for end users**. Contributions and feedback are not yet open until the first stable release. Please stay tuned for updates.
+
+CORNETO (Constraint-based Optimization for the Reconstruction of NETworks from Omics) is a unified network inference framework implemented in Python designed to bring together many common network inference problems in biology. Through constraint programming, CORNETO transforms these problems into unified mathematical representations using flow networks, offering modular building blocks for diverse applications.
 
 ## Installation
 
