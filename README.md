@@ -1,11 +1,24 @@
-# CORNETO: Unified knowledge-driven network inference from omics <img src="https://github.com/pablormier/resources/raw/main/images/logos/corneto-logo-512px.png" align="right" height="200" alt="logo">
+<div align="center"> 
+<picture>
+  <img alt="corneto logo" src="docs/_static/logo/corneto-logo-512px.png" height="200">
+</picture>
+<br>
+<h3>CORNETO: Unified knowledge-driven network inference from omics data.</h3>
+
+Maintained by [Saez-Rodriguez](https://saezlab.org) group.
+
 <!-- badges: start -->
 [![main](https://github.com/saezlab/corneto/actions/workflows/unit-tests.yml/badge.svg)](https://github.com/saezlab/corneto/actions)
 <!-- badges: end -->
 
-> **⚠️ Disclaimer**: This is an early preview of the CORNETO library. **CORNETO is under active development and has not yet reached a stable release for end users**. Contributions and feedback are not yet open until the first stable release. Please stay tuned for updates.
+</div>
+
+---
 
 CORNETO (Constraint-based Optimization for the Reconstruction of NETworks from Omics) is a unified network inference framework implemented in Python designed to bring together many common network inference problems in biology. Through constraint programming, CORNETO transforms these problems into unified mathematical representations using flow networks, offering modular building blocks for diverse applications.
+
+> **⚠️ Disclaimer**: This is an early preview of the CORNETO library. **CORNETO is under active development and has not yet reached a stable release for end users**. Contributions and feedback are not yet open until the first stable release. Please stay tuned for updates.
+
 
 ## Installation
 
