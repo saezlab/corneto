@@ -1,7 +1,5 @@
 <div align="center"> 
-<picture>
-  <img alt="corneto logo" src="docs/_static/logo/corneto-logo-512px.png" height="200">
-</picture>
+<img alt="corneto logo" src="docs/_static/logo/corneto-logo-512px.png" height="200"/>
 <br>
 <h3>CORNETO: Unified knowledge-driven network inference from omics data.</h3>
 
