@@ -1274,10 +1274,14 @@ class Backend(abc.ABC):
         )
 
     def linear_or(
-        self, x: CExpression, axis: Optional[int] = None, varname="or"
+        self,
+        x: CExpression,
+        axis: Optional[int] = None,
+        varname="or",
+        ignore_type=False,
     ) -> ProblemDef:
         # Check if the variable has a vartype and is binary
-        if hasattr(x, "_vartype") and x._vartype != VarType.BINARY:
+        if hasattr(x, "_vartype") and x._vartype != VarType.BINARY and not ignore_type:
             raise ValueError(f"Variable x has type {x._vartype} instead of BINARY")
         else:
             for s in x._proxy_symbols:
