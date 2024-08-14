@@ -82,11 +82,11 @@ function reLoadSphinxTabs() {
 function getEmbedURL(url) {
     var params = {
         'doctool': 'sphinx',
-        'doctoolversion': '7.3.7',
+        'doctoolversion': '7.4.7',
         'url': url,
     }
     console.debug('Data: ' + JSON.stringify(params));
-    var url = 'https://readthedocs.org' + '/api/v3/embed/?' + $.param(params);
+    var url = '/_' + '/api/v3/embed/?' + $.param(params);
     console.debug('URL: ' + url);
     return url
 }
@@ -111,7 +111,7 @@ function addTooltip(target) {
                 var url = getEmbedURL(href);
                 $.ajax({
                     url: url,
-                    headers: {'X-HoverXRef-Version': '1.3.0'},
+                    headers: {'X-HoverXRef-Version': '1.4.0'},
                 }).done(
                     function (data) {
                         // call the 'content' method to update the content of our tooltip with the returned data.
@@ -202,7 +202,7 @@ $(document).ready(function() {
         var url = getEmbedURL(href);
         $.ajax({
             url: url,
-            headers: {'X-HoverXRef-Version': '1.3.0'},
+            headers: {'X-HoverXRef-Version': '1.4.0'},
         }).done(
             function (data) {
                 var content = $('<div></div>');
