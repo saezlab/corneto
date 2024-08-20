@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>&lt;no title&gt; &#8212; CORNETO  documentation</title>
+    <title>Multi-sample shortest paths &#8212; CORNETO  documentation</title>
   
   
   
@@ -354,7 +354,7 @@ document.write(`
 <nav class="bd-docs-nav bd-links"
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
-  <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../intro/index.html">Getting started</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../intro/prior-knowledge.html">Prior Knowledge and Graphs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../intro/constrained-optimization.html">Constrained Optimization</a></li>
@@ -362,8 +362,9 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../intro/acyclic-flows.html">Acyclic Flows</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="index.html">Network methods</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Network methods</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="shortest-paths.html">Shortest paths</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Multi-sample shortest paths</a></li>
 <li class="toctree-l2"><a class="reference internal" href="steiner-trees.html">Steiner Trees (STs)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pcst.html">Prize-Collecting Steiner Trees (PCSTs)</a></li>
 </ul>
@@ -438,7 +439,7 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="index.html" class="nav-link">Network methods</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">&lt;no title&gt;</li>
+    <li class="breadcrumb-item active" aria-current="page">Multi-sample...</li>
   </ul>
 </nav>
 </div>
@@ -455,7 +456,17 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <div class="cell docutils container">
+  <section class="tex2jax_ignore mathjax_ignore" id="multi-sample-shortest-paths">
+<h1>Multi-sample shortest paths<a class="headerlink" href="#multi-sample-shortest-paths" title="Link to this heading">#</a></h1>
+<p>Here we will see how the multi-sample capabilities of CORNETO allow to exactly solve more complex problems on networks.</p>
+<p>Imagine you have a directed graph <strong>G</strong> with a defined set of vertices and edges. Each edge in this graph has two different costs associated with it, one for each sample (let’s call these Sample 1 and Sample 2). These costs represent two possible scenarios or configurations. For each sample, we want to find the shortest path using the costs defined for that sample. We could run a standard shortest path method per sample. However, given that there can be multiple shortest paths with the same total cost, following that strategy, we cannot identify interesting solutions, for example, if there is a path that is the shortest for both samples. Without a multi-sample method, we need to enumerate all shortest paths per sample, and then compare them to find the answer. This is not only computationally expensive but also not feasible for large networks.</p>
+<p>Using CORNETO, it is possible to create a multi shortest path problem to identify a pair of shortest paths—one for each sample—that minimize the number of “non-selected” edges across both samples. This objective can be interpreted in two ways:</p>
+<ol class="arabic simple">
+<li><p>If there are multiple shortest paths with the same total cost for a given sample, prefer the one with the fewest edges (i.e., the most direct route).</p></li>
+<li><p>If the shortest paths differ between the two samples, prioritize the selection of paths that share the greatest number of common edges. This ensures that, despite different costs, the paths are as similar as possible.</p></li>
+</ol>
+<p>We will see how to solve this problem using CORNETO’s multi-sample capabilities.</p>
+<div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">corneto</span> <span class="k">as</span> <span class="nn">cn</span>
 
@@ -533,7 +544,8 @@ document.write(`
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">c1_weights</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Weights for the 14 edges for the two samples</span>
+<span class="n">c1_weights</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
 <span class="n">c2_weights</span> <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
 </pre></div>
 </div>
@@ -543,6 +555,7 @@ document.write(`
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">corneto.methods</span> <span class="kn">import</span> <span class="n">solve_shortest_path</span>
 
+<span class="c1"># We solve independently each shortest path problem</span>
 <span class="n">edges</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">Gc</span> <span class="o">=</span> <span class="n">solve_shortest_path</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;H&quot;</span><span class="p">,</span> <span class="n">edge_weights</span><span class="o">=</span><span class="n">c1_weights</span><span class="p">,</span> <span class="n">solver</span><span class="o">=</span><span class="s2">&quot;SCIPY&quot;</span><span class="p">)</span>
 <span class="n">Gc</span><span class="o">.</span><span class="n">edge_subgraph</span><span class="p">(</span><span class="n">edges</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">orphan_edges</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
@@ -616,33 +629,33 @@ document.write(`
                                      CVXPY                                     
                                      v1.5.2                                    
 ===============================================================================
-(CVXPY) Aug 20 04:50:36 PM: Your problem has 51 variables, 126 constraints, and 0 parameters.
-(CVXPY) Aug 20 04:50:36 PM: It is compliant with the following grammars: DCP, DQCP
-(CVXPY) Aug 20 04:50:36 PM: (If you need to solve this problem multiple times, but with different data, consider using parameters.)
-(CVXPY) Aug 20 04:50:36 PM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
-(CVXPY) Aug 20 04:50:36 PM: Your problem is compiled with the CPP canonicalization backend.
+(CVXPY) Aug 20 05:23:34 PM: Your problem has 51 variables, 126 constraints, and 0 parameters.
+(CVXPY) Aug 20 05:23:34 PM: It is compliant with the following grammars: DCP, DQCP
+(CVXPY) Aug 20 05:23:34 PM: (If you need to solve this problem multiple times, but with different data, consider using parameters.)
+(CVXPY) Aug 20 05:23:34 PM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
+(CVXPY) Aug 20 05:23:34 PM: Your problem is compiled with the CPP canonicalization backend.
 -------------------------------------------------------------------------------
                                   Compilation                                  
 -------------------------------------------------------------------------------
-(CVXPY) Aug 20 04:50:36 PM: Compiling problem (target solver=SCIPY).
-(CVXPY) Aug 20 04:50:36 PM: Reduction chain: Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; SCIPY
-(CVXPY) Aug 20 04:50:36 PM: Applying reduction Dcp2Cone
-(CVXPY) Aug 20 04:50:36 PM: Applying reduction CvxAttr2Constr
-(CVXPY) Aug 20 04:50:36 PM: Applying reduction ConeMatrixStuffing
-(CVXPY) Aug 20 04:50:36 PM: Applying reduction SCIPY
-(CVXPY) Aug 20 04:50:36 PM: Finished problem compilation (took 1.369e-02 seconds).
+(CVXPY) Aug 20 05:23:34 PM: Compiling problem (target solver=SCIPY).
+(CVXPY) Aug 20 05:23:34 PM: Reduction chain: Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; SCIPY
+(CVXPY) Aug 20 05:23:34 PM: Applying reduction Dcp2Cone
+(CVXPY) Aug 20 05:23:34 PM: Applying reduction CvxAttr2Constr
+(CVXPY) Aug 20 05:23:34 PM: Applying reduction ConeMatrixStuffing
+(CVXPY) Aug 20 05:23:34 PM: Applying reduction SCIPY
+(CVXPY) Aug 20 05:23:34 PM: Finished problem compilation (took 1.337e-02 seconds).
 -------------------------------------------------------------------------------
                                 Numerical solver                               
 -------------------------------------------------------------------------------
-(CVXPY) Aug 20 04:50:36 PM: Invoking solver SCIPY  to obtain a solution.
+(CVXPY) Aug 20 05:23:34 PM: Invoking solver SCIPY  to obtain a solution.
 Solver terminated with message: Optimization terminated successfully. (HiGHS Status 7: Optimal)
 -------------------------------------------------------------------------------
                                     Summary                                    
 -------------------------------------------------------------------------------
-(CVXPY) Aug 20 04:50:36 PM: Problem status: optimal
-(CVXPY) Aug 20 04:50:36 PM: Optimal value: 3.705e+01
-(CVXPY) Aug 20 04:50:36 PM: Compilation took 1.369e-02 seconds
-(CVXPY) Aug 20 04:50:36 PM: Solver (including time spent in interface) took 2.572e-03 seconds
+(CVXPY) Aug 20 05:23:34 PM: Problem status: optimal
+(CVXPY) Aug 20 05:23:34 PM: Optimal value: 3.705e+01
+(CVXPY) Aug 20 05:23:34 PM: Compilation took 1.337e-02 seconds
+(CVXPY) Aug 20 05:23:34 PM: Solver (including time spent in interface) took 2.856e-03 seconds
 </pre></div>
 </div>
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Problem(Minimize(Expression(AFFINE, UNKNOWN, ())), [Inequality(Constant(CONSTANT, ZERO, (17, 2))), Inequality(Variable((17, 2), _flow)), Equality(Expression(AFFINE, UNKNOWN, (8, 2)), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (2,)), Constant(CONSTANT, NONNEGATIVE, ())), Equality(Expression(AFFINE, UNKNOWN, (2,)), Constant(CONSTANT, NONNEGATIVE, ())), Equality(Expression(AFFINE, UNKNOWN, (2,)), Constant(CONSTANT, NONNEGATIVE, ())), Equality(Expression(AFFINE, UNKNOWN, (2,)), Constant(CONSTANT, NONNEGATIVE, ())), Inequality(Expression(AFFINE, UNKNOWN, (17,))), Inequality(Variable((17,), active_edge, boolean=True))])
@@ -652,19 +665,21 @@ Solver terminated with message: Optimization terminated successfully. (HiGHS Sta
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">P</span><span class="o">.</span><span class="n">objectives</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">P</span><span class="o">.</span><span class="n">objectives</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>  <span class="c1"># , P.objectives[2].value</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We obtain the same optimal cost for each shortest path, but now we identified a shortest path that is common to both samples</span>
+<span class="n">P</span><span class="o">.</span><span class="n">objectives</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">P</span><span class="o">.</span><span class="n">objectives</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">P</span><span class="o">.</span><span class="n">objectives</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(15.0, 22.0)
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(15.0, 22.0, 5.0)
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="o">.</span><span class="n">value</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Even though flow is continuous, we have discrete values which indicate the shortest paths.</span>
+<span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="o">.</span><span class="n">value</span>
 </pre></div>
 </div>
 </div>
@@ -724,6 +739,7 @@ Solver terminated with message: Optimization terminated successfully. (HiGHS Sta
 <img alt="../../_images/d04abbfb2e9ea8b908ab9a6139f9121edde15eeee4600640c6c3095e9a169d2b.svg" src="../../_images/d04abbfb2e9ea8b908ab9a6139f9121edde15eeee4600640c6c3095e9a169d2b.svg" />
 </div>
 </div>
+</section>
 
 
                 </article>
@@ -762,18 +778,6 @@ Solver terminated with message: Optimization terminated successfully. (HiGHS Sta
               
                 <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
-
-  <div class="sidebar-secondary-item">
-<div
-    id="pst-page-navigation-heading-2"
-    class="page-toc tocsection onthispage">
-    <i class="fa-solid fa-list"></i> On this page
-  </div>
-  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
-    <ul class="simple visible nav section-nav flex-column">
-</ul>
-
-  </nav></div>
 
   <div class="sidebar-secondary-item">
 

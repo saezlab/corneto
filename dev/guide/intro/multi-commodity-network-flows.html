@@ -364,6 +364,7 @@ document.write(`
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../networks/index.html">Network methods</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../networks/shortest-paths.html">Shortest paths</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../networks/multi-sample-shortest-paths.html">Multi-sample shortest paths</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../networks/steiner-trees.html">Steiner Trees (STs)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../networks/pcst.html">Prize-Collecting Steiner Trees (PCSTs)</a></li>
 </ul>
@@ -580,25 +581,25 @@ document.write(`
                                      CVXPY                                     
                                      v1.5.2                                    
 ===============================================================================
-(CVXPY) Aug 20 04:49:23 PM: Your problem has 20 variables, 70 constraints, and 0 parameters.
-(CVXPY) Aug 20 04:49:23 PM: It is compliant with the following grammars: DCP, DQCP
-(CVXPY) Aug 20 04:49:23 PM: (If you need to solve this problem multiple times, but with different data, consider using parameters.)
-(CVXPY) Aug 20 04:49:23 PM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
-(CVXPY) Aug 20 04:49:23 PM: Your problem is compiled with the CPP canonicalization backend.
+(CVXPY) Aug 20 05:22:18 PM: Your problem has 20 variables, 70 constraints, and 0 parameters.
+(CVXPY) Aug 20 05:22:18 PM: It is compliant with the following grammars: DCP, DQCP
+(CVXPY) Aug 20 05:22:18 PM: (If you need to solve this problem multiple times, but with different data, consider using parameters.)
+(CVXPY) Aug 20 05:22:18 PM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
+(CVXPY) Aug 20 05:22:18 PM: Your problem is compiled with the CPP canonicalization backend.
 -------------------------------------------------------------------------------
                                   Compilation                                  
 -------------------------------------------------------------------------------
-(CVXPY) Aug 20 04:49:23 PM: Compiling problem (target solver=SCIP).
-(CVXPY) Aug 20 04:49:23 PM: Reduction chain: Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; SCIP
-(CVXPY) Aug 20 04:49:23 PM: Applying reduction Dcp2Cone
-(CVXPY) Aug 20 04:49:23 PM: Applying reduction CvxAttr2Constr
-(CVXPY) Aug 20 04:49:23 PM: Applying reduction ConeMatrixStuffing
-(CVXPY) Aug 20 04:49:23 PM: Applying reduction SCIP
-(CVXPY) Aug 20 04:49:23 PM: Finished problem compilation (took 1.452e-02 seconds).
+(CVXPY) Aug 20 05:22:18 PM: Compiling problem (target solver=SCIP).
+(CVXPY) Aug 20 05:22:18 PM: Reduction chain: Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; SCIP
+(CVXPY) Aug 20 05:22:18 PM: Applying reduction Dcp2Cone
+(CVXPY) Aug 20 05:22:18 PM: Applying reduction CvxAttr2Constr
+(CVXPY) Aug 20 05:22:18 PM: Applying reduction ConeMatrixStuffing
+(CVXPY) Aug 20 05:22:18 PM: Applying reduction SCIP
+(CVXPY) Aug 20 05:22:18 PM: Finished problem compilation (took 1.460e-02 seconds).
 -------------------------------------------------------------------------------
                                 Numerical solver                               
 -------------------------------------------------------------------------------
-(CVXPY) Aug 20 04:49:23 PM: Invoking solver SCIP  to obtain a solution.
+(CVXPY) Aug 20 05:22:18 PM: Invoking solver SCIP  to obtain a solution.
 presolving:
    (0.0s) symmetry computation started: requiring (bin +, int +, cont +), (fixed: bin -, int -, cont -)
    (0.0s) no symmetry present (symcode time: 0.00)
@@ -622,10 +623,10 @@ Gap                : 0.00 %
 -------------------------------------------------------------------------------
                                     Summary                                    
 -------------------------------------------------------------------------------
-(CVXPY) Aug 20 04:49:23 PM: Problem status: optimal
-(CVXPY) Aug 20 04:49:23 PM: Optimal value: -1.900e+02
-(CVXPY) Aug 20 04:49:23 PM: Compilation took 1.452e-02 seconds
-(CVXPY) Aug 20 04:49:23 PM: Solver (including time spent in interface) took 7.204e-03 seconds
+(CVXPY) Aug 20 05:22:18 PM: Problem status: optimal
+(CVXPY) Aug 20 05:22:18 PM: Optimal value: -1.900e+02
+(CVXPY) Aug 20 05:22:18 PM: Compilation took 1.460e-02 seconds
+(CVXPY) Aug 20 05:22:18 PM: Solver (including time spent in interface) took 6.908e-03 seconds
 </pre></div>
 </div>
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Problem(Minimize(Expression(AFFINE, UNKNOWN, ())), [Inequality(Constant(CONSTANT, ZERO, (10, 2))), Inequality(Variable((10, 2), _flow)), Equality(Expression(AFFINE, UNKNOWN, (5, 2)), Constant(CONSTANT, ZERO, ())), Inequality(Expression(AFFINE, UNKNOWN, (10,))), Inequality(Constant(CONSTANT, ZERO, (10,)))])
