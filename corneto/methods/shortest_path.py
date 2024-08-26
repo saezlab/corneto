@@ -7,6 +7,36 @@ from corneto._settings import LOGGER
 from corneto.backend import DEFAULT_BACKEND, Backend
 from corneto.backend._base import DEFAULT_UB, Indicator
 
+"""
+class ShortestPath(CornetoMethod):
+    def __init__(self, backend=DEFAULT_BACKEND):
+        super().__init__(backend=backend)
+
+    def create_problem(self, source_target_pairs: list, lambd: float = 0.0):
+        P = self._backend.Flow(Gc, lb=0, ub=DEFAULT_UB, n_flows=len(source_target_nodes))
+        # Now we add the objective and constraints for each sample
+        for i, (s, t) in enumerate(source_target_pairs):
+            weights = edge_weights[i, :]
+            P.add_objectives(P.expr.flow[:, i] @ weights)
+            # Now we inject/extract 1 unit flow from s to t
+            P += P.expr.flow[inflow_edges[s]] == 1
+            P += P.expr.flow[outflow_edges[t]] == 1
+            # For the rest of inflow/outflow edges, we set the flow to 0
+            for node in inflow_edges:
+                if node != s:
+                    P += P.expr.flow[inflow_edges[node]] == 0
+            for node in outflow_edges:
+                if node != t:
+                    P += P.expr.flow[outflow_edges[node]] == 0
+        # Add reg
+        if lambd > 0:
+            P += self._backend.linear_or(
+                P.expr.flow, axis=1, ignore_type=True, varname="active_edge"
+            )
+            P.add_objectives(sum(P.expr.active_edge), weights=lambd)
+
+"""
+
 
 def create_multisample_shortest_path(
     G: BaseGraph,
