@@ -18,27 +18,19 @@ Traceback (most recent call last):
     raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
 nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
 ------------------
-from corneto.methods import runCARNIVAL_AcyclicFlow
+from corneto.methods.carnival import milp_carnival
 
-# We run the `standard` carnival problem. This interface is similar
-# to the old R function https://saezlab.github.io/CARNIVAL/reference/runVanillaCarnival.html
-P = runCARNIVAL_AcyclicFlow(G2, exp_list, solver="GUROBI")
+P = milp_carnival(G, {"I2": -1, "I1": 0}, {"T": 1}, beta_weight=0.01)
+P.solve(solver="GUROBI", verbosity=1)
 ------------------
 
 
 [0;31m---------------------------------------------------------------------------[0m
 [0;31mValueError[0m                                Traceback (most recent call last)
-Cell [0;32mIn[11], line 5[0m
-[1;32m      1[0m [38;5;28;01mfrom[39;00m [38;5;21;01mcorneto[39;00m[38;5;21;01m.[39;00m[38;5;21;01mmethods[39;00m [38;5;28;01mimport[39;00m runCARNIVAL_AcyclicFlow
-[1;32m      3[0m [38;5;66;03m# We run the `standard` carnival problem. This interface is similar[39;00m
-[1;32m      4[0m [38;5;66;03m# to the old R function https://saezlab.github.io/CARNIVAL/reference/runVanillaCarnival.html[39;00m
-[0;32m----> 5[0m P [38;5;241m=[39m [43mrunCARNIVAL_AcyclicFlow[49m[43m([49m[43mG2[49m[43m,[49m[43m [49m[43mexp_list[49m[43m,[49m[43m [49m[43msolver[49m[38;5;241;43m=[39;49m[38;5;124;43m"[39;49m[38;5;124;43mGUROBI[39;49m[38;5;124;43m"[39;49m[43m)[49m
-
-File [0;32m~/work/corneto/corneto/corneto/methods/carnival.py:546[0m, in [0;36mrunCARNIVAL_AcyclicFlow[0;34m(G, exp_list, betaWeight, solver, verbosity)[0m
-[1;32m    543[0m     P[38;5;241m.[39madd_objectives([38;5;28msum[39m(Z[m_nodes_positions, iexp][38;5;241m.[39mmultiply([38;5;28mabs[39m(m_values))))
-[1;32m    544[0m P[38;5;241m.[39madd_objectives(betaWeight [38;5;241m*[39m [38;5;28msum[39m([38;5;28msum[39m(Eact [38;5;241m+[39m Einh)))
-[0;32m--> 546[0m [43mP[49m[38;5;241;43m.[39;49m[43msolve[49m[43m([49m[43msolver[49m[38;5;241;43m=[39;49m[43msolver[49m[43m,[49m[43m [49m[43mverbosity[49m[38;5;241;43m=[39;49m[43mverbosity[49m[43m)[49m
-[1;32m    547[0m [38;5;28;01mreturn[39;00m P
+Cell [0;32mIn[14], line 4[0m
+[1;32m      1[0m [38;5;28;01mfrom[39;00m [38;5;21;01mcorneto[39;00m[38;5;21;01m.[39;00m[38;5;21;01mmethods[39;00m[38;5;21;01m.[39;00m[38;5;21;01mcarnival[39;00m [38;5;28;01mimport[39;00m milp_carnival
+[1;32m      3[0m P [38;5;241m=[39m milp_carnival(G, {[38;5;124m"[39m[38;5;124mI2[39m[38;5;124m"[39m: [38;5;241m-[39m[38;5;241m1[39m, [38;5;124m"[39m[38;5;124mI1[39m[38;5;124m"[39m: [38;5;241m0[39m}, {[38;5;124m"[39m[38;5;124mT[39m[38;5;124m"[39m: [38;5;241m1[39m}, beta_weight[38;5;241m=[39m[38;5;241m0.01[39m)
+[0;32m----> 4[0m [43mP[49m[38;5;241;43m.[39;49m[43msolve[49m[43m([49m[43msolver[49m[38;5;241;43m=[39;49m[38;5;124;43m"[39;49m[38;5;124;43mGUROBI[39;49m[38;5;124;43m"[39;49m[43m,[49m[43m [49m[43mverbosity[49m[38;5;241;43m=[39;49m[38;5;241;43m1[39;49m[43m)[49m
 
 File [0;32m~/work/corneto/corneto/corneto/backend/_base.py:553[0m, in [0;36mProblemDef.solve[0;34m(self, solver, max_seconds, warm_start, verbosity, **options)[0m
 [1;32m    551[0m [38;5;28;01mif[39;00m [38;5;28mself[39m[38;5;241m.[39m_backend [38;5;129;01mis[39;00m [38;5;28;01mNone[39;00m:

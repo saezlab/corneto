@@ -505,6 +505,20 @@ continuous state of the protein.</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="corneto.methods.carnival.preprocess_graph">
+<span class="sig-prename descclassname"><span class="pre">corneto.methods.carnival.</span></span><span class="sig-name descname"><span class="pre">preprocess_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">priorKnowledgeNetwork</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">perturbations</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measurements</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.carnival.preprocess_graph" title="Link to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>priorKnowledgeNetwork</strong> (<em>BaseGraph</em>)</p></li>
+<li><p><strong>perturbations</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.12)"><em>Dict</em></a>)</p></li>
+<li><p><strong>measurements</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.12)"><em>Dict</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="corneto.methods.carnival.runVanillaCarnival">
 <span class="sig-prename descclassname"><span class="pre">corneto.methods.carnival.</span></span><span class="sig-name descname"><span class="pre">runVanillaCarnival</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">perturbations</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measurements</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">priorKnowledgeNetwork</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">betaWeight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend_options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solve</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.carnival.runVanillaCarnival" title="Link to this definition">#</a></dt>
 <dd><dl class="field-list simple">
@@ -595,6 +609,37 @@ continuous state of the protein.</p></li>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>betaWeight</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="corneto.methods.carnival.milp_carnival">
+<span class="sig-prename descclassname"><span class="pre">corneto.methods.carnival.</span></span><span class="sig-name descname"><span class="pre">milp_carnival</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">perturbations</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measurements</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta_weight=0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_dist=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">penalize='edges'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_perturbation_weights=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interaction_graph_attribute='interaction'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disable_acyclicity=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend=&lt;corneto.backend._cvxpy_backend.CvxpyBackend</span> <span class="pre">object&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.carnival.milp_carnival" title="Link to this definition">#</a></dt>
+<dd><p>Improved port of the original Carnival R method.</p>
+<p>This implementation uses the CORNETO backend capabilities to create a MILP problem.
+However, it does not use the flow formulation and multi-sample capabilities of the
+novel method implemented in CORNETO. This method is kept for compatibility with the
+original Carnival R method and for comparison purposes.</p>
+<p>NOTE: Since the method is decoupled from specific solvers, the default pool of
+solutions generated using CPLEX is not available.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>G</strong> – The graph object representing the network.</p></li>
+<li><p><strong>perturbations</strong> – A dictionary of perturbations applied to specific vertices in the graph.</p></li>
+<li><p><strong>measurements</strong> – A dictionary of measured values for specific vertices in the graph.</p></li>
+<li><p><strong>beta_weight</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span> (default: <code class="docutils literal notranslate"><span class="pre">0.2</span></code>)) – The weight for the regularization term in the objective function.</p></li>
+<li><p><strong>max_dist</strong> (default: <code class="docutils literal notranslate"><span class="pre">None</span></code>) – The maximum distance allowed for vertex positions in the graph.</p></li>
+<li><p><strong>penalize</strong> (default: <code class="docutils literal notranslate"><span class="pre">'edges'</span></code>) – The type of regularization to apply (‘nodes’, ‘edges’, or ‘both’).</p></li>
+<li><p><strong>use_perturbation_weights</strong> (default: <code class="docutils literal notranslate"><span class="pre">False</span></code>) – Whether to use perturbation weights in the objective function.</p></li>
+<li><p><strong>interaction_graph_attribute</strong> (default: <code class="docutils literal notranslate"><span class="pre">'interaction'</span></code>) – The attribute name for the interaction type in the graph.</p></li>
+<li><p><strong>disable_acyclicity</strong> (default: <code class="docutils literal notranslate"><span class="pre">False</span></code>) – Whether to disable the acyclicity constraint in the optimization.</p></li>
+<li><p><strong>backend</strong> (default: <code class="docutils literal notranslate"><span class="pre">&lt;corneto.backend._cvxpy_backend.CvxpyBackend</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x7f313d6b5f50&gt;</span></code>) – The backend engine to use for the optimization.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The optimization problem object.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -836,6 +881,7 @@ continuous state of the protein.</p></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#submodules">Submodules</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-corneto.methods.carnival">corneto.methods.carnival module</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.carnival.read_dataset"><code class="docutils literal notranslate"><span class="pre">read_dataset()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.carnival.preprocess_graph"><code class="docutils literal notranslate"><span class="pre">preprocess_graph()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.carnival.runVanillaCarnival"><code class="docutils literal notranslate"><span class="pre">runVanillaCarnival()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.carnival.runInverseCarnival"><code class="docutils literal notranslate"><span class="pre">runInverseCarnival()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.carnival.heuristic_carnival"><code class="docutils literal notranslate"><span class="pre">heuristic_carnival()</span></code></a></li>
@@ -846,6 +892,7 @@ continuous state of the protein.</p></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.carnival.runCARNIVAL_AcyclicFlow"><code class="docutils literal notranslate"><span class="pre">runCARNIVAL_AcyclicFlow()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.carnival.runCARNIVAL_Flow_Acyclic"><code class="docutils literal notranslate"><span class="pre">runCARNIVAL_Flow_Acyclic()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.carnival.runCARNIVAL_Flow_Acyclic_Signal"><code class="docutils literal notranslate"><span class="pre">runCARNIVAL_Flow_Acyclic_Signal()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.carnival.milp_carnival"><code class="docutils literal notranslate"><span class="pre">milp_carnival()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-corneto.methods.shortest_path">corneto.methods.shortest_path module</a><ul class="nav section-nav flex-column">
