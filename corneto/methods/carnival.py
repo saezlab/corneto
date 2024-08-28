@@ -562,37 +562,37 @@ def runCARNIVAL_AcyclicFlow(
     return P
 
 
-# CARNIVAL with flow (single flow)
+# CARNIVAL with acyclic flow (single flow)
 def runCARNIVAL_Flow_Acyclic(
     G, exp_list, betaWeight: float = 0.2, solver=None, verbosity=False
 ):
     At, Ah = get_incidence_matrices_of_edges(G)
     interaction = get_interactions(G)
 
-    VAR_FLOW = "car_flow"
-    P = cn.K.Flow(
+    VAR_FLOW = "with_flow"
+    P = cn.opt.Flow(
         G,
         varname=VAR_FLOW,
         alias_flow_ipos="positive_flow",
         alias_flow_ineg="negative_flow",
         create_nonzero_indicators=True,
     )
-    P = cn.K.Acyclic(
+    P = cn.opt.Acyclic(
         G,
         P,
         indicator_positive_var_name="positive_flow",
         indicator_negative_var_name="negative_flow",
     )
 
-    # TODO: check input grahp, experiment list and their compatibility
+    # TODO: check input graph, experiment list and their compatibility
 
-    Eact = cn.K.Variable(
+    Eact = cn.opt.Variable(
         "edge_activates", (G.num_edges, len(exp_list)), vartype=cn.VarType.BINARY
     )
-    Einh = cn.K.Variable(
+    Einh = cn.opt.Variable(
         "edge_inhibits", (G.num_edges, len(exp_list)), vartype=cn.VarType.BINARY
     )
-    Z = cn.K.Variable(
+    Z = cn.opt.Variable(
         "dummy", (G.num_vertices, len(exp_list)), vartype=cn.VarType.CONTINUOUS
     )
     P += Z >= 0
@@ -600,11 +600,10 @@ def runCARNIVAL_Flow_Acyclic(
     # Edge cannot activate and inhibit at the same time
     P += Eact + Einh <= 1
 
-    # The value of a vertex is the sign average of the incoming edges
-    N_parents = At @ np.ones(len(G.E))
+    # The value of a vertex is the difference of the incoming edges
     Va = At @ Eact
     Vi = At @ Einh
-    V = Va - Vi  # / N_parents
+    V = Va - Vi
     P.register("vertex_value", V)
     P.register("vertex_inhibited", Vi)
     P.register("vertex_activated", Va)
@@ -615,12 +614,7 @@ def runCARNIVAL_Flow_Acyclic(
     for exp, iexp in zip(exp_list, range(len(exp_list))):
         # Edge cannot activate or inhibit downstream vertices if it is not carrying flow
         P += (
-            Eact[:, iexp]
-            + Einh[
-                :,
-                iexp,
-            ]
-            <= P.expr.with_flow
+            Eact[:, iexp] + Einh[:,  iexp] <= P.expr.with_flow
         )
 
         P += Eact[edges_with_head, iexp] <= (Ah.T @ Va)[edges_with_head, iexp].multiply(
@@ -662,7 +656,7 @@ def runCARNIVAL_Flow_Acyclic(
     return P
 
 
-# CARNIVAL with flow (single flow)
+# CARNIVAL with flow and acyclic signaling
 def runCARNIVAL_Flow_Acyclic_Signal(
     G, exp_list, betaWeight: float = 0.2, solver=None, verbosity=False
 ):
@@ -670,17 +664,17 @@ def runCARNIVAL_Flow_Acyclic_Signal(
     interaction = get_interactions(G)
 
     VAR_FLOW = "with_flow"
-    P = cn.K.Flow(G, varname=VAR_FLOW)
+    P = cn.opt.Flow(G, varname=VAR_FLOW)
 
-    # TODO: check input grahp, experiment list and their compatibility
+    # TODO: check input graph, experiment list and their compatibility
 
-    Eact = cn.K.Variable(
+    Eact = cn.opt.Variable(
         "edge_activates", (G.num_edges, len(exp_list)), vartype=cn.VarType.BINARY
     )
-    Einh = cn.K.Variable(
+    Einh = cn.opt.Variable(
         "edge_inhibits", (G.num_edges, len(exp_list)), vartype=cn.VarType.BINARY
     )
-    Z = cn.K.Variable(
+    Z = cn.opt.Variable(
         "dummy", (G.num_vertices, len(exp_list)), vartype=cn.VarType.CONTINUOUS
     )
     P += Z >= 0
@@ -688,29 +682,25 @@ def runCARNIVAL_Flow_Acyclic_Signal(
     # Edge cannot activate and inhibit at the same time
     P += Eact + Einh <= 1
 
-    # The value of a vertex is the sign average of the incoming edges
-    N_parents = At @ np.ones(len(G.E))
+    # The value of a vertex is the difference of the positive and negative incoming edges
     Va = At @ Eact
     Vi = At @ Einh
-    V = Va - Vi  # / N_parents
+    V = Va - Vi
     P.register("vertex_value", V)
     P.register("vertex_inhibited", Vi)
     P.register("vertex_activated", Va)
     P.register("edge_value", Eact - Einh)
-    # indicate a constraint on the edge value rather than the flow:
-    P = cn.K.Acyclic(G, P, indicator_positive_var_name="edge_value")
+    P.register("edge_has_signal", Eact + Einh)
+    
+    # Add acyclic constraints on the edge_has_signal (signal)
+    P = cn.opt.Acyclic(G, P, indicator_positive_var_name="edge_has_signal")
 
     edges_with_head = np.flatnonzero(np.sum(np.abs(Ah), axis=0) > 0)
 
     for exp, iexp in zip(exp_list, range(len(exp_list))):
         # Edge cannot activate or inhibit downstream vertices if it is not carrying flow
         P += (
-            Eact[:, iexp]
-            + Einh[
-                :,
-                iexp,
-            ]
-            <= P.expr.with_flow
+            Eact[:, iexp] + Einh[:,  iexp] <= P.expr.with_flow
         )
 
         P += Eact[edges_with_head, iexp] <= (Ah.T @ Va)[edges_with_head, iexp].multiply(
