@@ -13,7 +13,7 @@ Maintained by [Saez-Rodriguez](https://saezlab.org) group.
 
 ---
 
-CORNETO (Constraint-based Optimization for the Reconstruction of NETworks from Omics) is a unified network inference framework implemented in Python designed to bring together many common network inference problems in biology. Through constraint programming, CORNETO transforms these problems into unified mathematical representations using flow networks, offering modular building blocks for diverse applications.
+CORNETO (Constraint-based Optimization for the Reconstruction of NETworks from Omics) is a unified network inference framework implemented in Python designed to bring together many common network inference problems in biology. Through constrained optimisation, CORNETO transforms these problems into unified mathematical representations using flow networks, offering modular building blocks for diverse applications.
 
 > **⚠️ Disclaimer**: This is an early preview of the CORNETO library. **CORNETO is under active development and has not yet reached a stable release for end users**. Contributions and feedback are not yet open until the first stable release. Please stay tuned for updates.
 
