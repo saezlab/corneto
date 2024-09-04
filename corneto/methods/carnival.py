@@ -491,7 +491,10 @@ def create_flow_carnival_v3(G, exp_list, lambd=0.2):
 
     # Create a single unique flow. The flow selects the
     # subset of the PKN that will contain all signal propagations.
-    P = cn.opt.Flow(G)
+
+    # NOTE: increased UB flow since we dont have indicator, fractional positive flows <1
+    # will block signal in this case. To verify if this is a problem.
+    P = cn.opt.Flow(G, ub=1000)
 
     Eact = cn.opt.Variable(
         "edge_activates", (G.num_edges, len(exp_list)), vartype=cn.VarType.BINARY
@@ -525,7 +528,7 @@ def create_flow_carnival_v3(G, exp_list, lambd=0.2):
 
     for exp, iexp in zip(exp_list, range(len(exp_list))):
         # Edge cannot activate or inhibit downstream vertices if it is not carrying flow
-        P += Eact[:, iexp] + Einh[:, iexp] <= P.expr.with_flow
+        P += Eact[:, iexp] + Einh[:, iexp] <= P.expr.flow
 
         P += Eact[edges_with_head, iexp] <= (Ah.T @ Va)[edges_with_head, iexp].multiply(
             interaction[edges_with_head] > 0
