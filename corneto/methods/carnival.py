@@ -483,7 +483,7 @@ def bfs_search(
     return selected_edges, paths, stats
 
 
-def create_flow_carnival_v3(G, exp_list, lambd=0.2):
+def create_flow_carnival_v3(G, exp_list, lambd=0.2, exclusive_vertex_values=True):
     # This is the flow acyclic signal
 
     At, Ah = get_incidence_matrices_of_edges(G)
@@ -515,6 +515,11 @@ def create_flow_carnival_v3(G, exp_list, lambd=0.2):
     Va = At @ Eact
     Vi = At @ Einh
     V = Va - Vi
+
+    if exclusive_vertex_values:
+        P += (
+            Va + Vi <= 1
+        )  # otherwise a vertex can be both active and inactive through diff. paths
     P.register("vertex_value", V)
     P.register("vertex_inhibited", Vi)
     P.register("vertex_activated", Va)
