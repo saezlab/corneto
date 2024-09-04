@@ -980,15 +980,11 @@ class Backend(abc.ABC):
         )
         vix = {v: i for i, v in enumerate(g.vertices)}
         for i_order in range(n_order):
-            if n_order == 1:
-                Ip_i_order = Ip
-                In_i_order = In
-            else:
-                if Ip is not None:
-                    Ip_i_order = Ip[:, i_order]
-                if In is not None:
-                    In_i_order = In[:, i_order]
-
+            if Ip is not None:
+                Ip_i_order = Ip[:, i_order]
+            if In is not None:
+                In_i_order = In[:, i_order]
+            
             # These constraints are not compatible with hyperedges
             if Ip is not None:
                 # Get edges s->t that can have a positive flow
@@ -1009,9 +1005,9 @@ class Backend(abc.ABC):
                 # The layer position in a DAG of the target vertex of the edge
                 # has to be greater than the source vertex, otherwise Ip (pos flow) has to be 0
                 if len(e_ix) > 0:
-                    P += L[t_idx, i_order] - L[s_idx, i_order] >= Ip_i_order[e_ix,0] + (
+                    P += L[t_idx, i_order] - L[s_idx, i_order] >= Ip_i_order[e_ix,] + (
                         1 - g.num_vertices
-                    ) * (1 - Ip_i_order[e_ix,0])
+                    ) * (1 - Ip_i_order[e_ix,])
                     P += L[t_idx, i_order] - L[s_idx, i_order] <= g.num_vertices - 1
             if In is not None:
                 # NOTE: Negative flows eq. to reversed directed edge
@@ -1030,9 +1026,9 @@ class Backend(abc.ABC):
                 s_idx = np.array([vix[list(s)[0]] for (s, _) in edges])
                 t_idx = np.array([vix[list(t)[0]] for (_, t) in edges])
                 if len(e_ix) > 0:
-                    P += L[s_idx, i_order] - L[t_idx, i_order] >= In_i_order[e_ix,0] + (
+                    P += L[s_idx, i_order] - L[t_idx, i_order] >= In_i_order[e_ix,] + (
                         1 - g.num_vertices
-                    ) * (1 - In_i_order[e_ix,0])
+                    ) * (1 - In_i_order[e_ix,])
                     P += L[s_idx, i_order] - L[t_idx, i_order] <= g.num_vertices - 1
             # TODO: Raise error if hypergraph
         return P
