@@ -984,7 +984,7 @@ class Backend(abc.ABC):
                 Ip_i_order = Ip[:, i_order]
             if In is not None:
                 In_i_order = In[:, i_order]
-            
+
             # These constraints are not compatible with hyperedges
             if Ip is not None:
                 # Get edges s->t that can have a positive flow
