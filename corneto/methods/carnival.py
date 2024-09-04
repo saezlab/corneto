@@ -483,9 +483,14 @@ def bfs_search(
     return selected_edges, paths, stats
 
 
-def create_flow_carnival_v3(G, exp_list, lambd=0.2, exclusive_vertex_values=True):
-    # This is the flow acyclic signal
-
+def create_flow_carnival_v3(
+    G,
+    exp_list,
+    lambd=0.2,
+    exclusive_vertex_values=True,
+    upper_bound_flow=1000,
+    backend=cn.DEFAULT_BACKEND,
+):
     At, Ah = get_incidence_matrices_of_edges(G)
     interaction = get_interactions(G)
 
@@ -494,16 +499,16 @@ def create_flow_carnival_v3(G, exp_list, lambd=0.2, exclusive_vertex_values=True
 
     # NOTE: increased UB flow since we dont have indicator, fractional positive flows <1
     # will block signal in this case. To verify if this is a problem.
-    P = cn.opt.Flow(G, ub=1000)
+    P = backend.Flow(G, ub=upper_bound_flow)
 
-    Eact = cn.opt.Variable(
+    Eact = backend.Variable(
         "edge_activates", (G.num_edges, len(exp_list)), vartype=cn.VarType.BINARY
     )
-    Einh = cn.opt.Variable(
+    Einh = backend.Variable(
         "edge_inhibits", (G.num_edges, len(exp_list)), vartype=cn.VarType.BINARY
     )
     # This var should be removed
-    Z = cn.opt.Variable(
+    Z = backend.Variable(
         "dummy", (G.num_vertices, len(exp_list)), vartype=cn.VarType.CONTINUOUS
     )
     P += Z >= 0
@@ -517,9 +522,9 @@ def create_flow_carnival_v3(G, exp_list, lambd=0.2, exclusive_vertex_values=True
     V = Va - Vi
 
     if exclusive_vertex_values:
-        P += (
-            Va + Vi <= 1
-        )  # otherwise a vertex can be both active and inactive through diff. paths
+        # otherwise a vertex can be both active and inactive through diff. paths
+        # NOTE: Seems to increase the gap of the relaxated problem.
+        P += Va + Vi <= 1
     P.register("vertex_value", V)
     P.register("vertex_inhibited", Vi)
     P.register("vertex_activated", Va)
@@ -527,12 +532,15 @@ def create_flow_carnival_v3(G, exp_list, lambd=0.2, exclusive_vertex_values=True
     P.register("edge_has_signal", Eact + Einh)
 
     # Add acyclic constraints on the edge_has_signal (signal)
-    P = cn.opt.Acyclic(G, P, indicator_positive_var_name="edge_has_signal")
+    P = backend.Acyclic(G, P, indicator_positive_var_name="edge_has_signal")
 
     edges_with_head = np.flatnonzero(np.sum(np.abs(Ah), axis=0) > 0)
 
     for exp, iexp in zip(exp_list, range(len(exp_list))):
-        # Edge cannot activate or inhibit downstream vertices if it is not carrying flow
+        # Edge cannot activate or inhibit downstream vertices if it is not carrying flow.
+        # Note: since Eact and Einh are binary variables, the threshold activation for signal
+        # is at least 1 unit of flow. That means that positive, non-zero flows below 1
+        # are not enough for activating signal.
         P += Eact[:, iexp] + Einh[:, iexp] <= P.expr.flow
 
         P += Eact[edges_with_head, iexp] <= (Ah.T @ Va)[edges_with_head, iexp].multiply(
@@ -557,6 +565,8 @@ def create_flow_carnival_v3(G, exp_list, lambd=0.2, exclusive_vertex_values=True
         m_nodes = list(exp_list[exp]["output"].keys())
         m_values = np.array(list(exp_list[exp]["output"].values()))
         m_nodes_positions = [G.V.index(key) for key in m_nodes]
+
+        # Count the negative and the positive parts of the measurements
 
         # linearization of the ABS function: https://optimization.cbe.cornell.edu/index.php?title=Optimization_with_absolute_values
         P += (
