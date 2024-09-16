@@ -167,8 +167,13 @@ def exact_steiner_tree(
     # TODO: Take as argument, read from graph
     if edge_weights is None:
         edge_weights = np.array([prop.get("weight", 0) for prop in Gc.get_attr_edges()])
-    elif isinstance(edge_weights, (list, tuple)):
-        edge_weights = np.array(edge_weights)
+    elif isinstance(edge_weights, (list, tuple, np.ndarray)):
+        ew = np.zeros(Gc.ne)
+        ew[: len(edge_weights)] = np.array(edge_weights)
+        edge_weights = ew
+    # If is a number, generate a list with the same value for all edges
+    elif isinstance(edge_weights, (int, float)):
+        edge_weights = np.array([edge_weights for _ in range(Gc.ne)])
     else:
         raise ValueError("Unknown type for edge_weights (list or tuple)")
 

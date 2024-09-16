@@ -100,6 +100,9 @@ def networkx_to_corneto_graph(G: Union[NxGraph, NxDiGraph]):
     for edge in G.edges():
         e_data = G.get_edge_data(edge[0], edge[1], default=dict())
         Gc.add_edge(edge[0], edge[1], **e_data)
+    # Also add node attributes
+    for node, data in G.nodes(data=True):
+        Gc.add_vertex(node, **data)
     return Gc
 
 

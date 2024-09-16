@@ -16,15 +16,31 @@ def clip_quantiles(arr, q):
 
 def vertex_style(
     P,
-    G,  # TODO: G should not be required
+    G: Optional[BaseGraph] = None,  # TODO: G should not be required
     vertex_var: str = "vertex_values",
     negative_color: str = "dodgerblue4",
     positive_color: str = "firebrick4",
-    condition: Optional[int] = 0,
+    sample: Optional[int] = None,
 ):
     v_values = np.array(P.expr[vertex_var].value)
+    if v_values is None:
+        raise ValueError(
+            f"""Variable {vertex_var} in the problem, but values are None.
+            Has the problem been solved?"""
+        )
+    if sample is not None:
+        if len(v_values.shape) < 2:
+            raise ValueError(
+                f"""Variable {vertex_var} in the problem is not a matrix.
+                Cannot select sample {sample}"""
+            )
+        v_values = v_values[:, sample]
+    if G is None:
+        vertices = list(range(len(v_values)))
+    else:
+        vertices = G.V
     return create_graphviz_vertex_attributes(
-        G.V, v_values, negative_color=negative_color, positive_color=positive_color
+        vertices, v_values, negative_color=negative_color, positive_color=positive_color
     )
 
 
@@ -35,7 +51,7 @@ def edge_style(
     edge_var: str = "edge_values",
     negative_color: str = "dodgerblue4",
     positive_color: str = "firebrick4",
-    condition: Optional[int] = 0,
+    sample: Optional[int] = None,
 ):
     e_values = P.expr[edge_var].value
     if e_values is None:
@@ -43,6 +59,13 @@ def edge_style(
             f"""Variable {edge_var} in the problem, but values are None.
             Has the problem been solved?"""
         )
+    if sample is not None:
+        if len(e_values.shape) < 2:
+            raise ValueError(
+                f"""Variable {edge_var} in the problem is not a matrix.
+                Cannot select sample {sample}"""
+            )
+        e_values = e_values[:, sample]
     return create_graphviz_edge_attributes(
         e_values,
         max_edge_width=max_edge_width,
@@ -187,7 +210,7 @@ def to_graphviz(
     node_attr: Optional[Dict[str, str]] = None,
     edge_attr: Optional[Dict[str, str]] = None,
     custom_edge_attr: Optional[Dict[int, Dict[str, str]]] = None,
-    custom_vertex_attr: Optional[Dict[str, Dict[str, str]]] = None,
+    custom_vertex_attr: Optional[Dict[Union[int, str], Dict[str, str]]] = None,
     layout: str = "dot",
     orphan_edges: bool = True,
 ) -> Any:
@@ -198,6 +221,14 @@ def to_graphviz(
         custom_edge_attr = {}
     if custom_vertex_attr is None:
         custom_vertex_attr = {}
+    if len(custom_vertex_attr) > 0:
+        keys = list(custom_vertex_attr.keys())
+        # Check if all the keys are integers
+        if all(isinstance(k, int) for k in keys):
+            vertices = graph.V
+            custom_vertex_attr = {
+                str(v): custom_vertex_attr[i] for i, v in enumerate(vertices)
+            }
     if node_attr is None:
         node_attr = dict(fixedsize="true")
     g = graphviz.Digraph(

@@ -980,14 +980,10 @@ class Backend(abc.ABC):
         )
         vix = {v: i for i, v in enumerate(g.vertices)}
         for i_order in range(n_order):
-            if n_order == 1:
-                Ip_i_order = Ip
-                In_i_order = In
-            else:
-                if Ip is not None:
-                    Ip_i_order = Ip[:, i_order]
-                if In is not None:
-                    In_i_order = In[:, i_order]
+            if Ip is not None:
+                Ip_i_order = Ip[:, i_order]
+            if In is not None:
+                In_i_order = In[:, i_order]
 
             # These constraints are not compatible with hyperedges
             if Ip is not None:
@@ -1274,10 +1270,14 @@ class Backend(abc.ABC):
         )
 
     def linear_or(
-        self, x: CExpression, axis: Optional[int] = None, varname="or"
+        self,
+        x: CExpression,
+        axis: Optional[int] = None,
+        varname="or",
+        ignore_type=False,
     ) -> ProblemDef:
         # Check if the variable has a vartype and is binary
-        if hasattr(x, "_vartype") and x._vartype != VarType.BINARY:
+        if hasattr(x, "_vartype") and x._vartype != VarType.BINARY and not ignore_type:
             raise ValueError(f"Variable x has type {x._vartype} instead of BINARY")
         else:
             for s in x._proxy_symbols:

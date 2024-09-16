@@ -1,8 +1,64 @@
 import importlib
 import re
+from functools import wraps
 from pathlib import Path
 
 from corneto.utils._attr import Attr, Attributes
+
+
+class OptionalModule:
+    def __init__(self, module_name):
+        self.module_name = module_name
+        self.module = None
+        try:
+            self.module = importlib.import_module(module_name)
+        except ImportError:
+            pass
+
+    def __getattr__(self, item):
+        if self.module:
+            return getattr(self.module, item)
+        else:
+            return self._create_dummy(item)
+
+    def _create_dummy(self, name):
+        def dummy(*args, **kwargs):
+            return None
+
+        return dummy
+
+
+class OptionalNumba(OptionalModule):
+    def __init__(self):
+        super().__init__("numba")
+
+    def _create_dummy(self, name):
+        if name == "jit":
+
+            def _jit(*_args, **_kwargs):
+                def _dummy_jit(func):
+                    @wraps(func)
+                    def _wrapped_func(*args, **kwargs):
+                        return func(*args, **kwargs)
+
+                    return _wrapped_func
+
+                return _dummy_jit
+
+            return _jit
+
+        if name in ["uint16", "uint32", "uint64", "int16", "int32", "int64"]:
+            return int
+        if name in ["float32", "float64", "complex64", "complex128"]:
+            return float
+        if name == "prange":
+            return range
+
+        return super()._create_dummy(name)
+
+
+# Create an instance for numba
+numba = OptionalModule("numba")
 
 
 def get_library_version(lib_name):

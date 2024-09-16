@@ -1,3 +1,6 @@
+import hashlib
+import os
+import pickle
 from collections import OrderedDict
 from itertools import filterfalse
 from typing import Any, Callable, Dict, Iterable, Optional, Set, TypeVar
@@ -6,6 +9,13 @@ import numpy as np
 from numpy.linalg import svd
 
 T = TypeVar("T")
+
+
+def obj_content_hash(obj) -> str:
+    obj_serialized = pickle.dumps(obj)
+    hash_obj = hashlib.sha256()
+    hash_obj.update(obj_serialized)
+    return hash_obj.hexdigest()
 
 
 def unique_iter(
@@ -130,6 +140,12 @@ def _get_info() -> Dict[str, Dict]:
         info["graphviz_version"]["value"] = graphviz.__version__
     except Exception:
         pass
+
+    info["installed_path"] = {
+        "title": "Installed path",
+        "message": os.path.dirname(__file__),
+        "value": os.path.dirname(__file__),
+    }
     info["repo_url"] = {
         "title": "Repository",
         "message": "https://github.com/saezlab/corneto",
