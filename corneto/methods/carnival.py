@@ -498,7 +498,8 @@ def create_flow_carnival_v3(
     # subset of the PKN that will contain all signal propagations.
 
     # NOTE: increased UB flow since we dont have indicator, fractional positive flows <1
-    # will block signal in this case. To verify if this is a problem.
+    # will block signal in this case. To verify if this is a problem. The UB corresponds
+    # to the value of the Big-M in the constraints.
     P = backend.Flow(G, ub=upper_bound_flow)
 
     Eact = backend.Variable(
@@ -523,7 +524,8 @@ def create_flow_carnival_v3(
 
     if exclusive_vertex_values:
         # otherwise a vertex can be both active and inactive through diff. paths
-        # NOTE: Seems to increase the gap of the relaxated problem.
+        # NOTE: Seems to increase the gap of the relaxated problem. Slower than
+        # the formulations using indicator variables.
         P += Va + Vi <= 1
     P.register("vertex_value", V)
     P.register("vertex_inhibited", Vi)
