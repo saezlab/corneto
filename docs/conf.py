@@ -123,7 +123,7 @@ html_show_sphinx = False
 html_theme_options = {
     "primary_sidebar_end": ["sidebar-ethical-ads"],
     "switcher": {
-        "json_url": "https://saezlab.github.io/corneto/main/_static/switcher.json",
+        "json_url": "https://saezlab.github.io/corneto/dev/_static/switcher.json",
         "version_match": corneto.__version__,
     },
     "navbar_start": ["navbar-logo", "version-switcher"],
