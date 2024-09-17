@@ -509,25 +509,25 @@ document.write(`
                                      CVXPY                                     
                                      v1.5.3                                    
 ===============================================================================
-(CVXPY) Sep 02 10:45:26 AM: Your problem has 5 variables, 6 constraints, and 0 parameters.
-(CVXPY) Sep 02 10:45:26 AM: It is compliant with the following grammars: DCP, DQCP
-(CVXPY) Sep 02 10:45:26 AM: (If you need to solve this problem multiple times, but with different data, consider using parameters.)
-(CVXPY) Sep 02 10:45:26 AM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
-(CVXPY) Sep 02 10:45:26 AM: Your problem is compiled with the CPP canonicalization backend.
+(CVXPY) Sep 17 09:05:14 AM: Your problem has 5 variables, 6 constraints, and 0 parameters.
+(CVXPY) Sep 17 09:05:14 AM: It is compliant with the following grammars: DCP, DQCP
+(CVXPY) Sep 17 09:05:14 AM: (If you need to solve this problem multiple times, but with different data, consider using parameters.)
+(CVXPY) Sep 17 09:05:14 AM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
+(CVXPY) Sep 17 09:05:14 AM: Your problem is compiled with the CPP canonicalization backend.
 -------------------------------------------------------------------------------
                                   Compilation                                  
 -------------------------------------------------------------------------------
-(CVXPY) Sep 02 10:45:26 AM: Compiling problem (target solver=OSQP).
-(CVXPY) Sep 02 10:45:26 AM: Reduction chain: CvxAttr2Constr -&gt; Qp2SymbolicQp -&gt; QpMatrixStuffing -&gt; OSQP
-(CVXPY) Sep 02 10:45:26 AM: Applying reduction CvxAttr2Constr
-(CVXPY) Sep 02 10:45:26 AM: Applying reduction Qp2SymbolicQp
-(CVXPY) Sep 02 10:45:26 AM: Applying reduction QpMatrixStuffing
-(CVXPY) Sep 02 10:45:26 AM: Applying reduction OSQP
-(CVXPY) Sep 02 10:45:26 AM: Finished problem compilation (took 1.801e-02 seconds).
+(CVXPY) Sep 17 09:05:14 AM: Compiling problem (target solver=OSQP).
+(CVXPY) Sep 17 09:05:14 AM: Reduction chain: CvxAttr2Constr -&gt; Qp2SymbolicQp -&gt; QpMatrixStuffing -&gt; OSQP
+(CVXPY) Sep 17 09:05:14 AM: Applying reduction CvxAttr2Constr
+(CVXPY) Sep 17 09:05:14 AM: Applying reduction Qp2SymbolicQp
+(CVXPY) Sep 17 09:05:14 AM: Applying reduction QpMatrixStuffing
+(CVXPY) Sep 17 09:05:14 AM: Applying reduction OSQP
+(CVXPY) Sep 17 09:05:14 AM: Finished problem compilation (took 1.736e-02 seconds).
 -------------------------------------------------------------------------------
                                 Numerical solver                               
 -------------------------------------------------------------------------------
-(CVXPY) Sep 02 10:45:26 AM: Invoking solver OSQP  to obtain a solution.
+(CVXPY) Sep 17 09:05:14 AM: Invoking solver OSQP  to obtain a solution.
 -----------------------------------------------------------------
            OSQP v0.6.3  -  Operator Splitting QP Solver
               (c) Bartolomeo Stellato,  Goran Banjac
@@ -545,24 +545,24 @@ settings: linear system solver = qdldl,
           warm start: on, polish: on, time_limit: off
 
 iter   objective    pri res    dua res    rho        time
-   1  -5.2220e+00   3.68e+00   1.70e+02   1.00e-01   3.45e-05s
- 150   6.9994e-01   1.96e-05   7.82e-06   4.77e+00   8.12e-05s
-plsh   7.0000e-01   1.95e-30   0.00e+00   --------   1.07e-04s
+   1  -5.2220e+00   3.68e+00   1.70e+02   1.00e-01   6.14e-05s
+ 150   6.9994e-01   1.96e-05   7.82e-06   4.77e+00   1.70e-04s
+plsh   7.0000e-01   1.95e-30   0.00e+00   --------   5.41e-04s
 
 status:               solved
 solution polish:      successful
 number of iterations: 150
 optimal objective:    0.7000
-run time:             1.07e-04s
+run time:             5.41e-04s
 optimal rho estimate: 9.81e+00
 
 -------------------------------------------------------------------------------
                                     Summary                                    
 -------------------------------------------------------------------------------
-(CVXPY) Sep 02 10:45:26 AM: Problem status: optimal
-(CVXPY) Sep 02 10:45:26 AM: Optimal value: -3.000e-01
-(CVXPY) Sep 02 10:45:26 AM: Compilation took 1.801e-02 seconds
-(CVXPY) Sep 02 10:45:26 AM: Solver (including time spent in interface) took 1.067e-03 seconds
+(CVXPY) Sep 17 09:05:14 AM: Problem status: optimal
+(CVXPY) Sep 17 09:05:14 AM: Optimal value: -3.000e-01
+(CVXPY) Sep 17 09:05:14 AM: Compilation took 1.736e-02 seconds
+(CVXPY) Sep 17 09:05:14 AM: Solver (including time spent in interface) took 1.198e-03 seconds
 </pre></div>
 </div>
 </div>
@@ -574,7 +574,7 @@ optimal rho estimate: 9.81e+00
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-0.30000000000000004
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>np.float64(-0.30000000000000004)
 </pre></div>
 </div>
 </div>
