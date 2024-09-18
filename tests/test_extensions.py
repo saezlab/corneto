@@ -33,7 +33,8 @@ def move_mean(a, window_arr, out):
 
 def test_guvectorize_numba():
     arr = np.arange(20, dtype=np.float64).reshape(2, 10)
-    result = move_mean(arr, 3)
+    window_arr = np.array([3], dtype=np.intp)
+    result = move_mean(arr, window_arr)
     expected = np.array(
         [
             [0.0, 0.5, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0],
