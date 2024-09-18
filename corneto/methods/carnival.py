@@ -8,7 +8,7 @@ from corneto.methods.signaling import create_flow_graph, signflow
 
 def _info(s, show=True):
     if show:
-        LOGGER.info(s)
+        print(s)
 
 
 def read_dataset(zip_path):
