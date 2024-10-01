@@ -111,6 +111,7 @@ def exact_steiner_tree(
     in_flow_edge_type=EdgeType.DIRECTED,
     out_flow_edge_type=EdgeType.DIRECTED,
     backend: Backend = DEFAULT_BACKEND,
+    flow_injected: float = 10,
 ):
     prized_nodes, prizes = [], []
     if isinstance(terminals, dict):
@@ -153,9 +154,9 @@ def exact_steiner_tree(
         ]
     )
     if strict_acyclic:
-        P = K.AcyclicFlow(Gc, lb=lb, ub=10, varname=flow_name)
+        P = K.AcyclicFlow(Gc, lb=lb, ub=flow_injected, varname=flow_name)
     else:
-        P = K.Flow(Gc, lb=lb, ub=10, varname=flow_name)
+        P = K.Flow(Gc, lb=lb, ub=flow_injected, varname=flow_name)
     ids_e = list(set(range(Gc.ne)) - set(ids + [eidx]))
     # Indicators for the edges (1=unconstrained, 0=blocked flow)
     F = P.expr[flow_name]
@@ -181,8 +182,10 @@ def exact_steiner_tree(
 
     if len(prized_nodes) == 0:
         # If not prized
-        P += F[eidx] == 10  # inject non-zero flow
-        P += F[ids] >= 10 / (len(terminals) + 1)  # Force all terminals to be present
+        P += F[eidx] == flow_injected  # inject non-zero flow
+        P += F[ids] >= flow_injected / (
+            len(terminals) + 1
+        )  # Force all terminals to be present
     else:
         id_edge_prized = np.array([dummy_edges[v] for v in prized_nodes])
         P += K.NonZeroIndicator(

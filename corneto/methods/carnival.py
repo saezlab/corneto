@@ -5,7 +5,7 @@ import numpy as np
 
 import corneto as cn
 from corneto._graph import BaseGraph, Graph
-from corneto._settings import LOGGER
+from corneto._settings import LOGGER, sparsify
 from corneto.methods.signal._util import (
     get_incidence_matrices_of_edges,
     get_interactions,
@@ -483,6 +483,136 @@ def bfs_search(
     return selected_edges, paths, stats
 
 
+def create_flow_carnival_v4(
+    G,
+    exp_list,
+    lambd=0.2,
+    exclusive_vertex_values=True,
+    upper_bound_flow=1000,
+    penalty_on="signal",  # or "flow"
+    slack_reg=False,
+    backend=cn.DEFAULT_BACKEND,
+):
+    At, Ah = get_incidence_matrices_of_edges(G)
+    interaction = get_interactions(G)
+
+    # Create a single unique flow. The flow selects the
+    # subset of the PKN that will contain all signal propagations.
+
+    # NOTE: increased UB flow since we dont have indicator, fractional positive flows <1
+    # will block signal in this case. To verify if this is a problem. The UB corresponds
+    # to the value of the Big-M in the constraints.
+    P = backend.Flow(G, ub=upper_bound_flow)
+    if penalty_on == "flow":
+        P += cn.Indicator()
+
+    Eact = backend.Variable(
+        "edge_activates", (G.num_edges, len(exp_list)), vartype=cn.VarType.BINARY
+    )
+    Einh = backend.Variable(
+        "edge_inhibits", (G.num_edges, len(exp_list)), vartype=cn.VarType.BINARY
+    )
+
+    # Edge cannot activate and inhibit at the same time
+    P += Eact + Einh <= 1
+
+    # The value of a vertex is the difference of the positive and negative incoming edges
+    Va = At @ Eact
+    Vi = At @ Einh
+    V = Va - Vi
+
+    if exclusive_vertex_values:
+        # otherwise a vertex can be both active and inactive through diff. paths
+        # NOTE: Seems to increase the gap of the relaxated problem. Slower than
+        # the formulations using indicator variables.
+        P += Va + Vi <= 1
+    P.register("vertex_value", V)
+    P.register("vertex_inhibited", Vi)
+    P.register("vertex_activated", Va)
+    P.register("edge_value", Eact - Einh)
+    P.register("edge_has_signal", Eact + Einh)
+
+    # Add acyclic constraints on the edge_has_signal (signal)
+    P = backend.Acyclic(G, P, indicator_positive_var_name="edge_has_signal")
+
+    edges_with_head = np.flatnonzero(np.sum(np.abs(Ah), axis=0) > 0)
+
+    # Extend flows (M,) to (M, N) where N is the num of experiments
+    F = P.expr.flow.reshape((Eact.shape[0], 1)) @ np.ones((1, len(exp_list)))
+    # Fi = P.expr._flow_i.reshape((Eact.shape[0], 1)) @ np.ones((1, len(exp_list)))
+
+    # If no flow, no signal (signal cannot circulate in a non-selected subgraph)
+    P += Eact + Einh <= F
+
+    Int = sparsify(
+        np.reshape(interaction, (interaction.shape[0], 1)) @ np.ones((1, len(exp_list)))
+    )
+
+    # Sum incoming signals for edges with head (for all samples)
+    # An edge can only be active in two situations:
+    # - the head vertex is active and the edge activatory
+    # - or the head vertex is inactive and the edge inhibitory
+    sum_upstream_act = (Ah.T @ Va)[edges_with_head, :].multiply(
+        Int[edges_with_head, :] > 0
+    )
+    sum_upstream_inh = (Ah.T @ Vi)[edges_with_head, :].multiply(
+        Int[edges_with_head, :] < 0
+    )
+    P += Eact[edges_with_head, :] <= sum_upstream_act + sum_upstream_inh
+    # The opposite for inhibition
+    sum_upstream_act = (Ah.T @ Va)[edges_with_head, :].multiply(
+        Int[edges_with_head, :] < 0
+    )
+    sum_upstream_inh = (Ah.T @ Vi)[edges_with_head, :].multiply(
+        Int[edges_with_head, :] > 0
+    )
+    P += Einh[edges_with_head, :] <= sum_upstream_act + sum_upstream_inh
+
+    vertex_indexes = np.array(
+        [G.V.index(v) for exp in exp_list for v in exp_list[exp]["input"]]
+    )
+    perturbation_values = np.array(
+        [val for exp in exp_list for val in exp_list[exp]["input"].values()]
+    )
+
+    # Set the perturbations to the given values
+    P += V[vertex_indexes, :] == perturbation_values[:, None]
+    for i, exp in enumerate(exp_list):
+        # measuremenents:
+        m_nodes = list(exp_list[exp]["output"].keys())
+        m_values = np.array(list(exp_list[exp]["output"].values()))
+        m_nodes_positions = [G.V.index(key) for key in m_nodes]
+
+        # Count the negative and the positive parts of the measurements
+        # Compute the error and add it to the objective function
+        error = (1 - V[m_nodes_positions, i].multiply(np.sign(m_values))).multiply(
+            abs(m_values)
+        )
+        P.add_objectives(sum(error))
+
+    if lambd > 0:
+        obj = None
+        if penalty_on == "signal":
+            P += cn.opt.linear_or(Eact + Einh, axis=1, varname="Y")
+            obj = sum(P.expr.Y)
+        elif penalty_on == "flow":
+            obj = sum(P.expr._flow_i)
+        else:
+            raise ValueError(
+                f"Invalid penalty_on={penalty_on} not valid. Only signal or flow are supported."
+            )
+        if slack_reg:
+            s = backend.Variable(lb=0, ub=G.num_edges)
+            max_edges = G.num_edges - s
+            P += obj <= max_edges
+            P.add_objectives(max_edges, weights=lambd)
+        else:
+            P.add_objectives(obj, weights=lambd)
+    else:
+        P.add_objectives(0)
+    return P
+
+
 def create_flow_carnival_v3(
     G,
     exp_list,
@@ -578,6 +708,9 @@ def create_flow_carnival_v3(
             -V[m_nodes_positions, iexp] + np.sign(m_values)
             <= Z[m_nodes_positions, iexp]
         )
+
+        # Compute the error and add it to the objective function
+        # error = abs(m_values) * (1 - np.sign(m_values) * V[m_nodes_positions, iexp])
 
         P.add_objectives(sum(Z[m_nodes_positions, iexp].multiply(abs(m_values))))
     if lambd > 0:

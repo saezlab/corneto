@@ -878,6 +878,58 @@ class Graph(BaseGraph):
             g.add_edge(s, t, **attr)
         return g
 
+    # TODO: Validate and replace the extract_subgraph with this one
+    def _extract_subgraph_keep_order(
+        self, vertices: Optional[Iterable] = None, edges: Optional[Iterable[int]] = None
+    ):
+        # Create a new graph
+        g = Graph()
+        g._graph_attr = deepcopy(self._graph_attr)
+
+        def append_unique(lst, items):
+            for item in items:
+                if item not in lst:
+                    lst.append(item)
+
+        # Initialize lists to preserve order
+        if vertices is not None:
+            vertices = list(vertices)
+        else:
+            vertices = []
+        if edges is not None:
+            edges = list(edges)
+            # Collect vertices from edges
+            for i in edges:
+                s, t = self.get_edge(i)
+                v_set = s.union(t)
+                append_unique(vertices, v_set)
+        else:
+            edges = []
+            # If edges are not specified but vertices are, include edges induced by the vertices
+            if vertices:
+                # Collect edges induced by the set of vertices
+                for i in range(self.ne):
+                    s, t = self.get_edge(i)
+                    v_set = s.union(t)
+                    if all(v in vertices for v in v_set):
+                        edges.append(i)
+
+        # Copy vertices
+        for v in vertices:
+            g.add_vertex(v)
+            if v in self._vertex_attr:
+                v_attr = self.get_attr_vertex(v)
+                if len(v_attr) > 0:
+                    g._vertex_attr[v] = deepcopy(v_attr)
+
+        # Copy edges
+        for i in edges:
+            s, t = self.get_edge(i)
+            attr = deepcopy(self.get_attr_edge(i))
+            g.add_edge(s, t, **attr)
+
+        return g
+
     def reverse(self) -> "Graph":
         """Create a new graph and reverse the direction of all edges in the graph."""
         G = self.copy()

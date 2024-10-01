@@ -96,7 +96,7 @@ def _get_info() -> Dict[str, Dict]:
         cv = f"v{__version__} (up to date)"
     else:
         if latest:
-            cv = f"v{__version__} (latest: v{latest})"
+            cv = f"v{__version__} (latest stable: v{latest})"
         else:
             cv = f"v{__version__}"
     info["corneto_version"] = {

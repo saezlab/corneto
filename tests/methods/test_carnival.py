@@ -1,7 +1,20 @@
+import pytest
+
+from corneto.backend import Backend, CvxpyBackend, PicosBackend
 from corneto.methods import runVanillaCarnival
 
 
-def test_vanilla_carnival():
+@pytest.fixture(params=[CvxpyBackend])
+def backend(request):
+    opt: Backend = request.param()
+    if isinstance(opt, CvxpyBackend):
+        opt._default_solver = "SCIPY"
+    elif isinstance(opt, PicosBackend):
+        opt._default_solver = "gurobi"
+    return opt
+
+
+def test_vanilla_carnival(backend):
     pkn = [
         ("I1", 1, "N1"),
         ("N1", 1, "M1"),
@@ -12,7 +25,7 @@ def test_vanilla_carnival():
     ]
     measurements = {"M1": 1, "M2": 1}
     perturbations = {"I1": 1, "I2": 1}
-    p, Gf = runVanillaCarnival(perturbations, measurements, pkn)
+    p, Gf = runVanillaCarnival(perturbations, measurements, pkn, backend=backend)
     V = list(Gf.vertices)
     act = p.get_symbol("species_activated_c0").value
     inh = p.get_symbol("species_inhibited_c0").value

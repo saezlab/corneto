@@ -1,7 +1,20 @@
 import numpy as np
+import pytest
 
 import corneto as cn
+from corneto.backend import Backend, CvxpyBackend, PicosBackend
 from corneto.methods.signal.cellnopt_ilp import cellnoptILP
+
+
+# PICOS does not work
+@pytest.fixture(params=[CvxpyBackend, PicosBackend])
+def backend(request):
+    opt: Backend = request.param()
+    if isinstance(opt, CvxpyBackend):
+        opt._default_solver = "SCIPY"
+    elif isinstance(opt, PicosBackend):
+        opt._default_solver = "gurobi"
+    return opt
 
 
 def get_test_graph_1():
@@ -21,7 +34,7 @@ def get_test_graph_1():
     return G1
 
 
-def test_cellnoptILP_AND():
+def test_cellnoptILP_AND(backend):
     G1 = get_test_graph_1()
 
     # RAS is only active iff both EGF and TNFa are active -> we need to identify the AND gate
@@ -32,7 +45,9 @@ def test_cellnoptILP_AND():
         "exp3": {"input": {"EGF": 1, "TNFa": 1}, "output": {"Ras": 1}},
     }
 
-    P = cellnoptILP(G1, exp_list_G1_and, verbose=True, alpha_flow=0.001)
+    P = cellnoptILP(
+        G1, exp_list_G1_and, verbose=True, alpha_flow=0.001, backend=backend
+    )
     expected_edge_values = np.array(
         [
             [0.0, 1.0, 0.0, 1.0],
@@ -55,7 +70,7 @@ def test_cellnoptILP_AND():
             [0.0, -0.0, -0.0, 1.0],
         ]
     )
-
+    obj = sum([o.value for o in P.objectives])
     assert np.isclose(sum([o.value for o in P.objectives]), 0.006)
     assert np.isclose(P.expr.edge_activates.value, expected_edge_values).all()
     assert np.isclose(
@@ -63,7 +78,7 @@ def test_cellnoptILP_AND():
     ).all()
 
 
-def test_cellnoptILP_OR():
+def test_cellnoptILP_OR(backend):
     G1 = get_test_graph_1()
 
     # RAS is only active iff both EGF and TNFa are active -> we need to identify the AND gate
@@ -74,7 +89,7 @@ def test_cellnoptILP_OR():
         "exp3": {"input": {"EGF": 1, "TNFa": 1}, "output": {"Ras": 1}},
     }
 
-    P = cellnoptILP(G1, exp_list_G1_or, verbose=True, alpha_flow=0.001)
+    P = cellnoptILP(G1, exp_list_G1_or, verbose=True, alpha_flow=0.001, backend=backend)
     expected_edge_values = np.array(
         [
             [0.0, -0.0, 0.0, -0.0],

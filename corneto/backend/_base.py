@@ -1,5 +1,6 @@
 import abc
 import numbers
+from copy import copy as shallow_copy
 from numbers import Number
 from typing import Any, Callable, Dict, Iterable, List, Optional, Set, Tuple, Union
 
@@ -490,6 +491,22 @@ class ProblemDef:
     def get_symbols(self, *args) -> List[CSymbol]:
         return [self.get_symbol(n) for n in args]
 
+    def add_suffix(self, suffix: str, inplace: bool = False) -> "ProblemDef":
+        o = self
+        if not inplace:
+            o = self.copy()
+        obs = set()
+        for e in self._constraints + self._objectives:
+            s = getattr(e, "_proxy_symbols", {})
+            for x in s:
+                if hasattr(x, "_name"):
+                    if x not in obs:
+                        x._name = x._name + suffix
+                        obs.add(x)
+        expr = {k + suffix: v for k, v in self._expressions.items()}
+        o._expressions = expr
+        return o
+
     @property
     def constraints(self) -> List[CExpression]:
         return self._constraints
@@ -507,7 +524,7 @@ class ProblemDef:
         return self._direction
 
     def copy(self) -> "ProblemDef":
-        raise NotImplementedError()
+        return shallow_copy(self)
 
     def _add(self, other: Any, inplace: bool = False):
         if isinstance(other, ProblemDef):
@@ -896,8 +913,8 @@ class Backend(abc.ABC):
         indicator_negative_var_name: Optional[str] = None,
         acyclic_var_name: str = VAR_DAG,
         max_parents: Optional[Union[int, Dict[Any, int]]] = None,
-        vertex_lb_dist: Optional[np.ndarray] = None,
-        vertex_ub_dist: Optional[np.ndarray] = None,
+        vertex_lb_dist: Optional[List[Dict[Any, int]]] = None,
+        vertex_ub_dist: Optional[List[Dict[Any, int]]] = None,
     ) -> ProblemDef:
         """Create Acyclicity Constraint.
 
@@ -925,8 +942,6 @@ class Backend(abc.ABC):
             The maximum number of parents per node. If an integer is provided, the maximum
             number of parents is the same for all nodes. If a dictionary is provided, the
             maximum number of parents can be different for each node. Default is None.
-        vertex_lb_dist : Optional[np.ndarray], optional
-            The lower bound distribution of the vertices. Default is None.
 
         Returns:
         -------
@@ -985,7 +1000,6 @@ class Backend(abc.ABC):
             if In is not None:
                 In_i_order = In[:, i_order]
 
-            # These constraints are not compatible with hyperedges
             if Ip is not None:
                 # Get edges s->t that can have a positive flow
                 # check if Ip has ub field
@@ -1313,6 +1327,34 @@ class Backend(abc.ABC):
         Z_norm = Z / N
         And = self.Variable(varname, Z.shape, 0, 1, vartype=VarType.BINARY)
         return self.Problem([And <= Z_norm, And >= Z - N + 1])
+
+    def linear_xor(
+        self,
+        x: CExpression,
+        axis: Optional[int] = None,
+        varname="xor",
+        ignore_type=False,
+    ) -> ProblemDef:
+        # Check if the variable is binary, otherwise throw an error
+        if hasattr(x, "_vartype") and x._vartype != VarType.BINARY and not ignore_type:
+            raise ValueError(f"Variable x has type {x._vartype} instead of BINARY")
+        else:
+            for s in x._proxy_symbols:
+                if s._vartype != VarType.BINARY:
+                    # Show warning only
+                    LOGGER.warn(
+                        f"Variable {s.name} has type {s._vartype}, expression is assumed to be binary"
+                    )
+                    break
+        # Sum the binary variables along the specified axis
+        Z = x.sum(axis=axis)
+        # Create a new binary variable to represent the XOR result
+        Xor = self.Variable(varname, Z.shape, 0, 1, vartype=VarType.BINARY)
+        # Introduce an integer variable to model the floor division
+        K = self.Variable(varname + "_k", Z.shape, 0, None, vartype=VarType.INTEGER)
+        # Add the constraint that Z - 2*K - Xor == 0
+        constraints = [Z - 2 * K - Xor == 0]
+        return self.Problem(constraints)
 
     def vstack(self, arg_list: Iterable[CExpression]) -> CExpression:
         v = None

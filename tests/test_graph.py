@@ -324,8 +324,27 @@ def test_edge_subgraph():
     gs = g.edge_subgraph([0, 1, 4])
     assert gs.num_edges == 3
     assert gs.num_vertices == 6
+
+
+def test_edge_subgraph_attributes():
+    g = Graph(name="graph")
+    g.add_edge({1, 2}, {3, 4}, custom="e1")
+    g.add_edge(1, 1, type=EdgeType.UNDIRECTED, custom="e2")
+    g.add_edge(3, 1, custom="e3")
+    g.add_edge(4, 2, custom="e4")
+    g.add_edge({3}, {5, 6}, custom="e5")
+    g.add_edge(7, 8, custom="e6")
+    gs = g.edge_subgraph([0, 1, 4])
+    # Graph contains the graph attribute name graph
+    assert gs.get_graph_attributes().name == "graph"
+    # Selected edges contain the attributes
+    assert len(gs.get_attr_edges()) == 3
     assert "custom" in gs.get_attr_edge(0)
-    assert gs.get_attr_edge(0)["custom"] == "custom"
+    assert gs.get_attr_edge(0)["custom"] == "e1"
+    assert "custom" in gs.get_attr_edge(1)
+    assert gs.get_attr_edge(1)["custom"] == "e2"
+    assert "custom" in gs.get_attr_edge(2)
+    assert gs.get_attr_edge(2)["custom"] == "e5"
 
 
 def test_import_from_tuples():

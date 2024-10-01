@@ -10,12 +10,12 @@ from corneto.backend import Backend, CvxpyBackend, PicosBackend, VarType
 
 @pytest.fixture(params=[CvxpyBackend, PicosBackend])
 def backend(request):
-    K: Backend = request.param()
-    if isinstance(K, CvxpyBackend):
-        K._default_solver = "SCIPY"
-    elif isinstance(K, PicosBackend):
-        K._default_solver = "glpk"
-    return K
+    opt: Backend = request.param()
+    if isinstance(opt, CvxpyBackend):
+        opt._default_solver = "SCIPY"
+    elif isinstance(opt, PicosBackend):
+        opt._default_solver = "glpk"
+    return opt
 
 
 @pytest.fixture
@@ -232,8 +232,10 @@ def test_hstack_matrix(backend):
     z = x.hstack(y)
     assert z.shape == (2, 5)
 
-@pytest.mark.skip(reason="PICOS Backend fails on  this")
+
+# @pytest.mark.skip(reason="PICOS Backend fails on  this")
 def test_hstack_1d(backend):
+    # PICOS treats this as (5,1)
     x = backend.Variable("x", (5,))
     y = None
     for _ in range(5):
@@ -242,6 +244,15 @@ def test_hstack_1d(backend):
         else:
             y = y.hstack(x)
     assert y.shape == (25,)
+
+
+# Skip test for now
+# @pytest.mark.skip(reason="To be fixed")
+def test_hstack_2d_1d(backend):
+    x = backend.Variable("x", (5,))
+    y = backend.Variable("y", (1, 5))
+    with pytest.raises(Exception):
+        y.hstack(x)
 
 
 def test_hstack_rowvec_2d(backend):
@@ -260,14 +271,6 @@ def test_invalid_hstack_1d_2d(backend):
     y = backend.Variable("y", (1, 5))
     with pytest.raises(Exception):
         x.hstack(y)
-
-# Skip test for now
-@pytest.mark.skip(reason="To be fixed")
-def test_hstack_2d_1d(backend):
-    x = backend.Variable("x", (5,))
-    y = backend.Variable("y", (1, 5))
-    z = y.hstack(x)
-    assert z.shape == (1, 10)
 
 
 def test_hstack_left_vec_expression(backend):
@@ -493,6 +496,60 @@ def test_linearized_and_axis1(backend):
     assert np.isclose(np.sum(X[0, :].value), 3.0)
 
 
+def test_linearized_xor_axis0(backend):
+    P = backend.Problem()
+    X = backend.Variable("X", (2, 3), vartype=VarType.BINARY)
+    # Apply linear_xor along axis 0
+    P += backend.linear_xor(X, axis=0, varname="v_xor")
+    # Force the XOR of the first column to be 1 (odd number of ones)
+    P += P.expr.v_xor[0] == 1
+    # Objective: minimize the number of ones in the first column
+    P.add_objectives(sum(X[:, 0]))
+    P.solve()
+    # Retrieve the total number of ones in the first column
+    total = np.sum(X[:, 0].value)
+    # Check that the sum is odd and minimal
+    assert total % 2 == 1, f"Sum along axis 0 should be odd, got {total}"
+    assert np.isclose(total, 1.0), f"Sum along axis 0 should be minimal, got {total}"
+
+
+def test_linearized_xor_axis1(backend):
+    P = backend.Problem()
+    X = backend.Variable("X", (2, 3), vartype=VarType.BINARY)
+    # Apply linear_xor along axis 1
+    P += backend.linear_xor(X, axis=1, varname="v_xor")
+    # Force the XOR of the first row to be 1 (odd number of ones)
+    P += P.expr.v_xor[0] == 1
+    # Objective: minimize the number of ones in the first row
+    P.add_objectives(sum(X[0, :]))
+    P.solve()
+    # Retrieve the total number of ones in the first row
+    total = np.sum(X[0, :].value)
+    # Check that the sum is odd and minimal
+    assert total % 2 == 1, f"Sum along axis 1 should be odd, got {total}"
+    assert np.isclose(total, 1.0), f"Sum along axis 1 should be minimal, got {total}"
+
+
+def test_indexing_axis0(backend):
+    P = backend.Problem()
+    X = backend.Variable("X", (3, 4), vartype=VarType.BINARY)
+    idx = [0, 2]
+    P += X[idx, :] == 1
+    P.add_objectives(sum(sum(X[idx, :])))
+    P.solve()
+    assert np.isclose(np.sum(np.sum(X.value[idx, :])), 8.0)
+
+
+def test_indexing_axis1(backend):
+    P = backend.Problem()
+    X = backend.Variable("X", (3, 4), vartype=VarType.BINARY)
+    idx = [0, 2]
+    P += X[:, idx] == 1
+    P.add_objectives(sum(sum(X[:, idx])))
+    P.solve()
+    assert np.isclose(np.sum(np.sum(X.value[:, idx])), 6.0)
+
+
 def test_undirected_flow(backend):
     g = Graph()
     g.add_edges([((), "A"), ("A", "B"), ("A", "C"), ("B", "D"), ("C", "D"), ("D", ())])
@@ -502,6 +559,22 @@ def test_undirected_flow(backend):
     P.add_objectives(sum(P.expr.flow), weights=1)
     P.solve()
     assert np.isclose(P.objectives[0].value, 0)
+
+
+def test_complex_chaining_with_indexing(backend):
+    Ah = np.array([[1, 0, 1], [0, 1, 0], [1, 0, 1], [0, 1, 0]])
+    Int = np.array([[1, 0, 1], [0, 1, 0], [1, 0, 1], [0, 1, 0]])
+    V = backend.Variable("V", (4, 3))
+    idx = [0, 2]
+    # Matrix multiplication Ah.T (3x4) @ V (4x3) -> (3x3) matrix
+    # X is converted to a 2x3 matrix
+    I = Int[idx, :] < 1  # This creates issues in PICOS
+    X = (Ah.T @ V)[idx, :].multiply(I.astype(int))
+    P = backend.Problem()
+    P += X >= 0
+    P.add_objectives(sum(sum(X)))
+    P.solve()
+    assert np.isclose(np.sum(np.sum(X.value)), 0.0)
 
 
 def test_undirected_flow_unbounded(backend):

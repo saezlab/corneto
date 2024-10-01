@@ -41,9 +41,12 @@ def _infer_shape(c: Any):
         if hasattr(c, "_proxy_symbols"):
             for s in c._proxy_symbols:
                 # If there is some original symbol used in the expression
-                # with ndim 1, we assume the original shape was 1D.
+                # with ndim 1, and the current shape contains a dimension
+                # with a 1, then we assume the original shape was 1D.
                 s_shape = _get_shape(s)
                 if len(s_shape) == 1:
+                    if shape[0] == 1:
+                        return (shape[1],)
                     return (shape[0],)
     return shape
 
@@ -51,6 +54,10 @@ def _infer_shape(c: Any):
 class PicosExpression(CExpression):
     def __init__(self, expr: Any, symbols: Optional[Set["CSymbol"]] = None) -> None:
         super().__init__(expr, symbols)
+
+    @property
+    def shape(self) -> Tuple[int, ...]:
+        return _infer_shape(self)
 
     def _create_proxy_expr(
         self, expr: Any, symbols: Optional[Set["CSymbol"]] = None

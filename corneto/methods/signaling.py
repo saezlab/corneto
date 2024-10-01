@@ -196,8 +196,8 @@ def signflow_constraints(
         # TODO: Filter out reactions that has reactant or product in the non reachable set
         valid = np.zeros(g.num_edges, dtype=bool)
         valid[reachable] = True
-        has_reactant = np.sum(A < 0, axis=0) > 0
-        has_product = np.sum(A > 0, axis=0) > 0
+        has_reactant = (np.sum(A < 0, axis=0) > 0).astype(int)
+        has_product = (np.sum(A > 0, axis=0) > 0).astype(int)
         # has_reactant = np.sum(np.logical_and(rn.stoichiometry < 0, valid), axis=0) > 0
         # has_product = np.sum(np.logical_and(rn.stoichiometry > 0, valid), axis=0) > 0
         rids = np.flatnonzero(np.logical_and(has_reactant, has_product))
