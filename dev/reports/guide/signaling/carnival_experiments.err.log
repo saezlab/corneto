@@ -7,7 +7,7 @@ Traceback (most recent call last):
   File "/home/runner/.cache/pypoetry/virtualenvs/corneto-lU1q7eKj-py3.11/lib/python3.11/site-packages/jupyter_core/utils/__init__.py", line 165, in wrapped
     return loop.run_until_complete(inner)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.9/x64/lib/python3.11/asyncio/base_events.py", line 654, in run_until_complete
+  File "/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/asyncio/base_events.py", line 654, in run_until_complete
     return future.result()
            ^^^^^^^^^^^^^^^
   File "/home/runner/.cache/pypoetry/virtualenvs/corneto-lU1q7eKj-py3.11/lib/python3.11/site-packages/nbclient/client.py", line 709, in async_execute
@@ -32,34 +32,34 @@ Cell [0;32mIn[14], line 4[0m
 [1;32m      3[0m P [38;5;241m=[39m milp_carnival(G, {[38;5;124m'[39m[38;5;124mI2[39m[38;5;124m'[39m: [38;5;241m-[39m[38;5;241m1[39m, [38;5;124m'[39m[38;5;124mI1[39m[38;5;124m'[39m: [38;5;241m0[39m}, {[38;5;124m"[39m[38;5;124mT[39m[38;5;124m"[39m: [38;5;241m1[39m}, beta_weight[38;5;241m=[39m[38;5;241m0.01[39m)
 [0;32m----> 4[0m [43mP[49m[38;5;241;43m.[39;49m[43msolve[49m[43m([49m[43msolver[49m[38;5;241;43m=[39;49m[38;5;124;43m"[39;49m[38;5;124;43mGUROBI[39;49m[38;5;124;43m"[39;49m[43m,[49m[43m [49m[43mverbosity[49m[38;5;241;43m=[39;49m[38;5;241;43m1[39;49m[43m)[49m
 
-File [0;32m~/work/corneto/corneto/corneto/backend/_base.py:553[0m, in [0;36mProblemDef.solve[0;34m(self, solver, max_seconds, warm_start, verbosity, **options)[0m
-[1;32m    551[0m [38;5;28;01mif[39;00m [38;5;28mself[39m[38;5;241m.[39m_backend [38;5;129;01mis[39;00m [38;5;28;01mNone[39;00m:
-[1;32m    552[0m     [38;5;28;01mraise[39;00m [38;5;167;01mValueError[39;00m([38;5;124m"[39m[38;5;124mNo backend assigned.[39m[38;5;124m"[39m)
-[0;32m--> 553[0m [38;5;28;01mreturn[39;00m [38;5;28;43mself[39;49m[38;5;241;43m.[39;49m[43m_backend[49m[38;5;241;43m.[39;49m[43msolve[49m[43m([49m
-[1;32m    554[0m [43m    [49m[38;5;28;43mself[39;49m[43m,[49m
-[1;32m    555[0m [43m    [49m[43msolver[49m[38;5;241;43m=[39;49m[43msolver[49m[43m,[49m
-[1;32m    556[0m [43m    [49m[43mmax_seconds[49m[38;5;241;43m=[39;49m[43mmax_seconds[49m[43m,[49m
-[1;32m    557[0m [43m    [49m[43mwarm_start[49m[38;5;241;43m=[39;49m[43mwarm_start[49m[43m,[49m
-[1;32m    558[0m [43m    [49m[43mverbosity[49m[38;5;241;43m=[39;49m[43mverbosity[49m[43m,[49m
-[1;32m    559[0m [43m    [49m[38;5;241;43m*[39;49m[38;5;241;43m*[39;49m[43moptions[49m[43m,[49m
-[1;32m    560[0m [43m[49m[43m)[49m
+File [0;32m~/work/corneto/corneto/corneto/backend/_base.py:570[0m, in [0;36mProblemDef.solve[0;34m(self, solver, max_seconds, warm_start, verbosity, **options)[0m
+[1;32m    568[0m [38;5;28;01mif[39;00m [38;5;28mself[39m[38;5;241m.[39m_backend [38;5;129;01mis[39;00m [38;5;28;01mNone[39;00m:
+[1;32m    569[0m     [38;5;28;01mraise[39;00m [38;5;167;01mValueError[39;00m([38;5;124m"[39m[38;5;124mNo backend assigned.[39m[38;5;124m"[39m)
+[0;32m--> 570[0m [38;5;28;01mreturn[39;00m [38;5;28;43mself[39;49m[38;5;241;43m.[39;49m[43m_backend[49m[38;5;241;43m.[39;49m[43msolve[49m[43m([49m
+[1;32m    571[0m [43m    [49m[38;5;28;43mself[39;49m[43m,[49m
+[1;32m    572[0m [43m    [49m[43msolver[49m[38;5;241;43m=[39;49m[43msolver[49m[43m,[49m
+[1;32m    573[0m [43m    [49m[43mmax_seconds[49m[38;5;241;43m=[39;49m[43mmax_seconds[49m[43m,[49m
+[1;32m    574[0m [43m    [49m[43mwarm_start[49m[38;5;241;43m=[39;49m[43mwarm_start[49m[43m,[49m
+[1;32m    575[0m [43m    [49m[43mverbosity[49m[38;5;241;43m=[39;49m[43mverbosity[49m[43m,[49m
+[1;32m    576[0m [43m    [49m[38;5;241;43m*[39;49m[38;5;241;43m*[39;49m[43moptions[49m[43m,[49m
+[1;32m    577[0m [43m[49m[43m)[49m
 
-File [0;32m~/work/corneto/corneto/corneto/backend/_base.py:810[0m, in [0;36mBackend.solve[0;34m(self, p, solver, max_seconds, warm_start, verbosity, **options)[0m
-[1;32m    804[0m [38;5;28;01melse[39;00m:
-[1;32m    805[0m     o [38;5;241m=[39m (
-[1;32m    806[0m         p[38;5;241m.[39mweights[[38;5;241m0[39m] [38;5;241m*[39m p[38;5;241m.[39mobjectives[[38;5;241m0[39m]
-[1;32m    807[0m         [38;5;28;01mif[39;00m p[38;5;241m.[39mobjectives [38;5;129;01mand[39;00m p[38;5;241m.[39mweights[[38;5;241m0[39m] [38;5;241m!=[39m [38;5;241m0[39m
-[1;32m    808[0m         [38;5;28;01melse[39;00m [38;5;28;01mNone[39;00m
-[1;32m    809[0m     )
-[0;32m--> 810[0m [38;5;28;01mreturn[39;00m [38;5;28;43mself[39;49m[38;5;241;43m.[39;49m[43m_solve[49m[43m([49m
-[1;32m    811[0m [43m    [49m[43mp[49m[43m,[49m
-[1;32m    812[0m [43m    [49m[43mobjective[49m[38;5;241;43m=[39;49m[43mo[49m[43m,[49m
-[1;32m    813[0m [43m    [49m[43msolver[49m[38;5;241;43m=[39;49m[43msolver[49m[43m,[49m
-[1;32m    814[0m [43m    [49m[43mmax_seconds[49m[38;5;241;43m=[39;49m[43mmax_seconds[49m[43m,[49m
-[1;32m    815[0m [43m    [49m[43mwarm_start[49m[38;5;241;43m=[39;49m[43mwarm_start[49m[43m,[49m
-[1;32m    816[0m [43m    [49m[43mverbosity[49m[38;5;241;43m=[39;49m[43mverbosity[49m[43m,[49m
-[1;32m    817[0m [43m    [49m[38;5;241;43m*[39;49m[38;5;241;43m*[39;49m[43moptions[49m[43m,[49m
-[1;32m    818[0m [43m[49m[43m)[49m
+File [0;32m~/work/corneto/corneto/corneto/backend/_base.py:827[0m, in [0;36mBackend.solve[0;34m(self, p, solver, max_seconds, warm_start, verbosity, **options)[0m
+[1;32m    821[0m [38;5;28;01melse[39;00m:
+[1;32m    822[0m     o [38;5;241m=[39m (
+[1;32m    823[0m         p[38;5;241m.[39mweights[[38;5;241m0[39m] [38;5;241m*[39m p[38;5;241m.[39mobjectives[[38;5;241m0[39m]
+[1;32m    824[0m         [38;5;28;01mif[39;00m p[38;5;241m.[39mobjectives [38;5;129;01mand[39;00m p[38;5;241m.[39mweights[[38;5;241m0[39m] [38;5;241m!=[39m [38;5;241m0[39m
+[1;32m    825[0m         [38;5;28;01melse[39;00m [38;5;28;01mNone[39;00m
+[1;32m    826[0m     )
+[0;32m--> 827[0m [38;5;28;01mreturn[39;00m [38;5;28;43mself[39;49m[38;5;241;43m.[39;49m[43m_solve[49m[43m([49m
+[1;32m    828[0m [43m    [49m[43mp[49m[43m,[49m
+[1;32m    829[0m [43m    [49m[43mobjective[49m[38;5;241;43m=[39;49m[43mo[49m[43m,[49m
+[1;32m    830[0m [43m    [49m[43msolver[49m[38;5;241;43m=[39;49m[43msolver[49m[43m,[49m
+[1;32m    831[0m [43m    [49m[43mmax_seconds[49m[38;5;241;43m=[39;49m[43mmax_seconds[49m[43m,[49m
+[1;32m    832[0m [43m    [49m[43mwarm_start[49m[38;5;241;43m=[39;49m[43mwarm_start[49m[43m,[49m
+[1;32m    833[0m [43m    [49m[43mverbosity[49m[38;5;241;43m=[39;49m[43mverbosity[49m[43m,[49m
+[1;32m    834[0m [43m    [49m[38;5;241;43m*[39;49m[38;5;241;43m*[39;49m[43moptions[49m[43m,[49m
+[1;32m    835[0m [43m[49m[43m)[49m
 
 File [0;32m~/work/corneto/corneto/corneto/backend/_cvxpy_backend.py:162[0m, in [0;36mCvxpyBackend._solve[0;34m(self, p, objective, solver, max_seconds, warm_start, verbosity, **options)[0m
 [1;32m    160[0m solvers [38;5;241m=[39m cp[38;5;241m.[39minstalled_solvers()

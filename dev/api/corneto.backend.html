@@ -622,14 +622,14 @@ flow it implies order(A) &gt; order(B).</p></li>
 <li><p><strong>max_parents</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>Dict</em><em>[</em><em>Any</em><em>, </em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>]</em><em>]</em><em>]</em><em>, </em><em>optional</em>) – The maximum number of parents per node. If an integer is provided, the maximum
 number of parents is the same for all nodes. If a dictionary is provided, the
 maximum number of parents can be different for each node. Default is None.</p></li>
-<li><p><strong>vertex_lb_dist</strong> (<em>Optional</em><em>[</em><em>np.ndarray</em><em>]</em><em>, </em><em>optional</em>) – The lower bound distribution of the vertices. Default is None.</p></li>
 <li><p><strong>Returns</strong></p></li>
 <li><p><strong>-------</strong></p></li>
 <li><p><strong>ProblemDef</strong> – The problem definition with acyclic constraints.</p></li>
 <li><p><strong>Raises</strong></p></li>
 <li><p><strong>------</strong></p></li>
 <li><p><strong>NotImplementedError</strong> – If hyperedges are used.</p></li>
-<li><p><strong>vertex_ub_dist</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><em>ndarray</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>vertex_lb_dist</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.12)"><em>List</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.12)"><em>Dict</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><em>Any</em></a><em>, </em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>]</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>vertex_ub_dist</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.12)"><em>List</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.12)"><em>Dict</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><em>Any</em></a><em>, </em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>]</em><em>] </em><em>| </em><em>None</em>)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -746,6 +746,22 @@ maximum number of parents can be different for each node. Default is None.</p></
 <dl class="py method">
 <dt class="sig sig-object py" id="corneto.backend.Backend.linear_and">
 <span class="sig-name descname"><span class="pre">linear_and</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">varname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'and'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.backend.Backend.linear_and" title="Link to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProblemDef</span></code></span></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>x</strong> (<em>CExpression</em>)</p></li>
+<li><p><strong>axis</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.backend.Backend.linear_xor">
+<span class="sig-name descname"><span class="pre">linear_xor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">varname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'xor'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.backend.Backend.linear_xor" title="Link to this definition">#</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProblemDef</span></code></span></p>
@@ -1039,6 +1055,7 @@ Defaults to VarType.CONTINUOUS.</p></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.Backend.Xor"><code class="docutils literal notranslate"><span class="pre">Backend.Xor()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.Backend.linear_or"><code class="docutils literal notranslate"><span class="pre">Backend.linear_or()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.Backend.linear_and"><code class="docutils literal notranslate"><span class="pre">Backend.linear_and()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.Backend.linear_xor"><code class="docutils literal notranslate"><span class="pre">Backend.linear_xor()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.Backend.vstack"><code class="docutils literal notranslate"><span class="pre">Backend.vstack()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.Backend.hstack"><code class="docutils literal notranslate"><span class="pre">Backend.hstack()</span></code></a></li>
 </ul>
