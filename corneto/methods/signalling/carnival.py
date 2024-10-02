@@ -223,6 +223,7 @@ def create_carnival_problem(
     P += Einh[edges_with_head, :] <= sum_upstream_act + sum_upstream_inh
 
     # Set the perturbations for each vertex based on experimental inputs
+    """
     vertex_indexes = np.array(
         [G.V.index(v) for exp in experiment_list for v in experiment_list[exp]["input"]]
     )
@@ -234,12 +235,34 @@ def create_carnival_problem(
         ]
     )
     P += V[vertex_indexes, :] == perturbation_values[:, None]
+    """
+
+    all_inputs = set(
+        v for exp in experiment_list for v in experiment_list[exp]["input"]
+    )
 
     # For each experiment, set constraints and add error to the objective function
     for i, exp in enumerate(experiment_list):
         m_nodes = list(experiment_list[exp]["output"].keys())
         m_values = np.array(list(experiment_list[exp]["output"].values()))
         m_nodes_positions = [G.V.index(key) for key in m_nodes]
+        p_nodes = list(experiment_list[exp]["input"].keys())
+        p_values = list(experiment_list[exp]["input"].values())
+        p_nodes_positions = [G.V.index(key) for key in p_nodes]
+
+        P += V[p_nodes_positions, i] == p_values
+        # Make sure that in each condition, only the given perturbation can be active
+        # We need to take the incoming flow edges that are not part of the perturbation and block them
+        if len(experiment_list) > 1:
+            other_inputs = all_inputs - set(p_nodes)
+            other_input_edges = [
+                idx
+                for v in other_inputs
+                for (idx, _) in G.in_edges(v)
+                if len(G.get_edge(idx)[0]) == 0
+            ]
+            P += Eact[other_input_edges, i] == 0
+            P += Einh[other_input_edges, i] == 0
 
         error = create_signed_error_expression(
             P,
