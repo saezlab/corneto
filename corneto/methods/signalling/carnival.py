@@ -261,8 +261,9 @@ def create_carnival_problem(
                 for (idx, _) in G.in_edges(v)
                 if len(G.get_edge(idx)[0]) == 0
             ]
-            P += Eact[other_input_edges, i] == 0
-            P += Einh[other_input_edges, i] == 0
+            if len(other_input_edges) > 0:
+                P += Eact[other_input_edges, i] == 0
+                P += Einh[other_input_edges, i] == 0
 
         error = create_signed_error_expression(
             P,
