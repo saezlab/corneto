@@ -83,7 +83,7 @@ class FlowMethod(ABC):
             output_vertices = d.attributes.get("outputs", set())
             output_values = list(d.vertex_data.get(v, 0) for v in output_vertices)
             vertex_indexes = [graph.V.index(key) for key in output_vertices]
-            #error = self.elementwise_error()
+            # error = self.elementwise_error()
 
     # Getter for the graph
     @property

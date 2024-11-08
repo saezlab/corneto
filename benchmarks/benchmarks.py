@@ -1,11 +1,9 @@
 import random
-from copy import deepcopy
 
-from corneto._graph import Attributes, Graph
+from corneto._graph import Graph
 
 
 class TimeSuite:
-
     def setup(self):
         # Create a graph with at least 1000 edges
         self.g = Graph()
@@ -30,7 +28,7 @@ class TimeSuite:
 
     def time_add_edges(self):
         self.g = Graph()
-        edges = [(i, i+1) for i in range(1000)]
+        edges = [(i, i + 1) for i in range(1000)]
         self.g.add_edges(edges)
 
     def time_bfs(self):

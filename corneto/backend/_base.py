@@ -1,9 +1,9 @@
 import abc
 import numbers
+import warnings
 from copy import copy as shallow_copy
 from numbers import Number
 from typing import Any, Callable, Dict, Iterable, List, Optional, Set, Tuple, Union
-import warnings
 
 import numpy as np
 
@@ -1403,8 +1403,7 @@ class NoBackend(Backend):
         return False
 
     def __getattr__(self, name):
-        """
-        Intercept any attribute or method call that isn't already defined in the Backend class
+        """Intercept any attribute or method call that isn't already defined in the Backend class
         and raise a NotImplementedError.
         """
         if hasattr(super(), name):

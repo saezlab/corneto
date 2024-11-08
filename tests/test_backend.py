@@ -553,7 +553,7 @@ def test_indexing_axis1(backend):
 def test_zero_function(backend):
     assert backend.zero_function().value == 0
     # TODO: Fix this for picos, as it returns (1,1)
-    #assert backend.zero_function().shape == ()
+    # assert backend.zero_function().shape == ()
 
 
 def test_undirected_flow(backend):

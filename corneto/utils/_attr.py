@@ -12,6 +12,7 @@ class Attr(str, Enum):
         TARGET_ATTR: Represents the key for a target attribute.
         CUSTOM_ATTR: Represents the key for a custom attribute.
     """
+
     VALUE = "__value"
     EDGE_TYPE = "__edge_type"
     SOURCE_ATTR = "__source_attr"
@@ -35,7 +36,7 @@ class Attributes(dict):
 
         Args:
             __name (str): The name of the attribute to set.
-            __value (Any): The value to assign to the attribute. If the value is an instance 
+            __value (Any): The value to assign to the attribute. If the value is an instance
                            of `Attr`, its value is used.
 
         Raises:
@@ -69,7 +70,7 @@ class Attributes(dict):
 
         Args:
             key (Attr): The key for the attribute, represented as an `Attr` enum.
-            value (Any): The value to assign to the key. If the value is an enum, 
+            value (Any): The value to assign to the key. If the value is an enum,
                          its value is used.
         """
         v = value if not isinstance(value, Enum) else value.value
@@ -83,7 +84,7 @@ class Attributes(dict):
             value (Optional[Any]): The optional value to check for.
 
         Returns:
-            bool: `True` if the attribute exists and matches the value (if provided), 
+            bool: `True` if the attribute exists and matches the value (if provided),
                   otherwise `False`.
         """
         if value is None:
