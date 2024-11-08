@@ -120,3 +120,33 @@ def test_calculate_division():
 - **Coverage**: Aim for as much code coverage as possible to ensure that all code paths and scenarios are tested.
 - **Documentation**: Document what each test covers and any specific scenarios it is testing.
 - **Simplicity**: Keep tests simple and easy to understand. Complex tests can become a source of bugs themselves.
+
+
+## Generating the documentation
+
+This project uses Sphinx along with the PyData Sphinx theme to generate HTML documentation. We also use `myst-nb` to convert Jupyter notebooks into HTML pages.
+
+### Documentation for the current version
+
+To generate the HTML documentation for the current version of the project:
+
+```bash
+poetry run sphinx-build docs docs/_build/html
+```
+
+This command will build the documentation in the `docs/_build/html` directory, which you can open in a browser to view.
+
+### Documentation for all versions
+
+To generate the HTML documentation for all available versions of the project, use the following command:
+
+```bash
+poetry run sphinx-multiversion docs docs/_build/html
+```
+
+This will build documentation across multiple versions, allowing you to view historical and current documentation in the same structure. The output will also be located in `docs/_build/html`.
+
+### Additional notes
+
+- **`sphinx-multiversion`**: This command uses `sphinx-multiversion` to generate documentation for multiple versions of the project. Ensure you have `sphinx-multiversion` configured in `pyproject.toml` or the appropriate dependency file.
+- **`myst-nb`**: We use `myst-nb` to handle the conversion of Jupyter notebooks (`.ipynb` files) into HTML. If your contribution involves notebooks, make sure they render correctly in the generated documentation.
