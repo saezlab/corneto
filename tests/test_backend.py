@@ -550,6 +550,12 @@ def test_indexing_axis1(backend):
     assert np.isclose(np.sum(np.sum(X.value[:, idx])), 6.0)
 
 
+def test_zero_function(backend):
+    assert backend.zero_function().value == 0
+    # TODO: Fix this for picos, as it returns (1,1)
+    #assert backend.zero_function().shape == ()
+
+
 def test_undirected_flow(backend):
     g = Graph()
     g.add_edges([((), "A"), ("A", "B"), ("A", "C"), ("B", "D"), ("C", "D"), ("D", ())])

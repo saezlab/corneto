@@ -87,7 +87,6 @@ class PicosExpression(CExpression):
         if len(a_shape) == 1 and len(b_shape) == 1:
             a = a.reshaped((1, a_shape[0]))
             b = b.reshaped((1, b_shape[0]))
-            return a & b
         return a & b
 
     def _vstack(self, other: Any) -> Any:
@@ -174,6 +173,11 @@ class PicosBackend(Backend):
 
     def build(self, p: ProblemDef) -> Any:
         raise NotImplementedError()
+
+    def Constant(self, value: Any, name: Optional[str] = None) -> CSymbol:
+        name = name or _get_unique_name(prefix="const")
+        v = pc.Constant(name, value=value)
+        return PicosSymbol(v, name, shape=(), variable=False)
 
     def Variable(
         self,

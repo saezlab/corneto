@@ -504,7 +504,7 @@ class BaseGraph(abc.ABC):
             # Check if the object is able to produce a MIME bundle
             Gv._repr_mimebundle_()
             return Gv
-        except Exception as e:
+        except (OSError, Exception) as e:
             from corneto._settings import LOGGER
             from corneto._util import supports_html
 

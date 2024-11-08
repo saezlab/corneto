@@ -89,6 +89,11 @@ class CvxpyBackend(Backend):
     def available_solvers(self) -> List[str]:
         return cp.installed_solvers()
 
+    def Constant(self, value: Any, name: Optional[str] = None) -> CSymbol:
+        name = name or _get_unique_name(prefix="const")
+        v = cp.Constant(value, name=name)
+        return CvxpySymbol(v, name, shape=(), variable=False)
+
     def Variable(
         self,
         name: Optional[str] = None,

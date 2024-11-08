@@ -57,9 +57,10 @@ pytest = "^8.1.1"
 flake8 = "^7.0.0"
 pre-commit = "^3.7.0"
 pydocstyle = "^6.3.0"
+asv = "^0.6.4"
 
 [tool.poetry.extras]
-highs = ["cvxpy-base"]
+highs = ["cvxpy-base", "scipy"]
 picos = ["picos"]
 os = ["cvxpy-base", "scipy", "pyscipopt"]
 
@@ -69,6 +70,7 @@ fix = true
 [tool.ruff.lint]
 ignore-init-module-imports = true
 select = ["E", "F", "W", "I", "D", "RUF"]
+ignore = ["D101","D102"]
 
 [tool.ruff.lint.flake8-quotes]
 docstring-quotes = "double"

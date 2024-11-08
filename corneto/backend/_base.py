@@ -3,6 +3,7 @@ import numbers
 from copy import copy as shallow_copy
 from numbers import Number
 from typing import Any, Callable, Dict, Iterable, List, Optional, Set, Tuple, Union
+import warnings
 
 import numpy as np
 
@@ -728,6 +729,10 @@ class Backend(abc.ABC):
         raise NotImplementedError()
 
     @abc.abstractmethod
+    def Constant(self, value: Any, name: Optional[str] = None) -> CSymbol:
+        raise NotImplementedError()
+
+    @abc.abstractmethod
     def Variable(
         self,
         name: Optional[str] = None,
@@ -1236,6 +1241,12 @@ class Backend(abc.ABC):
         suffix_pos="_ipos",
         suffix_neg="_ineg",
     ) -> ProblemDef:
+        # SHow a deprecated
+        warnings.warn(
+            "The Indicators method is deprecated, use Indicator instead",
+            DeprecationWarning,
+        )
+
         # Get upper/lower bounds for flow variables
         constraints = []
         if not (positive or negative):
@@ -1270,7 +1281,10 @@ class Backend(abc.ABC):
         return self.Problem(constraints)
 
     def Xor(self, x: CExpression, y: CExpression, varname="_xor"):
-        # TODO: Generalize for matrices Xor(X,Y)
+        # Deprecated
+        warnings.warn(
+            "The Xor method is deprecated, use linear_xor instead", DeprecationWarning
+        )
         if isinstance(x, CSymbol) and x._vartype != VarType.BINARY:
             raise ValueError(f"Variable x has type {x._vartype} instead of BINARY")
         if isinstance(y, CSymbol) and y._vartype != VarType.BINARY:
@@ -1374,44 +1388,27 @@ class Backend(abc.ABC):
                 h = h.hstack(a)
         return h
 
+    def zero_function(self) -> CExpression:
+        return self.Constant(0).sum()
+
 
 class NoBackend(Backend):
     def __init__(self) -> None:
         self._error = (
             "No backend found. You can install one of the "
-            "supported backend by `pip install cvxpy` or `pip install picos`."
+            "supported backends by `pip install cvxpy` or `pip install picos`."
         )
 
     def __bool__(self) -> bool:
         return False
 
-    def _load(self):
-        return None
-
-    def available_solvers(self):
-        return []
-
-    def Variable(
-        self,
-        *args,
-        **kwargs,
-    ) -> CSymbol:
-        raise NotImplementedError(self._error)
-
-    def _solve(
-        self,
-        *args,
-        **kwargs,
-    ):
-        raise NotImplementedError(self._error)
-
-    def Constant(self) -> CSymbol:
-        raise NotImplementedError(self._error)
-
-    def Parameter(self) -> CSymbol:
-        raise NotImplementedError(self._error)
-
-    def build(self, p: ProblemDef) -> Any:
+    def __getattr__(self, name):
+        """
+        Intercept any attribute or method call that isn't already defined in the Backend class
+        and raise a NotImplementedError.
+        """
+        if hasattr(super(), name):
+            return super().__getattr__(name)
         raise NotImplementedError(self._error)
 
 
