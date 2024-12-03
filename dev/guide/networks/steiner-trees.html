@@ -52,7 +52,7 @@
     <script src="../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
     <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/hoverxref.js"></script>
     <script src="../../_static/js/tooltipster.bundle.min.js"></script>
@@ -485,10 +485,116 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Cost: 45
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ValueError</span><span class="g g-Whitespace">                                </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">line</span> <span class="mi">4</span>
+<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="c1"># Select 10 random vertices from the networkx graph as terminal nodes:</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">terminals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">random_graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="ne">----&gt; </span><span class="mi">4</span> <span class="n">stree</span> <span class="o">=</span> <span class="n">steiner_tree</span><span class="p">(</span><span class="n">random_graph</span><span class="p">,</span> <span class="n">terminals</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="n">total_weight</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">random_graph</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">v</span><span class="p">][</span><span class="s2">&quot;weight&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">stree</span><span class="o">.</span><span class="n">edges</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">6</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cost:&quot;</span><span class="p">,</span> <span class="n">total_weight</span><span class="p">)</span>
+
+<span class="nn">File ~/.cache/pypoetry/virtualenvs/corneto-lU1q7eKj-py3.11/lib/python3.11/site-packages/networkx/utils/decorators.py:788,</span> in <span class="ni">argmap.__call__.&lt;locals&gt;.func</span><span class="nt">(_argmap__wrapper, *args, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">787</span> <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">__wrapper</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="ne">--&gt; </span><span class="mi">788</span>     <span class="k">return</span> <span class="n">argmap</span><span class="o">.</span><span class="n">_lazy_compile</span><span class="p">(</span><span class="n">__wrapper</span><span class="p">)(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<span class="nn">File &lt;class &#39;networkx.utils.decorators.argmap&#39;&gt; compilation 18:4,</span> in <span class="ni">argmap_steiner_tree_14</span><span class="nt">(G, terminal_nodes, weight, method, backend, **backend_kwargs)</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="kn">import</span> <span class="nn">collections</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="kn">import</span> <span class="nn">gzip</span>
+<span class="ne">----&gt; </span><span class="mi">4</span> <span class="kn">import</span> <span class="nn">inspect</span>
+<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="kn">import</span> <span class="nn">itertools</span>
+<span class="g g-Whitespace">      </span><span class="mi">6</span> <span class="kn">import</span> <span class="nn">re</span>
+
+<span class="nn">File ~/.cache/pypoetry/virtualenvs/corneto-lU1q7eKj-py3.11/lib/python3.11/site-packages/networkx/utils/backends.py:967,</span> in <span class="ni">_dispatchable.__call__</span><span class="nt">(self, backend, *args, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">965</span>     <span class="k">if</span> <span class="n">backend</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">backend</span> <span class="o">!=</span> <span class="s2">&quot;networkx&quot;</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">966</span>         <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">backend</span><span class="si">}</span><span class="s2">&#39; backend is not installed&quot;</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">967</span>     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">orig_func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">969</span> <span class="c1"># Use `backend_name` in this function instead of `backend`.</span>
+<span class="g g-Whitespace">    </span><span class="mi">970</span> <span class="c1"># This is purely for aesthetics and to make it easier to search for this</span>
+<span class="g g-Whitespace">    </span><span class="mi">971</span> <span class="c1"># variable since &quot;backend&quot; is used in many comments and log/error messages.</span>
+<span class="g g-Whitespace">    </span><span class="mi">972</span> <span class="n">backend_name</span> <span class="o">=</span> <span class="n">backend</span>
+
+<span class="nn">File ~/.cache/pypoetry/virtualenvs/corneto-lU1q7eKj-py3.11/lib/python3.11/site-packages/networkx/algorithms/approximation/steinertree.py:224,</span> in <span class="ni">steiner_tree</span><span class="nt">(G, terminal_nodes, weight, method)</span>
+<span class="g g-Whitespace">    </span><span class="mi">221</span> <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">222</span>     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2"> is not a valid choice for an algorithm.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+<span class="ne">--&gt; </span><span class="mi">224</span> <span class="n">edges</span> <span class="o">=</span> <span class="n">algo</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">terminal_nodes</span><span class="p">,</span> <span class="n">weight</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">225</span> <span class="c1"># For multigraph we should add the minimal weight edge keys</span>
+<span class="g g-Whitespace">    </span><span class="mi">226</span> <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">is_multigraph</span><span class="p">():</span>
+
+<span class="nn">File ~/.cache/pypoetry/virtualenvs/corneto-lU1q7eKj-py3.11/lib/python3.11/site-packages/networkx/algorithms/approximation/steinertree.py:51,</span> in <span class="ni">_mehlhorn_steiner_tree</span><span class="nt">(G, terminal_nodes, weight)</span>
+<span class="g g-Whitespace">     </span><span class="mi">50</span> <span class="k">def</span> <span class="nf">_mehlhorn_steiner_tree</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">terminal_nodes</span><span class="p">,</span> <span class="n">weight</span><span class="p">):</span>
+<span class="ne">---&gt; </span><span class="mi">51</span>     <span class="n">paths</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">multi_source_dijkstra_path</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">terminal_nodes</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">53</span>     <span class="n">d_1</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="g g-Whitespace">     </span><span class="mi">54</span>     <span class="n">s</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="nn">File ~/.cache/pypoetry/virtualenvs/corneto-lU1q7eKj-py3.11/lib/python3.11/site-packages/networkx/utils/decorators.py:788,</span> in <span class="ni">argmap.__call__.&lt;locals&gt;.func</span><span class="nt">(_argmap__wrapper, *args, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">787</span> <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">__wrapper</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="ne">--&gt; </span><span class="mi">788</span>     <span class="k">return</span> <span class="n">argmap</span><span class="o">.</span><span class="n">_lazy_compile</span><span class="p">(</span><span class="n">__wrapper</span><span class="p">)(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<span class="nn">File &lt;class &#39;networkx.utils.decorators.argmap&#39;&gt; compilation 22:3,</span> in <span class="ni">argmap_multi_source_dijkstra_path_19</span><span class="nt">(G, sources, cutoff, weight, backend, **backend_kwargs)</span>
+<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="kn">import</span> <span class="nn">bz2</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="kn">import</span> <span class="nn">collections</span>
+<span class="ne">----&gt; </span><span class="mi">3</span> <span class="kn">import</span> <span class="nn">gzip</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="kn">import</span> <span class="nn">inspect</span>
+<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="kn">import</span> <span class="nn">itertools</span>
+
+<span class="nn">File ~/.cache/pypoetry/virtualenvs/corneto-lU1q7eKj-py3.11/lib/python3.11/site-packages/networkx/utils/backends.py:967,</span> in <span class="ni">_dispatchable.__call__</span><span class="nt">(self, backend, *args, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">965</span>     <span class="k">if</span> <span class="n">backend</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">backend</span> <span class="o">!=</span> <span class="s2">&quot;networkx&quot;</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">966</span>         <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">backend</span><span class="si">}</span><span class="s2">&#39; backend is not installed&quot;</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">967</span>     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">orig_func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">969</span> <span class="c1"># Use `backend_name` in this function instead of `backend`.</span>
+<span class="g g-Whitespace">    </span><span class="mi">970</span> <span class="c1"># This is purely for aesthetics and to make it easier to search for this</span>
+<span class="g g-Whitespace">    </span><span class="mi">971</span> <span class="c1"># variable since &quot;backend&quot; is used in many comments and log/error messages.</span>
+<span class="g g-Whitespace">    </span><span class="mi">972</span> <span class="n">backend_name</span> <span class="o">=</span> <span class="n">backend</span>
+
+<span class="nn">File ~/.cache/pypoetry/virtualenvs/corneto-lU1q7eKj-py3.11/lib/python3.11/site-packages/networkx/algorithms/shortest_paths/weighted.py:564,</span> in <span class="ni">multi_source_dijkstra_path</span><span class="nt">(G, sources, cutoff, weight)</span>
+<span class="g g-Whitespace">    </span><span class="mi">494</span> <span class="nd">@nx</span><span class="o">.</span><span class="n">_dispatchable</span><span class="p">(</span><span class="n">edge_attrs</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">495</span> <span class="k">def</span> <span class="nf">multi_source_dijkstra_path</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">sources</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">):</span>
+<span class="g g-Whitespace">    </span><span class="mi">496</span><span class="w">     </span><span class="sd">&quot;&quot;&quot;Find shortest weighted paths in G from a given set of source</span>
+<span class="g g-Whitespace">    </span><span class="mi">497</span><span class="sd">     nodes.</span>
+<span class="g g-Whitespace">    </span><span class="mi">498</span><span class="sd"> </span>
+<span class="sd">   (...)</span>
+<span class="g g-Whitespace">    </span><span class="mi">562</span><span class="sd"> </span>
+<span class="g g-Whitespace">    </span><span class="mi">563</span><span class="sd">     &quot;&quot;&quot;</span>
+<span class="ne">--&gt; </span><span class="mi">564</span>     <span class="n">length</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="n">multi_source_dijkstra</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">sources</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="n">cutoff</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">weight</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">565</span>     <span class="k">return</span> <span class="n">path</span>
+
+<span class="nn">File ~/.cache/pypoetry/virtualenvs/corneto-lU1q7eKj-py3.11/lib/python3.11/site-packages/networkx/utils/decorators.py:788,</span> in <span class="ni">argmap.__call__.&lt;locals&gt;.func</span><span class="nt">(_argmap__wrapper, *args, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">787</span> <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">__wrapper</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="ne">--&gt; </span><span class="mi">788</span>     <span class="k">return</span> <span class="n">argmap</span><span class="o">.</span><span class="n">_lazy_compile</span><span class="p">(</span><span class="n">__wrapper</span><span class="p">)(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<span class="nn">File &lt;class &#39;networkx.utils.decorators.argmap&#39;&gt; compilation 26:3,</span> in <span class="ni">argmap_multi_source_dijkstra_23</span><span class="nt">(G, sources, target, cutoff, weight, backend, **backend_kwargs)</span>
+<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="kn">import</span> <span class="nn">bz2</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="kn">import</span> <span class="nn">collections</span>
+<span class="ne">----&gt; </span><span class="mi">3</span> <span class="kn">import</span> <span class="nn">gzip</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="kn">import</span> <span class="nn">inspect</span>
+<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="kn">import</span> <span class="nn">itertools</span>
+
+<span class="nn">File ~/.cache/pypoetry/virtualenvs/corneto-lU1q7eKj-py3.11/lib/python3.11/site-packages/networkx/utils/backends.py:967,</span> in <span class="ni">_dispatchable.__call__</span><span class="nt">(self, backend, *args, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">965</span>     <span class="k">if</span> <span class="n">backend</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">backend</span> <span class="o">!=</span> <span class="s2">&quot;networkx&quot;</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">966</span>         <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">backend</span><span class="si">}</span><span class="s2">&#39; backend is not installed&quot;</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">967</span>     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">orig_func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">969</span> <span class="c1"># Use `backend_name` in this function instead of `backend`.</span>
+<span class="g g-Whitespace">    </span><span class="mi">970</span> <span class="c1"># This is purely for aesthetics and to make it easier to search for this</span>
+<span class="g g-Whitespace">    </span><span class="mi">971</span> <span class="c1"># variable since &quot;backend&quot; is used in many comments and log/error messages.</span>
+<span class="g g-Whitespace">    </span><span class="mi">972</span> <span class="n">backend_name</span> <span class="o">=</span> <span class="n">backend</span>
+
+<span class="nn">File ~/.cache/pypoetry/virtualenvs/corneto-lU1q7eKj-py3.11/lib/python3.11/site-packages/networkx/algorithms/shortest_paths/weighted.py:750,</span> in <span class="ni">multi_source_dijkstra</span><span class="nt">(G, sources, target, cutoff, weight)</span>
+<span class="g g-Whitespace">    </span><span class="mi">650</span> <span class="nd">@nx</span><span class="o">.</span><span class="n">_dispatchable</span><span class="p">(</span><span class="n">edge_attrs</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">651</span> <span class="k">def</span> <span class="nf">multi_source_dijkstra</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">sources</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">):</span>
+<span class="g g-Whitespace">    </span><span class="mi">652</span><span class="w">     </span><span class="sd">&quot;&quot;&quot;Find shortest weighted paths and lengths from a given set of</span>
+<span class="g g-Whitespace">    </span><span class="mi">653</span><span class="sd">     source nodes.</span>
+<span class="g g-Whitespace">    </span><span class="mi">654</span><span class="sd"> </span>
+<span class="sd">   (...)</span>
+<span class="g g-Whitespace">    </span><span class="mi">748</span><span class="sd"> </span>
+<span class="g g-Whitespace">    </span><span class="mi">749</span><span class="sd">     &quot;&quot;&quot;</span>
+<span class="ne">--&gt; </span><span class="mi">750</span>     <span class="k">if</span> <span class="ow">not</span> <span class="n">sources</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">751</span>         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;sources must not be empty&quot;</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">752</span>     <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">sources</span><span class="p">:</span>
+
+<span class="ne">ValueError</span>: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
 </pre></div>
 </div>
-<img alt="../../_images/e055927ec90fc8aba8b9cb00474277bc47e10a172486f1223670e3944bda126b.png" src="../../_images/e055927ec90fc8aba8b9cb00474277bc47e10a172486f1223670e3944bda126b.png" />
 </div>
 </div>
 <p>We need to check if the solution is the optimal one or not. <strong>Since we’ve used an heuristic (but fast) method, we don’t have any proof about optimality</strong>. We will see now how CORNETO can be used to get a better solution (which is also the optimal). Due to CORNETO’s exact modeling of the problem, and the use of advanced mathematical solvers, we can not only achieve a solution superior to that of NetworkX, but also have the guarantees that the solution is optimal and no better network exists.</p>
@@ -513,7 +619,7 @@
             </td>
             <td>
             <table>
-                <tr><td>Installed version:</td><td style='text-align:left'>v1.0.0.dev1 (latest stable: v1.0.0-alpha)</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.5.3, PICOS v2.5.1</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CLARABEL, CVXOPT, ECOS, ECOS_BB, GLPK, GLPK_MI, OSQP, SCIP, SCIPY, SCS</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.3</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href=https://github.com/saezlab/corneto>https://github.com/saezlab/corneto</a></td></tr>
+                <tr><td>Installed version:</td><td style='text-align:left'>v1.0.0.dev0 (up to date)</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.5.1, PICOS v2.4.17</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CLARABEL, CVXOPT, ECOS, ECOS_BB, GLPK, GLPK_MI, GUROBI, OSQP, SCIP, SCIPY, SCS</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.3</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href=https://github.com/saezlab/corneto>https://github.com/saezlab/corneto</a></td></tr>
             </table>
             </td>
         </tr>
@@ -580,27 +686,27 @@
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>===============================================================================
                                      CVXPY                                     
-                                     v1.5.3                                    
+                                     v1.5.1                                    
 ===============================================================================
-(CVXPY) Nov 08 04:02:39 PM: Your problem has 310 variables, 680 constraints, and 0 parameters.
-(CVXPY) Nov 08 04:02:39 PM: It is compliant with the following grammars: DCP, DQCP
-(CVXPY) Nov 08 04:02:39 PM: (If you need to solve this problem multiple times, but with different data, consider using parameters.)
-(CVXPY) Nov 08 04:02:39 PM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
-(CVXPY) Nov 08 04:02:39 PM: Your problem is compiled with the CPP canonicalization backend.
+(CVXPY) May 14 09:33:51 PM: Your problem has 310 variables, 680 constraints, and 0 parameters.
+(CVXPY) May 14 09:33:51 PM: It is compliant with the following grammars: DCP, DQCP
+(CVXPY) May 14 09:33:51 PM: (If you need to solve this problem multiple times, but with different data, consider using parameters.)
+(CVXPY) May 14 09:33:51 PM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
+(CVXPY) May 14 09:33:51 PM: Your problem is compiled with the CPP canonicalization backend.
 -------------------------------------------------------------------------------
                                   Compilation                                  
 -------------------------------------------------------------------------------
-(CVXPY) Nov 08 04:02:39 PM: Compiling problem (target solver=SCIP).
-(CVXPY) Nov 08 04:02:39 PM: Reduction chain: Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; SCIP
-(CVXPY) Nov 08 04:02:39 PM: Applying reduction Dcp2Cone
-(CVXPY) Nov 08 04:02:39 PM: Applying reduction CvxAttr2Constr
-(CVXPY) Nov 08 04:02:39 PM: Applying reduction ConeMatrixStuffing
-(CVXPY) Nov 08 04:02:39 PM: Applying reduction SCIP
-(CVXPY) Nov 08 04:02:39 PM: Finished problem compilation (took 1.346e-02 seconds).
+(CVXPY) May 14 09:33:51 PM: Compiling problem (target solver=SCIP).
+(CVXPY) May 14 09:33:51 PM: Reduction chain: Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; SCIP
+(CVXPY) May 14 09:33:51 PM: Applying reduction Dcp2Cone
+(CVXPY) May 14 09:33:52 PM: Applying reduction CvxAttr2Constr
+(CVXPY) May 14 09:33:52 PM: Applying reduction ConeMatrixStuffing
+(CVXPY) May 14 09:33:52 PM: Applying reduction SCIP
+(CVXPY) May 14 09:33:52 PM: Finished problem compilation (took 4.779e-02 seconds).
 -------------------------------------------------------------------------------
                                 Numerical solver                               
 -------------------------------------------------------------------------------
-(CVXPY) Nov 08 04:02:39 PM: Invoking solver SCIP  to obtain a solution.
+(CVXPY) May 14 09:33:52 PM: Invoking solver SCIP  to obtain a solution.
 presolving:
 (round 1, fast)       13 del vars, 342 del conss, 0 add conss, 315 chg bounds, 0 chg sides, 0 chg coeffs, 0 upgd conss, 0 impls, 0 clqs
 (round 2, fast)       22 del vars, 342 del conss, 0 add conss, 315 chg bounds, 0 chg sides, 0 chg coeffs, 0 upgd conss, 0 impls, 0 clqs
@@ -629,141 +735,158 @@ Presolving Time: 0.00
  time | node  | left  |LP iter|LP it/n|mem/heur|mdpt |vars |cons |rows |cuts |sepa|confs|strbr|  dualbound   | primalbound  |  gap   | compl. 
 p 0.0s|     1 |     0 |   115 |     - |   locks|   0 | 288 | 339 | 339 |   0 |  0 |   0 |   0 | 0.000000e+00 | 6.870000e+02 |    Inf | unknown
 i 0.0s|     1 |     0 |   115 |     - |  oneopt|   0 | 288 | 339 | 339 |   0 |  0 |   0 |   0 | 0.000000e+00 | 6.050000e+02 |    Inf | unknown
-  0.0s|     1 |     0 |   497 |     - |  6410k |   0 | 288 | 339 | 339 |   0 |  0 |   0 |   0 | 8.181818e+00 | 6.050000e+02 |7294.44%| unknown
+  0.0s|     1 |     0 |   497 |     - |  6409k |   0 | 288 | 339 | 339 |   0 |  0 |   0 |   0 | 8.181818e+00 | 6.050000e+02 |7294.44%| unknown
 r 0.0s|     1 |     0 |   497 |     - |simplero|   0 | 288 | 339 | 339 |   0 |  0 |   0 |   0 | 8.181818e+00 | 5.300000e+01 | 547.78%| unknown
-  0.0s|     1 |     0 |   571 |     - |  6655k |   0 | 288 | 339 | 346 |   7 |  1 |   0 |   0 | 2.345455e+01 | 5.300000e+01 | 125.97%| unknown
-  0.0s|     1 |     0 |   639 |     - |  6750k |   0 | 288 | 339 | 352 |  13 |  2 |   0 |   0 | 2.772727e+01 | 5.300000e+01 |  91.15%| unknown
-  0.0s|     1 |     0 |   677 |     - |  6908k |   0 | 288 | 339 | 357 |  18 |  3 |   0 |   0 | 2.854545e+01 | 5.300000e+01 |  85.67%| unknown
-  0.0s|     1 |     0 |   741 |     - |  7030k |   0 | 288 | 339 | 363 |  24 |  4 |   0 |   0 | 2.886860e+01 | 5.300000e+01 |  83.59%| unknown
-  0.0s|     1 |     0 |   797 |     - |  7241k |   0 | 288 | 339 | 368 |  29 |  5 |   0 |   0 | 2.929293e+01 | 5.300000e+01 |  80.93%| unknown
-  0.0s|     1 |     0 |   908 |     - |  7448k |   0 | 288 | 339 | 372 |  33 |  6 |   0 |   0 | 3.044215e+01 | 5.300000e+01 |  74.10%| unknown
-  0.0s|     1 |     0 |   981 |     - |  7657k |   0 | 288 | 339 | 377 |  38 |  7 |   0 |   0 | 3.086909e+01 | 5.300000e+01 |  71.69%| unknown
-  0.0s|     1 |     0 |  1082 |     - |  7829k |   0 | 288 | 339 | 383 |  44 |  8 |   0 |   0 | 3.150000e+01 | 5.300000e+01 |  68.25%| unknown
-  0.0s|     1 |     0 |  1166 |     - |  8066k |   0 | 288 | 339 | 387 |  48 |  9 |   0 |   0 | 3.212121e+01 | 5.300000e+01 |  65.00%| unknown
-  0.1s|     1 |     0 |  1207 |     - |  8438k |   0 | 288 | 339 | 389 |  50 | 10 |   0 |   0 | 3.276923e+01 | 5.300000e+01 |  61.74%| unknown
-  0.1s|     1 |     0 |  1240 |     - |  8483k |   0 | 288 | 339 | 393 |  54 | 11 |   0 |   0 | 3.281239e+01 | 5.300000e+01 |  61.52%| unknown
+  0.0s|     1 |     0 |   571 |     - |  6654k |   0 | 288 | 339 | 346 |   7 |  1 |   0 |   0 | 2.345455e+01 | 5.300000e+01 | 125.97%| unknown
+  0.0s|     1 |     0 |   639 |     - |  6749k |   0 | 288 | 339 | 352 |  13 |  2 |   0 |   0 | 2.772727e+01 | 5.300000e+01 |  91.15%| unknown
+  0.0s|     1 |     0 |   677 |     - |  6907k |   0 | 288 | 339 | 357 |  18 |  3 |   0 |   0 | 2.854545e+01 | 5.300000e+01 |  85.67%| unknown
+  0.0s|     1 |     0 |   741 |     - |  7029k |   0 | 288 | 339 | 363 |  24 |  4 |   0 |   0 | 2.886860e+01 | 5.300000e+01 |  83.59%| unknown
+  0.0s|     1 |     0 |   797 |     - |  7240k |   0 | 288 | 339 | 368 |  29 |  5 |   0 |   0 | 2.929293e+01 | 5.300000e+01 |  80.93%| unknown
+  0.0s|     1 |     0 |   908 |     - |  7447k |   0 | 288 | 339 | 372 |  33 |  6 |   0 |   0 | 3.044215e+01 | 5.300000e+01 |  74.10%| unknown
+  0.0s|     1 |     0 |   981 |     - |  7656k |   0 | 288 | 339 | 377 |  38 |  7 |   0 |   0 | 3.086909e+01 | 5.300000e+01 |  71.69%| unknown
+  0.0s|     1 |     0 |  1082 |     - |  7828k |   0 | 288 | 339 | 383 |  44 |  8 |   0 |   0 | 3.150000e+01 | 5.300000e+01 |  68.25%| unknown
+  0.0s|     1 |     0 |  1166 |     - |  8065k |   0 | 288 | 339 | 387 |  48 |  9 |   0 |   0 | 3.212121e+01 | 5.300000e+01 |  65.00%| unknown
+  0.0s|     1 |     0 |  1207 |     - |  8437k |   0 | 288 | 339 | 389 |  50 | 10 |   0 |   0 | 3.276923e+01 | 5.300000e+01 |  61.74%| unknown
+  0.0s|     1 |     0 |  1240 |     - |  8482k |   0 | 288 | 339 | 393 |  54 | 11 |   0 |   0 | 3.281239e+01 | 5.300000e+01 |  61.52%| unknown
  time | node  | left  |LP iter|LP it/n|mem/heur|mdpt |vars |cons |rows |cuts |sepa|confs|strbr|  dualbound   | primalbound  |  gap   | compl. 
-  0.1s|     1 |     0 |  1279 |     - |  8528k |   0 | 288 | 339 | 399 |  60 | 12 |   0 |   0 | 3.282571e+01 | 5.300000e+01 |  61.46%| unknown
-  0.1s|     1 |     0 |  1330 |     - |  8869k |   0 | 288 | 339 | 403 |  64 | 13 |   0 |   0 | 3.285455e+01 | 5.300000e+01 |  61.32%| unknown
-  0.1s|     1 |     0 |  1435 |     - |  8970k |   0 | 288 | 339 | 407 |  68 | 14 |   0 |   0 | 3.293114e+01 | 5.300000e+01 |  60.94%| unknown
-  0.1s|     1 |     0 |  1452 |     - |  9018k |   0 | 288 | 339 | 411 |  72 | 15 |   0 |   0 | 3.293339e+01 | 5.300000e+01 |  60.93%| unknown
-  0.1s|     1 |     0 |  1478 |     - |  9080k |   0 | 288 | 339 | 408 |  76 | 16 |   0 |   0 | 3.295789e+01 | 5.300000e+01 |  60.81%| unknown
-  0.1s|     1 |     0 |  1490 |     - |  9162k |   0 | 288 | 339 | 411 |  79 | 17 |   0 |   0 | 3.298752e+01 | 5.300000e+01 |  60.67%| unknown
-  0.1s|     1 |     0 |  1505 |     - |  9407k |   0 | 288 | 339 | 414 |  82 | 18 |   0 |   0 | 3.302375e+01 | 5.300000e+01 |  60.49%| unknown
-  0.1s|     1 |     0 |  1509 |     - |  9452k |   0 | 288 | 339 | 416 |  84 | 19 |   0 |   0 | 3.303714e+01 | 5.300000e+01 |  60.43%| unknown
-  0.1s|     1 |     0 |  1522 |     - |  9606k |   0 | 288 | 339 | 419 |  87 | 20 |   0 |   0 | 3.304510e+01 | 5.300000e+01 |  60.39%| unknown
-  0.1s|     1 |     0 |  1542 |     - |  9739k |   0 | 288 | 339 | 422 |  90 | 21 |   0 |   0 | 3.306189e+01 | 5.300000e+01 |  60.31%| unknown
-  0.1s|     1 |     0 |  1564 |     - |  9753k |   0 | 288 | 339 | 410 |  93 | 22 |   0 |   0 | 3.308676e+01 | 5.300000e+01 |  60.18%| unknown
-  0.1s|     1 |     0 |  1603 |     - |  9761k |   0 | 288 | 339 | 413 |  96 | 23 |   0 |   0 | 3.313949e+01 | 5.300000e+01 |  59.93%| unknown
-  0.2s|     1 |     0 |  1638 |     - |  9832k |   0 | 288 | 339 | 415 |  98 | 24 |   0 |   0 | 3.316628e+01 | 5.300000e+01 |  59.80%| unknown
-  0.2s|     1 |     0 |  1667 |     - |  9855k |   0 | 288 | 339 | 418 | 101 | 25 |   0 |   0 | 3.317514e+01 | 5.300000e+01 |  59.76%| unknown
-0.2s|     1 |     0 |  1677 |     - |  9861k |   0 | 288 | 339 | 420 | 103 | 26 |   0 |   0 | 3.318084e+01 | 5.300000e+01 |  59.73%| unknown
-time | node  | left  |LP iter|LP it/n|mem/heur|mdpt |vars |cons |rows |cuts |sepa|confs|strbr|  dualbound   | primalbound  |  gap   | compl. 
-  0.2s|     1 |     0 |  1690 |     - |    10M |   0 | 288 | 339 | 423 | 106 | 27 |   0 |   0 | 3.318096e+01 | 5.300000e+01 |  59.73%| unknown
-  0.2s|     1 |     0 |  1706 |     - |    10M |   0 | 288 | 339 | 403 | 108 | 28 |   0 |   0 | 3.318136e+01 | 5.300000e+01 |  59.73%| unknown
-  0.2s|     1 |     0 |  1712 |     - |    10M |   0 | 288 | 339 | 406 | 111 | 29 |   0 |   0 | 3.318234e+01 | 5.300000e+01 |  59.72%| unknown
-  0.2s|     1 |     0 |  1726 |     - |    10M |   0 | 288 | 339 | 408 | 113 | 30 |   0 |   0 | 3.318395e+01 | 5.300000e+01 |  59.72%| unknown
-0.2s|     1 |     0 |  1824 |     - |    10M |   0 | 288 | 339 | 410 | 115 | 31 |   0 |   0 | 3.326683e+01 | 5.300000e+01 |  59.32%| unknown
-  0.3s|     1 |     0 |  1845 |     - |    10M |   0 | 288 | 339 | 413 | 118 | 32 |   0 |   0 | 3.326746e+01 | 5.300000e+01 |  59.31%| unknown
-  0.3s|     1 |     0 |  1881 |     - |    10M |   0 | 288 | 339 | 416 | 121 | 33 |   0 |   0 | 3.331122e+01 | 5.300000e+01 |  59.11%| unknown
-  0.3s|     1 |     0 |  1903 |     - |    10M |   0 | 288 | 339 | 408 | 127 | 34 |   0 |   0 | 3.332682e+01 | 5.300000e+01 |  59.03%| unknown
-  0.3s|     1 |     0 |  1944 |     - |    10M |   0 | 288 | 339 | 410 | 129 | 35 |   0 |   0 | 3.334863e+01 | 5.300000e+01 |  58.93%| unknown
-  0.3s|     1 |     0 |  1946 |     - |    10M |   0 | 288 | 339 | 412 | 131 | 36 |   0 |   0 | 3.334971e+01 | 5.300000e+01 |  58.92%| unknown
-  0.3s|     1 |     0 |  1949 |     - |    10M |   0 | 288 | 339 | 414 | 133 | 37 |   0 |   0 | 3.335045e+01 | 5.300000e+01 |  58.92%| unknown
-  0.4s|     1 |     0 |  1952 |     - |    10M |   0 | 288 | 339 | 416 | 135 | 38 |   0 |   0 | 3.335073e+01 | 5.300000e+01 |  58.92%| unknown
-  0.4s|     1 |     0 |  1966 |     - |    10M |   0 | 288 | 339 | 421 | 140 | 39 |   0 |   0 | 3.335198e+01 | 5.300000e+01 |  58.91%| unknown
-  0.4s|     1 |     0 |  1974 |     - |    10M |   0 | 288 | 339 | 414 | 145 | 40 |   0 |   0 | 3.335910e+01 | 5.300000e+01 |  58.88%| unknown
-  0.4s|     1 |     0 |  1983 |     - |    10M |   0 | 288 | 339 | 417 | 148 | 41 |   0 |   0 | 3.335940e+01 | 5.300000e+01 |  58.88%| unknown
-time | node  | left  |LP iter|LP it/n|mem/heur|mdpt |vars |cons |rows |cuts |sepa|confs|strbr|  dualbound   | primalbound  |  gap   | compl. 
-  0.4s|     1 |     0 |  1998 |     - |    10M |   0 | 288 | 339 | 423 | 154 | 42 |   0 |   0 | 3.336109e+01 | 5.300000e+01 |  58.87%| unknown
-  0.5s|     1 |     0 |  2009 |     - |    10M |   0 | 288 | 339 | 427 | 158 | 43 |   0 |   0 | 3.336301e+01 | 5.300000e+01 |  58.86%| unknown
-  0.5s|     1 |     0 |  2040 |     - |    10M |   0 | 288 | 339 | 429 | 160 | 44 |   0 |   0 | 3.338944e+01 | 5.300000e+01 |  58.73%| unknown
-0.5s|     1 |     0 |  2047 |     - |    10M |   0 | 288 | 339 | 433 | 164 | 45 |   0 |   0 | 3.339111e+01 | 5.300000e+01 |  58.72%| unknown
-  0.5s|     1 |     0 |  2072 |     - |    10M |   0 | 288 | 339 | 417 | 167 | 46 |   0 |   0 | 3.339197e+01 | 5.300000e+01 |  58.72%| unknown
-0.6s|     1 |     0 |  2100 |     - |    10M |   0 | 288 | 339 | 420 | 170 | 47 |   0 |   0 | 3.340227e+01 | 5.300000e+01 |  58.67%| unknown
-  0.6s|     1 |     0 |  2111 |     - |    10M |   0 | 288 | 339 | 424 | 174 | 48 |   0 |   0 | 3.340234e+01 | 5.300000e+01 |  58.67%| unknown
-  0.6s|     1 |     0 |  2112 |     - |    10M |   0 | 288 | 339 | 425 | 175 | 49 |   0 |   0 | 3.340238e+01 | 5.300000e+01 |  58.67%| unknown
-d 0.7s|     1 |     0 |  3081 |     - |farkasdi|   0 | 288 | 339 | 425 |   0 | 50 |   0 |   0 | 3.340238e+01 | 4.900000e+01 |  46.70%| unknown
-d 0.7s|     1 |     0 |  3103 |     - |farkasdi|   0 | 288 | 339 | 425 |   0 | 50 |   0 |   0 | 3.340238e+01 | 4.900000e+01 |  46.70%| unknown
-L 0.8s|     1 |     0 |  3347 |     - |    rens|   0 | 288 | 339 | 425 | 175 | 50 |   0 |   0 | 3.340238e+01 | 4.300000e+01 |  28.73%| unknown
-  0.8s|     1 |     0 |  3347 |     - |    11M |   0 | 288 | 339 | 425 | 175 | 50 |   0 |   0 | 3.340238e+01 | 4.300000e+01 |  28.73%| unknown
-0.8s|     1 |     0 |  3347 |     - |    11M |   0 | 288 | 339 | 425 | 175 | 50 |   0 |   0 | 3.340238e+01 | 4.300000e+01 |  28.73%| unknown
-  0.8s|     1 |     0 |  3347 |     - |    11M |   0 | 288 | 339 | 421 | 175 | 51 |   0 |   0 | 3.340238e+01 | 4.300000e+01 |  28.73%| unknown
-  1.0s|     1 |     2 |  3347 |     - |    11M |   0 | 288 | 333 | 421 | 175 | 51 |   0 |  24 | 3.381211e+01 | 4.300000e+01 |  27.17%| unknown
+  0.0s|     1 |     0 |  1279 |     - |  8527k |   0 | 288 | 339 | 399 |  60 | 12 |   0 |   0 | 3.282571e+01 | 5.300000e+01 |  61.46%| unknown
+  0.0s|     1 |     0 |  1330 |     - |  8868k |   0 | 288 | 339 | 403 |  64 | 13 |   0 |   0 | 3.285455e+01 | 5.300000e+01 |  61.32%| unknown
+  0.0s|     1 |     0 |  1435 |     - |  8969k |   0 | 288 | 339 | 407 |  68 | 14 |   0 |   0 | 3.293114e+01 | 5.300000e+01 |  60.94%| unknown
+  0.0s|     1 |     0 |  1452 |     - |  9017k |   0 | 288 | 339 | 411 |  72 | 15 |   0 |   0 | 3.293339e+01 | 5.300000e+01 |  60.93%| unknown
+  0.0s|     1 |     0 |  1478 |     - |  9078k |   0 | 288 | 339 | 408 |  76 | 16 |   0 |   0 | 3.295789e+01 | 5.300000e+01 |  60.81%| unknown
+  0.0s|     1 |     0 |  1490 |     - |  9161k |   0 | 288 | 339 | 411 |  79 | 17 |   0 |   0 | 3.298752e+01 | 5.300000e+01 |  60.67%| unknown
+  0.0s|     1 |     0 |  1505 |     - |  9406k |   0 | 288 | 339 | 414 |  82 | 18 |   0 |   0 | 3.302375e+01 | 5.300000e+01 |  60.49%| unknown
+  0.0s|     1 |     0 |  1509 |     - |  9451k |   0 | 288 | 339 | 416 |  84 | 19 |   0 |   0 | 3.303714e+01 | 5.300000e+01 |  60.43%| unknown
+  0.0s|     1 |     0 |  1522 |     - |  9605k |   0 | 288 | 339 | 419 |  87 | 20 |   0 |   0 | 3.304510e+01 | 5.300000e+01 |  60.39%| unknown
+  0.0s|     1 |     0 |  1542 |     - |  9738k |   0 | 288 | 339 | 422 |  90 | 21 |   0 |   0 | 3.306189e+01 | 5.300000e+01 |  60.31%| unknown
+  1.0s|     1 |     0 |  1564 |     - |  9752k |   0 | 288 | 339 | 410 |  93 | 22 |   0 |   0 | 3.308676e+01 | 5.300000e+01 |  60.18%| unknown
+  1.0s|     1 |     0 |  1603 |     - |  9760k |   0 | 288 | 339 | 413 |  96 | 23 |   0 |   0 | 3.313949e+01 | 5.300000e+01 |  59.93%| unknown
+  1.0s|     1 |     0 |  1639 |     - |  9831k |   0 | 288 | 339 | 415 |  98 | 24 |   0 |   0 | 3.316628e+01 | 5.300000e+01 |  59.80%| unknown
+  1.0s|     1 |     0 |  1669 |     - |  9854k |   0 | 288 | 339 | 418 | 101 | 25 |   0 |   0 | 3.317514e+01 | 5.300000e+01 |  59.76%| unknown
+  1.0s|     1 |     0 |  1679 |     - |    10M |   0 | 288 | 339 | 420 | 103 | 26 |   0 |   0 | 3.318084e+01 | 5.300000e+01 |  59.73%| unknown
  time | node  | left  |LP iter|LP it/n|mem/heur|mdpt |vars |cons |rows |cuts |sepa|confs|strbr|  dualbound   | primalbound  |  gap   | compl. 
-  2.2s|   100 |    57 | 11760 |  98.6 |    22M |  20 | 288 | 333 | 385 | 622 |  2 |   2 | 330 | 3.381211e+01 | 4.300000e+01 |  27.17%|   3.05%
-  3.0s|   200 |   129 | 20389 |  92.4 |    23M |  20 | 288 | 333 | 379 |1112 |  2 |   3 | 403 | 3.404708e+01 | 4.300000e+01 |  26.30%|   5.49%
-L 3.1s|   201 |   109 | 20893 |  94.5 |    rins|  20 | 288 | 333 | 431 |1183 | 21 |   3 | 406 | 3.404708e+01 | 4.200000e+01 |  23.36%|   7.03%
-  3.8s|   300 |   200 | 30220 |  94.4 |    24M |  20 | 288 | 337 | 382 |1603 |  2 |  13 | 452 | 3.485050e+01 | 4.200000e+01 |  20.51%|  10.44%
-r 4.5s|   390 |   262 | 39821 |  97.2 |ziroundi|  20 | 288 | 340 | 397 |2229 |  3 |  17 | 473 | 3.512987e+01 | 4.200000e+01 |  19.56%|  14.78%
-  4.7s|   400 |   270 | 41281 |  98.5 |    25M |  20 | 288 | 340 | 415 |2364 |  8 |  17 | 473 | 3.523593e+01 | 4.200000e+01 |  19.20%|  15.31%
-5.1s|   500 |   352 | 47324 |  90.8 |    25M |  21 | 288 | 342 | 416 |2652 |  3 |  23 | 482 | 3.536532e+01 | 4.200000e+01 |  18.76%|  16.00%
-L 5.6s|   590 |   336 | 53496 |  87.4 |crossove|  22 | 288 | 343 | 389 |2989 |  2 |  26 | 486 | 3.544318e+01 | 4.100000e+01 |  15.68%|  20.45%
-  5.7s|   600 |   346 | 54433 |  87.5 |    26M |  22 | 288 | 344 | 405 |3062 |  2 |  27 | 488 | 3.544767e+01 | 4.100000e+01 |  15.66%|  20.62%
-6.1s|   700 |   388 | 59920 |  82.9 |    26M |  25 | 288 | 348 | 381 |3441 |  2 |  33 | 492 | 3.571763e+01 | 4.100000e+01 |  14.79%|  22.93%
-  6.7s|   800 |   424 | 65759 |  79.8 |    27M |  25 | 288 | 350 | 395 |3932 |  0 |  39 | 503 | 3.596245e+01 | 4.100000e+01 |  14.01%|  27.01%
-  7.0s|   900 |   458 | 69907 |  75.5 |    27M |  25 | 288 | 352 | 409 |4192 |  4 |  43 | 507 | 3.605455e+01 | 4.100000e+01 |  13.72%|  30.03%
-  7.3s|  1000 |   496 | 74190 |  72.3 |    28M |  25 | 288 | 353 | 425 |4351 |  2 |  46 | 513 | 3.627273e+01 | 4.100000e+01 |  13.03%|  32.35%
-  7.6s|  1100 |   526 | 77950 |  69.1 |    28M |  25 | 288 | 352 | 410 |4522 |  0 |  51 | 522 | 3.633070e+01 | 4.100000e+01 |  12.85%|  34.24%
-  7.8s|  1200 |   550 | 81125 |  66.0 |    28M |  25 | 288 | 355 | 395 |4714 |  2 |  55 | 528 | 3.645455e+01 | 4.100000e+01 |  12.47%|  35.59%
+  1.0s|     1 |     0 |  1694 |     - |    10M |   0 | 288 | 339 | 423 | 106 | 27 |   0 |   0 | 3.318096e+01 | 5.300000e+01 |  59.73%| unknown
+  1.0s|     1 |     0 |  1708 |     - |    10M |   0 | 288 | 339 | 403 | 108 | 28 |   0 |   0 | 3.318136e+01 | 5.300000e+01 |  59.73%| unknown
+  1.0s|     1 |     0 |  1714 |     - |    10M |   0 | 288 | 339 | 406 | 111 | 29 |   0 |   0 | 3.318234e+01 | 5.300000e+01 |  59.72%| unknown
+  1.0s|     1 |     0 |  1729 |     - |    10M |   0 | 288 | 339 | 408 | 113 | 30 |   0 |   0 | 3.318395e+01 | 5.300000e+01 |  59.72%| unknown
+  1.0s|     1 |     0 |  1797 |     - |    10M |   0 | 288 | 339 | 410 | 115 | 31 |   0 |   0 | 3.326683e+01 | 5.300000e+01 |  59.32%| unknown
+  1.0s|     1 |     0 |  1811 |     - |    10M |   0 | 288 | 339 | 413 | 118 | 32 |   0 |   0 | 3.326746e+01 | 5.300000e+01 |  59.31%| unknown
+  1.0s|     1 |     0 |  1856 |     - |    10M |   0 | 288 | 339 | 418 | 123 | 33 |   0 |   0 | 3.331122e+01 | 5.300000e+01 |  59.11%| unknown
+  1.0s|     1 |     0 |  1866 |     - |    10M |   0 | 288 | 339 | 410 | 127 | 34 |   0 |   0 | 3.332546e+01 | 5.300000e+01 |  59.04%| unknown
+  1.0s|     1 |     0 |  1966 |     - |    10M |   0 | 288 | 339 | 417 | 134 | 35 |   0 |   0 | 3.334509e+01 | 5.300000e+01 |  58.94%| unknown
+  1.0s|     1 |     0 |  1970 |     - |    10M |   0 | 288 | 339 | 419 | 136 | 36 |   0 |   0 | 3.334647e+01 | 5.300000e+01 |  58.94%| unknown
+  1.0s|     1 |     0 |  1976 |     - |    10M |   0 | 288 | 339 | 421 | 138 | 37 |   0 |   0 | 3.335103e+01 | 5.300000e+01 |  58.92%| unknown
+  2.0s|     1 |     0 |  1983 |     - |    10M |   0 | 288 | 339 | 425 | 142 | 38 |   0 |   0 | 3.335784e+01 | 5.300000e+01 |  58.88%| unknown
+  2.0s|     1 |     0 |  1990 |     - |    10M |   0 | 288 | 339 | 429 | 146 | 39 |   0 |   0 | 3.336041e+01 | 5.300000e+01 |  58.87%| unknown
+  2.0s|     1 |     0 |  2001 |     - |    10M |   0 | 288 | 339 | 419 | 150 | 40 |   0 |   0 | 3.337361e+01 | 5.300000e+01 |  58.81%| unknown
+  2.0s|     1 |     0 |  2027 |     - |    10M |   0 | 288 | 339 | 423 | 154 | 41 |   0 |   0 | 3.340026e+01 | 5.300000e+01 |  58.68%| unknown
  time | node  | left  |LP iter|LP it/n|mem/heur|mdpt |vars |cons |rows |cuts |sepa|confs|strbr|  dualbound   | primalbound  |  gap   | compl. 
-  8.1s|  1300 |   556 | 84198 |  63.3 |    28M |  25 | 288 | 357 | 424 |4871 |  1 |  61 | 533 | 3.645455e+01 | 4.100000e+01 |  12.47%|  38.40%
-  8.4s|  1400 |   558 | 87739 |  61.3 |    28M |  25 | 288 | 360 | 419 |5130 |  0 |  64 | 536 | 3.655195e+01 | 4.100000e+01 |  12.17%|  39.97%
-8.7s|  1500 |   564 | 91069 |  59.4 |    29M |  27 | 288 | 361 | 402 |5430 |  0 |  65 | 543 | 3.663636e+01 | 4.100000e+01 |  11.91%|  41.73%
-  9.0s|  1600 |   584 | 94760 |  58.0 |    29M |  27 | 288 | 362 | 397 |5637 |  1 |  66 | 552 | 3.669972e+01 | 4.100000e+01 |  11.72%|  43.17%
-  9.3s|  1700 |   586 | 97474 |  56.2 |    29M |  27 | 288 | 361 | 413 |5827 |  0 |  66 | 556 | 3.674892e+01 | 4.100000e+01 |  11.57%|  45.36%
-  9.4s|  1800 |   584 | 99732 |  54.3 |    29M |  27 | 288 | 361 | 402 |5966 |  1 |  66 | 559 | 3.681788e+01 | 4.100000e+01 |  11.36%|  47.24%
-9.7s|  1900 |   580 |103065 |  53.2 |    29M |  27 | 288 | 367 | 388 |6164 |  0 |  75 | 561 | 3.696893e+01 | 4.100000e+01 |  10.90%|  50.21%
- 10.0s|  2000 |   588 |106449 |  52.3 |    30M |  27 | 288 | 369 | 423 |6360 |  2 |  78 | 567 | 3.709091e+01 | 4.100000e+01 |  10.54%|  52.25%
-r10.0s|  2063 |   581 |107843 |  51.3 |ziroundi|  27 | 288 | 370 | 403 |6417 |  1 |  79 | 568 | 3.709091e+01 | 4.100000e+01 |  10.54%|  53.41%
- 10.1s|  2100 |   584 |108687 |  50.8 |    30M |  27 | 288 | 370 | 396 |6463 |  0 |  79 | 570 | 3.717127e+01 | 4.100000e+01 |  10.30%|  53.80%
- 10.3s|  2200 |   586 |110895 |  49.5 |    30M |  27 | 288 | 371 | 410 |6626 |  2 |  80 | 575 | 3.718182e+01 | 4.100000e+01 |  10.27%|  55.27%
- 10.5s|  2300 |   596 |113045 |  48.3 |    30M |  27 | 288 | 371 | 416 |6691 |  1 |  81 | 579 | 3.727465e+01 | 4.100000e+01 |   9.99%|  56.18%
- 10.7s|  2400 |   588 |115954 |  47.5 |    30M |  27 | 288 | 371 | 407 |6924 |  0 |  85 | 586 | 3.732588e+01 | 4.100000e+01 |   9.84%|  58.36%
- 10.8s|  2500 |   594 |117884 |  46.4 |    30M |  27 | 288 | 372 | 402 |6935 |  2 |  88 | 588 | 3.742153e+01 | 4.100000e+01 |   9.56%|  59.59%
- 11.0s|  2600 |   600 |119582 |  45.2 |    30M |  29 | 288 | 372 | 406 |7000 |  1 |  88 | 591 | 3.748052e+01 | 4.100000e+01 |   9.39%|  60.14%
-time | node  | left  |LP iter|LP it/n|mem/heur|mdpt |vars |cons |rows |cuts |sepa|confs|strbr|  dualbound   | primalbound  |  gap   | compl. 
- 11.2s|  2700 |   586 |122164 |  44.5 |    30M |  29 | 288 | 372 | 424 |7120 |  1 |  88 | 603 | 3.752841e+01 | 4.100000e+01 |   9.25%|  61.61%
- 11.3s|  2800 |   574 |124157 |  43.6 |    30M |  29 | 288 | 373 | 389 |7177 |  1 |  90 | 609 | 3.760909e+01 | 4.100000e+01 |   9.02%|  63.48%
-11.4s|  2900 |   552 |126052 |  42.8 |    30M |  29 | 288 | 374 | 415 |7254 |  0 |  91 | 612 | 3.768370e+01 | 4.100000e+01 |   8.80%|  64.96%
- 11.6s|  3000 |   546 |127767 |  41.9 |    30M |  29 | 288 | 375 | 414 |7313 |  2 |  92 | 617 | 3.773496e+01 | 4.100000e+01 |   8.65%|  66.56%
- 11.7s|  3100 |   534 |129551 |  41.2 |    30M |  29 | 288 | 376 | 392 |7383 |  0 |  94 | 624 | 3.779457e+01 | 4.100000e+01 |   8.48%|  67.53%
- 11.9s|  3200 |   532 |131789 |  40.6 |    31M |  29 | 288 | 379 | 406 |7477 |  0 |  97 | 634 | 3.784000e+01 | 4.100000e+01 |   8.35%|  68.46%
- 12.0s|  3300 |   522 |132956 |  39.7 |    31M |  29 | 288 | 379 | 411 |7515 |  0 |  97 | 635 | 3.790909e+01 | 4.100000e+01 |   8.15%|  69.35%
-12.1s|  3400 |   516 |134658 |  39.0 |    31M |  29 | 288 | 379 | 415 |7609 |  0 |  97 | 637 | 3.795455e+01 | 4.100000e+01 |   8.02%|  69.99%
- 12.2s|  3500 |   494 |136294 |  38.4 |    31M |  29 | 288 | 382 | 411 |7668 |  0 | 100 | 638 | 3.797486e+01 | 4.100000e+01 |   7.97%|  70.98%
-12.4s|  3600 |   466 |137939 |  37.8 |    31M |  29 | 288 | 382 |   0 |7743 |  0 | 100 | 638 | 3.801145e+01 | 4.100000e+01 |   7.86%|  74.10%
- 12.5s|  3700 |   444 |139184 |  37.1 |    31M |  29 | 288 | 382 | 403 |7786 |  2 | 100 | 640 | 3.809091e+01 | 4.100000e+01 |   7.64%|  75.12%
- 12.6s|  3800 |   424 |140556 |  36.5 |    31M |  29 | 288 | 382 | 451 |7828 |  2 | 100 | 644 | 3.810351e+01 | 4.100000e+01 |   7.60%|  76.33%
- 12.6s|  3900 |   410 |141571 |  35.8 |    31M |  29 | 288 | 382 | 411 |7828 |  0 | 100 | 646 | 3.814738e+01 | 4.100000e+01 |   7.48%|  77.42%
- 12.8s|  4000 |   394 |143223 |  35.3 |    31M |  29 | 288 | 382 | 469 |7909 |  3 | 100 | 649 | 3.823250e+01 | 4.100000e+01 |   7.24%|  79.14%
- 12.9s|  4100 |   364 |144834 |  34.8 |    31M |  29 | 288 | 382 | 408 |7950 |  0 | 101 | 652 | 3.836364e+01 | 4.100000e+01 |   6.87%|  80.35%
-time | node  | left  |LP iter|LP it/n|mem/heur|mdpt |vars |cons |rows |cuts |sepa|confs|strbr|  dualbound   | primalbound  |  gap   | compl. 
- 13.0s|  4200 |   322 |146216 |  34.3 |    31M |  29 | 288 | 382 | 426 |7989 |  2 | 101 | 656 | 3.848182e+01 | 4.100000e+01 |   6.54%|  82.46%
- 13.1s|  4300 |   282 |147564 |  33.9 |    31M |  29 | 288 | 381 | 605 |8022 |  0 | 102 | 657 | 3.854545e+01 | 4.100000e+01 |   6.37%|  83.46%
- 13.2s|  4400 |   232 |148919 |  33.4 |    31M |  29 | 288 | 381 | 420 |8054 |  0 | 103 | 657 | 3.865776e+01 | 4.100000e+01 |   6.06%|  86.16%
- 13.3s|  4500 |   212 |150125 |  32.9 |    31M |  29 | 288 | 381 | 465 |8060 |  1 | 104 | 657 | 3.868654e+01 | 4.100000e+01 |   5.98%|  87.39%
-13.4s|  4600 |   160 |151467 |  32.5 |    31M |  29 | 288 | 382 | 536 |8076 |  2 | 106 | 659 | 3.877874e+01 | 4.100000e+01 |   5.73%|  90.20%
- 13.5s|  4700 |   122 |152671 |  32.1 |    31M |  29 | 288 | 382 | 424 |8091 |  0 | 106 | 660 | 3.885069e+01 | 4.100000e+01 |   5.53%|  92.21%
- 13.6s|  4800 |    69 |153984 |  31.7 |    31M |  29 | 288 | 382 | 564 |8103 |  0 | 106 | 665 | 3.900000e+01 | 4.100000e+01 |   5.13%|  95.62%
- 13.6s|  4900 |    23 |155398 |  31.3 |    31M |  29 | 288 | 382 | 419 |8103 |  0 | 106 | 669 | 3.928602e+01 | 4.100000e+01 |   4.36%|  98.64%
+  2.0s|     1 |     0 |  2040 |     - |    10M |   0 | 288 | 339 | 426 | 157 | 42 |   0 |   0 | 3.340426e+01 | 5.300000e+01 |  58.66%| unknown
+  2.0s|     1 |     0 |  2070 |     - |    10M |   0 | 288 | 339 | 431 | 162 | 43 |   0 |   0 | 3.340995e+01 | 5.300000e+01 |  58.64%| unknown
+  2.0s|     1 |     0 |  2086 |     - |    10M |   0 | 288 | 339 | 437 | 168 | 44 |   0 |   0 | 3.341025e+01 | 5.300000e+01 |  58.63%| unknown
+  2.0s|     1 |     0 |  2106 |     - |    10M |   0 | 288 | 339 | 441 | 172 | 45 |   0 |   0 | 3.341140e+01 | 5.300000e+01 |  58.63%| unknown
+  2.0s|     1 |     0 |  2117 |     - |    10M |   0 | 288 | 339 | 429 | 177 | 46 |   0 |   0 | 3.341336e+01 | 5.300000e+01 |  58.62%| unknown
+  2.0s|     1 |     0 |  2121 |     - |    10M |   0 | 288 | 339 | 432 | 180 | 47 |   0 |   0 | 3.341343e+01 | 5.300000e+01 |  58.62%| unknown
+  3.0s|     1 |     0 |  2147 |     - |    10M |   0 | 288 | 339 | 435 | 183 | 48 |   0 |   0 | 3.341428e+01 | 5.300000e+01 |  58.61%| unknown
+  3.0s|     1 |     0 |  2155 |     - |    10M |   0 | 288 | 339 | 437 | 185 | 49 |   0 |   0 | 3.341428e+01 | 5.300000e+01 |  58.61%| unknown
+  3.0s|     1 |     0 |  2159 |     - |    10M |   0 | 288 | 339 | 439 | 187 | 50 |   0 |   0 | 3.341428e+01 | 5.300000e+01 |  58.61%| unknown
+  3.0s|     1 |     0 |  2169 |     - |    10M |   0 | 288 | 339 | 440 | 188 | 51 |   0 |   0 | 3.341428e+01 | 5.300000e+01 |  58.61%| unknown
+  3.0s|     1 |     0 |  2171 |     - |    10M |   0 | 288 | 339 | 419 | 189 | 52 |   0 |   0 | 3.341606e+01 | 5.300000e+01 |  58.61%| unknown
+  3.0s|     1 |     0 |  2173 |     - |    10M |   0 | 288 | 339 | 421 | 191 | 53 |   0 |   0 | 3.341606e+01 | 5.300000e+01 |  58.61%| unknown
+d 3.0s|     1 |     0 |  2878 |     - |farkasdi|   0 | 288 | 339 | 421 |   0 | 53 |   0 |   0 | 3.341606e+01 | 4.900000e+01 |  46.64%| unknown
+d 3.0s|     1 |     0 |  2954 |     - |farkasdi|   0 | 288 | 339 | 421 |   0 | 53 |   0 |   0 | 3.341606e+01 | 4.400000e+01 |  31.67%| unknown
+L 4.0s|     1 |     0 |  3068 |     - |    rens|   0 | 288 | 339 | 421 | 191 | 53 |   0 |   0 | 3.341606e+01 | 4.300000e+01 |  28.68%| unknown
+ time | node  | left  |LP iter|LP it/n|mem/heur|mdpt |vars |cons |rows |cuts |sepa|confs|strbr|  dualbound   | primalbound  |  gap   | compl. 
+  4.0s|     1 |     0 |  3068 |     - |    11M |   0 | 288 | 339 | 421 | 191 | 53 |   0 |   0 | 3.341606e+01 | 4.300000e+01 |  28.68%| unknown
+  4.0s|     1 |     0 |  3068 |     - |    11M |   0 | 288 | 339 | 421 | 191 | 53 |   0 |   0 | 3.341606e+01 | 4.300000e+01 |  28.68%| unknown
+  4.0s|     1 |     0 |  3075 |     - |    11M |   0 | 288 | 339 | 409 | 193 | 54 |   0 |   0 | 3.341606e+01 | 4.300000e+01 |  28.68%| unknown
+  4.0s|     1 |     0 |  3076 |     - |    11M |   0 | 288 | 339 | 410 | 194 | 55 |   0 |   0 | 3.341606e+01 | 4.300000e+01 |  28.68%| unknown
+  4.0s|     1 |     2 |  3076 |     - |    11M |   0 | 288 | 333 | 410 | 194 | 55 |   0 |  24 | 3.373205e+01 | 4.300000e+01 |  27.48%| unknown
+  7.0s|   100 |    99 | 10349 |  83.7 |    23M |  15 | 288 | 333 | 416 | 751 |  4 |   9 | 371 | 3.394705e+01 | 4.300000e+01 |  26.67%| unknown
+  9.0s|   200 |   175 | 15838 |  69.2 |    23M |  21 | 288 | 334 | 388 |1132 |  2 |  10 | 425 | 3.457121e+01 | 4.300000e+01 |  24.38%| unknown
+L 9.0s|   201 |   151 | 15906 |  69.2 |crossove|  21 | 288 | 334 | 399 |1132 |  2 |  10 | 425 | 3.460508e+01 | 4.200000e+01 |  21.37%| unknown
+ 11.0s|   300 |   240 | 25811 |  79.4 |    25M |  21 | 288 | 348 | 422 |1719 |  2 |  33 | 443 | 3.501772e+01 | 4.200000e+01 |  19.94%|  10.88%
+ 13.0s|   400 |   324 | 34250 |  80.7 |    25M |  21 | 288 | 360 | 412 |2301 |  2 |  50 | 457 | 3.516032e+01 | 4.200000e+01 |  19.45%|  14.35%
+ 14.0s|   500 |   388 | 41238 |  78.5 |    26M |  21 | 288 | 363 | 406 |2876 |  2 |  58 | 461 | 3.569818e+01 | 4.200000e+01 |  17.65%|  18.88%
+ 16.0s|   600 |   438 | 48449 |  77.4 |    27M |  21 | 288 | 371 | 414 |3664 |  5 |  72 | 467 | 3.589782e+01 | 4.200000e+01 |  17.00%|  21.02%
+ 17.0s|   700 |   496 | 55278 |  76.1 |    27M |  23 | 288 | 371 | 423 |4283 |  2 |  73 | 474 | 3.606494e+01 | 4.200000e+01 |  16.46%|  22.67%
+ 19.0s|   800 |   552 | 63005 |  76.3 |    28M |  25 | 288 | 371 | 426 |5046 |  2 |  75 | 485 | 3.619668e+01 | 4.200000e+01 |  16.03%|  24.48%
+ 20.0s|   900 |   606 | 67077 |  72.3 |    28M |  25 | 288 | 370 | 431 |5240 |  0 |  78 | 492 | 3.632900e+01 | 4.200000e+01 |  15.61%|  26.53%
+ time | node  | left  |LP iter|LP it/n|mem/heur|mdpt |vars |cons |rows |cuts |sepa|confs|strbr|  dualbound   | primalbound  |  gap   | compl. 
+ 21.0s|  1000 |   660 | 71410 |  69.4 |    28M |  25 | 288 | 373 | 430 |5498 |  0 |  84 | 498 | 3.656061e+01 | 4.200000e+01 |  14.88%|  28.09%
+ 21.0s|  1100 |   720 | 75926 |  67.2 |    30M |  28 | 288 | 373 | 396 |5749 |  2 |  88 | 499 | 3.667087e+01 | 4.200000e+01 |  14.53%|  29.10%
+ 22.0s|  1200 |   774 | 80197 |  65.2 |    30M |  28 | 288 | 374 | 442 |6051 |  8 |  92 | 508 | 3.667087e+01 | 4.200000e+01 |  14.53%|  29.89%
+ 23.0s|  1300 |   838 | 84668 |  63.6 |    31M |  28 | 288 | 375 | 438 |6271 |  2 |  95 | 515 | 3.673913e+01 | 4.200000e+01 |  14.32%|  30.45%
+ 24.0s|  1400 |   888 | 89337 |  62.4 |    31M |  33 | 288 | 375 | 427 |6648 |  1 |  95 | 516 | 3.692692e+01 | 4.200000e+01 |  13.74%|  31.11%
+r25.0s|  1460 |   642 | 91671 |  61.4 |ziroundi|  33 | 288 | 379 | 441 |6820 |  2 | 100 | 518 | 3.694039e+01 | 4.100000e+01 |  10.99%|  39.05%
+ 25.0s|  1500 |   646 | 92518 |  60.3 |    31M |  33 | 288 | 379 | 436 |6902 |  1 | 100 | 518 | 3.694039e+01 | 4.100000e+01 |  10.99%|  39.60%
+ 25.0s|  1600 |   672 | 94905 |  58.1 |    31M |  33 | 288 | 379 | 437 |7094 |  2 | 102 | 519 | 3.702133e+01 | 4.100000e+01 |  10.75%|  40.41%
+ 26.0s|  1700 |   690 | 96613 |  55.6 |    31M |  33 | 288 | 384 | 438 |7185 |  2 | 107 | 519 | 3.704513e+01 | 4.100000e+01 |  10.68%|  42.00%
+ 26.0s|  1800 |   708 | 98148 |  53.4 |    31M |  33 | 288 | 386 | 426 |7291 |  4 | 110 | 519 | 3.705311e+01 | 4.100000e+01 |  10.65%|  42.94%
+ 26.0s|  1900 |   724 | 99711 |  51.4 |    31M |  33 | 288 | 389 | 426 |7347 |  1 | 113 | 520 | 3.705810e+01 | 4.100000e+01 |  10.64%|  43.81%
+ 27.0s|  2000 |   726 |102052 |  50.0 |    31M |  33 | 288 | 390 | 430 |7517 |  2 | 116 | 523 | 3.706469e+01 | 4.100000e+01 |  10.62%|  45.65%
+ 27.0s|  2100 |   734 |103965 |  48.5 |    31M |  33 | 288 | 391 | 400 |7642 |  0 | 117 | 524 | 3.711633e+01 | 4.100000e+01 |  10.46%|  46.38%
+ 27.0s|  2200 |   754 |105916 |  47.2 |    31M |  33 | 288 | 392 | 422 |7774 |  1 | 118 | 526 | 3.717277e+01 | 4.100000e+01 |  10.30%|  47.80%
+ 28.0s|  2300 |   758 |106834 |  45.6 |    31M |  33 | 288 | 392 | 431 |7807 |  1 | 120 | 527 | 3.717277e+01 | 4.100000e+01 |  10.30%|  48.27%
+ time | node  | left  |LP iter|LP it/n|mem/heur|mdpt |vars |cons |rows |cuts |sepa|confs|strbr|  dualbound   | primalbound  |  gap   | compl. 
+ 28.0s|  2400 |   756 |108012 |  44.2 |    31M |  34 | 288 | 392 | 394 |7871 |  1 | 122 | 530 | 3.722356e+01 | 4.100000e+01 |  10.15%|  49.32%
+ 28.0s|  2500 |   758 |110597 |  43.4 |    31M |  34 | 288 | 392 | 405 |8051 |  2 | 123 | 531 | 3.726690e+01 | 4.100000e+01 |  10.02%|  50.86%
+ 28.0s|  2600 |   758 |111932 |  42.3 |    31M |  34 | 288 | 395 | 408 |8070 |  2 | 129 | 535 | 3.727273e+01 | 4.100000e+01 |  10.00%|  52.12%
+ 29.0s|  2700 |   766 |114122 |  41.5 |    31M |  34 | 288 | 395 | 421 |8174 |  0 | 135 | 535 | 3.729089e+01 | 4.100000e+01 |   9.95%|  53.25%
+ 29.0s|  2800 |   770 |115754 |  40.6 |    31M |  34 | 288 | 395 | 434 |8308 |  0 | 136 | 535 | 3.730722e+01 | 4.100000e+01 |   9.90%|  53.67%
+ 30.0s|  2900 |   780 |117900 |  40.0 |    31M |  34 | 288 | 395 | 419 |8459 |  0 | 138 | 537 | 3.731818e+01 | 4.100000e+01 |   9.87%|  54.71%
+ 30.0s|  3000 |   776 |119853 |  39.3 |    31M |  34 | 288 | 395 | 414 |8589 |  1 | 139 | 540 | 3.736112e+01 | 4.100000e+01 |   9.74%|  55.99%
+ 30.0s|  3100 |   780 |121910 |  38.7 |    31M |  34 | 288 | 395 | 415 |8747 |  2 | 140 | 541 | 3.740066e+01 | 4.100000e+01 |   9.62%|  56.71%
+ 30.0s|  3200 |   764 |123732 |  38.0 |    31M |  34 | 288 | 396 | 441 |8853 |  1 | 141 | 542 | 3.760828e+01 | 4.100000e+01 |   9.02%|  58.52%
+ 31.0s|  3300 |   754 |125494 |  37.4 |    32M |  34 | 288 | 396 | 421 |8950 |  2 | 143 | 542 | 3.766299e+01 | 4.100000e+01 |   8.86%|  59.62%
+ 31.0s|  3400 |   732 |127786 |  37.0 |    32M |  34 | 288 | 399 | 434 |9127 |  0 | 147 | 542 | 3.775000e+01 | 4.100000e+01 |   8.61%|  61.33%
+ 31.0s|  3500 |   716 |129147 |  36.3 |    32M |  34 | 288 | 399 | 414 |9174 |  1 | 147 | 542 | 3.775157e+01 | 4.100000e+01 |   8.60%|  62.37%
+ 32.0s|  3600 |   702 |130999 |  35.8 |    32M |  34 | 288 | 399 | 439 |9293 |  0 | 147 | 542 | 3.777922e+01 | 4.100000e+01 |   8.53%|  63.58%
+ 32.0s|  3700 |   692 |132309 |  35.2 |    32M |  34 | 288 | 400 | 418 |9393 |  0 | 148 | 543 | 3.778982e+01 | 4.100000e+01 |   8.49%|  64.28%
+ 32.0s|  3800 |   678 |134000 |  34.7 |    32M |  34 | 288 | 400 | 425 |9442 |  1 | 148 | 545 | 3.786189e+01 | 4.100000e+01 |   8.29%|  65.26%
+ time | node  | left  |LP iter|LP it/n|mem/heur|mdpt |vars |cons |rows |cuts |sepa|confs|strbr|  dualbound   | primalbound  |  gap   | compl. 
+ 32.0s|  3900 |   656 |135542 |  34.2 |    32M |  34 | 288 | 403 | 435 |9548 |  0 | 151 | 549 | 3.788285e+01 | 4.100000e+01 |   8.23%|  66.44%
+ 33.0s|  4000 |   642 |137266 |  33.8 |    32M |  34 | 288 | 403 | 425 |9676 |  2 | 153 | 553 | 3.790909e+01 | 4.100000e+01 |   8.15%|  67.83%
+ 33.0s|  4100 |   616 |138514 |  33.3 |    32M |  34 | 288 | 408 | 408 |9714 |  0 | 160 | 557 | 3.793831e+01 | 4.100000e+01 |   8.07%|  69.09%
+ 33.0s|  4200 |   604 |140118 |  32.9 |    32M |  34 | 288 | 408 | 420 |9814 |  0 | 160 | 563 | 3.800000e+01 | 4.100000e+01 |   7.89%|  69.87%
+ 33.0s|  4300 |   586 |141853 |  32.5 |    32M |  34 | 288 | 412 | 397 |9848 |  0 | 164 | 568 | 3.800455e+01 | 4.100000e+01 |   7.88%|  71.09%
+ 34.0s|  4400 |   566 |143321 |  32.1 |    32M |  34 | 288 | 412 | 434 |9929 |  0 | 166 | 570 | 3.803162e+01 | 4.100000e+01 |   7.81%|  72.12%
+ 34.0s|  4500 |   558 |144967 |  31.8 |    32M |  34 | 288 | 412 | 444 |  10k|  0 | 166 | 575 | 3.808914e+01 | 4.100000e+01 |   7.64%|  72.66%
+ 34.0s|  4600 |   542 |146062 |  31.3 |    32M |  34 | 288 | 412 | 430 |  10k|  1 | 167 | 577 | 3.813379e+01 | 4.100000e+01 |   7.52%|  73.61%
+ 34.0s|  4700 |   514 |147495 |  30.9 |    32M |  34 | 288 | 412 | 426 |  10k|  0 | 168 | 583 | 3.817586e+01 | 4.100000e+01 |   7.40%|  75.33%
+ 34.0s|  4800 |   494 |149374 |  30.7 |    32M |  34 | 288 | 412 | 410 |  10k|  0 | 168 | 586 | 3.829369e+01 | 4.100000e+01 |   7.07%|  76.78%
+ 35.0s|  4900 |   470 |150640 |  30.3 |    32M |  34 | 288 | 412 | 435 |  10k|  0 | 168 | 589 | 3.829717e+01 | 4.100000e+01 |   7.06%|  77.83%
+ 35.0s|  5000 |   434 |151894 |  30.0 |    32M |  34 | 288 | 412 | 418 |  10k|  0 | 168 | 595 | 3.836446e+01 | 4.100000e+01 |   6.87%|  79.64%
+ 35.0s|  5100 |   418 |153162 |  29.6 |    32M |  34 | 288 | 412 | 440 |  10k|  1 | 168 | 599 | 3.838528e+01 | 4.100000e+01 |   6.81%|  80.72%
+ 35.0s|  5200 |   404 |154211 |  29.3 |    32M |  34 | 288 | 414 | 412 |  10k|  1 | 170 | 608 | 3.843067e+01 | 4.100000e+01 |   6.69%|  81.67%
+ 35.0s|  5300 |   376 |155576 |  29.0 |    32M |  34 | 288 | 410 | 410 |  10k|  1 | 170 | 613 | 3.843551e+01 | 4.100000e+01 |   6.67%|  82.73%
+ time | node  | left  |LP iter|LP it/n|mem/heur|mdpt |vars |cons |rows |cuts |sepa|confs|strbr|  dualbound   | primalbound  |  gap   | compl. 
+ 35.0s|  5400 |   346 |157124 |  28.7 |    32M |  34 | 288 | 410 | 431 |  10k|  0 | 171 | 618 | 3.843790e+01 | 4.100000e+01 |   6.67%|  84.03%
+ 36.0s|  5500 |   322 |158520 |  28.5 |    32M |  34 | 288 | 408 | 436 |  10k|  0 | 173 | 623 | 3.859626e+01 | 4.100000e+01 |   6.23%|  85.29%
+ 36.0s|  5600 |   256 |159844 |  28.2 |    32M |  34 | 288 | 408 | 417 |  10k|  0 | 173 | 623 | 3.866704e+01 | 4.100000e+01 |   6.03%|  88.86%
+ 36.0s|  5700 |   224 |161060 |  27.9 |    32M |  34 | 288 | 406 | 416 |  10k|  0 | 173 | 626 | 3.879340e+01 | 4.100000e+01 |   5.69%|  90.10%
+ 36.0s|  5800 |   186 |162331 |  27.6 |    32M |  34 | 288 | 406 | 428 |  10k|  1 | 175 | 628 | 3.891748e+01 | 4.100000e+01 |   5.35%|  92.57%
+ 36.0s|  5900 |   146 |163520 |  27.4 |    32M |  34 | 288 | 406 | 425 |  10k|  0 | 175 | 635 | 3.901409e+01 | 4.100000e+01 |   5.09%|  93.77%
+ 36.0s|  6000 |   108 |164822 |  27.1 |    32M |  34 | 288 | 406 | 420 |  10k|  0 | 175 | 639 | 3.902481e+01 | 4.100000e+01 |   5.06%|  94.92%
+ 37.0s|  6100 |    68 |166069 |  26.9 |    32M |  34 | 288 | 406 | 603 |  10k|  0 | 175 | 648 | 3.916924e+01 | 4.100000e+01 |   4.67%|  96.40%
+ 37.0s|  6200 |    28 |167592 |  26.7 |    32M |  34 | 288 | 405 | 498 |  10k|  0 | 175 | 650 | 3.930665e+01 | 4.100000e+01 |   4.31%|  98.77%
 
 SCIP Status        : problem is solved [optimal solution found]
-Solving Time (sec) : 13.67
-Solving Nodes      : 4931
-Primal Bound       : +4.10000000000000e+01 (739 solutions)
+Solving Time (sec) : 37.00
+Solving Nodes      : 6230
+Primal Bound       : +4.10000000000000e+01 (779 solutions)
 Dual Bound         : +4.10000000000000e+01
 Gap                : 0.00 %
 -------------------------------------------------------------------------------
                                     Summary                                    
 -------------------------------------------------------------------------------
-(CVXPY) Nov 08 04:02:53 PM: Problem status: optimal
-(CVXPY) Nov 08 04:02:53 PM: Optimal value: 4.100e+01
-(CVXPY) Nov 08 04:02:53 PM: Compilation took 1.346e-02 seconds
-(CVXPY) Nov 08 04:02:53 PM: Solver (including time spent in interface) took 1.370e+01 seconds
+(CVXPY) May 14 09:34:29 PM: Problem status: optimal
+(CVXPY) May 14 09:34:29 PM: Optimal value: 4.100e+01
+(CVXPY) May 14 09:34:29 PM: Compilation took 4.779e-02 seconds
+(CVXPY) May 14 09:34:29 PM: Solver (including time spent in interface) took 3.735e+01 seconds
 </pre></div>
 </div>
-<img alt="../../_images/bbd6205678cbf11f174d402f91c3e44928389f0d843ff9c3f493f0f4ec9d5698.svg" src="../../_images/bbd6205678cbf11f174d402f91c3e44928389f0d843ff9c3f493f0f4ec9d5698.svg" />
+<img alt="../../_images/70c2bfcdd437bfe3381782aa28321c0695917a1cc072c8f22437908bd59aa9e4.svg" src="../../_images/70c2bfcdd437bfe3381782aa28321c0695917a1cc072c8f22437908bd59aa9e4.svg" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -774,7 +897,7 @@ Gap                : 0.00 %
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>np.float64(41.0)
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>41.0
 </pre></div>
 </div>
 </div>
@@ -790,43 +913,6 @@ Gap                : 0.00 %
 <span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>===============================================================================
-                                     CVXPY                                     
-                                     v1.5.3                                    
-===============================================================================
-(CVXPY) Nov 08 04:02:53 PM: Your problem has 670 variables, 1990 constraints, and 0 parameters.
-(CVXPY) Nov 08 04:02:53 PM: It is compliant with the following grammars: DCP, DQCP
-(CVXPY) Nov 08 04:02:53 PM: (If you need to solve this problem multiple times, but with different data, consider using parameters.)
-(CVXPY) Nov 08 04:02:53 PM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
-(CVXPY) Nov 08 04:02:53 PM: Your problem is compiled with the CPP canonicalization backend.
--------------------------------------------------------------------------------
-                                  Compilation                                  
--------------------------------------------------------------------------------
-(CVXPY) Nov 08 04:02:53 PM: Compiling problem (target solver=SCIPY).
-(CVXPY) Nov 08 04:02:53 PM: Reduction chain: Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; SCIPY
-(CVXPY) Nov 08 04:02:53 PM: Applying reduction Dcp2Cone
-(CVXPY) Nov 08 04:02:53 PM: Applying reduction CvxAttr2Constr
-(CVXPY) Nov 08 04:02:53 PM: Applying reduction ConeMatrixStuffing
-(CVXPY) Nov 08 04:02:53 PM: Applying reduction SCIPY
-(CVXPY) Nov 08 04:02:53 PM: Finished problem compilation (took 2.461e-02 seconds).
--------------------------------------------------------------------------------
-                                Numerical solver                               
--------------------------------------------------------------------------------
-(CVXPY) Nov 08 04:02:53 PM: Invoking solver SCIPY  to obtain a solution.
-Solver terminated with message: Optimization terminated successfully. (HiGHS Status 7: Optimal)
--------------------------------------------------------------------------------
-                                    Summary                                    
--------------------------------------------------------------------------------
-(CVXPY) Nov 08 04:03:11 PM: Problem status: optimal
-(CVXPY) Nov 08 04:03:11 PM: Optimal value: 4.100e+01
-(CVXPY) Nov 08 04:03:11 PM: Compilation took 2.461e-02 seconds
-(CVXPY) Nov 08 04:03:11 PM: Solver (including time spent in interface) took 1.874e+01 seconds
-Optimal value: 41.000000000002665
-</pre></div>
-</div>
-<img alt="../../_images/fb84df82963bdb2e503ff50ad0612e3a9d1b45b48662dfbf5acf4c133d711c5e.svg" src="../../_images/fb84df82963bdb2e503ff50ad0612e3a9d1b45b48662dfbf5acf4c133d711c5e.svg" />
 </div>
 </div>
 </section>

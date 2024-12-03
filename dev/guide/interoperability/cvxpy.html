@@ -52,7 +52,7 @@
     <script src="../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
     <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/hoverxref.js"></script>
     <script src="../../_static/js/tooltipster.bundle.min.js"></script>
@@ -451,7 +451,7 @@
             </td>
             <td>
             <table>
-                <tr><td>Installed version:</td><td style='text-align:left'>v1.0.0.dev1 (latest stable: v1.0.0-alpha)</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.5.3, PICOS v2.5.1</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CLARABEL, CVXOPT, ECOS, ECOS_BB, GLPK, GLPK_MI, OSQP, SCIP, SCIPY, SCS</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.3</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href=https://github.com/saezlab/corneto>https://github.com/saezlab/corneto</a></td></tr>
+                <tr><td>Installed version:</td><td style='text-align:left'>v1.0.0.dev1 (latest stable: v1.0.0-alpha)</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.6.0, PICOS v2.5.1</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CVXOPT, GLPK, GLPK_MI, HIGHS, SCIP, SCIPY</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.3</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href=https://github.com/saezlab/corneto>https://github.com/saezlab/corneto</a></td></tr>
             </table>
             </td>
         </tr>
@@ -476,64 +476,52 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>===============================================================================
-                                     CVXPY                                     
-                                     v1.5.3                                    
-===============================================================================
-(CVXPY) Nov 08 03:59:38 PM: Your problem has 5 variables, 6 constraints, and 0 parameters.
-(CVXPY) Nov 08 03:59:38 PM: It is compliant with the following grammars: DCP, DQCP
-(CVXPY) Nov 08 03:59:38 PM: (If you need to solve this problem multiple times, but with different data, consider using parameters.)
-(CVXPY) Nov 08 03:59:38 PM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
-(CVXPY) Nov 08 03:59:38 PM: Your problem is compiled with the CPP canonicalization backend.
--------------------------------------------------------------------------------
-                                  Compilation                                  
--------------------------------------------------------------------------------
-(CVXPY) Nov 08 03:59:38 PM: Compiling problem (target solver=OSQP).
-(CVXPY) Nov 08 03:59:38 PM: Reduction chain: CvxAttr2Constr -&gt; Qp2SymbolicQp -&gt; QpMatrixStuffing -&gt; OSQP
-(CVXPY) Nov 08 03:59:38 PM: Applying reduction CvxAttr2Constr
-(CVXPY) Nov 08 03:59:38 PM: Applying reduction Qp2SymbolicQp
-(CVXPY) Nov 08 03:59:38 PM: Applying reduction QpMatrixStuffing
-(CVXPY) Nov 08 03:59:38 PM: Applying reduction OSQP
-(CVXPY) Nov 08 03:59:38 PM: Finished problem compilation (took 1.771e-02 seconds).
--------------------------------------------------------------------------------
-                                Numerical solver                               
--------------------------------------------------------------------------------
-(CVXPY) Nov 08 03:59:38 PM: Invoking solver OSQP  to obtain a solution.
------------------------------------------------------------------
-           OSQP v0.6.3  -  Operator Splitting QP Solver
-              (c) Bartolomeo Stellato,  Goran Banjac
-        University of Oxford  -  Stanford University 2021
------------------------------------------------------------------
-problem:  variables n = 5, constraints m = 6
-          nnz(P) + nnz(A) = 10
-settings: linear system solver = qdldl,
-          eps_abs = 1.0e-05, eps_rel = 1.0e-05,
-          eps_prim_inf = 1.0e-04, eps_dual_inf = 1.0e-04,
-          rho = 1.00e-01 (adaptive),
-          sigma = 1.00e-06, alpha = 1.60, max_iter = 10000
-          check_termination: on (interval 25),
-          scaling: on, scaled_termination: off
-          warm start: on, polish: on, time_limit: off
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ValueError</span><span class="g g-Whitespace">                                </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">line</span> <span class="mi">13</span>
+<span class="g g-Whitespace">     </span><span class="mi">10</span> <span class="n">P</span> <span class="o">+=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="n">x</span> <span class="o">&gt;=</span> <span class="mi">0</span>
+<span class="g g-Whitespace">     </span><span class="mi">12</span> <span class="n">P</span><span class="o">.</span><span class="n">add_objectives</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">A</span> <span class="o">@</span> <span class="n">x</span> <span class="o">-</span> <span class="n">b</span><span class="p">))</span>
+<span class="ne">---&gt; </span><span class="mi">13</span> <span class="n">cvxpy_model</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;osqp&quot;</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
-iter   objective    pri res    dua res    rho        time
-   1  -5.2220e+00   3.68e+00   1.70e+02   1.00e-01   3.38e-05s
- 150   6.9994e-01   1.96e-05   7.82e-06   4.77e+00   7.95e-05s
-plsh   7.0000e-01   1.95e-30   0.00e+00   --------   1.06e-04s
+<span class="nn">File ~/work/corneto/corneto/corneto/backend/_base.py:571,</span> in <span class="ni">ProblemDef.solve</span><span class="nt">(self, solver, max_seconds, warm_start, verbosity, **options)</span>
+<span class="g g-Whitespace">    </span><span class="mi">569</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_backend</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">570</span>     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No backend assigned.&quot;</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">571</span> <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_backend</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">572</span>     <span class="bp">self</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">573</span>     <span class="n">solver</span><span class="o">=</span><span class="n">solver</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">574</span>     <span class="n">max_seconds</span><span class="o">=</span><span class="n">max_seconds</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">575</span>     <span class="n">warm_start</span><span class="o">=</span><span class="n">warm_start</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">576</span>     <span class="n">verbosity</span><span class="o">=</span><span class="n">verbosity</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">577</span>     <span class="o">**</span><span class="n">options</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">578</span> <span class="p">)</span>
 
-status:               solved
-solution polish:      successful
-number of iterations: 150
-optimal objective:    0.7000
-run time:             1.06e-04s
-optimal rho estimate: 9.81e+00
+<span class="nn">File ~/work/corneto/corneto/corneto/backend/_base.py:832,</span> in <span class="ni">Backend.solve</span><span class="nt">(self, p, solver, max_seconds, warm_start, verbosity, **options)</span>
+<span class="g g-Whitespace">    </span><span class="mi">826</span> <span class="k">else</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">827</span>     <span class="n">o</span> <span class="o">=</span> <span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">828</span>         <span class="n">p</span><span class="o">.</span><span class="n">weights</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">objectives</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="g g-Whitespace">    </span><span class="mi">829</span>         <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">objectives</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">weights</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span>
+<span class="g g-Whitespace">    </span><span class="mi">830</span>         <span class="k">else</span> <span class="kc">None</span>
+<span class="g g-Whitespace">    </span><span class="mi">831</span>     <span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">832</span> <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_solve</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">833</span>     <span class="n">p</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">834</span>     <span class="n">objective</span><span class="o">=</span><span class="n">o</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">835</span>     <span class="n">solver</span><span class="o">=</span><span class="n">solver</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">836</span>     <span class="n">max_seconds</span><span class="o">=</span><span class="n">max_seconds</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">837</span>     <span class="n">warm_start</span><span class="o">=</span><span class="n">warm_start</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">838</span>     <span class="n">verbosity</span><span class="o">=</span><span class="n">verbosity</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">839</span>     <span class="o">**</span><span class="n">options</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">840</span> <span class="p">)</span>
 
--------------------------------------------------------------------------------
-                                    Summary                                    
--------------------------------------------------------------------------------
-(CVXPY) Nov 08 03:59:38 PM: Problem status: optimal
-(CVXPY) Nov 08 03:59:38 PM: Optimal value: -3.000e-01
-(CVXPY) Nov 08 03:59:38 PM: Compilation took 1.771e-02 seconds
-(CVXPY) Nov 08 03:59:38 PM: Solver (including time spent in interface) took 1.164e-03 seconds
+<span class="nn">File ~/work/corneto/corneto/corneto/backend/_cvxpy_backend.py:167,</span> in <span class="ni">CvxpyBackend._solve</span><span class="nt">(self, p, objective, solver, max_seconds, warm_start, verbosity, **options)</span>
+<span class="g g-Whitespace">    </span><span class="mi">165</span> <span class="n">solvers</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">installed_solvers</span><span class="p">()</span>
+<span class="g g-Whitespace">    </span><span class="mi">166</span> <span class="k">if</span> <span class="n">s</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">s</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">solvers</span><span class="p">:</span>
+<span class="ne">--&gt; </span><span class="mi">167</span>     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">168</span>         <span class="sa">f</span><span class="s2">&quot;Solver </span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s2"> is not installed/supported, supported solvers are: </span><span class="si">{</span><span class="n">solvers</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="g g-Whitespace">    </span><span class="mi">169</span>     <span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">170</span> <span class="c1"># TODO: Implement parameter mapping for solvers and backends</span>
+<span class="g g-Whitespace">    </span><span class="mi">171</span> <span class="k">if</span> <span class="n">max_seconds</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+<span class="ne">ValueError</span>: Solver OSQP is not installed/supported, supported solvers are: [&#39;CVXOPT&#39;, &#39;GLPK&#39;, &#39;GLPK_MI&#39;, &#39;HIGHS&#39;, &#39;SCIP&#39;, &#39;SCIPY&#39;]
 </pre></div>
 </div>
 </div>
@@ -545,7 +533,7 @@ optimal rho estimate: 9.81e+00
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>np.float64(-0.30000000000000004)
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-0.30000000000000004
 </pre></div>
 </div>
 </div>
