@@ -20,7 +20,7 @@ _cvxpy_mip_solvers = ["GUROBI", "CPLEX", "SCIP", "SCIPY", "CBC", "GLPK_MI"]
 _picos_mip_solvers = ["gurobi", "cplex", "scip", "glpk"]
 
 
-DEFAULT_BACKEND, = available_backends()[:1] or (NoBackend(),)
+(DEFAULT_BACKEND,) = available_backends()[:1] or (NoBackend(),)
 DEFAULT_SOLVER = None
 
 if not DEFAULT_BACKEND:
