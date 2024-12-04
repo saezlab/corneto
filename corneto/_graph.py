@@ -1,6 +1,6 @@
 import abc
 import pickle
-from collections import OrderedDict
+from collections import OrderedDict, deque
 from copy import deepcopy
 from enum import Enum
 from itertools import chain
@@ -631,6 +631,32 @@ class BaseGraph(abc.ABC):
 
         with opener(filename, "rb") as f:
             return pickle.load(f)
+
+    def toposort(self):
+        # Topological sort using Kahn's algorithm
+        in_degree = {v: len(set(self.predecessors(v))) for v in self._get_vertices()}
+
+        # Initialize queue with nodes having zero in-degree
+        queue = deque([v for v in in_degree.keys() if in_degree[v] == 0])
+
+        result = []
+
+        while queue:
+            v = queue.popleft()
+            result.append(v)
+
+            # Decrease the in-degree of successor nodes by 1
+            for successor in self.successors(v):
+                in_degree[successor] -= 1
+                if in_degree[successor] == 0:
+                    queue.append(successor)
+
+        # Check if topological sort is possible (i.e., graph has no cycles)
+        if len(result) == self.num_vertices:
+            return result
+        else:
+            raise ValueError("Graph contains a cycle, so topological sort is not possible.")
+
 
     def reachability_analysis(
         self,

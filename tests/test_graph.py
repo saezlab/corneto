@@ -274,6 +274,21 @@ def test_graph_bfs_rev():
     assert dist[4] == 2
     assert 5 not in dist
 
+def test_graph_toposort():
+    g = Graph()
+    g.add_edge("a", "b")
+    g.add_edge("a", "c")
+    g.add_edge("c", "b")
+    g.add_edge("c", "d")
+    g.add_edge("c", "e")
+    g.add_edge("b", "d")
+    g.add_edge("d", "e")
+    order = g.toposort()
+    assert order.index("a") < order.index("b")
+    assert order.index("a") < order.index("c")
+    assert order.index("c") < order.index("d")
+    assert order.index("d") < order.index("e")
+    assert order.index("b") < order.index("d")
 
 def test_incidence_single_edge_single_source_vertex():
     g = Graph()
