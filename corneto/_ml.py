@@ -4,6 +4,13 @@ from types import MethodType
 from corneto._graph import BaseGraph
 from collections import deque
 
+import numpy as np
+try:
+    import pandas as pd
+    _PANDAS_AVAILABLE = True
+except ImportError:
+    _PANDAS_AVAILABLE = False
+
 def _load_keras():
     # Check if keras_core is installed,
     # then find the best backend, prioritizing JAX then TF then Pytorch:
@@ -18,11 +25,79 @@ def _load_keras():
     except ImportError as e:
         raise e
 
+def kfold_nonzero_splits(
+    data,
+    n_splits: int = 5,
+    shuffle: bool = True,
+    random_state: int = 42
+):
+    from sklearn.model_selection import KFold
+    """
+    Perform K-fold splitting on all nonzero cells in the input data,
+    returning two structures per fold (train and val), each the same shape
+    as the original data, but with NaNs (or a numpy.nan equivalent) marking
+    the 'left-out' entries.
+
+    Parameters
+    ----------
+    data : array-like or pd.DataFrame
+        Input data with shape (features x samples) and values in {-1, 0, 1}.
+        Can be a numpy array or a pandas DataFrame.
+    n_splits : int, optional
+        Number of folds (default=5).
+    shuffle : bool, optional
+        Shuffle the labeled cells before splitting (default=True).
+    random_state : int, optional
+        Random seed for reproducibility (default=42).
+
+    Returns
+    ------
+    train, val : tuple of the same type as `data`
+        - Both have the same shape as `data`.
+        - In `train`, all cells that belong to the validation fold are set to NaN.
+        - In `val`, all cells that are not in the validation fold are set to NaN.
+    """
+    if _PANDAS_AVAILABLE and isinstance(data, pd.DataFrame):
+        is_pandas = True
+        arr = data.to_numpy()
+    else:
+        is_pandas = False
+        arr = np.asarray(data)
+
+    # Identify positions of nonzero (±1) cells
+    row_indices, col_indices = np.where(arr != 0)
+    labeled_positions = np.array(list(zip(row_indices, col_indices)))
+
+    # Use KFold to split these labeled positions
+    kf = KFold(n_splits=n_splits, shuffle=shuffle, random_state=random_state)
+
+    for train_idx, val_idx in kf.split(labeled_positions):
+        train_copy = arr.copy()
+        val_copy = arr.copy()
+
+        # Set NaNs for validation fold in train_copy
+        val_positions = labeled_positions[val_idx]
+        for r, c in val_positions:
+            train_copy[r, c] = np.nan
+
+        # Set NaNs for training fold in val_copy
+        train_positions = labeled_positions[train_idx]
+        for r, c in train_positions:
+            val_copy[r, c] = np.nan
+
+        if is_pandas:
+            train_copy = pd.DataFrame(train_copy, index=data.index, columns=data.columns)
+            val_copy = pd.DataFrame(val_copy, index=data.index, columns=data.columns)
+
+        yield train_copy, val_copy
+
+
 def toposort(G):
     # Topological sort using Kahn's algorithm
+    # See: https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.dag.topological_sort.html
     in_degree = {v: len(set(G.predecessors(v))) for v in G._get_vertices()}
 
-    # Initialize queue with nodes having zero in-degree
+    # Initialize queue with nodes having zero in-degrees
     queue = deque([v for v in in_degree.keys() if in_degree[v] == 0])
 
     result = []

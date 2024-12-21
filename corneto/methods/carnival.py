@@ -11,7 +11,7 @@ from corneto.methods.signal._util import (
     get_interactions,
 )
 from corneto.methods.signaling import create_flow_graph, signflow
-
+import warnings
 
 def _info(s, show=True):
     if show:
@@ -491,6 +491,8 @@ def create_flow_carnival_v4(
     upper_bound_flow=1000,
     penalty_on="signal",  # or "flow"
     slack_reg=False,
+    set_perturbation_values=True,
+    fix_input_values=True,
     backend=cn.DEFAULT_BACKEND,
 ):
     At, Ah = get_incidence_matrices_of_edges(G)
@@ -572,13 +574,39 @@ def create_flow_carnival_v4(
         [G.V.index(v) for exp in exp_list for v in exp_list[exp]["input"]]
     )
     perturbation_values = np.array(
-        [val for exp in exp_list for val in exp_list[exp]["input"].values()]
+        [int(np.sign(val)) for exp in exp_list for val in exp_list[exp]["input"].values()]
     )
 
     # Set the perturbations to the given values
-    P += V[vertex_indexes, :] == perturbation_values[:, None]
+    if set_perturbation_values:
+        warnings.warn("Using set_perturbation_values, please disable since behavior differs from original carnival")
+        nonzero_mask = perturbation_values != 0
+        nonzero_vertex_indexes = vertex_indexes[nonzero_mask]
+        nonzero_perturbation_values = perturbation_values[nonzero_mask]
+        # Assign the perturbations only to the nonzero ones
+        P += V[nonzero_vertex_indexes, :] == nonzero_perturbation_values[:, None]
+
+    all_vertices = G.V
+    all_inputs = [k for k in all_vertices if len(list(G.predecessors(k)))==0]
+
     for i, exp in enumerate(exp_list):
-        # measuremenents:
+        # Any input not indicated in the condition must be blocked
+        if not set_perturbation_values:
+            # Block flow from any input not in the set of valid inputs
+            # for the given condition
+            m_inputs = list(exp_list[exp]["input"].keys())
+            for v_input in all_inputs:
+                if v_input not in m_inputs:
+                    P += V[all_vertices.index(v_input), i] == 0
+                else:
+                    input_value = int(exp_list[exp]["input"][v_input])
+                    if input_value != 0:
+                        if fix_input_values:
+                            if input_value == -1 or input_value == 1:
+                                P += V[all_vertices.index(v_input), i] == input_value
+                            else:
+                                raise ValueError(f"Invalid value for input vertex {v_input}: {input_value} (only -1, 0 or 1)")
+
         m_nodes = list(exp_list[exp]["output"].keys())
         m_values = np.array(list(exp_list[exp]["output"].values()))
         m_nodes_positions = [G.V.index(key) for key in m_nodes]
