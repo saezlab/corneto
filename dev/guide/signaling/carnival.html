@@ -515,38 +515,38 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(CORNETO) Dec 21 06:44:46 PM - INFO    : 2/2 inputs mapped to the graph
-(CORNETO) Dec 21 06:44:46 PM - INFO    : 2/2 outputs mapped to the graph
-(CORNETO) Dec 21 06:44:46 PM - INFO    : Pruning the graph with size: V x E = (6, 6)...
-(CORNETO) Dec 21 06:44:46 PM - INFO    : Finished. Final size: V x E = (6, 6).
-(CORNETO) Dec 21 06:44:46 PM - INFO    : 2/2 inputs after pruning.
-(CORNETO) Dec 21 06:44:46 PM - INFO    : 2/2 outputs after pruning.
-(CORNETO) Dec 21 06:44:46 PM - INFO    : Converting into a flow graph...
-(CORNETO) Dec 21 06:44:46 PM - INFO    : Creating a network flow problem...
-(CORNETO) Dec 21 06:44:46 PM - INFO    : Preprocess completed.
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(CORNETO) Dec 23 12:43:49 PM - INFO    : 2/2 inputs mapped to the graph
+(CORNETO) Dec 23 12:43:49 PM - INFO    : 2/2 outputs mapped to the graph
+(CORNETO) Dec 23 12:43:49 PM - INFO    : Pruning the graph with size: V x E = (6, 6)...
+(CORNETO) Dec 23 12:43:49 PM - INFO    : Finished. Final size: V x E = (6, 6).
+(CORNETO) Dec 23 12:43:49 PM - INFO    : 2/2 inputs after pruning.
+(CORNETO) Dec 23 12:43:49 PM - INFO    : 2/2 outputs after pruning.
+(CORNETO) Dec 23 12:43:49 PM - INFO    : Converting into a flow graph...
+(CORNETO) Dec 23 12:43:49 PM - INFO    : Creating a network flow problem...
+(CORNETO) Dec 23 12:43:49 PM - INFO    : Preprocess completed.
 ===============================================================================
                                      CVXPY                                     
                                      v1.6.0                                    
 ===============================================================================
-(CVXPY) Dec 21 06:44:46 PM: Your problem has 86 variables, 197 constraints, and 0 parameters.
-(CVXPY) Dec 21 06:44:46 PM: It is compliant with the following grammars: DCP, DQCP
-(CVXPY) Dec 21 06:44:46 PM: (If you need to solve this problem multiple times, but with different data, consider using parameters.)
-(CVXPY) Dec 21 06:44:46 PM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
-(CVXPY) Dec 21 06:44:46 PM: Your problem is compiled with the CPP canonicalization backend.
+(CVXPY) Dec 23 12:43:49 PM: Your problem has 86 variables, 197 constraints, and 0 parameters.
+(CVXPY) Dec 23 12:43:49 PM: It is compliant with the following grammars: DCP, DQCP
+(CVXPY) Dec 23 12:43:49 PM: (If you need to solve this problem multiple times, but with different data, consider using parameters.)
+(CVXPY) Dec 23 12:43:49 PM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
+(CVXPY) Dec 23 12:43:49 PM: Your problem is compiled with the CPP canonicalization backend.
 -------------------------------------------------------------------------------
                                   Compilation                                  
 -------------------------------------------------------------------------------
-(CVXPY) Dec 21 06:44:46 PM: Compiling problem (target solver=SCIP).
-(CVXPY) Dec 21 06:44:46 PM: Reduction chain: Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; SCIP
-(CVXPY) Dec 21 06:44:46 PM: Applying reduction Dcp2Cone
-(CVXPY) Dec 21 06:44:46 PM: Applying reduction CvxAttr2Constr
-(CVXPY) Dec 21 06:44:46 PM: Applying reduction ConeMatrixStuffing
-(CVXPY) Dec 21 06:44:46 PM: Applying reduction SCIP
-(CVXPY) Dec 21 06:44:46 PM: Finished problem compilation (took 3.023e-02 seconds).
+(CVXPY) Dec 23 12:43:49 PM: Compiling problem (target solver=SCIP).
+(CVXPY) Dec 23 12:43:49 PM: Reduction chain: Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; SCIP
+(CVXPY) Dec 23 12:43:49 PM: Applying reduction Dcp2Cone
+(CVXPY) Dec 23 12:43:49 PM: Applying reduction CvxAttr2Constr
+(CVXPY) Dec 23 12:43:49 PM: Applying reduction ConeMatrixStuffing
+(CVXPY) Dec 23 12:43:49 PM: Applying reduction SCIP
+(CVXPY) Dec 23 12:43:49 PM: Finished problem compilation (took 3.017e-02 seconds).
 -------------------------------------------------------------------------------
                                 Numerical solver                               
 -------------------------------------------------------------------------------
-(CVXPY) Dec 21 06:44:46 PM: Invoking solver SCIP  to obtain a solution.
+(CVXPY) Dec 23 12:43:49 PM: Invoking solver SCIP  to obtain a solution.
 presolving:
 (round 1, fast)       36 del vars, 95 del conss, 0 add conss, 48 chg bounds, 1 chg sides, 23 chg coeffs, 0 upgd conss, 0 impls, 28 clqs
 (round 2, fast)       54 del vars, 129 del conss, 0 add conss, 52 chg bounds, 9 chg sides, 31 chg coeffs, 0 upgd conss, 0 impls, 20 clqs
@@ -578,15 +578,13 @@ transformed objective value is always integral (scale: 0.1)
 Presolving Time: 0.00
 
  time | node  | left  |LP iter|LP it/n|mem/heur|mdpt |vars |cons |rows |cuts |sepa|confs|strbr|  dualbound   | primalbound  |  gap   | compl. 
-p 0.0s|     1 |     0 |     0 |     - |  clique|   0 |  27 |  45 |  42 |   0 |  0 |   0 |   0 |-3.500000e+00 | 1.000000e-01 |    Inf | unknown
-p 0.0s|     1 |     0 |     0 |     - |   locks|   0 |  27 |  45 |  42 |   0 |  0 |   0 |   0 |-3.500000e+00 |-6.000000e-01 | 483.33%| unknown
-p 0.0s|     1 |     0 |     0 |     - | vbounds|   0 |  27 |  45 |  42 |   0 |  0 |   0 |   0 |-3.500000e+00 |-1.600000e+00 | 118.75%| unknown
-p 0.0s|     1 |     0 |     0 |     - | vbounds|   0 |  27 |  47 |  42 |   0 |  0 |   2 |   0 |-3.500000e+00 |-3.200000e+00 |   9.37%| unknown
-  0.0s|     1 |     0 |    23 |     - |  1788k |   0 |  27 |  48 |  42 |   0 |  0 |   7 |   0 |-3.300000e+00 |-3.200000e+00 |   3.13%| unknown
-  0.0s|     1 |     0 |    23 |     - |  1788k |   0 |  27 |  48 |  39 |   0 |  0 |   7 |   0 |-3.300000e+00 |-3.200000e+00 |   3.13%| unknown
-  0.0s|     1 |     0 |    26 |     - |  1794k |   0 |  27 |  44 |  36 |   3 |  1 |   7 |   0 |-3.300000e+00 |-3.200000e+00 |   3.13%| unknown
-r 0.0s|     1 |     0 |    26 |     - |rounding|   0 |  27 |  44 |  36 |   3 |  1 |   7 |   0 |-3.300000e+00 |-3.300000e+00 |   0.00%| unknown
-  0.0s|     1 |     0 |    26 |     - |  1795k |   0 |  27 |  44 |  36 |   3 |  1 |   7 |   0 |-3.300000e+00 |-3.300000e+00 |   0.00%| unknown
+p 0.0s|     1 |     0 |     3 |     - |  clique|   0 |  27 |  45 |  42 |   0 |  0 |   0 |   0 |-3.500000e+00 | 1.000000e-01 |    Inf | unknown
+p 0.0s|     1 |     0 |     3 |     - |   locks|   0 |  27 |  45 |  42 |   0 |  0 |   0 |   0 |-3.500000e+00 |-6.000000e-01 | 483.33%| unknown
+p 0.0s|     1 |     0 |     3 |     - | vbounds|   0 |  27 |  45 |  42 |   0 |  0 |   0 |   0 |-3.500000e+00 |-1.600000e+00 | 118.75%| unknown
+p 0.0s|     1 |     0 |     3 |     - | vbounds|   0 |  27 |  46 |  42 |   0 |  0 |   1 |   0 |-3.500000e+00 |-3.200000e+00 |   9.37%| unknown
+  0.0s|     1 |     0 |    18 |     - |  1786k |   0 |  27 |  29 |  42 |   0 |  0 |   7 |   0 |-3.300000e+00 |-3.200000e+00 |   3.13%| unknown
+r 0.0s|     1 |     0 |    18 |     - |rounding|   0 |  27 |  29 |  42 |   0 |  0 |   7 |   0 |-3.300000e+00 |-3.300000e+00 |   0.00%| unknown
+  0.0s|     1 |     0 |    18 |     - |  1786k |   0 |  27 |  29 |  42 |   0 |  0 |   7 |   0 |-3.300000e+00 |-3.300000e+00 |   0.00%| unknown
 
 SCIP Status        : problem is solved [optimal solution found]
 Solving Time (sec) : 0.01
@@ -597,11 +595,11 @@ Gap                : 0.00 %
 -------------------------------------------------------------------------------
                                     Summary                                    
 -------------------------------------------------------------------------------
-(CVXPY) Dec 21 06:44:46 PM: Problem status: optimal
-(CVXPY) Dec 21 06:44:46 PM: Optimal value: 7.000e-01
-(CVXPY) Dec 21 06:44:46 PM: Compilation took 3.023e-02 seconds
-(CVXPY) Dec 21 06:44:46 PM: Solver (including time spent in interface) took 1.593e-02 seconds
-(CORNETO) Dec 21 06:44:46 PM - INFO    : Finished in 0.07 s.
+(CVXPY) Dec 23 12:43:49 PM: Problem status: optimal
+(CVXPY) Dec 23 12:43:49 PM: Optimal value: 7.000e-01
+(CVXPY) Dec 23 12:43:49 PM: Compilation took 3.017e-02 seconds
+(CVXPY) Dec 23 12:43:49 PM: Solver (including time spent in interface) took 1.226e-02 seconds
+(CORNETO) Dec 23 12:43:49 PM - INFO    : Finished in 0.07 s.
 </pre></div>
 </div>
 </div>
@@ -681,33 +679,33 @@ Gap                : 0.00 %
   <tbody>
     <tr>
       <th>0</th>
-      <td>M1</td>
-      <td>1.0</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>I1</td>
-      <td>1.0</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>N1</td>
-      <td>0.0</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>I2</td>
-      <td>1.0</td>
-    </tr>
-    <tr>
-      <th>4</th>
       <td>M2</td>
       <td>1.0</td>
     </tr>
     <tr>
-      <th>5</th>
+      <th>1</th>
       <td>N2</td>
       <td>-1.0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>I1</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>N1</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>I2</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>M1</td>
+      <td>1.0</td>
     </tr>
     <tr>
       <th>6</th>
