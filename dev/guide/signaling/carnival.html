@@ -30,7 +30,7 @@
   <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 <link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster.custom.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster.bundle.min.css" />
@@ -64,7 +64,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://saezlab.github.io/corneto/dev/_static/switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.0.0.dev2';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.0.0.dev3';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
@@ -451,13 +451,31 @@
 <p>The original version of CARNIVAL was implemented in R and CPLEX. The new re-implementationo of CARNIVAL in CORNETO support a wide variety of solvers thanks to the support of both CVXPY and PICOS. It also has more flexibility since the problem is symbolically defined, and can be modified through the CORNETO API after creating the CARNIVAL problem. This gives user extra flexibility to modify the problem or to use CORNETO as a building block for other optimization problems.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">corneto</span> <span class="k">as</span> <span class="nn">cn</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">corneto</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cn</span>
 
 <span class="n">cn</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(CVXPY) Jan 07 08:43:07 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+(CVXPY) Jan 07 08:43:07 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+(CVXPY) Jan 07 08:43:07 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+(CVXPY) Jan 07 08:43:07 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+(CVXPY) Jan 07 08:43:08 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+(CVXPY) Jan 07 08:43:08 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+(CVXPY) Jan 07 08:43:08 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+(CVXPY) Jan 07 08:43:08 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+</pre></div>
+</div>
 <div class="output text_html"></div><div class="output text_html">
         <table style='background-color:rgba(0, 0, 0, 0);'>
         <tr>
@@ -466,7 +484,7 @@
             </td>
             <td>
             <table>
-                <tr><td>Installed version:</td><td style='text-align:left'>v1.0.0.dev2 (latest stable: v1.0.0-alpha)</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.6.0, PICOS v2.5.1</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CVXOPT, GLPK, GLPK_MI, HIGHS, SCIP, SCIPY</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.3</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href=https://github.com/saezlab/corneto>https://github.com/saezlab/corneto</a></td></tr>
+                <tr><td>Installed version:</td><td style='text-align:left'>v1.0.0.dev3 (latest stable: v1.0.0-alpha)</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.6.0, PICOS v2.5.1</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CVXOPT, GLPK, GLPK_MI, SCIP, SCIPY</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.3</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href=https://github.com/saezlab/corneto>https://github.com/saezlab/corneto</a></td></tr>
             </table>
             </td>
         </tr>
@@ -496,7 +514,7 @@
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">corneto.methods</span> <span class="kn">import</span> <span class="n">runVanillaCarnival</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods</span><span class="w"> </span><span class="kn">import</span> <span class="n">runVanillaCarnival</span>
 
 <span class="c1"># These are the measurements (e.g. TF activity from Decoupler).</span>
 <span class="c1"># Positive values correspond to up-regulation and negative values</span>
@@ -515,38 +533,42 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(CORNETO) Dec 23 12:43:49 PM - INFO    : 2/2 inputs mapped to the graph
-(CORNETO) Dec 23 12:43:49 PM - INFO    : 2/2 outputs mapped to the graph
-(CORNETO) Dec 23 12:43:49 PM - INFO    : Pruning the graph with size: V x E = (6, 6)...
-(CORNETO) Dec 23 12:43:49 PM - INFO    : Finished. Final size: V x E = (6, 6).
-(CORNETO) Dec 23 12:43:49 PM - INFO    : 2/2 inputs after pruning.
-(CORNETO) Dec 23 12:43:49 PM - INFO    : 2/2 outputs after pruning.
-(CORNETO) Dec 23 12:43:49 PM - INFO    : Converting into a flow graph...
-(CORNETO) Dec 23 12:43:49 PM - INFO    : Creating a network flow problem...
-(CORNETO) Dec 23 12:43:49 PM - INFO    : Preprocess completed.
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(CORNETO) Jan 07 08:43:08 PM - INFO    : 2/2 inputs mapped to the graph
+(CORNETO) Jan 07 08:43:08 PM - INFO    : 2/2 outputs mapped to the graph
+(CORNETO) Jan 07 08:43:08 PM - INFO    : Pruning the graph with size: V x E = (6, 6)...
+(CORNETO) Jan 07 08:43:08 PM - INFO    : Finished. Final size: V x E = (6, 6).
+(CORNETO) Jan 07 08:43:08 PM - INFO    : 2/2 inputs after pruning.
+(CORNETO) Jan 07 08:43:08 PM - INFO    : 2/2 outputs after pruning.
+(CORNETO) Jan 07 08:43:08 PM - INFO    : Converting into a flow graph...
+(CORNETO) Jan 07 08:43:08 PM - INFO    : Creating a network flow problem...
+(CORNETO) Jan 07 08:43:08 PM - INFO    : Preprocess completed.
+(CVXPY) Jan 07 08:43:08 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+(CVXPY) Jan 07 08:43:08 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
 ===============================================================================
                                      CVXPY                                     
                                      v1.6.0                                    
 ===============================================================================
-(CVXPY) Dec 23 12:43:49 PM: Your problem has 86 variables, 197 constraints, and 0 parameters.
-(CVXPY) Dec 23 12:43:49 PM: It is compliant with the following grammars: DCP, DQCP
-(CVXPY) Dec 23 12:43:49 PM: (If you need to solve this problem multiple times, but with different data, consider using parameters.)
-(CVXPY) Dec 23 12:43:49 PM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
-(CVXPY) Dec 23 12:43:49 PM: Your problem is compiled with the CPP canonicalization backend.
+(CVXPY) Jan 07 08:43:08 PM: Your problem has 86 variables, 197 constraints, and 0 parameters.
+(CVXPY) Jan 07 08:43:08 PM: It is compliant with the following grammars: DCP, DQCP
+(CVXPY) Jan 07 08:43:08 PM: (If you need to solve this problem multiple times, but with different data, consider using parameters.)
+(CVXPY) Jan 07 08:43:08 PM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
+(CVXPY) Jan 07 08:43:08 PM: Your problem is compiled with the CPP canonicalization backend.
 -------------------------------------------------------------------------------
                                   Compilation                                  
 -------------------------------------------------------------------------------
-(CVXPY) Dec 23 12:43:49 PM: Compiling problem (target solver=SCIP).
-(CVXPY) Dec 23 12:43:49 PM: Reduction chain: Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; SCIP
-(CVXPY) Dec 23 12:43:49 PM: Applying reduction Dcp2Cone
-(CVXPY) Dec 23 12:43:49 PM: Applying reduction CvxAttr2Constr
-(CVXPY) Dec 23 12:43:49 PM: Applying reduction ConeMatrixStuffing
-(CVXPY) Dec 23 12:43:49 PM: Applying reduction SCIP
-(CVXPY) Dec 23 12:43:49 PM: Finished problem compilation (took 3.017e-02 seconds).
+(CVXPY) Jan 07 08:43:08 PM: Compiling problem (target solver=SCIP).
+(CVXPY) Jan 07 08:43:08 PM: Reduction chain: Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; SCIP
+(CVXPY) Jan 07 08:43:08 PM: Applying reduction Dcp2Cone
+(CVXPY) Jan 07 08:43:08 PM: Applying reduction CvxAttr2Constr
+(CVXPY) Jan 07 08:43:08 PM: Applying reduction ConeMatrixStuffing
+(CVXPY) Jan 07 08:43:08 PM: Applying reduction SCIP
+(CVXPY) Jan 07 08:43:08 PM: Finished problem compilation (took 2.964e-02 seconds).
 -------------------------------------------------------------------------------
                                 Numerical solver                               
 -------------------------------------------------------------------------------
-(CVXPY) Dec 23 12:43:49 PM: Invoking solver SCIP  to obtain a solution.
+(CVXPY) Jan 07 08:43:08 PM: Invoking solver SCIP  to obtain a solution.
 presolving:
 (round 1, fast)       36 del vars, 95 del conss, 0 add conss, 48 chg bounds, 1 chg sides, 23 chg coeffs, 0 upgd conss, 0 impls, 28 clqs
 (round 2, fast)       54 del vars, 129 del conss, 0 add conss, 52 chg bounds, 9 chg sides, 31 chg coeffs, 0 upgd conss, 0 impls, 20 clqs
@@ -578,28 +600,27 @@ transformed objective value is always integral (scale: 0.1)
 Presolving Time: 0.00
 
  time | node  | left  |LP iter|LP it/n|mem/heur|mdpt |vars |cons |rows |cuts |sepa|confs|strbr|  dualbound   | primalbound  |  gap   | compl. 
-p 0.0s|     1 |     0 |     3 |     - |  clique|   0 |  27 |  45 |  42 |   0 |  0 |   0 |   0 |-3.500000e+00 | 1.000000e-01 |    Inf | unknown
-p 0.0s|     1 |     0 |     3 |     - |   locks|   0 |  27 |  45 |  42 |   0 |  0 |   0 |   0 |-3.500000e+00 |-6.000000e-01 | 483.33%| unknown
-p 0.0s|     1 |     0 |     3 |     - | vbounds|   0 |  27 |  45 |  42 |   0 |  0 |   0 |   0 |-3.500000e+00 |-1.600000e+00 | 118.75%| unknown
-p 0.0s|     1 |     0 |     3 |     - | vbounds|   0 |  27 |  46 |  42 |   0 |  0 |   1 |   0 |-3.500000e+00 |-3.200000e+00 |   9.37%| unknown
-  0.0s|     1 |     0 |    18 |     - |  1786k |   0 |  27 |  29 |  42 |   0 |  0 |   7 |   0 |-3.300000e+00 |-3.200000e+00 |   3.13%| unknown
-r 0.0s|     1 |     0 |    18 |     - |rounding|   0 |  27 |  29 |  42 |   0 |  0 |   7 |   0 |-3.300000e+00 |-3.300000e+00 |   0.00%| unknown
-  0.0s|     1 |     0 |    18 |     - |  1786k |   0 |  27 |  29 |  42 |   0 |  0 |   7 |   0 |-3.300000e+00 |-3.300000e+00 |   0.00%| unknown
+p 0.0s|     1 |     0 |     0 |     - |   locks|   0 |  27 |  46 |  42 |   0 |  0 |   0 |   0 |-3.500000e+00 |-6.000000e-01 | 483.33%| unknown
+p 0.0s|     1 |     0 |     0 |     - | vbounds|   0 |  27 |  46 |  42 |   0 |  0 |   0 |   0 |-3.500000e+00 |-1.600000e+00 | 118.75%| unknown
+p 0.0s|     1 |     0 |     0 |     - | vbounds|   0 |  27 |  47 |  42 |   0 |  0 |   1 |   0 |-3.500000e+00 |-3.200000e+00 |   9.37%| unknown
+  0.0s|     1 |     0 |    14 |     - |  1787k |   0 |  27 |  29 |  42 |   0 |  0 |   7 |   0 |-3.300000e+00 |-3.200000e+00 |   3.13%| unknown
+r 0.0s|     1 |     0 |    14 |     - |rounding|   0 |  27 |  29 |  42 |   0 |  0 |   7 |   0 |-3.300000e+00 |-3.300000e+00 |   0.00%| unknown
+  0.0s|     1 |     0 |    14 |     - |  1788k |   0 |  27 |  29 |  42 |   0 |  0 |   7 |   0 |-3.300000e+00 |-3.300000e+00 |   0.00%| unknown
 
 SCIP Status        : problem is solved [optimal solution found]
-Solving Time (sec) : 0.01
+Solving Time (sec) : 0.00
 Solving Nodes      : 1
-Primal Bound       : -3.30000000000000e+00 (5 solutions)
+Primal Bound       : -3.30000000000000e+00 (4 solutions)
 Dual Bound         : -3.30000000000000e+00
 Gap                : 0.00 %
 -------------------------------------------------------------------------------
                                     Summary                                    
 -------------------------------------------------------------------------------
-(CVXPY) Dec 23 12:43:49 PM: Problem status: optimal
-(CVXPY) Dec 23 12:43:49 PM: Optimal value: 7.000e-01
-(CVXPY) Dec 23 12:43:49 PM: Compilation took 3.017e-02 seconds
-(CVXPY) Dec 23 12:43:49 PM: Solver (including time spent in interface) took 1.226e-02 seconds
-(CORNETO) Dec 23 12:43:49 PM - INFO    : Finished in 0.07 s.
+(CVXPY) Jan 07 08:43:08 PM: Problem status: optimal
+(CVXPY) Jan 07 08:43:08 PM: Optimal value: 7.000e-01
+(CVXPY) Jan 07 08:43:08 PM: Compilation took 2.964e-02 seconds
+(CVXPY) Jan 07 08:43:08 PM: Solver (including time spent in interface) took 1.165e-02 seconds
+(CORNETO) Jan 07 08:43:08 PM - INFO    : Finished in 0.07 s.
 </pre></div>
 </div>
 </div>
@@ -644,9 +665,9 @@ Gap                : 0.00 %
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
-<span class="kn">from</span> <span class="nn">corneto.methods.carnival</span> <span class="kn">import</span> <span class="n">get_result</span><span class="p">,</span> <span class="n">get_selected_edges</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods.carnival</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_result</span><span class="p">,</span> <span class="n">get_selected_edges</span>
 
 <span class="n">V</span><span class="p">,</span> <span class="n">E</span> <span class="o">=</span> <span class="n">get_result</span><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="n">Gf</span><span class="p">)</span>
 <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">V</span><span class="p">)</span>
@@ -684,27 +705,27 @@ Gap                : 0.00 %
     </tr>
     <tr>
       <th>1</th>
-      <td>N2</td>
-      <td>-1.0</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>I1</td>
-      <td>1.0</td>
-    </tr>
-    <tr>
-      <th>3</th>
       <td>N1</td>
       <td>0.0</td>
     </tr>
     <tr>
-      <th>4</th>
-      <td>I2</td>
+      <th>2</th>
+      <td>M1</td>
       <td>1.0</td>
     </tr>
     <tr>
+      <th>3</th>
+      <td>I1</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>N2</td>
+      <td>-1.0</td>
+    </tr>
+    <tr>
       <th>5</th>
-      <td>M1</td>
+      <td>I2</td>
       <td>1.0</td>
     </tr>
     <tr>

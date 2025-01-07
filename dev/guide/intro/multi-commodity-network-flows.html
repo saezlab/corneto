@@ -30,7 +30,7 @@
   <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 <link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster.custom.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster.bundle.min.css" />
@@ -64,7 +64,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://saezlab.github.io/corneto/dev/_static/switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.0.0.dev2';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.0.0.dev3';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
@@ -437,16 +437,34 @@
 <p>Multi-commodity network flows are a mathematical model used to optimize the simultaneous routing of multiple resources through a single network. These models can be applied in various fields, including logistics, telecommunications, and urban planning to improve efficiency and resource allocation. In our example, we will explore the application of this model using a small network consisting of nodes <strong>A, B, C, D,</strong> and <strong>E</strong>, connected by directed edges with specific capacities: <strong>A-&gt;B</strong>, <strong>A-&gt;D</strong>, <strong>B-&gt;C</strong>, <strong>B-&gt;D</strong>, <strong>C-&gt;E</strong>, <strong>D-&gt;C</strong>, and <strong>D-&gt;E</strong>. The network includes two commodities, with the first aiming to maximize flow from node <strong>A</strong> to node <strong>C</strong>, and the second from node <strong>A</strong> to node <strong>E</strong>. Transporting each commodity through the network has a different profit per edge, and the objective is to maximize the total profit while respecting the capacity constraints of each edge.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
-<span class="kn">import</span> <span class="nn">corneto</span> <span class="k">as</span> <span class="nn">cn</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">corneto</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cn</span>
 
 <span class="n">cn</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(CVXPY) Jan 07 08:24:56 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+(CVXPY) Jan 07 08:24:56 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+(CVXPY) Jan 07 08:24:56 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+(CVXPY) Jan 07 08:24:56 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+(CVXPY) Jan 07 08:24:56 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+(CVXPY) Jan 07 08:24:56 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+(CVXPY) Jan 07 08:24:56 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+(CVXPY) Jan 07 08:24:56 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+</pre></div>
+</div>
 <div class="output text_html"></div><div class="output text_html">
         <table style='background-color:rgba(0, 0, 0, 0);'>
         <tr>
@@ -455,7 +473,7 @@
             </td>
             <td>
             <table>
-                <tr><td>Installed version:</td><td style='text-align:left'>v1.0.0.dev2 (latest stable: v1.0.0-alpha)</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.6.0, PICOS v2.5.1</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CVXOPT, GLPK, GLPK_MI, HIGHS, SCIP, SCIPY</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.3</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href=https://github.com/saezlab/corneto>https://github.com/saezlab/corneto</a></td></tr>
+                <tr><td>Installed version:</td><td style='text-align:left'>v1.0.0.dev3 (latest stable: v1.0.0-alpha)</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.6.0, PICOS v2.5.1</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CVXOPT, GLPK, GLPK_MI, SCIP, SCIPY</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.3</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href=https://github.com/saezlab/corneto>https://github.com/saezlab/corneto</a></td></tr>
             </table>
             </td>
         </tr>
@@ -553,29 +571,33 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>===============================================================================
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(CVXPY) Jan 07 08:24:57 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+(CVXPY) Jan 07 08:24:57 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+===============================================================================
                                      CVXPY                                     
                                      v1.6.0                                    
 ===============================================================================
-(CVXPY) Dec 23 12:40:34 PM: Your problem has 20 variables, 70 constraints, and 0 parameters.
-(CVXPY) Dec 23 12:40:34 PM: It is compliant with the following grammars: DCP, DQCP
-(CVXPY) Dec 23 12:40:34 PM: (If you need to solve this problem multiple times, but with different data, consider using parameters.)
-(CVXPY) Dec 23 12:40:34 PM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
-(CVXPY) Dec 23 12:40:34 PM: Your problem is compiled with the CPP canonicalization backend.
+(CVXPY) Jan 07 08:24:57 PM: Your problem has 20 variables, 70 constraints, and 0 parameters.
+(CVXPY) Jan 07 08:24:57 PM: It is compliant with the following grammars: DCP, DQCP
+(CVXPY) Jan 07 08:24:57 PM: (If you need to solve this problem multiple times, but with different data, consider using parameters.)
+(CVXPY) Jan 07 08:24:57 PM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
+(CVXPY) Jan 07 08:24:57 PM: Your problem is compiled with the CPP canonicalization backend.
 -------------------------------------------------------------------------------
                                   Compilation                                  
 -------------------------------------------------------------------------------
-(CVXPY) Dec 23 12:40:34 PM: Compiling problem (target solver=SCIP).
-(CVXPY) Dec 23 12:40:34 PM: Reduction chain: Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; SCIP
-(CVXPY) Dec 23 12:40:34 PM: Applying reduction Dcp2Cone
-(CVXPY) Dec 23 12:40:34 PM: Applying reduction CvxAttr2Constr
-(CVXPY) Dec 23 12:40:34 PM: Applying reduction ConeMatrixStuffing
-(CVXPY) Dec 23 12:40:34 PM: Applying reduction SCIP
-(CVXPY) Dec 23 12:40:34 PM: Finished problem compilation (took 1.607e-02 seconds).
+(CVXPY) Jan 07 08:24:57 PM: Compiling problem (target solver=SCIP).
+(CVXPY) Jan 07 08:24:57 PM: Reduction chain: Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; SCIP
+(CVXPY) Jan 07 08:24:57 PM: Applying reduction Dcp2Cone
+(CVXPY) Jan 07 08:24:57 PM: Applying reduction CvxAttr2Constr
+(CVXPY) Jan 07 08:24:57 PM: Applying reduction ConeMatrixStuffing
+(CVXPY) Jan 07 08:24:57 PM: Applying reduction SCIP
+(CVXPY) Jan 07 08:24:57 PM: Finished problem compilation (took 1.366e-02 seconds).
 -------------------------------------------------------------------------------
                                 Numerical solver                               
 -------------------------------------------------------------------------------
-(CVXPY) Dec 23 12:40:34 PM: Invoking solver SCIP  to obtain a solution.
+(CVXPY) Jan 07 08:24:57 PM: Invoking solver SCIP  to obtain a solution.
 presolving:
    (0.0s) symmetry computation started: requiring (bin +, int +, cont +), (fixed: bin -, int -, cont -)
    (0.0s) no symmetry present (symcode time: 0.00)
@@ -599,10 +621,10 @@ Gap                : 0.00 %
 -------------------------------------------------------------------------------
                                     Summary                                    
 -------------------------------------------------------------------------------
-(CVXPY) Dec 23 12:40:34 PM: Problem status: optimal
-(CVXPY) Dec 23 12:40:34 PM: Optimal value: -1.900e+02
-(CVXPY) Dec 23 12:40:34 PM: Compilation took 1.607e-02 seconds
-(CVXPY) Dec 23 12:40:34 PM: Solver (including time spent in interface) took 5.568e-03 seconds
+(CVXPY) Jan 07 08:24:57 PM: Problem status: optimal
+(CVXPY) Jan 07 08:24:57 PM: Optimal value: -1.900e+02
+(CVXPY) Jan 07 08:24:57 PM: Compilation took 1.366e-02 seconds
+(CVXPY) Jan 07 08:24:57 PM: Solver (including time spent in interface) took 5.927e-03 seconds
 </pre></div>
 </div>
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Problem(Minimize(Expression(AFFINE, UNKNOWN, ())), [Inequality(Constant(CONSTANT, ZERO, (10, 2))), Inequality(Variable((10, 2), _flow)), Equality(Expression(AFFINE, UNKNOWN, (5, 2)), Constant(CONSTANT, ZERO, ())), Inequality(Expression(AFFINE, UNKNOWN, (10,))), Inequality(Constant(CONSTANT, ZERO, (10,)))])

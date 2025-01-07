@@ -30,7 +30,7 @@
   <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 <link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster.custom.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster.bundle.min.css" />
@@ -64,7 +64,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://saezlab.github.io/corneto/dev/_static/switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.0.0.dev2';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.0.0.dev3';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
@@ -457,13 +457,31 @@
 <p>We will see how to use CORNETO to easily model and solve to optimality this problem.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">corneto</span> <span class="k">as</span> <span class="nn">cn</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">corneto</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cn</span>
 
 <span class="n">cn</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(CVXPY) Jan 07 08:24:54 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+(CVXPY) Jan 07 08:24:54 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+(CVXPY) Jan 07 08:24:54 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+(CVXPY) Jan 07 08:24:54 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+(CVXPY) Jan 07 08:24:54 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+(CVXPY) Jan 07 08:24:54 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+(CVXPY) Jan 07 08:24:54 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+(CVXPY) Jan 07 08:24:54 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+</pre></div>
+</div>
 <div class="output text_html"></div><div class="output text_html">
         <table style='background-color:rgba(0, 0, 0, 0);'>
         <tr>
@@ -472,7 +490,7 @@
             </td>
             <td>
             <table>
-                <tr><td>Installed version:</td><td style='text-align:left'>v1.0.0.dev2 (latest stable: v1.0.0-alpha)</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.6.0, PICOS v2.5.1</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CVXOPT, GLPK, GLPK_MI, HIGHS, SCIP, SCIPY</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.3</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href=https://github.com/saezlab/corneto>https://github.com/saezlab/corneto</a></td></tr>
+                <tr><td>Installed version:</td><td style='text-align:left'>v1.0.0.dev3 (latest stable: v1.0.0-alpha)</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.6.0, PICOS v2.5.1</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CVXOPT, GLPK, GLPK_MI, SCIP, SCIPY</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.3</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href=https://github.com/saezlab/corneto>https://github.com/saezlab/corneto</a></td></tr>
             </table>
             </td>
         </tr>
@@ -488,7 +506,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;corneto.DeprecatedBackend at 0x7fcba0729150&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;corneto.DeprecatedBackend at 0x7f6b98613410&gt;
 </pre></div>
 </div>
 </div>
@@ -526,7 +544,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;corneto.backend._base.ProblemDef at 0x7fcba074d8d0&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;corneto.backend._base.ProblemDef at 0x7f6b51347210&gt;
 </pre></div>
 </div>
 </div>
@@ -540,8 +558,8 @@
 <div class="cell_output docutils container">
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;obj5&#39;: Variable((1,), obj5, boolean=True),
  &#39;obj4&#39;: Variable((1,), obj4, boolean=True),
- &#39;obj3&#39;: Variable((1,), obj3, boolean=True),
  &#39;obj2&#39;: Variable((1,), obj2, boolean=True),
+ &#39;obj3&#39;: Variable((1,), obj3, boolean=True),
  &#39;obj1&#39;: Variable((1,), obj1, boolean=True)}
 </pre></div>
 </div>
@@ -557,7 +575,11 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The max. value you can get with the backpack is $15.0
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(CVXPY) Jan 07 08:24:54 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+(CVXPY) Jan 07 08:24:54 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+The max. value you can get with the backpack is $15.0
 </pre></div>
 </div>
 </div>
@@ -702,30 +724,34 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>===============================================================================
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(CVXPY) Jan 07 08:24:54 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+(CVXPY) Jan 07 08:24:54 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+===============================================================================
                                      CVXPY                                     
                                      v1.6.0                                    
 ===============================================================================
-(CVXPY) Dec 23 12:40:32 PM: Your problem has 50 variables, 1 constraints, and 0 parameters.
-(CVXPY) Dec 23 12:40:32 PM: It is compliant with the following grammars: DCP, DQCP
-(CVXPY) Dec 23 12:40:32 PM: (If you need to solve this problem multiple times, but with different data, consider using parameters.)
-(CVXPY) Dec 23 12:40:32 PM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
-(CVXPY) Dec 23 12:40:32 PM: Your problem is compiled with the CPP canonicalization backend.
+(CVXPY) Jan 07 08:24:54 PM: Your problem has 50 variables, 1 constraints, and 0 parameters.
+(CVXPY) Jan 07 08:24:54 PM: It is compliant with the following grammars: DCP, DQCP
+(CVXPY) Jan 07 08:24:54 PM: (If you need to solve this problem multiple times, but with different data, consider using parameters.)
+(CVXPY) Jan 07 08:24:54 PM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
+(CVXPY) Jan 07 08:24:54 PM: Your problem is compiled with the CPP canonicalization backend.
 -------------------------------------------------------------------------------
                                   Compilation                                  
 -------------------------------------------------------------------------------
-(CVXPY) Dec 23 12:40:32 PM: Compiling problem (target solver=SCIP).
-(CVXPY) Dec 23 12:40:32 PM: Reduction chain: FlipObjective -&gt; Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; SCIP
-(CVXPY) Dec 23 12:40:32 PM: Applying reduction FlipObjective
-(CVXPY) Dec 23 12:40:32 PM: Applying reduction Dcp2Cone
-(CVXPY) Dec 23 12:40:32 PM: Applying reduction CvxAttr2Constr
-(CVXPY) Dec 23 12:40:32 PM: Applying reduction ConeMatrixStuffing
-(CVXPY) Dec 23 12:40:32 PM: Applying reduction SCIP
-(CVXPY) Dec 23 12:40:32 PM: Finished problem compilation (took 6.768e-03 seconds).
+(CVXPY) Jan 07 08:24:54 PM: Compiling problem (target solver=SCIP).
+(CVXPY) Jan 07 08:24:54 PM: Reduction chain: FlipObjective -&gt; Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; SCIP
+(CVXPY) Jan 07 08:24:54 PM: Applying reduction FlipObjective
+(CVXPY) Jan 07 08:24:54 PM: Applying reduction Dcp2Cone
+(CVXPY) Jan 07 08:24:54 PM: Applying reduction CvxAttr2Constr
+(CVXPY) Jan 07 08:24:54 PM: Applying reduction ConeMatrixStuffing
+(CVXPY) Jan 07 08:24:54 PM: Applying reduction SCIP
+(CVXPY) Jan 07 08:24:54 PM: Finished problem compilation (took 7.971e-03 seconds).
 -------------------------------------------------------------------------------
                                 Numerical solver                               
 -------------------------------------------------------------------------------
-(CVXPY) Dec 23 12:40:32 PM: Invoking solver SCIP  to obtain a solution.
+(CVXPY) Jan 07 08:24:54 PM: Invoking solver SCIP  to obtain a solution.
 feasible solution found by trivial heuristic after 0.0 seconds, objective value -6.000000e+02
 presolving:
 (round 1, fast)       4 del vars, 0 del conss, 0 add conss, 0 chg bounds, 0 chg sides, 0 chg coeffs, 0 upgd conss, 0 impls, 0 clqs
@@ -746,10 +772,10 @@ Gap                : 0.00 %
 -------------------------------------------------------------------------------
                                     Summary                                    
 -------------------------------------------------------------------------------
-(CVXPY) Dec 23 12:40:32 PM: Problem status: optimal
-(CVXPY) Dec 23 12:40:32 PM: Optimal value: 7.534e+03
-(CVXPY) Dec 23 12:40:32 PM: Compilation took 6.768e-03 seconds
-(CVXPY) Dec 23 12:40:32 PM: Solver (including time spent in interface) took 3.417e-03 seconds
+(CVXPY) Jan 07 08:24:54 PM: Problem status: optimal
+(CVXPY) Jan 07 08:24:54 PM: Optimal value: 7.534e+03
+(CVXPY) Jan 07 08:24:54 PM: Compilation took 7.971e-03 seconds
+(CVXPY) Jan 07 08:24:54 PM: Solver (including time spent in interface) took 3.568e-03 seconds
 </pre></div>
 </div>
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Problem(Maximize(Expression(AFFINE, NONNEGATIVE, ())), [Inequality(Expression(AFFINE, NONNEGATIVE, ()))])

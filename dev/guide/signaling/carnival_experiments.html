@@ -30,7 +30,7 @@
   <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 <link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster.custom.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster.bundle.min.css" />
@@ -64,7 +64,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://saezlab.github.io/corneto/dev/_static/switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.0.0.dev2';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.0.0.dev3';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
@@ -394,13 +394,31 @@
 <p>The original version of CARNIVAL was implemented in R and CPLEX. The new re-implementationo of CARNIVAL in CORNETO support a wide variety of solvers thanks to the support of both CVXPY and PICOS. It also has more flexibility since the problem is symbolically defined, and can be modified through the CORNETO API after creating the CARNIVAL problem. This gives user extra flexibility to modify the problem or to use CORNETO as a building block for other optimization problems.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">corneto</span> <span class="k">as</span> <span class="nn">cn</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">corneto</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cn</span>
 
 <span class="n">cn</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(CVXPY) Jan 07 08:43:10 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+(CVXPY) Jan 07 08:43:10 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+(CVXPY) Jan 07 08:43:10 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+(CVXPY) Jan 07 08:43:10 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+(CVXPY) Jan 07 08:43:10 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+(CVXPY) Jan 07 08:43:10 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+(CVXPY) Jan 07 08:43:10 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+(CVXPY) Jan 07 08:43:10 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+</pre></div>
+</div>
 <div class="output text_html"></div><div class="output text_html">
         <table style='background-color:rgba(0, 0, 0, 0);'>
         <tr>
@@ -409,7 +427,7 @@
             </td>
             <td>
             <table>
-                <tr><td>Installed version:</td><td style='text-align:left'>v1.0.0.dev2 (latest stable: v1.0.0-alpha)</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.6.0, PICOS v2.5.1</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CVXOPT, GLPK, GLPK_MI, HIGHS, SCIP, SCIPY</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.3</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href=https://github.com/saezlab/corneto>https://github.com/saezlab/corneto</a></td></tr>
+                <tr><td>Installed version:</td><td style='text-align:left'>v1.0.0.dev3 (latest stable: v1.0.0-alpha)</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.6.0, PICOS v2.5.1</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CVXOPT, GLPK, GLPK_MI, SCIP, SCIPY</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.3</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href=https://github.com/saezlab/corneto>https://github.com/saezlab/corneto</a></td></tr>
             </table>
             </td>
         </tr>
@@ -439,7 +457,7 @@
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">corneto.methods</span> <span class="kn">import</span> <span class="n">runVanillaCarnival</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods</span><span class="w"> </span><span class="kn">import</span> <span class="n">runVanillaCarnival</span>
 
 <span class="c1"># These are the measurements (e.g. TF activity from Decoupler).</span>
 <span class="c1"># Positive values correspond to up-regulation and negative values</span>
@@ -458,48 +476,52 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(CORNETO) Dec 23 12:43:51 PM - INFO    : 2/2 inputs mapped to the graph
-(CORNETO) Dec 23 12:43:51 PM - INFO    : 2/2 outputs mapped to the graph
-(CORNETO) Dec 23 12:43:51 PM - INFO    : Pruning the graph with size: V x E = (6, 6)...
-(CORNETO) Dec 23 12:43:51 PM - INFO    : Finished. Final size: V x E = (6, 6).
-(CORNETO) Dec 23 12:43:51 PM - INFO    : 2/2 inputs after pruning.
-(CORNETO) Dec 23 12:43:51 PM - INFO    : 2/2 outputs after pruning.
-(CORNETO) Dec 23 12:43:51 PM - INFO    : Converting into a flow graph...
-(CORNETO) Dec 23 12:43:51 PM - INFO    : Creating a network flow problem...
-(CORNETO) Dec 23 12:43:51 PM - INFO    : Preprocess completed.
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(CORNETO) Jan 07 08:43:10 PM - INFO    : 2/2 inputs mapped to the graph
+(CORNETO) Jan 07 08:43:10 PM - INFO    : 2/2 outputs mapped to the graph
+(CORNETO) Jan 07 08:43:10 PM - INFO    : Pruning the graph with size: V x E = (6, 6)...
+(CORNETO) Jan 07 08:43:10 PM - INFO    : Finished. Final size: V x E = (6, 6).
+(CORNETO) Jan 07 08:43:10 PM - INFO    : 2/2 inputs after pruning.
+(CORNETO) Jan 07 08:43:10 PM - INFO    : 2/2 outputs after pruning.
+(CORNETO) Jan 07 08:43:10 PM - INFO    : Converting into a flow graph...
+(CORNETO) Jan 07 08:43:10 PM - INFO    : Creating a network flow problem...
+(CORNETO) Jan 07 08:43:10 PM - INFO    : Preprocess completed.
+(CVXPY) Jan 07 08:43:10 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+(CVXPY) Jan 07 08:43:10 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
 ===============================================================================
                                      CVXPY                                     
                                      v1.6.0                                    
 ===============================================================================
-(CVXPY) Dec 23 12:43:51 PM: Your problem has 86 variables, 197 constraints, and 0 parameters.
-(CVXPY) Dec 23 12:43:51 PM: It is compliant with the following grammars: DCP, DQCP
-(CVXPY) Dec 23 12:43:51 PM: (If you need to solve this problem multiple times, but with different data, consider using parameters.)
-(CVXPY) Dec 23 12:43:51 PM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
-(CVXPY) Dec 23 12:43:51 PM: Your problem is compiled with the CPP canonicalization backend.
+(CVXPY) Jan 07 08:43:10 PM: Your problem has 86 variables, 197 constraints, and 0 parameters.
+(CVXPY) Jan 07 08:43:10 PM: It is compliant with the following grammars: DCP, DQCP
+(CVXPY) Jan 07 08:43:10 PM: (If you need to solve this problem multiple times, but with different data, consider using parameters.)
+(CVXPY) Jan 07 08:43:10 PM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
+(CVXPY) Jan 07 08:43:10 PM: Your problem is compiled with the CPP canonicalization backend.
 -------------------------------------------------------------------------------
                                   Compilation                                  
 -------------------------------------------------------------------------------
-(CVXPY) Dec 23 12:43:51 PM: Compiling problem (target solver=SCIP).
-(CVXPY) Dec 23 12:43:51 PM: Reduction chain: Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; SCIP
-(CVXPY) Dec 23 12:43:51 PM: Applying reduction Dcp2Cone
-(CVXPY) Dec 23 12:43:51 PM: Applying reduction CvxAttr2Constr
-(CVXPY) Dec 23 12:43:51 PM: Applying reduction ConeMatrixStuffing
-(CVXPY) Dec 23 12:43:51 PM: Applying reduction SCIP
-(CVXPY) Dec 23 12:43:51 PM: Finished problem compilation (took 3.090e-02 seconds).
+(CVXPY) Jan 07 08:43:10 PM: Compiling problem (target solver=SCIP).
+(CVXPY) Jan 07 08:43:10 PM: Reduction chain: Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; SCIP
+(CVXPY) Jan 07 08:43:10 PM: Applying reduction Dcp2Cone
+(CVXPY) Jan 07 08:43:10 PM: Applying reduction CvxAttr2Constr
+(CVXPY) Jan 07 08:43:10 PM: Applying reduction ConeMatrixStuffing
+(CVXPY) Jan 07 08:43:10 PM: Applying reduction SCIP
+(CVXPY) Jan 07 08:43:10 PM: Finished problem compilation (took 2.857e-02 seconds).
 -------------------------------------------------------------------------------
                                 Numerical solver                               
 -------------------------------------------------------------------------------
-(CVXPY) Dec 23 12:43:51 PM: Invoking solver SCIP  to obtain a solution.
+(CVXPY) Jan 07 08:43:10 PM: Invoking solver SCIP  to obtain a solution.
 presolving:
 (round 1, fast)       36 del vars, 95 del conss, 0 add conss, 48 chg bounds, 1 chg sides, 23 chg coeffs, 0 upgd conss, 0 impls, 28 clqs
-(round 2, fast)       54 del vars, 132 del conss, 0 add conss, 53 chg bounds, 10 chg sides, 32 chg coeffs, 0 upgd conss, 0 impls, 20 clqs
-(round 3, fast)       61 del vars, 145 del conss, 0 add conss, 53 chg bounds, 12 chg sides, 34 chg coeffs, 0 upgd conss, 0 impls, 18 clqs
-(round 4, fast)       64 del vars, 147 del conss, 0 add conss, 53 chg bounds, 16 chg sides, 38 chg coeffs, 0 upgd conss, 0 impls, 18 clqs
-(round 5, fast)       66 del vars, 151 del conss, 0 add conss, 53 chg bounds, 16 chg sides, 38 chg coeffs, 0 upgd conss, 0 impls, 18 clqs
-(round 6, exhaustive) 66 del vars, 151 del conss, 0 add conss, 53 chg bounds, 16 chg sides, 38 chg coeffs, 40 upgd conss, 0 impls, 18 clqs
+(round 2, fast)       54 del vars, 129 del conss, 0 add conss, 52 chg bounds, 9 chg sides, 31 chg coeffs, 0 upgd conss, 0 impls, 20 clqs
+(round 3, fast)       63 del vars, 145 del conss, 0 add conss, 52 chg bounds, 11 chg sides, 33 chg coeffs, 0 upgd conss, 0 impls, 18 clqs
+(round 4, fast)       65 del vars, 147 del conss, 0 add conss, 52 chg bounds, 15 chg sides, 37 chg coeffs, 0 upgd conss, 0 impls, 18 clqs
+(round 5, fast)       67 del vars, 151 del conss, 0 add conss, 52 chg bounds, 15 chg sides, 37 chg coeffs, 0 upgd conss, 0 impls, 18 clqs
+(round 6, exhaustive) 67 del vars, 151 del conss, 0 add conss, 52 chg bounds, 15 chg sides, 37 chg coeffs, 40 upgd conss, 0 impls, 18 clqs
    (0.0s) probing cycle finished: starting next cycle
-(round 7, exhaustive) 68 del vars, 151 del conss, 0 add conss, 53 chg bounds, 16 chg sides, 38 chg coeffs, 40 upgd conss, 28 impls, 46 clqs
-(round 8, medium)     68 del vars, 155 del conss, 0 add conss, 53 chg bounds, 16 chg sides, 38 chg coeffs, 40 upgd conss, 28 impls, 46 clqs
+(round 7, exhaustive) 69 del vars, 151 del conss, 0 add conss, 52 chg bounds, 15 chg sides, 37 chg coeffs, 40 upgd conss, 28 impls, 46 clqs
+(round 8, medium)     69 del vars, 155 del conss, 0 add conss, 52 chg bounds, 15 chg sides, 37 chg coeffs, 40 upgd conss, 28 impls, 46 clqs
    (0.0s) probing cycle finished: starting next cycle
    (0.0s) symmetry computation started: requiring (bin +, int +, cont +), (fixed: bin -, int -, cont -)
    (0.0s) symmetry computation finished: 2 generators found (max: 1500, log10 of symmetry group size: 0.0) (symcode time: 0.00)
@@ -508,9 +530,9 @@ dynamic symmetry handling statistics:
    orbital reduction:         no components
    lexicographic reduction:   no permutations
 handled 1 out of 1 symmetry components
-(round 9, exhaustive) 68 del vars, 155 del conss, 3 add conss, 53 chg bounds, 16 chg sides, 38 chg coeffs, 40 upgd conss, 28 impls, 46 clqs
+(round 9, exhaustive) 69 del vars, 155 del conss, 3 add conss, 52 chg bounds, 15 chg sides, 37 chg coeffs, 40 upgd conss, 28 impls, 46 clqs
 presolving (10 rounds: 10 fast, 5 medium, 4 exhaustive):
- 68 deleted vars, 155 deleted constraints, 3 added constraints, 53 tightened bounds, 0 added holes, 16 changed sides, 38 changed coefficients
+ 69 deleted vars, 155 deleted constraints, 3 added constraints, 52 tightened bounds, 0 added holes, 15 changed sides, 37 changed coefficients
  28 implications, 46 cliques
 presolved problem has 27 variables (19 bin, 0 int, 0 impl, 8 cont) and 45 constraints
      16 constraints of type &lt;varbound&gt;
@@ -521,29 +543,28 @@ transformed objective value is always integral (scale: 0.1)
 Presolving Time: 0.00
 
  time | node  | left  |LP iter|LP it/n|mem/heur|mdpt |vars |cons |rows |cuts |sepa|confs|strbr|  dualbound   | primalbound  |  gap   | compl. 
-p 0.0s|     1 |     0 |     2 |     - |  clique|   0 |  27 |  45 |  42 |   0 |  0 |   0 |   0 |-3.500000e+00 | 1.000000e-01 |    Inf | unknown
-p 0.0s|     1 |     0 |     2 |     - |   locks|   0 |  27 |  45 |  42 |   0 |  0 |   0 |   0 |-3.500000e+00 |-6.000000e-01 | 483.33%| unknown
-p 0.0s|     1 |     0 |     2 |     - | vbounds|   0 |  27 |  46 |  42 |   0 |  0 |   1 |   0 |-3.500000e+00 |-1.600000e+00 | 118.75%| unknown
-p 0.0s|     1 |     0 |     2 |     - | vbounds|   0 |  27 |  48 |  42 |   0 |  0 |   3 |   0 |-3.500000e+00 |-3.200000e+00 |   9.37%| unknown
-  0.0s|     1 |     0 |    24 |     - |  1784k |   0 |  27 |  49 |  42 |   0 |  0 |   8 |   0 |-3.300000e+00 |-3.200000e+00 |   3.13%| unknown
-r 0.0s|     1 |     0 |    24 |     - |rounding|   0 |  27 |  49 |  39 |   0 |  0 |   8 |   0 |-3.300000e+00 |-3.300000e+00 |   0.00%| unknown
-  0.0s|     1 |     0 |    24 |     - |  1784k |   0 |  27 |  49 |  39 |   0 |  0 |   8 |   0 |-3.300000e+00 |-3.300000e+00 |   0.00%| unknown
-  0.0s|     1 |     0 |    24 |     - |  1784k |   0 |  27 |  49 |  39 |   0 |  0 |   8 |   0 |-3.300000e+00 |-3.300000e+00 |   0.00%| unknown
+p 0.0s|     1 |     0 |     0 |     - |   locks|   0 |  27 |  46 |  42 |   0 |  0 |   0 |   0 |-3.500000e+00 |-6.000000e-01 | 483.33%| unknown
+p 0.0s|     1 |     0 |     0 |     - | vbounds|   0 |  27 |  46 |  42 |   0 |  0 |   0 |   0 |-3.500000e+00 |-1.600000e+00 | 118.75%| unknown
+p 0.0s|     1 |     0 |     0 |     - | vbounds|   0 |  27 |  48 |  42 |   0 |  0 |   2 |   0 |-3.500000e+00 |-3.200000e+00 |   9.37%| unknown
+  0.0s|     1 |     0 |    22 |     - |  1784k |   0 |  27 |  49 |  42 |   0 |  0 |   7 |   0 |-3.300000e+00 |-3.200000e+00 |   3.13%| unknown
+r 0.0s|     1 |     0 |    22 |     - |rounding|   0 |  27 |  49 |  39 |   0 |  0 |   7 |   0 |-3.300000e+00 |-3.300000e+00 |   0.00%| unknown
+  0.0s|     1 |     0 |    22 |     - |  1785k |   0 |  27 |  49 |  39 |   0 |  0 |   7 |   0 |-3.300000e+00 |-3.300000e+00 |   0.00%| unknown
+  0.0s|     1 |     0 |    22 |     - |  1785k |   0 |  27 |  49 |  39 |   0 |  0 |   7 |   0 |-3.300000e+00 |-3.300000e+00 |   0.00%| unknown
 
 SCIP Status        : problem is solved [optimal solution found]
 Solving Time (sec) : 0.01
 Solving Nodes      : 1
-Primal Bound       : -3.30000000000000e+00 (5 solutions)
+Primal Bound       : -3.30000000000000e+00 (4 solutions)
 Dual Bound         : -3.30000000000000e+00
 Gap                : 0.00 %
 -------------------------------------------------------------------------------
                                     Summary                                    
 -------------------------------------------------------------------------------
-(CVXPY) Dec 23 12:43:51 PM: Problem status: optimal
-(CVXPY) Dec 23 12:43:51 PM: Optimal value: 7.000e-01
-(CVXPY) Dec 23 12:43:51 PM: Compilation took 3.090e-02 seconds
-(CVXPY) Dec 23 12:43:51 PM: Solver (including time spent in interface) took 1.464e-02 seconds
-(CORNETO) Dec 23 12:43:51 PM - INFO    : Finished in 0.07 s.
+(CVXPY) Jan 07 08:43:10 PM: Problem status: optimal
+(CVXPY) Jan 07 08:43:10 PM: Optimal value: 7.000e-01
+(CVXPY) Jan 07 08:43:10 PM: Compilation took 2.857e-02 seconds
+(CVXPY) Jan 07 08:43:10 PM: Solver (including time spent in interface) took 1.456e-02 seconds
+(CORNETO) Jan 07 08:43:10 PM - INFO    : Finished in 0.07 s.
 </pre></div>
 </div>
 </div>
@@ -588,9 +609,9 @@ Gap                : 0.00 %
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
-<span class="kn">from</span> <span class="nn">corneto.methods.carnival</span> <span class="kn">import</span> <span class="n">get_result</span><span class="p">,</span> <span class="n">get_selected_edges</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods.carnival</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_result</span><span class="p">,</span> <span class="n">get_selected_edges</span>
 
 <span class="n">V</span><span class="p">,</span> <span class="n">E</span> <span class="o">=</span> <span class="n">get_result</span><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="n">Gf</span><span class="p">)</span>
 <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">V</span><span class="p">)</span>
@@ -623,32 +644,32 @@ Gap                : 0.00 %
   <tbody>
     <tr>
       <th>0</th>
-      <td>I1</td>
-      <td>1.0</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>N2</td>
-      <td>-1.0</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>I2</td>
-      <td>1.0</td>
-    </tr>
-    <tr>
-      <th>3</th>
       <td>N1</td>
       <td>0.0</td>
     </tr>
     <tr>
+      <th>1</th>
+      <td>M2</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>I1</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>N2</td>
+      <td>-1.0</td>
+    </tr>
+    <tr>
       <th>4</th>
-      <td>M1</td>
+      <td>I2</td>
       <td>1.0</td>
     </tr>
     <tr>
       <th>5</th>
-      <td>M2</td>
+      <td>M1</td>
       <td>1.0</td>
     </tr>
     <tr>
@@ -866,7 +887,7 @@ Gap                : 0.00 %
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">corneto.methods.carnival</span> <span class="kn">import</span> <span class="n">milp_carnival</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods.carnival</span><span class="w"> </span><span class="kn">import</span> <span class="n">milp_carnival</span>
 
 <span class="n">P</span> <span class="o">=</span> <span class="n">milp_carnival</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;I2&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;I1&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;T&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span> <span class="n">beta_weight</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
 <span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;GUROBI&quot;</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -874,10 +895,16 @@ Gap                : 0.00 %
 </div>
 </div>
 <div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(CVXPY) Jan 07 08:43:10 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+(CVXPY) Jan 07 08:43:10 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+</pre></div>
+</div>
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
 <span class="ne">ValueError</span><span class="g g-Whitespace">                                </span>Traceback (most recent call last)
 <span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">14</span><span class="p">],</span> <span class="n">line</span> <span class="mi">4</span>
-<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="kn">from</span> <span class="nn">corneto.methods.carnival</span> <span class="kn">import</span> <span class="n">milp_carnival</span>
+<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods.carnival</span><span class="w"> </span><span class="kn">import</span> <span class="n">milp_carnival</span>
 <span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">P</span> <span class="o">=</span> <span class="n">milp_carnival</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;I2&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;I1&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;T&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span> <span class="n">beta_weight</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
 <span class="ne">----&gt; </span><span class="mi">4</span> <span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;GUROBI&quot;</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
@@ -919,7 +946,7 @@ Gap                : 0.00 %
 <span class="g g-Whitespace">    </span><span class="mi">170</span> <span class="c1"># TODO: Implement parameter mapping for solvers and backends</span>
 <span class="g g-Whitespace">    </span><span class="mi">171</span> <span class="k">if</span> <span class="n">max_seconds</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
 
-<span class="ne">ValueError</span>: Solver GUROBI is not installed/supported, supported solvers are: [&#39;CVXOPT&#39;, &#39;GLPK&#39;, &#39;GLPK_MI&#39;, &#39;HIGHS&#39;, &#39;SCIP&#39;, &#39;SCIPY&#39;]
+<span class="ne">ValueError</span>: Solver GUROBI is not installed/supported, supported solvers are: [&#39;CVXOPT&#39;, &#39;GLPK&#39;, &#39;GLPK_MI&#39;, &#39;SCIP&#39;, &#39;SCIPY&#39;]
 </pre></div>
 </div>
 </div>
@@ -1137,7 +1164,7 @@ Gap                : 0.00 %
 <h2>Comparison<a class="headerlink" href="#comparison" title="Link to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">corneto.methods.carnival</span> <span class="kn">import</span> <span class="n">read_dataset</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods.carnival</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_dataset</span>
 
 <span class="n">G</span><span class="p">,</span> <span class="n">dict_data</span> <span class="o">=</span> <span class="n">read_dataset</span><span class="p">(</span><span class="s2">&quot;carnival_example.zip&quot;</span><span class="p">)</span>
 <span class="n">G</span><span class="o">.</span><span class="n">shape</span>
@@ -1234,7 +1261,7 @@ Gap                : 0.00 %
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">corneto.methods.carnival</span> <span class="kn">import</span> <span class="n">heuristic_carnival</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods.carnival</span><span class="w"> </span><span class="kn">import</span> <span class="n">heuristic_carnival</span>
 
 <span class="n">Gc</span><span class="p">,</span> <span class="n">selected_edges</span><span class="p">,</span> <span class="n">paths</span><span class="p">,</span> <span class="n">stats</span><span class="p">,</span> <span class="n">errors</span> <span class="o">=</span> <span class="n">heuristic_carnival</span><span class="p">(</span>
     <span class="n">G</span><span class="p">,</span> <span class="n">c_inputs</span><span class="p">,</span> <span class="n">c_outputs</span><span class="p">,</span> <span class="n">restricted_search</span><span class="o">=</span><span class="kc">False</span>
@@ -1301,7 +1328,7 @@ Number of selected edges: 26
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">corneto.methods.carnival</span> <span class="kn">import</span> <span class="n">preprocess_graph</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods.carnival</span><span class="w"> </span><span class="kn">import</span> <span class="n">preprocess_graph</span>
 
 <span class="n">Gp</span><span class="p">,</span> <span class="n">cp_inputs</span><span class="p">,</span> <span class="n">cp_outputs</span> <span class="o">=</span> <span class="n">preprocess_graph</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">c_inputs</span><span class="p">,</span> <span class="n">c_outputs</span><span class="p">)</span>
 <span class="n">P</span> <span class="o">=</span> <span class="n">milp_carnival</span><span class="p">(</span><span class="n">Gp</span><span class="p">,</span> <span class="n">cp_inputs</span><span class="p">,</span> <span class="n">cp_outputs</span><span class="p">,</span> <span class="n">beta_weight</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
@@ -1407,7 +1434,7 @@ Best objective -9.800000000000e+00, best bound -9.800000000000e+00, gap 0.0000%
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="n">Gsol</span> <span class="o">=</span> <span class="n">Gp</span><span class="o">.</span><span class="n">edge_subgraph</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">edge_values</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">))</span>
 <span class="n">Gsol</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
@@ -1564,7 +1591,7 @@ Best objective -1.077000000000e+01, best bound -1.077000000000e+01, gap 0.0000%
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">corneto.methods</span> <span class="kn">import</span> <span class="p">(</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">expand_graph_for_flows</span><span class="p">,</span>
     <span class="n">runCARNIVAL_AcyclicFlow</span><span class="p">,</span>
     <span class="n">runCARNIVAL_Flow_Acyclic</span><span class="p">,</span>
@@ -1984,7 +2011,7 @@ Best objective 4.200000000000e-01, best bound 4.200000000000e-01, gap 0.0000%
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">corneto.methods</span> <span class="kn">import</span> <span class="n">expand_graph_for_flows</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods</span><span class="w"> </span><span class="kn">import</span> <span class="n">expand_graph_for_flows</span>
 
 <span class="n">G2</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 <span class="n">G2</span> <span class="o">=</span> <span class="n">expand_graph_for_flows</span><span class="p">(</span><span class="n">G2</span><span class="p">,</span> <span class="n">exp_list</span><span class="p">)</span>
@@ -1998,7 +2025,7 @@ Best objective 4.200000000000e-01, best bound 4.200000000000e-01, gap 0.0000%
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">corneto.methods</span> <span class="kn">import</span> <span class="n">runCARNIVAL_AcyclicFlow</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods</span><span class="w"> </span><span class="kn">import</span> <span class="n">runCARNIVAL_AcyclicFlow</span>
 
 <span class="c1"># We run the `standard` carnival problem. This interface is similar</span>
 <span class="c1"># to the old R function https://saezlab.github.io/CARNIVAL/reference/runVanillaCarnival.html</span>
@@ -2156,7 +2183,7 @@ Notice that the list of experiments contains two conditions.</p>
 <h2>Let’s check the Acyclic on flow<a class="headerlink" href="#let-s-check-the-acyclic-on-flow" title="Link to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">corneto.methods</span> <span class="kn">import</span> <span class="n">runCARNIVAL_Flow_Acyclic</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods</span><span class="w"> </span><span class="kn">import</span> <span class="n">runCARNIVAL_Flow_Acyclic</span>
 </pre></div>
 </div>
 </div>
@@ -2204,7 +2231,7 @@ Notice that the list of experiments contains two conditions.</p>
 <p><code class="docutils literal notranslate"><span class="pre">runCARNIVAL_Flow_Acyclic_Signal</span></code> applies the acyclic constraints on the signaling rather than on the flow. Thus, we can find a solution where the flow is not DAG, but the signaling is.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">corneto.methods</span> <span class="kn">import</span> <span class="n">runCARNIVAL_Flow_Acyclic_Signal</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods</span><span class="w"> </span><span class="kn">import</span> <span class="n">runCARNIVAL_Flow_Acyclic_Signal</span>
 
 <span class="n">P_cross</span> <span class="o">=</span> <span class="n">runCARNIVAL_Flow_Acyclic_Signal</span><span class="p">(</span><span class="n">G_cross</span><span class="p">,</span> <span class="n">exp_list_cross</span><span class="p">,</span> <span class="n">solver</span><span class="o">=</span><span class="s2">&quot;GUROBI&quot;</span><span class="p">)</span>
 </pre></div>

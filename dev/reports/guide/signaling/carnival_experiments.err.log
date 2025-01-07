@@ -24,11 +24,18 @@ P = milp_carnival(G, {"I2": -1, "I1": 0}, {"T": 1}, beta_weight=0.01)
 P.solve(solver="GUROBI", verbosity=1)
 ------------------
 
+----- stdout -----
+(CVXPY) Jan 07 08:43:10 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError('generic_type: type "ObjSense" is already registered!')
+----- stdout -----
+(CVXPY) Jan 07 08:43:10 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError('generic_type: type "ObjSense" is already registered!')
+------------------
 
 [0;31m---------------------------------------------------------------------------[0m
 [0;31mValueError[0m                                Traceback (most recent call last)
 Cell [0;32mIn[14], line 4[0m
-[1;32m      1[0m [38;5;28;01mfrom[39;00m [38;5;21;01mcorneto[39;00m[38;5;21;01m.[39;00m[38;5;21;01mmethods[39;00m[38;5;21;01m.[39;00m[38;5;21;01mcarnival[39;00m [38;5;28;01mimport[39;00m milp_carnival
+[1;32m      1[0m [38;5;28;01mfrom[39;00m[38;5;250m [39m[38;5;21;01mcorneto[39;00m[38;5;21;01m.[39;00m[38;5;21;01mmethods[39;00m[38;5;21;01m.[39;00m[38;5;21;01mcarnival[39;00m[38;5;250m [39m[38;5;28;01mimport[39;00m milp_carnival
 [1;32m      3[0m P [38;5;241m=[39m milp_carnival(G, {[38;5;124m"[39m[38;5;124mI2[39m[38;5;124m"[39m: [38;5;241m-[39m[38;5;241m1[39m, [38;5;124m"[39m[38;5;124mI1[39m[38;5;124m"[39m: [38;5;241m0[39m}, {[38;5;124m"[39m[38;5;124mT[39m[38;5;124m"[39m: [38;5;241m1[39m}, beta_weight[38;5;241m=[39m[38;5;241m0.01[39m)
 [0;32m----> 4[0m [43mP[49m[38;5;241;43m.[39;49m[43msolve[49m[43m([49m[43msolver[49m[38;5;241;43m=[39;49m[38;5;124;43m"[39;49m[38;5;124;43mGUROBI[39;49m[38;5;124;43m"[39;49m[43m,[49m[43m [49m[43mverbosity[49m[38;5;241;43m=[39;49m[38;5;241;43m1[39;49m[43m)[49m
 
@@ -70,5 +77,5 @@ File [0;32m~/work/corneto/corneto/corneto/backend/_cvxpy_backend.py:167[0m, in
 [1;32m    170[0m [38;5;66;03m# TODO: Implement parameter mapping for solvers and backends[39;00m
 [1;32m    171[0m [38;5;28;01mif[39;00m max_seconds [38;5;129;01mis[39;00m [38;5;129;01mnot[39;00m [38;5;28;01mNone[39;00m:
 
-[0;31mValueError[0m: Solver GUROBI is not installed/supported, supported solvers are: ['CVXOPT', 'GLPK', 'GLPK_MI', 'HIGHS', 'SCIP', 'SCIPY']
+[0;31mValueError[0m: Solver GUROBI is not installed/supported, supported solvers are: ['CVXOPT', 'GLPK', 'GLPK_MI', 'SCIP', 'SCIPY']
 

@@ -30,7 +30,7 @@
   <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 <link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster.custom.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster.bundle.min.css" />
@@ -64,7 +64,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://saezlab.github.io/corneto/dev/_static/switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.0.0.dev2';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.0.0.dev3';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
@@ -444,13 +444,31 @@
 <p>We will see how to solve this problem using CORNETO’s multi-sample capabilities.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">corneto</span> <span class="k">as</span> <span class="nn">cn</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">corneto</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cn</span>
 
 <span class="n">cn</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(CVXPY) Jan 07 08:37:59 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+(CVXPY) Jan 07 08:37:59 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+(CVXPY) Jan 07 08:37:59 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+(CVXPY) Jan 07 08:37:59 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+(CVXPY) Jan 07 08:37:59 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+(CVXPY) Jan 07 08:37:59 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+(CVXPY) Jan 07 08:37:59 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+(CVXPY) Jan 07 08:37:59 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+</pre></div>
+</div>
 <div class="output text_html"></div><div class="output text_html">
         <table style='background-color:rgba(0, 0, 0, 0);'>
         <tr>
@@ -459,7 +477,7 @@
             </td>
             <td>
             <table>
-                <tr><td>Installed version:</td><td style='text-align:left'>v1.0.0.dev2 (latest stable: v1.0.0-alpha)</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.6.0, PICOS v2.5.1</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CVXOPT, GLPK, GLPK_MI, HIGHS, SCIP, SCIPY</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.3</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href=https://github.com/saezlab/corneto>https://github.com/saezlab/corneto</a></td></tr>
+                <tr><td>Installed version:</td><td style='text-align:left'>v1.0.0.dev3 (latest stable: v1.0.0-alpha)</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.6.0, PICOS v2.5.1</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CVXOPT, GLPK, GLPK_MI, SCIP, SCIPY</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.3</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href=https://github.com/saezlab/corneto>https://github.com/saezlab/corneto</a></td></tr>
             </table>
             </td>
         </tr>
@@ -529,7 +547,7 @@
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">corneto.methods</span> <span class="kn">import</span> <span class="n">solve_shortest_path</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods</span><span class="w"> </span><span class="kn">import</span> <span class="n">solve_shortest_path</span>
 
 <span class="c1"># We solve independently each shortest path problem</span>
 <span class="n">edges</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">Gc</span> <span class="o">=</span> <span class="n">solve_shortest_path</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;H&quot;</span><span class="p">,</span> <span class="n">edge_weights</span><span class="o">=</span><span class="n">c1_weights</span><span class="p">,</span> <span class="n">solver</span><span class="o">=</span><span class="s2">&quot;SCIPY&quot;</span><span class="p">)</span>
@@ -538,6 +556,12 @@
 </div>
 </div>
 <div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(CVXPY) Jan 07 08:37:59 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+(CVXPY) Jan 07 08:37:59 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+</pre></div>
+</div>
 <img alt="../../_images/845e503ef5eeff51de2e3ac0d2a9ff73f6c61fec08a071d70b0082842d9e5cb7.svg" src="../../_images/845e503ef5eeff51de2e3ac0d2a9ff73f6c61fec08a071d70b0082842d9e5cb7.svg" />
 </div>
 </div>
@@ -561,6 +585,12 @@
 </div>
 </div>
 <div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(CVXPY) Jan 07 08:37:59 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+(CVXPY) Jan 07 08:37:59 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+</pre></div>
+</div>
 <img alt="../../_images/0e35e72763cfaa3e9b6a43d268c4454b08cba574de910d183980a692b5a9b9bf.svg" src="../../_images/0e35e72763cfaa3e9b6a43d268c4454b08cba574de910d183980a692b5a9b9bf.svg" />
 </div>
 </div>
@@ -578,7 +608,7 @@
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">corneto.methods.shortest_path</span> <span class="kn">import</span> <span class="n">create_multisample_shortest_path</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods.shortest_path</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_multisample_shortest_path</span>
 
 <span class="n">samples</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;H&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;H&quot;</span><span class="p">)]</span>
 <span class="n">edge_weights</span> <span class="o">=</span> <span class="p">[</span><span class="n">c1_weights</span><span class="p">,</span> <span class="n">c2_weights</span><span class="p">]</span>
@@ -601,37 +631,41 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>===============================================================================
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(CVXPY) Jan 07 08:37:59 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+(CVXPY) Jan 07 08:37:59 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+===============================================================================
                                      CVXPY                                     
                                      v1.6.0                                    
 ===============================================================================
-(CVXPY) Dec 23 12:43:45 PM: Your problem has 51 variables, 126 constraints, and 0 parameters.
-(CVXPY) Dec 23 12:43:45 PM: It is compliant with the following grammars: DCP, DQCP
-(CVXPY) Dec 23 12:43:45 PM: (If you need to solve this problem multiple times, but with different data, consider using parameters.)
-(CVXPY) Dec 23 12:43:45 PM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
-(CVXPY) Dec 23 12:43:45 PM: Your problem is compiled with the CPP canonicalization backend.
+(CVXPY) Jan 07 08:37:59 PM: Your problem has 51 variables, 126 constraints, and 0 parameters.
+(CVXPY) Jan 07 08:37:59 PM: It is compliant with the following grammars: DCP, DQCP
+(CVXPY) Jan 07 08:37:59 PM: (If you need to solve this problem multiple times, but with different data, consider using parameters.)
+(CVXPY) Jan 07 08:37:59 PM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
+(CVXPY) Jan 07 08:37:59 PM: Your problem is compiled with the CPP canonicalization backend.
 -------------------------------------------------------------------------------
                                   Compilation                                  
 -------------------------------------------------------------------------------
-(CVXPY) Dec 23 12:43:45 PM: Compiling problem (target solver=SCIPY).
-(CVXPY) Dec 23 12:43:45 PM: Reduction chain: Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; SCIPY
-(CVXPY) Dec 23 12:43:45 PM: Applying reduction Dcp2Cone
-(CVXPY) Dec 23 12:43:45 PM: Applying reduction CvxAttr2Constr
-(CVXPY) Dec 23 12:43:45 PM: Applying reduction ConeMatrixStuffing
-(CVXPY) Dec 23 12:43:45 PM: Applying reduction SCIPY
-(CVXPY) Dec 23 12:43:45 PM: Finished problem compilation (took 1.193e-02 seconds).
+(CVXPY) Jan 07 08:37:59 PM: Compiling problem (target solver=SCIPY).
+(CVXPY) Jan 07 08:37:59 PM: Reduction chain: Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; SCIPY
+(CVXPY) Jan 07 08:37:59 PM: Applying reduction Dcp2Cone
+(CVXPY) Jan 07 08:37:59 PM: Applying reduction CvxAttr2Constr
+(CVXPY) Jan 07 08:37:59 PM: Applying reduction ConeMatrixStuffing
+(CVXPY) Jan 07 08:37:59 PM: Applying reduction SCIPY
+(CVXPY) Jan 07 08:37:59 PM: Finished problem compilation (took 1.166e-02 seconds).
 -------------------------------------------------------------------------------
                                 Numerical solver                               
 -------------------------------------------------------------------------------
-(CVXPY) Dec 23 12:43:45 PM: Invoking solver SCIPY  to obtain a solution.
+(CVXPY) Jan 07 08:37:59 PM: Invoking solver SCIPY  to obtain a solution.
 Solver terminated with message: Optimization terminated successfully. (HiGHS Status 7: Optimal)
 -------------------------------------------------------------------------------
                                     Summary                                    
 -------------------------------------------------------------------------------
-(CVXPY) Dec 23 12:43:45 PM: Problem status: optimal
-(CVXPY) Dec 23 12:43:45 PM: Optimal value: 3.705e+01
-(CVXPY) Dec 23 12:43:45 PM: Compilation took 1.193e-02 seconds
-(CVXPY) Dec 23 12:43:45 PM: Solver (including time spent in interface) took 1.773e-03 seconds
+(CVXPY) Jan 07 08:37:59 PM: Problem status: optimal
+(CVXPY) Jan 07 08:37:59 PM: Optimal value: 3.705e+01
+(CVXPY) Jan 07 08:37:59 PM: Compilation took 1.166e-02 seconds
+(CVXPY) Jan 07 08:37:59 PM: Solver (including time spent in interface) took 3.209e-03 seconds
 </pre></div>
 </div>
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Problem(Minimize(Expression(AFFINE, UNKNOWN, ())), [Inequality(Constant(CONSTANT, ZERO, (17, 2))), Inequality(Variable((17, 2), _flow)), Equality(Expression(AFFINE, UNKNOWN, (8, 2)), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (2,)), Constant(CONSTANT, NONNEGATIVE, ())), Equality(Expression(AFFINE, UNKNOWN, (2,)), Constant(CONSTANT, NONNEGATIVE, ())), Equality(Expression(AFFINE, UNKNOWN, (2,)), Constant(CONSTANT, NONNEGATIVE, ())), Equality(Expression(AFFINE, UNKNOWN, (2,)), Constant(CONSTANT, NONNEGATIVE, ())), Inequality(Expression(AFFINE, UNKNOWN, (17,))), Inequality(Variable((17,), active_edge, boolean=True))])
@@ -671,7 +705,7 @@ Solver terminated with message: Optimization terminated successfully. (HiGHS Sta
        [-0., -0.],
        [-0., -0.],
        [ 1.,  1.],
-       [ 0.,  0.],
+       [-0.,  0.],
        [-0., -0.],
        [-0., -0.],
        [-0., -0.],
@@ -683,7 +717,7 @@ Solver terminated with message: Optimization terminated successfully. (HiGHS Sta
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="nb">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
 </pre></div>

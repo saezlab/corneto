@@ -30,7 +30,7 @@
   <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 <link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster.custom.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster.bundle.min.css" />
@@ -64,7 +64,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://saezlab.github.io/corneto/dev/_static/switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.0.0.dev2';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.0.0.dev3';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
@@ -455,14 +455,14 @@
 <p>First, we will create a random undirected graph with random weights between 1 an 10. Then we will run the heuristic steiner tree algorithm from NetworkX to see which solution it finds.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">networkx.algorithms.approximation</span> <span class="kn">import</span> <span class="n">steiner_tree</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">networkx</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nx</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">networkx.algorithms.approximation</span><span class="w"> </span><span class="kn">import</span> <span class="n">steiner_tree</span>
 
 <span class="c1"># Generate a random graph with networkx</span>
 
 
-<span class="k">def</span> <span class="nf">create_random_graph</span><span class="p">(</span><span class="n">n_nodes</span><span class="p">,</span> <span class="n">prob</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_random_graph</span><span class="p">(</span><span class="n">n_nodes</span><span class="p">,</span> <span class="n">prob</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
     <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
     <span class="n">random_graph</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">erdos_renyi_graph</span><span class="p">(</span><span class="n">n_nodes</span><span class="p">,</span> <span class="n">prob</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
     <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">random_graph</span><span class="o">.</span><span class="n">edges</span><span class="p">))</span>
@@ -501,15 +501,15 @@
 <span class="g g-Whitespace">      </span><span class="mi">6</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cost:&quot;</span><span class="p">,</span> <span class="n">total_weight</span><span class="p">)</span>
 
 <span class="nn">File ~/.cache/pypoetry/virtualenvs/corneto-lU1q7eKj-py3.11/lib/python3.11/site-packages/networkx/utils/decorators.py:788,</span> in <span class="ni">argmap.__call__.&lt;locals&gt;.func</span><span class="nt">(_argmap__wrapper, *args, **kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">787</span> <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">__wrapper</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="g g-Whitespace">    </span><span class="mi">787</span> <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">__wrapper</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="ne">--&gt; </span><span class="mi">788</span>     <span class="k">return</span> <span class="n">argmap</span><span class="o">.</span><span class="n">_lazy_compile</span><span class="p">(</span><span class="n">__wrapper</span><span class="p">)(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 <span class="nn">File &lt;class &#39;networkx.utils.decorators.argmap&#39;&gt; compilation 18:4,</span> in <span class="ni">argmap_steiner_tree_14</span><span class="nt">(G, terminal_nodes, weight, method, backend, **backend_kwargs)</span>
-<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="kn">import</span> <span class="nn">collections</span>
-<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="kn">import</span> <span class="nn">gzip</span>
-<span class="ne">----&gt; </span><span class="mi">4</span> <span class="kn">import</span> <span class="nn">inspect</span>
-<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="kn">import</span> <span class="nn">itertools</span>
-<span class="g g-Whitespace">      </span><span class="mi">6</span> <span class="kn">import</span> <span class="nn">re</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="kn">import</span><span class="w"> </span><span class="nn">collections</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="kn">import</span><span class="w"> </span><span class="nn">gzip</span>
+<span class="ne">----&gt; </span><span class="mi">4</span> <span class="kn">import</span><span class="w"> </span><span class="nn">inspect</span>
+<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="kn">import</span><span class="w"> </span><span class="nn">itertools</span>
+<span class="g g-Whitespace">      </span><span class="mi">6</span> <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
 
 <span class="nn">File ~/.cache/pypoetry/virtualenvs/corneto-lU1q7eKj-py3.11/lib/python3.11/site-packages/networkx/utils/backends.py:967,</span> in <span class="ni">_dispatchable.__call__</span><span class="nt">(self, backend, *args, **kwargs)</span>
 <span class="g g-Whitespace">    </span><span class="mi">965</span>     <span class="k">if</span> <span class="n">backend</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">backend</span> <span class="o">!=</span> <span class="s2">&quot;networkx&quot;</span><span class="p">:</span>
@@ -522,27 +522,27 @@
 
 <span class="nn">File ~/.cache/pypoetry/virtualenvs/corneto-lU1q7eKj-py3.11/lib/python3.11/site-packages/networkx/algorithms/approximation/steinertree.py:224,</span> in <span class="ni">steiner_tree</span><span class="nt">(G, terminal_nodes, weight, method)</span>
 <span class="g g-Whitespace">    </span><span class="mi">221</span> <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">222</span>     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2"> is not a valid choice for an algorithm.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+<span class="g g-Whitespace">    </span><span class="mi">222</span>     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2"> is not a valid choice for an algorithm.&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
 <span class="ne">--&gt; </span><span class="mi">224</span> <span class="n">edges</span> <span class="o">=</span> <span class="n">algo</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">terminal_nodes</span><span class="p">,</span> <span class="n">weight</span><span class="p">)</span>
 <span class="g g-Whitespace">    </span><span class="mi">225</span> <span class="c1"># For multigraph we should add the minimal weight edge keys</span>
 <span class="g g-Whitespace">    </span><span class="mi">226</span> <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">is_multigraph</span><span class="p">():</span>
 
 <span class="nn">File ~/.cache/pypoetry/virtualenvs/corneto-lU1q7eKj-py3.11/lib/python3.11/site-packages/networkx/algorithms/approximation/steinertree.py:51,</span> in <span class="ni">_mehlhorn_steiner_tree</span><span class="nt">(G, terminal_nodes, weight)</span>
-<span class="g g-Whitespace">     </span><span class="mi">50</span> <span class="k">def</span> <span class="nf">_mehlhorn_steiner_tree</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">terminal_nodes</span><span class="p">,</span> <span class="n">weight</span><span class="p">):</span>
+<span class="g g-Whitespace">     </span><span class="mi">50</span> <span class="k">def</span><span class="w"> </span><span class="nf">_mehlhorn_steiner_tree</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">terminal_nodes</span><span class="p">,</span> <span class="n">weight</span><span class="p">):</span>
 <span class="ne">---&gt; </span><span class="mi">51</span>     <span class="n">paths</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">multi_source_dijkstra_path</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">terminal_nodes</span><span class="p">)</span>
 <span class="g g-Whitespace">     </span><span class="mi">53</span>     <span class="n">d_1</span> <span class="o">=</span> <span class="p">{}</span>
 <span class="g g-Whitespace">     </span><span class="mi">54</span>     <span class="n">s</span> <span class="o">=</span> <span class="p">{}</span>
 
 <span class="nn">File ~/.cache/pypoetry/virtualenvs/corneto-lU1q7eKj-py3.11/lib/python3.11/site-packages/networkx/utils/decorators.py:788,</span> in <span class="ni">argmap.__call__.&lt;locals&gt;.func</span><span class="nt">(_argmap__wrapper, *args, **kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">787</span> <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">__wrapper</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="g g-Whitespace">    </span><span class="mi">787</span> <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">__wrapper</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="ne">--&gt; </span><span class="mi">788</span>     <span class="k">return</span> <span class="n">argmap</span><span class="o">.</span><span class="n">_lazy_compile</span><span class="p">(</span><span class="n">__wrapper</span><span class="p">)(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 <span class="nn">File &lt;class &#39;networkx.utils.decorators.argmap&#39;&gt; compilation 22:3,</span> in <span class="ni">argmap_multi_source_dijkstra_path_19</span><span class="nt">(G, sources, cutoff, weight, backend, **backend_kwargs)</span>
-<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="kn">import</span> <span class="nn">bz2</span>
-<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="kn">import</span> <span class="nn">collections</span>
-<span class="ne">----&gt; </span><span class="mi">3</span> <span class="kn">import</span> <span class="nn">gzip</span>
-<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="kn">import</span> <span class="nn">inspect</span>
-<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="kn">import</span> <span class="nn">itertools</span>
+<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="kn">import</span><span class="w"> </span><span class="nn">bz2</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="kn">import</span><span class="w"> </span><span class="nn">collections</span>
+<span class="ne">----&gt; </span><span class="mi">3</span> <span class="kn">import</span><span class="w"> </span><span class="nn">gzip</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="kn">import</span><span class="w"> </span><span class="nn">inspect</span>
+<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="kn">import</span><span class="w"> </span><span class="nn">itertools</span>
 
 <span class="nn">File ~/.cache/pypoetry/virtualenvs/corneto-lU1q7eKj-py3.11/lib/python3.11/site-packages/networkx/utils/backends.py:967,</span> in <span class="ni">_dispatchable.__call__</span><span class="nt">(self, backend, *args, **kwargs)</span>
 <span class="g g-Whitespace">    </span><span class="mi">965</span>     <span class="k">if</span> <span class="n">backend</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">backend</span> <span class="o">!=</span> <span class="s2">&quot;networkx&quot;</span><span class="p">:</span>
@@ -555,7 +555,7 @@
 
 <span class="nn">File ~/.cache/pypoetry/virtualenvs/corneto-lU1q7eKj-py3.11/lib/python3.11/site-packages/networkx/algorithms/shortest_paths/weighted.py:564,</span> in <span class="ni">multi_source_dijkstra_path</span><span class="nt">(G, sources, cutoff, weight)</span>
 <span class="g g-Whitespace">    </span><span class="mi">494</span> <span class="nd">@nx</span><span class="o">.</span><span class="n">_dispatchable</span><span class="p">(</span><span class="n">edge_attrs</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">495</span> <span class="k">def</span> <span class="nf">multi_source_dijkstra_path</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">sources</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">):</span>
+<span class="g g-Whitespace">    </span><span class="mi">495</span> <span class="k">def</span><span class="w"> </span><span class="nf">multi_source_dijkstra_path</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">sources</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">):</span>
 <span class="g g-Whitespace">    </span><span class="mi">496</span><span class="w">     </span><span class="sd">&quot;&quot;&quot;Find shortest weighted paths in G from a given set of source</span>
 <span class="g g-Whitespace">    </span><span class="mi">497</span><span class="sd">     nodes.</span>
 <span class="g g-Whitespace">    </span><span class="mi">498</span><span class="sd"> </span>
@@ -566,15 +566,15 @@
 <span class="g g-Whitespace">    </span><span class="mi">565</span>     <span class="k">return</span> <span class="n">path</span>
 
 <span class="nn">File ~/.cache/pypoetry/virtualenvs/corneto-lU1q7eKj-py3.11/lib/python3.11/site-packages/networkx/utils/decorators.py:788,</span> in <span class="ni">argmap.__call__.&lt;locals&gt;.func</span><span class="nt">(_argmap__wrapper, *args, **kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">787</span> <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">__wrapper</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="g g-Whitespace">    </span><span class="mi">787</span> <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">__wrapper</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="ne">--&gt; </span><span class="mi">788</span>     <span class="k">return</span> <span class="n">argmap</span><span class="o">.</span><span class="n">_lazy_compile</span><span class="p">(</span><span class="n">__wrapper</span><span class="p">)(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 <span class="nn">File &lt;class &#39;networkx.utils.decorators.argmap&#39;&gt; compilation 26:3,</span> in <span class="ni">argmap_multi_source_dijkstra_23</span><span class="nt">(G, sources, target, cutoff, weight, backend, **backend_kwargs)</span>
-<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="kn">import</span> <span class="nn">bz2</span>
-<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="kn">import</span> <span class="nn">collections</span>
-<span class="ne">----&gt; </span><span class="mi">3</span> <span class="kn">import</span> <span class="nn">gzip</span>
-<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="kn">import</span> <span class="nn">inspect</span>
-<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="kn">import</span> <span class="nn">itertools</span>
+<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="kn">import</span><span class="w"> </span><span class="nn">bz2</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="kn">import</span><span class="w"> </span><span class="nn">collections</span>
+<span class="ne">----&gt; </span><span class="mi">3</span> <span class="kn">import</span><span class="w"> </span><span class="nn">gzip</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="kn">import</span><span class="w"> </span><span class="nn">inspect</span>
+<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="kn">import</span><span class="w"> </span><span class="nn">itertools</span>
 
 <span class="nn">File ~/.cache/pypoetry/virtualenvs/corneto-lU1q7eKj-py3.11/lib/python3.11/site-packages/networkx/utils/backends.py:967,</span> in <span class="ni">_dispatchable.__call__</span><span class="nt">(self, backend, *args, **kwargs)</span>
 <span class="g g-Whitespace">    </span><span class="mi">965</span>     <span class="k">if</span> <span class="n">backend</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">backend</span> <span class="o">!=</span> <span class="s2">&quot;networkx&quot;</span><span class="p">:</span>
@@ -587,7 +587,7 @@
 
 <span class="nn">File ~/.cache/pypoetry/virtualenvs/corneto-lU1q7eKj-py3.11/lib/python3.11/site-packages/networkx/algorithms/shortest_paths/weighted.py:750,</span> in <span class="ni">multi_source_dijkstra</span><span class="nt">(G, sources, target, cutoff, weight)</span>
 <span class="g g-Whitespace">    </span><span class="mi">650</span> <span class="nd">@nx</span><span class="o">.</span><span class="n">_dispatchable</span><span class="p">(</span><span class="n">edge_attrs</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">651</span> <span class="k">def</span> <span class="nf">multi_source_dijkstra</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">sources</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">):</span>
+<span class="g g-Whitespace">    </span><span class="mi">651</span> <span class="k">def</span><span class="w"> </span><span class="nf">multi_source_dijkstra</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">sources</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">):</span>
 <span class="g g-Whitespace">    </span><span class="mi">652</span><span class="w">     </span><span class="sd">&quot;&quot;&quot;Find shortest weighted paths and lengths from a given set of</span>
 <span class="g g-Whitespace">    </span><span class="mi">653</span><span class="sd">     source nodes.</span>
 <span class="g g-Whitespace">    </span><span class="mi">654</span><span class="sd"> </span>
@@ -610,7 +610,7 @@
 <p>Now, we will do the same using CORNETO to convert the random graph to a corneto graph and then we will create an ILP steiner tree problem, which is exact, and we will solve it using the SCIP solver (open source).</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">corneto</span> <span class="k">as</span> <span class="nn">cn</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">corneto</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cn</span>
 
 <span class="n">cn</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
 </pre></div>
@@ -634,10 +634,10 @@
 <p>We need some code to convert the <code class="docutils literal notranslate"><span class="pre">networkx</span></code> graph into a <code class="docutils literal notranslate"><span class="pre">corneto</span></code> Graph:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">corneto._graph</span> <span class="kn">import</span> <span class="n">EdgeType</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto._graph</span><span class="w"> </span><span class="kn">import</span> <span class="n">EdgeType</span>
 
 
-<span class="k">def</span> <span class="nf">to_graph</span><span class="p">(</span><span class="n">nx_graph</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">directed</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">to_graph</span><span class="p">(</span><span class="n">nx_graph</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">directed</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="n">G</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">weights</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">nx_graph</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">)]</span>
@@ -661,7 +661,7 @@
 <p>We will use the <code class="docutils literal notranslate"><span class="pre">exact_steiner_tree</span></code> method. This method converts the original graph into a network flow problem equivalent to the steiner tree problem. The method returns the optimization problem and a new graph, which is an augmented version of the original graph, containing few extra edges required for the network flow problem</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">corneto.methods.steiner</span> <span class="kn">import</span> <span class="n">exact_steiner_tree</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods.steiner</span><span class="w"> </span><span class="kn">import</span> <span class="n">exact_steiner_tree</span>
 
 <span class="n">P</span><span class="p">,</span> <span class="n">G_steiner</span> <span class="o">=</span> <span class="n">exact_steiner_tree</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">terminals</span><span class="p">,</span> <span class="n">out_flow_edge_type</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">EdgeType</span><span class="o">.</span><span class="n">DIRECTED</span><span class="p">)</span>
 

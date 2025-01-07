@@ -30,7 +30,7 @@
   <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 <link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster.custom.css" />
     <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster.bundle.min.css" />
@@ -64,7 +64,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://saezlab.github.io/corneto/dev/_static/switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.0.0.dev2';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.0.0.dev3';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
@@ -400,28 +400,28 @@
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># --- Saezlab tools ---</span>
 <span class="c1"># https://decoupler-py.readthedocs.io/</span>
-<span class="kn">import</span> <span class="nn">gzip</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">shutil</span>
-<span class="kn">import</span> <span class="nn">tempfile</span>
-<span class="kn">import</span> <span class="nn">urllib.request</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">gzip</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">urllib.request</span>
 
-<span class="kn">import</span> <span class="nn">decoupler</span> <span class="k">as</span> <span class="nn">dc</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">decoupler</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dc</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="c1"># https://omnipathdb.org/</span>
-<span class="kn">import</span> <span class="nn">omnipath</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">omnipath</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">op</span>
 
 <span class="c1"># Additional packages</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
 <span class="c1"># --- Additional libs ---</span>
 <span class="c1"># Pydeseq for differential expression analysis</span>
-<span class="kn">from</span> <span class="nn">pydeseq2.dds</span> <span class="kn">import</span> <span class="n">DefaultInference</span><span class="p">,</span> <span class="n">DeseqDataSet</span>
-<span class="kn">from</span> <span class="nn">pydeseq2.ds</span> <span class="kn">import</span> <span class="n">DeseqStats</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydeseq2.dds</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultInference</span><span class="p">,</span> <span class="n">DeseqDataSet</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydeseq2.ds</span><span class="w"> </span><span class="kn">import</span> <span class="n">DeseqStats</span>
 
 <span class="c1"># https://saezlab.github.io/</span>
-<span class="kn">import</span> <span class="nn">corneto</span> <span class="k">as</span> <span class="nn">cn</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">corneto</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cn</span>
 </pre></div>
 </div>
 </div>
@@ -658,7 +658,7 @@
 <p>We will use AnnData and PyDeseq2 to pre-process the data and compute differential expression between control and tretament</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">anndata</span> <span class="kn">import</span> <span class="n">AnnData</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">anndata</span><span class="w"> </span><span class="kn">import</span> <span class="n">AnnData</span>
 
 <span class="n">adata</span> <span class="o">=</span> <span class="n">AnnData</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
 <span class="n">adata</span><span class="o">.</span><span class="n">var_names_make_unique</span><span class="p">()</span>
@@ -2028,7 +2028,7 @@ MT-TP         0.012217
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We prune the network from inputs (receptors) to TFs to improve the performance.</span>
 <span class="c1"># The pruning step removes only parts of the network that cannot be reached from the pre-selected receptors</span>
-<span class="kn">from</span> <span class="nn">corneto.methods.carnival</span> <span class="kn">import</span> <span class="n">preprocess_graph</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods.carnival</span><span class="w"> </span><span class="kn">import</span> <span class="n">preprocess_graph</span>
 
 <span class="n">Gp</span><span class="p">,</span> <span class="n">inputs_p</span><span class="p">,</span> <span class="n">measurements_p</span> <span class="o">=</span> <span class="n">preprocess_graph</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">measurements</span><span class="p">)</span>
 <span class="n">Gp</span><span class="o">.</span><span class="n">shape</span>
@@ -2050,7 +2050,7 @@ MT-TP         0.012217
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">corneto.methods.carnival</span> <span class="kn">import</span> <span class="n">milp_carnival</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods.carnival</span><span class="w"> </span><span class="kn">import</span> <span class="n">milp_carnival</span>
 
 <span class="c1"># We create a CARNIVAL problem</span>
 <span class="n">P</span> <span class="o">=</span> <span class="n">milp_carnival</span><span class="p">(</span><span class="n">Gp</span><span class="p">,</span> <span class="n">inputs_p</span><span class="p">,</span> <span class="n">measurements_p</span><span class="p">,</span> <span class="n">beta_weight</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>

@@ -30,7 +30,7 @@
   <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 <link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster.custom.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster.bundle.min.css" />
@@ -64,7 +64,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://saezlab.github.io/corneto/dev/_static/switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.0.0.dev2';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.0.0.dev3';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
@@ -445,15 +445,33 @@
 <h2>Creating a weighted graph<a class="headerlink" href="#creating-a-weighted-graph" title="Link to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">import</span> <span class="nn">corneto</span> <span class="k">as</span> <span class="nn">cn</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">corneto</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cn</span>
 
 <span class="n">cn</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(CVXPY) Jan 07 08:38:01 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+(CVXPY) Jan 07 08:38:01 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+(CVXPY) Jan 07 08:38:01 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+(CVXPY) Jan 07 08:38:01 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+(CVXPY) Jan 07 08:38:01 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+(CVXPY) Jan 07 08:38:01 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+(CVXPY) Jan 07 08:38:01 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+(CVXPY) Jan 07 08:38:01 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+</pre></div>
+</div>
 <div class="output text_html"></div><div class="output text_html">
         <table style='background-color:rgba(0, 0, 0, 0);'>
         <tr>
@@ -462,7 +480,7 @@
             </td>
             <td>
             <table>
-                <tr><td>Installed version:</td><td style='text-align:left'>v1.0.0.dev2 (latest stable: v1.0.0-alpha)</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.6.0, PICOS v2.5.1</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CVXOPT, GLPK, GLPK_MI, HIGHS, SCIP, SCIPY</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.3</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href=https://github.com/saezlab/corneto>https://github.com/saezlab/corneto</a></td></tr>
+                <tr><td>Installed version:</td><td style='text-align:left'>v1.0.0.dev3 (latest stable: v1.0.0-alpha)</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.6.0, PICOS v2.5.1</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CVXOPT, GLPK, GLPK_MI, SCIP, SCIPY</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.3</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href=https://github.com/saezlab/corneto>https://github.com/saezlab/corneto</a></td></tr>
             </table>
             </td>
         </tr>
@@ -488,7 +506,7 @@
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">corneto.methods</span> <span class="kn">import</span> <span class="n">solve_shortest_path</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods</span><span class="w"> </span><span class="kn">import</span> <span class="n">solve_shortest_path</span>
 
 <span class="c1"># TODO: a graph problem should have the graph attached to it...</span>
 <span class="n">edges</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">Gc</span> <span class="o">=</span> <span class="n">solve_shortest_path</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;G&quot;</span><span class="p">,</span> <span class="n">solver</span><span class="o">=</span><span class="s2">&quot;SCIPY&quot;</span><span class="p">)</span>
@@ -497,6 +515,12 @@
 </div>
 </div>
 <div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(CVXPY) Jan 07 08:38:01 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+(CVXPY) Jan 07 08:38:01 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+</pre></div>
+</div>
 <img alt="../../_images/08d25f9cf2bdba35ef29a21209ab3f993c2a331a9c5712043ae6dfc6e3889325.svg" src="../../_images/08d25f9cf2bdba35ef29a21209ab3f993c2a331a9c5712043ae6dfc6e3889325.svg" />
 </div>
 </div>
@@ -518,10 +542,10 @@
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a function that generates a shortest path problem on a random graph created with networkx</span>
-<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">networkx</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nx</span>
 
 
-<span class="k">def</span> <span class="nf">create_random_graph</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">directed</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_random_graph</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">directed</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">barabasi_albert_graph</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
     <span class="n">vertices</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">())</span>
     <span class="c1"># Add random weights to the edges</span>
@@ -545,7 +569,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[np.int64(1069), 34, 1, 1492, 638, 1590, np.int64(3948)]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[np.int64(3208), 2189, 2248, 17, 109, 2, 4, 9, np.int64(3582)]
 </pre></div>
 </div>
 </div>
@@ -557,7 +581,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>21.146798243679967
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>22.856718743912623
 </pre></div>
 </div>
 </div>
@@ -577,7 +601,132 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>np.float64(21.146798243679964)
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(CVXPY) Jan 07 08:38:04 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+(CVXPY) Jan 07 08:38:04 PM: Encountered unexpected exception importing solver HIGHS:
+ImportError(&#39;generic_type: type &quot;ObjSense&quot; is already registered!&#39;)
+</pre></div>
+</div>
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">KeyboardInterrupt</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">9</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">sol</span><span class="p">,</span> <span class="n">Ps</span><span class="p">,</span> <span class="n">Gcs</span> <span class="o">=</span> <span class="n">solve_shortest_path</span><span class="p">(</span><span class="n">Gc</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">solver</span><span class="o">=</span><span class="s2">&quot;SCIPY&quot;</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">Ps</span><span class="o">.</span><span class="n">objectives</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
+
+<span class="nn">File ~/work/corneto/corneto/corneto/methods/shortest_path.py:170,</span> in <span class="ni">solve_shortest_path</span><span class="nt">(G, s, t, edge_weights, solver, backend, integer_tolerance, solver_kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">168</span> <span class="k">if</span> <span class="n">solver_kwargs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">169</span>     <span class="n">solver_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="ne">--&gt; </span><span class="mi">170</span> <span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="n">solver</span><span class="p">,</span> <span class="o">**</span><span class="n">solver_kwargs</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">171</span> <span class="n">sol</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">172</span> <span class="k">if</span> <span class="n">sol</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+
+<span class="nn">File ~/work/corneto/corneto/corneto/backend/_base.py:571,</span> in <span class="ni">ProblemDef.solve</span><span class="nt">(self, solver, max_seconds, warm_start, verbosity, **options)</span>
+<span class="g g-Whitespace">    </span><span class="mi">569</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_backend</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">570</span>     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No backend assigned.&quot;</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">571</span> <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_backend</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">572</span>     <span class="bp">self</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">573</span>     <span class="n">solver</span><span class="o">=</span><span class="n">solver</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">574</span>     <span class="n">max_seconds</span><span class="o">=</span><span class="n">max_seconds</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">575</span>     <span class="n">warm_start</span><span class="o">=</span><span class="n">warm_start</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">576</span>     <span class="n">verbosity</span><span class="o">=</span><span class="n">verbosity</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">577</span>     <span class="o">**</span><span class="n">options</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">578</span> <span class="p">)</span>
+
+<span class="nn">File ~/work/corneto/corneto/corneto/backend/_base.py:832,</span> in <span class="ni">Backend.solve</span><span class="nt">(self, p, solver, max_seconds, warm_start, verbosity, **options)</span>
+<span class="g g-Whitespace">    </span><span class="mi">826</span> <span class="k">else</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">827</span>     <span class="n">o</span> <span class="o">=</span> <span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">828</span>         <span class="n">p</span><span class="o">.</span><span class="n">weights</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">objectives</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="g g-Whitespace">    </span><span class="mi">829</span>         <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">objectives</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">weights</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span>
+<span class="g g-Whitespace">    </span><span class="mi">830</span>         <span class="k">else</span> <span class="kc">None</span>
+<span class="g g-Whitespace">    </span><span class="mi">831</span>     <span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">832</span> <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_solve</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">833</span>     <span class="n">p</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">834</span>     <span class="n">objective</span><span class="o">=</span><span class="n">o</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">835</span>     <span class="n">solver</span><span class="o">=</span><span class="n">solver</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">836</span>     <span class="n">max_seconds</span><span class="o">=</span><span class="n">max_seconds</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">837</span>     <span class="n">warm_start</span><span class="o">=</span><span class="n">warm_start</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">838</span>     <span class="n">verbosity</span><span class="o">=</span><span class="n">verbosity</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">839</span>     <span class="o">**</span><span class="n">options</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">840</span> <span class="p">)</span>
+
+<span class="nn">File ~/work/corneto/corneto/corneto/backend/_cvxpy_backend.py:205,</span> in <span class="ni">CvxpyBackend._solve</span><span class="nt">(self, p, objective, solver, max_seconds, warm_start, verbosity, **options)</span>
+<span class="g g-Whitespace">    </span><span class="mi">197</span>     <span class="k">else</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">198</span>         <span class="c1"># Warning that a mapping is not available, check backend documentation</span>
+<span class="g g-Whitespace">    </span><span class="mi">199</span>         <span class="n">LOGGER</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&quot;&quot;max_seconds parameter mapping for </span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s2"> not found.</span>
+<span class="g g-Whitespace">    </span><span class="mi">200</span><span class="s2">                     Please refer to the backend documentation for more</span>
+<span class="g g-Whitespace">    </span><span class="mi">201</span><span class="s2">                     information. For example, using CVXPY with GUROBI solver,</span>
+<span class="g g-Whitespace">    </span><span class="mi">202</span><span class="s2">                     the parameter TimeLimit can be directly passed with</span>
+<span class="g g-Whitespace">    </span><span class="mi">203</span><span class="s2">                     `problem.solve(solver=&#39;GUROBI&#39;, TimeLimit=max_seconds)`&quot;&quot;&quot;</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">205</span> <span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="n">s</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbosity</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">warm_start</span><span class="o">=</span><span class="n">warm_start</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">206</span> <span class="k">return</span> <span class="n">P</span>
+
+<span class="nn">File ~/.cache/pypoetry/virtualenvs/corneto-lU1q7eKj-py3.11/lib/python3.11/site-packages/cvxpy/problems/problem.py:577,</span> in <span class="ni">Problem.solve</span><span class="nt">(self, *args, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">574</span>         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">575</span>             <span class="s2">&quot;Cannot specify both &#39;solver&#39; and &#39;solver_path&#39;. Please choose one.&quot;</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">576</span>     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_solve_solver_path</span><span class="p">(</span><span class="n">solve_func</span><span class="p">,</span><span class="n">solver_path</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">577</span> <span class="k">return</span> <span class="n">solve_func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<span class="nn">File ~/.cache/pypoetry/virtualenvs/corneto-lU1q7eKj-py3.11/lib/python3.11/site-packages/cvxpy/problems/problem.py:1160,</span> in <span class="ni">Problem._solve</span><span class="nt">(self, solver, warm_start, verbose, gp, qcp, requires_grad, enforce_dpp, ignore_dpp, canon_backend, **kwargs)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1158</span> <span class="k">if</span> <span class="n">solver_verbose</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">verbose</span><span class="p">):</span>
+<span class="g g-Whitespace">   </span><span class="mi">1159</span>     <span class="nb">print</span><span class="p">(</span><span class="n">_NUM_SOLVER_STR</span><span class="p">)</span>
+<span class="ne">-&gt; </span><span class="mi">1160</span> <span class="n">solution</span> <span class="o">=</span> <span class="n">solving_chain</span><span class="o">.</span><span class="n">solve_via_data</span><span class="p">(</span>
+<span class="g g-Whitespace">   </span><span class="mi">1161</span>     <span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">warm_start</span><span class="p">,</span> <span class="n">solver_verbose</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1162</span> <span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="g g-Whitespace">   </span><span class="mi">1163</span> <span class="bp">self</span><span class="o">.</span><span class="n">_solve_time</span> <span class="o">=</span> <span class="n">end</span> <span class="o">-</span> <span class="n">start</span>
+
+<span class="nn">File ~/.cache/pypoetry/virtualenvs/corneto-lU1q7eKj-py3.11/lib/python3.11/site-packages/cvxpy/reductions/solvers/solving_chain.py:524,</span> in <span class="ni">SolvingChain.solve_via_data</span><span class="nt">(self, problem, data, warm_start, verbose, solver_opts)</span>
+<span class="g g-Whitespace">    </span><span class="mi">488</span> <span class="k">def</span><span class="w"> </span><span class="nf">solve_via_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">problem</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">warm_start</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">489</span>                    <span class="n">solver_opts</span><span class="o">=</span><span class="p">{}):</span>
+<span class="g g-Whitespace">    </span><span class="mi">490</span><span class="w">     </span><span class="sd">&quot;&quot;&quot;Solves the problem using the data output by the an apply invocation.</span>
+<span class="g g-Whitespace">    </span><span class="mi">491</span><span class="sd"> </span>
+<span class="g g-Whitespace">    </span><span class="mi">492</span><span class="sd">     The semantics are:</span>
+<span class="sd">   (...)</span>
+<span class="g g-Whitespace">    </span><span class="mi">522</span><span class="sd">         a Solution object.</span>
+<span class="g g-Whitespace">    </span><span class="mi">523</span><span class="sd">     &quot;&quot;&quot;</span>
+<span class="ne">--&gt; </span><span class="mi">524</span>     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">solve_via_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">warm_start</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">525</span>                                       <span class="n">solver_opts</span><span class="p">,</span> <span class="n">problem</span><span class="o">.</span><span class="n">_solver_cache</span><span class="p">)</span>
+
+<span class="nn">File ~/.cache/pypoetry/virtualenvs/corneto-lU1q7eKj-py3.11/lib/python3.11/site-packages/cvxpy/reductions/solvers/conic_solvers/scipy_conif.py:209,</span> in <span class="ni">SCIPY.solve_via_data</span><span class="nt">(self, data, warm_start, verbose, solver_opts, solver_cache)</span>
+<span class="g g-Whitespace">    </span><span class="mi">203</span>     <span class="n">solution</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">milp</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">C</span><span class="p">],</span> 
+<span class="g g-Whitespace">    </span><span class="mi">204</span>                         <span class="n">constraints</span><span class="o">=</span><span class="n">constraints</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">205</span>                         <span class="n">options</span><span class="o">=</span><span class="n">solver_opts</span><span class="p">[</span><span class="s1">&#39;scipy_options&#39;</span><span class="p">],</span>
+<span class="g g-Whitespace">    </span><span class="mi">206</span>                         <span class="n">integrality</span><span class="o">=</span><span class="n">integrality</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">207</span>                         <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">208</span> <span class="k">else</span><span class="p">:</span>
+<span class="ne">--&gt; </span><span class="mi">209</span>     <span class="n">solution</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">linprog</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">C</span><span class="p">],</span> <span class="n">A_ub</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">G</span><span class="p">],</span> <span class="n">b_ub</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">H</span><span class="p">],</span>
+<span class="g g-Whitespace">    </span><span class="mi">210</span>                            <span class="n">A_eq</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">A</span><span class="p">],</span> <span class="n">b_eq</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">B</span><span class="p">],</span> <span class="n">method</span><span class="o">=</span><span class="n">meth</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">211</span>                            <span class="n">options</span><span class="o">=</span><span class="n">solver_opts</span><span class="p">[</span><span class="s1">&#39;scipy_options&#39;</span><span class="p">],</span>
+<span class="g g-Whitespace">    </span><span class="mi">212</span>                            <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">214</span> <span class="c1"># Replace `scipy_options` method to avoid future warnings.</span>
+<span class="g g-Whitespace">    </span><span class="mi">215</span> <span class="n">solver_opts</span><span class="p">[</span><span class="s2">&quot;scipy_options&quot;</span><span class="p">][</span><span class="s2">&quot;method&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">meth</span>
+
+<span class="nn">File ~/.cache/pypoetry/virtualenvs/corneto-lU1q7eKj-py3.11/lib/python3.11/site-packages/scipy/optimize/_linprog.py:660,</span> in <span class="ni">linprog</span><span class="nt">(c, A_ub, b_ub, A_eq, b_eq, bounds, method, callback, options, x0, integrality)</span>
+<span class="g g-Whitespace">    </span><span class="mi">655</span>     <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;HiGHS solvers do not support the &quot;</span>
+<span class="g g-Whitespace">    </span><span class="mi">656</span>                               <span class="s2">&quot;callback interface.&quot;</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">657</span> <span class="n">highs_solvers</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;highs-ipm&#39;</span><span class="p">:</span> <span class="s1">&#39;ipm&#39;</span><span class="p">,</span> <span class="s1">&#39;highs-ds&#39;</span><span class="p">:</span> <span class="s1">&#39;simplex&#39;</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">658</span>                  <span class="s1">&#39;highs&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+<span class="ne">--&gt; </span><span class="mi">660</span> <span class="n">sol</span> <span class="o">=</span> <span class="n">_linprog_highs</span><span class="p">(</span><span class="n">lp</span><span class="p">,</span> <span class="n">solver</span><span class="o">=</span><span class="n">highs_solvers</span><span class="p">[</span><span class="n">meth</span><span class="p">],</span>
+<span class="g g-Whitespace">    </span><span class="mi">661</span>                      <span class="o">**</span><span class="n">solver_options</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">662</span> <span class="n">sol</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">],</span> <span class="n">sol</span><span class="p">[</span><span class="s1">&#39;message&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">663</span>     <span class="n">_check_result</span><span class="p">(</span><span class="n">sol</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">],</span> <span class="n">sol</span><span class="p">[</span><span class="s1">&#39;fun&#39;</span><span class="p">],</span> <span class="n">sol</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">],</span> <span class="n">sol</span><span class="p">[</span><span class="s1">&#39;slack&#39;</span><span class="p">],</span>
+<span class="g g-Whitespace">    </span><span class="mi">664</span>                   <span class="n">sol</span><span class="p">[</span><span class="s1">&#39;con&#39;</span><span class="p">],</span> <span class="n">lp</span><span class="o">.</span><span class="n">bounds</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="n">sol</span><span class="p">[</span><span class="s1">&#39;message&#39;</span><span class="p">],</span>
+<span class="g g-Whitespace">    </span><span class="mi">665</span>                   <span class="n">integrality</span><span class="p">))</span>
+<span class="g g-Whitespace">    </span><span class="mi">666</span> <span class="n">sol</span><span class="p">[</span><span class="s1">&#39;success&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sol</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span>
+
+<span class="nn">File ~/.cache/pypoetry/virtualenvs/corneto-lU1q7eKj-py3.11/lib/python3.11/site-packages/scipy/optimize/_linprog_highs.py:355,</span> in <span class="ni">_linprog_highs</span><span class="nt">(lp, solver, time_limit, presolve, disp, maxiter, dual_feasibility_tolerance, primal_feasibility_tolerance, ipm_optimality_tolerance, simplex_dual_edge_weight_strategy, mip_rel_gap, mip_max_nodes, **unknown_options)</span>
+<span class="g g-Whitespace">    </span><span class="mi">352</span> <span class="k">else</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">353</span>     <span class="n">integrality</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">integrality</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">355</span> <span class="n">res</span> <span class="o">=</span> <span class="n">_highs_wrapper</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">A</span><span class="o">.</span><span class="n">indptr</span><span class="p">,</span> <span class="n">A</span><span class="o">.</span><span class="n">indices</span><span class="p">,</span> <span class="n">A</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">lhs</span><span class="p">,</span> <span class="n">rhs</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">356</span>                      <span class="n">lb</span><span class="p">,</span> <span class="n">ub</span><span class="p">,</span> <span class="n">integrality</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">),</span> <span class="n">options</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">358</span> <span class="c1"># HiGHS represents constraints as lhs/rhs, so</span>
+<span class="g g-Whitespace">    </span><span class="mi">359</span> <span class="c1"># Ax + s = b =&gt; Ax = b - s</span>
+<span class="g g-Whitespace">    </span><span class="mi">360</span> <span class="c1"># and we need to split up s by A_ub and A_eq</span>
+<span class="g g-Whitespace">    </span><span class="mi">361</span> <span class="k">if</span> <span class="s1">&#39;slack&#39;</span> <span class="ow">in</span> <span class="n">res</span><span class="p">:</span>
+
+<span class="nn">File ~/.cache/pypoetry/virtualenvs/corneto-lU1q7eKj-py3.11/lib/python3.11/site-packages/scipy/optimize/_highspy/_highs_wrapper.py,</span> in <span class="ni">_highs_wrapper</span><span class="nt">(c, indptr, indices, data, lhs, rhs, lb, ub, integrality, options)</span>
+<span class="g g-Whitespace">      </span><span class="mi">0</span> <span class="o">&lt;</span><span class="n">Error</span> <span class="n">retrieving</span> <span class="n">source</span> <span class="n">code</span> <span class="k">with</span> <span class="n">stack_data</span> <span class="n">see</span> <span class="n">ipython</span><span class="o">/</span><span class="n">ipython</span><span class="c1">#13598&gt;</span>
+
+<span class="ne">KeyboardInterrupt</span>: 
 </pre></div>
 </div>
 </div>
@@ -587,9 +736,6 @@
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Gcs</span><span class="o">.</span><span class="n">edge_subgraph</span><span class="p">(</span><span class="n">sol</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">orphan_edges</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="cell_output docutils container">
-<img alt="../../_images/4782efaeed93c706e21e5c21abb08e0e73d329bbfa71bf3486f5a54a6a11f151.svg" src="../../_images/4782efaeed93c706e21e5c21abb08e0e73d329bbfa71bf3486f5a54a6a11f151.svg" />
 </div>
 </div>
 </section>
