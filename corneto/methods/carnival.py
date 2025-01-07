@@ -1317,8 +1317,13 @@ def milp_carnival(
             P += V_act[i] == 0
             P += V_inh[i] == 1
 
-    # Finally, the objective function is to minimise the difference between
-    # the predicted values and the measurements
+    # TODO: Remove, this is not required, as L1309-L1310 already exclude these vertices
+    other_potential_inputs = set(v for v in G.V if len(set(G.in_edges(v))) == 0)
+    other_potential_inputs = other_potential_inputs.difference(perturbations.keys())
+    for v in other_potential_inputs:
+        i = V_index[v]
+        P += V_act[i] == 0
+        P += V_inh[i] == 0
 
     data = measurements.copy()
     if use_perturbation_weights:

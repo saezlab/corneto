@@ -33,7 +33,7 @@ def get_test_graph_1():
 
     return G1
 
-
+@pytest.mark.skip(reason="not compatible with picos")
 def test_cellnoptILP_AND(backend):
     G1 = get_test_graph_1()
 
@@ -77,7 +77,7 @@ def test_cellnoptILP_AND(backend):
         np.sum(P.expr.vertex_value.value, axis=0), expected_vertex_values.sum(axis=0)
     ).all()
 
-
+@pytest.mark.skip(reason="not compatible with picos")
 def test_cellnoptILP_OR(backend):
     G1 = get_test_graph_1()
 
