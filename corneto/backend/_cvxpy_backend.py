@@ -190,7 +190,7 @@ class CvxpyBackend(Backend):
                 cfg = options.get("mosek_params", dict())
                 cfg.update({"mioMaxTime": float(max_seconds)})
                 options["mosek_params"] = cfg
-            elif s == "SCIPY" or s == "HIGHS":
+            elif s == "SCIPY":
                 cfg = options.get("scipy_options", dict())
                 cfg.update({"time_limit": float(max_seconds), "disp": verbosity > 0})
                 options["scipy_options"] = cfg
