@@ -24,13 +24,6 @@ P = milp_carnival(G, {"I2": -1, "I1": 0}, {"T": 1}, beta_weight=0.01)
 P.solve(solver="GUROBI", verbosity=1)
 ------------------
 
------ stdout -----
-(CVXPY) Jan 07 08:43:10 PM: Encountered unexpected exception importing solver HIGHS:
-ImportError('generic_type: type "ObjSense" is already registered!')
------ stdout -----
-(CVXPY) Jan 07 08:43:10 PM: Encountered unexpected exception importing solver HIGHS:
-ImportError('generic_type: type "ObjSense" is already registered!')
-------------------
 
 [0;31m---------------------------------------------------------------------------[0m
 [0;31mValueError[0m                                Traceback (most recent call last)
@@ -77,5 +70,5 @@ File [0;32m~/work/corneto/corneto/corneto/backend/_cvxpy_backend.py:167[0m, in
 [1;32m    170[0m [38;5;66;03m# TODO: Implement parameter mapping for solvers and backends[39;00m
 [1;32m    171[0m [38;5;28;01mif[39;00m max_seconds [38;5;129;01mis[39;00m [38;5;129;01mnot[39;00m [38;5;28;01mNone[39;00m:
 
-[0;31mValueError[0m: Solver GUROBI is not installed/supported, supported solvers are: ['CVXOPT', 'GLPK', 'GLPK_MI', 'SCIP', 'SCIPY']
+[0;31mValueError[0m: Solver GUROBI is not installed/supported, supported solvers are: ['CVXOPT', 'GLPK', 'GLPK_MI', 'HIGHS', 'SCIP', 'SCIPY']
 

@@ -466,7 +466,7 @@
             </td>
             <td>
             <table>
-                <tr><td>Installed version:</td><td style='text-align:left'>v1.0.0.dev3 (latest stable: v1.0.0-alpha)</td></tr><tr><td>Available backends:</td><td style='text-align:left'>PICOS v2.5.1</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>PICOS</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>cvxopt, glpk, scip</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.3</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href=https://github.com/saezlab/corneto>https://github.com/saezlab/corneto</a></td></tr>
+                <tr><td>Installed version:</td><td style='text-align:left'>v1.0.0.dev3 (latest stable: v1.0.0-alpha)</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.6.0, PICOS v2.5.1</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CVXOPT, GLPK, GLPK_MI, HIGHS, SCIP, SCIPY</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.3</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href=https://github.com/saezlab/corneto>https://github.com/saezlab/corneto</a></td></tr>
             </table>
             </td>
         </tr>
@@ -485,7 +485,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_flow&#39;: &lt;95×1 Real Variable: _flow&gt;, &#39;flow&#39;: &lt;95×1 Real Variable: _flow&gt;}
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_flow&#39;: Variable((95,), _flow), &#39;flow&#39;: Variable((95,), _flow)}
 </pre></div>
 </div>
 </div>
@@ -501,84 +501,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">NoStrategyFound</span><span class="g g-Whitespace">                           </span>Traceback (most recent call last)
-<span class="nn">File ~/.cache/pypoetry/virtualenvs/corneto-lU1q7eKj-py3.11/lib/python3.11/site-packages/picos/modeling/problem.py:1802,</span> in <span class="ni">Problem.solve</span><span class="nt">(self, **extra_options)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1801</span> <span class="k">try</span><span class="p">:</span>
-<span class="ne">-&gt; </span><span class="mi">1802</span>     <span class="bp">self</span><span class="o">.</span><span class="n">_strategy</span> <span class="o">=</span> <span class="n">Strategy</span><span class="o">.</span><span class="n">from_problem</span><span class="p">(</span>
-<span class="g g-Whitespace">   </span><span class="mi">1803</span>         <span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_options</span><span class="p">)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1804</span> <span class="k">except</span> <span class="n">NoStrategyFound</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
-
-<span class="nn">File ~/.cache/pypoetry/virtualenvs/corneto-lU1q7eKj-py3.11/lib/python3.11/site-packages/picos/modeling/strategy.py:331,</span> in <span class="ni">Strategy.from_problem</span><span class="nt">(cls, problem, **extra_options)</span>
-<span class="g g-Whitespace">    </span><span class="mi">329</span>         <span class="n">synopsis</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">    - &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="s2">&quot;&quot;</span><span class="p">,)</span> <span class="o">+</span> <span class="n">reasons</span><span class="p">)</span>
-<span class="ne">--&gt; </span><span class="mi">331</span>     <span class="k">raise</span> <span class="n">NoStrategyFound</span><span class="p">(</span><span class="n">synopsis</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">333</span> <span class="k">return</span> <span class="n">strategies</span><span class="p">[</span><span class="n">costs</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">costs</span><span class="p">))]</span>
-
-<span class="ne">NoStrategyFound</span>: No problem reformulation strategy found.
-<span class="n">Selected</span> <span class="n">reasons</span> <span class="k">for</span> <span class="n">discarding</span> <span class="n">reachable</span> <span class="n">problem</span> <span class="n">formulations</span><span class="p">:</span>
-  <span class="n">SCIP</span> <span class="n">via</span> <span class="n">PySCIPOpt</span> <span class="n">does</span> <span class="ow">not</span> <span class="n">support</span><span class="p">:</span>
-    <span class="o">-</span> <span class="n">Continuous</span> <span class="n">problems</span><span class="p">,</span> <span class="k">except</span> <span class="k">for</span> <span class="n">nonconvex</span> <span class="n">quadratic</span> <span class="n">ones</span> <span class="p">(</span><span class="n">PICOS</span><span class="s1">&#39; choice).</span>
-
-<span class="n">The</span> <span class="n">above</span> <span class="n">exception</span> <span class="n">was</span> <span class="n">the</span> <span class="n">direct</span> <span class="n">cause</span> <span class="n">of</span> <span class="n">the</span> <span class="n">following</span> <span class="n">exception</span><span class="p">:</span>
-
-<span class="ne">SolutionFailure</span><span class="g g-Whitespace">                           </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">line</span> <span class="mi">4</span>
-<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">biomass</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="p">[</span><span class="n">rid</span><span class="p">]</span>
-<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">P</span><span class="o">.</span><span class="n">add_objectives</span><span class="p">(</span><span class="n">biomass</span><span class="p">,</span> <span class="n">weights</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
-<span class="ne">----&gt; </span><span class="mi">4</span> <span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
-<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="nb">print</span><span class="p">(</span><span class="n">biomass</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
-
-<span class="nn">File ~/work/corneto/corneto/corneto/backend/_base.py:571,</span> in <span class="ni">ProblemDef.solve</span><span class="nt">(self, solver, max_seconds, warm_start, verbosity, **options)</span>
-<span class="g g-Whitespace">    </span><span class="mi">569</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_backend</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">570</span>     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No backend assigned.&quot;</span><span class="p">)</span>
-<span class="ne">--&gt; </span><span class="mi">571</span> <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_backend</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span>
-<span class="g g-Whitespace">    </span><span class="mi">572</span>     <span class="bp">self</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">573</span>     <span class="n">solver</span><span class="o">=</span><span class="n">solver</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">574</span>     <span class="n">max_seconds</span><span class="o">=</span><span class="n">max_seconds</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">575</span>     <span class="n">warm_start</span><span class="o">=</span><span class="n">warm_start</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">576</span>     <span class="n">verbosity</span><span class="o">=</span><span class="n">verbosity</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">577</span>     <span class="o">**</span><span class="n">options</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">578</span> <span class="p">)</span>
-
-<span class="nn">File ~/work/corneto/corneto/corneto/backend/_base.py:832,</span> in <span class="ni">Backend.solve</span><span class="nt">(self, p, solver, max_seconds, warm_start, verbosity, **options)</span>
-<span class="g g-Whitespace">    </span><span class="mi">826</span> <span class="k">else</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">827</span>     <span class="n">o</span> <span class="o">=</span> <span class="p">(</span>
-<span class="g g-Whitespace">    </span><span class="mi">828</span>         <span class="n">p</span><span class="o">.</span><span class="n">weights</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">objectives</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-<span class="g g-Whitespace">    </span><span class="mi">829</span>         <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">objectives</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">weights</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span>
-<span class="g g-Whitespace">    </span><span class="mi">830</span>         <span class="k">else</span> <span class="kc">None</span>
-<span class="g g-Whitespace">    </span><span class="mi">831</span>     <span class="p">)</span>
-<span class="ne">--&gt; </span><span class="mi">832</span> <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_solve</span><span class="p">(</span>
-<span class="g g-Whitespace">    </span><span class="mi">833</span>     <span class="n">p</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">834</span>     <span class="n">objective</span><span class="o">=</span><span class="n">o</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">835</span>     <span class="n">solver</span><span class="o">=</span><span class="n">solver</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">836</span>     <span class="n">max_seconds</span><span class="o">=</span><span class="n">max_seconds</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">837</span>     <span class="n">warm_start</span><span class="o">=</span><span class="n">warm_start</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">838</span>     <span class="n">verbosity</span><span class="o">=</span><span class="n">verbosity</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">839</span>     <span class="o">**</span><span class="n">options</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">840</span> <span class="p">)</span>
-
-<span class="nn">File ~/work/corneto/corneto/corneto/backend/_picos_backend.py:240,</span> in <span class="ni">PicosBackend._solve</span><span class="nt">(self, p, objective, solver, max_seconds, warm_start, verbosity, **options)</span>
-<span class="g g-Whitespace">    </span><span class="mi">237</span>     <span class="kn">from</span><span class="w"> </span><span class="nn">corneto._settings</span><span class="w"> </span><span class="kn">import</span> <span class="n">LOGGER</span>
-<span class="g g-Whitespace">    </span><span class="mi">239</span>     <span class="n">LOGGER</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;warm_start is not supported yet, ignored&quot;</span><span class="p">)</span>
-<span class="ne">--&gt; </span><span class="mi">240</span> <span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span>
-<span class="g g-Whitespace">    </span><span class="mi">241</span>     <span class="n">timelimit</span><span class="o">=</span><span class="n">max_seconds</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">242</span>     <span class="n">solver</span><span class="o">=</span><span class="n">solver</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">243</span>     <span class="n">verbosity</span><span class="o">=</span><span class="n">verbosity</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">244</span>     <span class="n">hotstart</span><span class="o">=</span><span class="n">warm_start</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">245</span>     <span class="o">**</span><span class="n">options</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">246</span> <span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">247</span> <span class="k">return</span> <span class="n">P</span>
-
-<span class="nn">File ~/.cache/pypoetry/virtualenvs/corneto-lU1q7eKj-py3.11/lib/python3.11/site-packages/picos/modeling/problem.py:1810,</span> in <span class="ni">Problem.solve</span><span class="nt">(self, **extra_options)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1807</span>     <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-<span class="g g-Whitespace">   </span><span class="mi">1808</span>         <span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="ne">-&gt; </span><span class="mi">1810</span>     <span class="k">raise</span> <span class="n">SolutionFailure</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;No solution strategy found.&quot;</span><span class="p">)</span> \
-<span class="g g-Whitespace">   </span><span class="mi">1811</span>         <span class="kn">from</span><span class="w"> </span><span class="nn">error</span>
-<span class="g g-Whitespace">   </span><span class="mi">1813</span> <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-<span class="g g-Whitespace">   </span><span class="mi">1814</span>     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Solution strategy:</span><span class="se">\n</span><span class="s2">  </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-<span class="g g-Whitespace">   </span><span class="mi">1815</span>         <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_strategy</span><span class="p">)</span><span class="o">.</span><span class="n">splitlines</span><span class="p">())))</span>
-
-<span class="ne">SolutionFailure</span>: Code 1: No solution strategy found.
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.8739215069684303
 </pre></div>
 </div>
 </div>
@@ -593,7 +516,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.5
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>np.float64(0.5)
 </pre></div>
 </div>
 </div>
@@ -605,7 +528,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/46d86fb5700b967f3cb2e48a58f8ba28919b9cd7c33bcae919974036f1676440.svg" src="../../_images/46d86fb5700b967f3cb2e48a58f8ba28919b9cd7c33bcae919974036f1676440.svg" />
+<img alt="../../_images/6a1b9fe842ceb0e8ddb3326fdc03d92fdc5b6a21d9adc0167c5e555ff79df0fe.svg" src="../../_images/6a1b9fe842ceb0e8ddb3326fdc03d92fdc5b6a21d9adc0167c5e555ff79df0fe.svg" />
 </div>
 </div>
 <p>Now we are going to see how to use specialized building blocks from CORNETO to automatically add indicators for the presence of reactions in a model. Indicators are binary variables associated to a continuous variable: when the indicator is 0, the continuous variable is 0; and when the indicator is 1, the continuous variable is unconstrained.</p>
@@ -621,6 +544,13 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_flow&#39;: Variable((95,), _flow),
+ &#39;unblocked_flow&#39;: Variable((95,), unblocked_flow, boolean=True),
+ &#39;flow&#39;: Variable((95,), _flow)}
+</pre></div>
+</div>
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -628,6 +558,11 @@
 <span class="n">P</span><span class="o">.</span><span class="n">add_objectives</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">unblocked_flow</span><span class="p">))</span>
 <span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">biomass</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.0
 </pre></div>
 </div>
 </div>
@@ -639,12 +574,20 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>np.float64(16.0)
+</pre></div>
+</div>
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">G</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">custom_edge_attr</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">flow_style</span><span class="p">(</span><span class="n">P</span><span class="p">),</span> <span class="n">layout</span><span class="o">=</span><span class="s2">&quot;fdp&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/b570d3064a8f682e6428311e567129aadde3daf02e97ea51b7533fc28b847ab5.svg" src="../../_images/b570d3064a8f682e6428311e567129aadde3daf02e97ea51b7533fc28b847ab5.svg" />
 </div>
 </div>
 </section>
@@ -660,6 +603,11 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Problem(Minimize(Expression(AFFINE, NONNEGATIVE, ())), [Inequality(Constant(CONSTANT, UNKNOWN, (95,))), Inequality(Variable((95,), _flow)), Equality(Expression(AFFINE, UNKNOWN, (72,)), Constant(CONSTANT, ZERO, ())), Inequality(Constant(CONSTANT, NONNEGATIVE, ())), Inequality(Expression(AFFINE, UNKNOWN, (95,))), Inequality(Variable((95,), _flow))])
+</pre></div>
+</div>
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -667,10 +615,20 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>np.float64(42.0)
+</pre></div>
+</div>
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">sum</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mf">1e-6</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>np.int64(42)
 </pre></div>
 </div>
 </div>
