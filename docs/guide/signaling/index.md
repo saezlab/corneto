@@ -10,4 +10,5 @@ multicondition-carnival.ipynb
 multitimepoint-carnival.ipynb
 phonemes.ipynb
 multicondition-phonemes.ipynb
+cellnopt_ILP.ipynb
 ```
