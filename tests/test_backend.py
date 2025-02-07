@@ -136,6 +136,16 @@ def test_opt_delegate_sum_axis1(backend):
     P.solve()
     assert np.isclose(esum.value, 60)
 
+@pytest.mark.skip()
+def test_abs(backend):
+    P = backend.Problem()
+    y_pred = backend.Variable(shape=(3, 2))
+    y_true = np.array([[-1, 1], [2, -1], [-3, 1]])
+    P += y_pred >= 0
+    P.add_objectives((y_true - y_pred).abs().sum())
+    P.solve()
+    assert np.isclose((y_true - y_pred.value).sum(), -5.0)
+    assert np.isclose(P.objectives[0].value, 5.0)
 
 def test_vstack_matrix(backend):
     x = backend.Variable("x", (2, 2))

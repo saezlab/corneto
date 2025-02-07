@@ -40,6 +40,9 @@ class CvxpyExpression(CExpression):
     def _max(self, axis: Optional[int] = None) -> Any:
         return cp.max(self._expr, axis=axis)
 
+    #def _abs(self) -> Any:
+    #    return cp.abs(self._expr)
+
     def _hstack(self, other: Any) -> Any:
         return cp.hstack([self._expr, other])
 

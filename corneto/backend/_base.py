@@ -204,6 +204,14 @@ class CExpression(abc.ABC):
     def max(self, axis: Optional[int] = None) -> "CExpression":
         return self._max(axis=axis)
 
+    #@abc.abstractmethod
+    #def _abs(self) -> Any:
+    #    pass
+
+    #@_delegate
+    #def abs(self) -> "CExpression":
+    #    return self._abs()
+
     # These delegated methods are invoked directly in the backend
     # and wrapped thanks to the _delegate decorator. If a new
     # backend has a different behavior, provide an abstract method

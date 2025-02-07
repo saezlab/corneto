@@ -76,6 +76,9 @@ class PicosExpression(CExpression):
     def _max(self, axis: Optional[int] = None) -> Any:
         raise NotImplementedError()
 
+    def _abs(self) -> Any:
+        raise NotImplementedError()
+
     def _hstack(self, other: Any) -> Any:
         a = self._expr
         b = other
