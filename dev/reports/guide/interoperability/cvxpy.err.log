@@ -41,43 +41,43 @@ Cell [0;32mIn[2], line 13[0m
 [1;32m     12[0m P[38;5;241m.[39madd_objectives([38;5;28msum[39m(A [38;5;241m@[39m x [38;5;241m-[39m b))
 [0;32m---> 13[0m cvxpy_model [38;5;241m=[39m [43mP[49m[38;5;241;43m.[39;49m[43msolve[49m[43m([49m[43msolver[49m[38;5;241;43m=[39;49m[38;5;124;43m"[39;49m[38;5;124;43mosqp[39;49m[38;5;124;43m"[39;49m[43m,[49m[43m [49m[43mverbosity[49m[38;5;241;43m=[39;49m[38;5;241;43m1[39;49m[43m)[49m
 
-File [0;32m~/work/corneto/corneto/corneto/backend/_base.py:571[0m, in [0;36mProblemDef.solve[0;34m(self, solver, max_seconds, warm_start, verbosity, **options)[0m
-[1;32m    569[0m [38;5;28;01mif[39;00m [38;5;28mself[39m[38;5;241m.[39m_backend [38;5;129;01mis[39;00m [38;5;28;01mNone[39;00m:
-[1;32m    570[0m     [38;5;28;01mraise[39;00m [38;5;167;01mValueError[39;00m([38;5;124m"[39m[38;5;124mNo backend assigned.[39m[38;5;124m"[39m)
-[0;32m--> 571[0m [38;5;28;01mreturn[39;00m [38;5;28;43mself[39;49m[38;5;241;43m.[39;49m[43m_backend[49m[38;5;241;43m.[39;49m[43msolve[49m[43m([49m
-[1;32m    572[0m [43m    [49m[38;5;28;43mself[39;49m[43m,[49m
-[1;32m    573[0m [43m    [49m[43msolver[49m[38;5;241;43m=[39;49m[43msolver[49m[43m,[49m
-[1;32m    574[0m [43m    [49m[43mmax_seconds[49m[38;5;241;43m=[39;49m[43mmax_seconds[49m[43m,[49m
-[1;32m    575[0m [43m    [49m[43mwarm_start[49m[38;5;241;43m=[39;49m[43mwarm_start[49m[43m,[49m
-[1;32m    576[0m [43m    [49m[43mverbosity[49m[38;5;241;43m=[39;49m[43mverbosity[49m[43m,[49m
-[1;32m    577[0m [43m    [49m[38;5;241;43m*[39;49m[38;5;241;43m*[39;49m[43moptions[49m[43m,[49m
-[1;32m    578[0m [43m[49m[43m)[49m
+File [0;32m~/work/corneto/corneto/corneto/backend/_base.py:579[0m, in [0;36mProblemDef.solve[0;34m(self, solver, max_seconds, warm_start, verbosity, **options)[0m
+[1;32m    577[0m [38;5;28;01mif[39;00m [38;5;28mself[39m[38;5;241m.[39m_backend [38;5;129;01mis[39;00m [38;5;28;01mNone[39;00m:
+[1;32m    578[0m     [38;5;28;01mraise[39;00m [38;5;167;01mValueError[39;00m([38;5;124m"[39m[38;5;124mNo backend assigned.[39m[38;5;124m"[39m)
+[0;32m--> 579[0m [38;5;28;01mreturn[39;00m [38;5;28;43mself[39;49m[38;5;241;43m.[39;49m[43m_backend[49m[38;5;241;43m.[39;49m[43msolve[49m[43m([49m
+[1;32m    580[0m [43m    [49m[38;5;28;43mself[39;49m[43m,[49m
+[1;32m    581[0m [43m    [49m[43msolver[49m[38;5;241;43m=[39;49m[43msolver[49m[43m,[49m
+[1;32m    582[0m [43m    [49m[43mmax_seconds[49m[38;5;241;43m=[39;49m[43mmax_seconds[49m[43m,[49m
+[1;32m    583[0m [43m    [49m[43mwarm_start[49m[38;5;241;43m=[39;49m[43mwarm_start[49m[43m,[49m
+[1;32m    584[0m [43m    [49m[43mverbosity[49m[38;5;241;43m=[39;49m[43mverbosity[49m[43m,[49m
+[1;32m    585[0m [43m    [49m[38;5;241;43m*[39;49m[38;5;241;43m*[39;49m[43moptions[49m[43m,[49m
+[1;32m    586[0m [43m[49m[43m)[49m
 
-File [0;32m~/work/corneto/corneto/corneto/backend/_base.py:832[0m, in [0;36mBackend.solve[0;34m(self, p, solver, max_seconds, warm_start, verbosity, **options)[0m
-[1;32m    826[0m [38;5;28;01melse[39;00m:
-[1;32m    827[0m     o [38;5;241m=[39m (
-[1;32m    828[0m         p[38;5;241m.[39mweights[[38;5;241m0[39m] [38;5;241m*[39m p[38;5;241m.[39mobjectives[[38;5;241m0[39m]
-[1;32m    829[0m         [38;5;28;01mif[39;00m p[38;5;241m.[39mobjectives [38;5;129;01mand[39;00m p[38;5;241m.[39mweights[[38;5;241m0[39m] [38;5;241m!=[39m [38;5;241m0[39m
-[1;32m    830[0m         [38;5;28;01melse[39;00m [38;5;28;01mNone[39;00m
-[1;32m    831[0m     )
-[0;32m--> 832[0m [38;5;28;01mreturn[39;00m [38;5;28;43mself[39;49m[38;5;241;43m.[39;49m[43m_solve[49m[43m([49m
-[1;32m    833[0m [43m    [49m[43mp[49m[43m,[49m
-[1;32m    834[0m [43m    [49m[43mobjective[49m[38;5;241;43m=[39;49m[43mo[49m[43m,[49m
-[1;32m    835[0m [43m    [49m[43msolver[49m[38;5;241;43m=[39;49m[43msolver[49m[43m,[49m
-[1;32m    836[0m [43m    [49m[43mmax_seconds[49m[38;5;241;43m=[39;49m[43mmax_seconds[49m[43m,[49m
-[1;32m    837[0m [43m    [49m[43mwarm_start[49m[38;5;241;43m=[39;49m[43mwarm_start[49m[43m,[49m
-[1;32m    838[0m [43m    [49m[43mverbosity[49m[38;5;241;43m=[39;49m[43mverbosity[49m[43m,[49m
-[1;32m    839[0m [43m    [49m[38;5;241;43m*[39;49m[38;5;241;43m*[39;49m[43moptions[49m[43m,[49m
-[1;32m    840[0m [43m[49m[43m)[49m
+File [0;32m~/work/corneto/corneto/corneto/backend/_base.py:840[0m, in [0;36mBackend.solve[0;34m(self, p, solver, max_seconds, warm_start, verbosity, **options)[0m
+[1;32m    834[0m [38;5;28;01melse[39;00m:
+[1;32m    835[0m     o [38;5;241m=[39m (
+[1;32m    836[0m         p[38;5;241m.[39mweights[[38;5;241m0[39m] [38;5;241m*[39m p[38;5;241m.[39mobjectives[[38;5;241m0[39m]
+[1;32m    837[0m         [38;5;28;01mif[39;00m p[38;5;241m.[39mobjectives [38;5;129;01mand[39;00m p[38;5;241m.[39mweights[[38;5;241m0[39m] [38;5;241m!=[39m [38;5;241m0[39m
+[1;32m    838[0m         [38;5;28;01melse[39;00m [38;5;28;01mNone[39;00m
+[1;32m    839[0m     )
+[0;32m--> 840[0m [38;5;28;01mreturn[39;00m [38;5;28;43mself[39;49m[38;5;241;43m.[39;49m[43m_solve[49m[43m([49m
+[1;32m    841[0m [43m    [49m[43mp[49m[43m,[49m
+[1;32m    842[0m [43m    [49m[43mobjective[49m[38;5;241;43m=[39;49m[43mo[49m[43m,[49m
+[1;32m    843[0m [43m    [49m[43msolver[49m[38;5;241;43m=[39;49m[43msolver[49m[43m,[49m
+[1;32m    844[0m [43m    [49m[43mmax_seconds[49m[38;5;241;43m=[39;49m[43mmax_seconds[49m[43m,[49m
+[1;32m    845[0m [43m    [49m[43mwarm_start[49m[38;5;241;43m=[39;49m[43mwarm_start[49m[43m,[49m
+[1;32m    846[0m [43m    [49m[43mverbosity[49m[38;5;241;43m=[39;49m[43mverbosity[49m[43m,[49m
+[1;32m    847[0m [43m    [49m[38;5;241;43m*[39;49m[38;5;241;43m*[39;49m[43moptions[49m[43m,[49m
+[1;32m    848[0m [43m[49m[43m)[49m
 
-File [0;32m~/work/corneto/corneto/corneto/backend/_cvxpy_backend.py:167[0m, in [0;36mCvxpyBackend._solve[0;34m(self, p, objective, solver, max_seconds, warm_start, verbosity, **options)[0m
-[1;32m    165[0m solvers [38;5;241m=[39m cp[38;5;241m.[39minstalled_solvers()
-[1;32m    166[0m [38;5;28;01mif[39;00m s [38;5;129;01mis[39;00m [38;5;129;01mnot[39;00m [38;5;28;01mNone[39;00m [38;5;129;01mand[39;00m s [38;5;129;01mnot[39;00m [38;5;129;01min[39;00m solvers:
-[0;32m--> 167[0m     [38;5;28;01mraise[39;00m [38;5;167;01mValueError[39;00m(
-[1;32m    168[0m         [38;5;124mf[39m[38;5;124m"[39m[38;5;124mSolver [39m[38;5;132;01m{[39;00ms[38;5;132;01m}[39;00m[38;5;124m is not installed/supported, supported solvers are: [39m[38;5;132;01m{[39;00msolvers[38;5;132;01m}[39;00m[38;5;124m"[39m
-[1;32m    169[0m     )
-[1;32m    170[0m [38;5;66;03m# TODO: Implement parameter mapping for solvers and backends[39;00m
-[1;32m    171[0m [38;5;28;01mif[39;00m max_seconds [38;5;129;01mis[39;00m [38;5;129;01mnot[39;00m [38;5;28;01mNone[39;00m:
+File [0;32m~/work/corneto/corneto/corneto/backend/_cvxpy_backend.py:170[0m, in [0;36mCvxpyBackend._solve[0;34m(self, p, objective, solver, max_seconds, warm_start, verbosity, **options)[0m
+[1;32m    168[0m solvers [38;5;241m=[39m cp[38;5;241m.[39minstalled_solvers()
+[1;32m    169[0m [38;5;28;01mif[39;00m s [38;5;129;01mis[39;00m [38;5;129;01mnot[39;00m [38;5;28;01mNone[39;00m [38;5;129;01mand[39;00m s [38;5;129;01mnot[39;00m [38;5;129;01min[39;00m solvers:
+[0;32m--> 170[0m     [38;5;28;01mraise[39;00m [38;5;167;01mValueError[39;00m(
+[1;32m    171[0m         [38;5;124mf[39m[38;5;124m"[39m[38;5;124mSolver [39m[38;5;132;01m{[39;00ms[38;5;132;01m}[39;00m[38;5;124m is not installed/supported, supported solvers are: [39m[38;5;132;01m{[39;00msolvers[38;5;132;01m}[39;00m[38;5;124m"[39m
+[1;32m    172[0m     )
+[1;32m    173[0m [38;5;66;03m# TODO: Implement parameter mapping for solvers and backends[39;00m
+[1;32m    174[0m [38;5;28;01mif[39;00m max_seconds [38;5;129;01mis[39;00m [38;5;129;01mnot[39;00m [38;5;28;01mNone[39;00m:
 
 [0;31mValueError[0m: Solver OSQP is not installed/supported, supported solvers are: ['CVXOPT', 'GLPK', 'GLPK_MI', 'HIGHS', 'SCIP', 'SCIPY']
 
