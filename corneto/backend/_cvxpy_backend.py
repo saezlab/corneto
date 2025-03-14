@@ -51,13 +51,13 @@ class CvxpyExpression(CExpression):
         b = other
         # If vector, for vstack assume is a row vector
         if len(a.shape) == 1:
-            a = cp.reshape(a, (1, a.shape[0]))
+            a = cp.reshape(a, (1, a.shape[0]), order="F")
         if len(b.shape) == 1:
-            b = cp.reshape(b, (1, b.shape[0]))
+            b = cp.reshape(b, (1, b.shape[0]), order="F")
         return cp.vstack([a, b])
 
     def _reshape(self, shape: Tuple[int, ...]) -> Any:
-        return cp.reshape(self._expr, shape)
+        return cp.reshape(self._expr, shape, order="F")
 
     @property
     def value(self) -> np.ndarray:

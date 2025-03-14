@@ -1,4 +1,5 @@
 import hashlib
+import json
 import os
 import pickle
 from collections import OrderedDict
@@ -13,6 +14,51 @@ T = TypeVar("T")
 
 def obj_content_hash(obj) -> str:
     obj_serialized = pickle.dumps(obj)
+    hash_obj = hashlib.sha256()
+    hash_obj.update(obj_serialized)
+    return hash_obj.hexdigest()
+
+
+def canonicalize(obj):
+    """Recursively convert an object into a JSON-serializable structure
+    that is independent of internal ordering.
+    """
+    if isinstance(obj, dict):
+        # Convert dictionary keys to strings and sort the keys
+        return {
+            str(key): canonicalize(obj[key])
+            for key in sorted(obj.keys(), key=lambda x: str(x))
+        }
+    elif isinstance(obj, (list, tuple)):
+        # Recursively canonicalize each element in the list or tuple
+        return [canonicalize(item) for item in obj]
+    elif isinstance(obj, set):
+        # Convert sets to a sorted list (sorting based on JSON string representation)
+        return sorted(
+            [canonicalize(item) for item in obj],
+            key=lambda x: json.dumps(x, sort_keys=True),
+        )
+    elif isinstance(obj, (int, float, str, bool)) or obj is None:
+        return obj
+    else:
+        # For non-standard objects, try using the __dict__ attribute if available
+        if hasattr(obj, "__dict__"):
+            return canonicalize(obj.__dict__)
+        else:
+            # Fall back to a string representation
+            return str(obj)
+
+
+def obj_canonicalized_hash(obj) -> str:
+    # First canonicalize the object
+    canonical_obj = canonicalize(obj)
+    # Serialize the canonical object to a JSON string.
+    # 'sort_keys=True' ensures consistent key order,
+    # and separators remove unnecessary whitespace.
+    obj_serialized = json.dumps(
+        canonical_obj, sort_keys=True, separators=(",", ":")
+    ).encode("utf-8")
+    # Compute the SHA256 hash of the serialized bytes
     hash_obj = hashlib.sha256()
     hash_obj.update(obj_serialized)
     return hash_obj.hexdigest()
@@ -34,6 +80,19 @@ def unique_iter(
             if k not in seen:
                 seen_add(k)
                 yield element
+
+
+def uiter(
+    iterable: Iterable[T], key: Optional[Callable[[T], Any]] = None
+) -> Iterable[T]:
+    seen: Set[Any] = set()
+    seen_add = seen.add  # micro-optimization
+
+    for element in iterable:
+        val = element if key is None else key(element)
+        if val not in seen:
+            seen_add(val)
+            yield element
 
 
 def get_latest_version(

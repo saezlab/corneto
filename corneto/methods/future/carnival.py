@@ -1,314 +1,568 @@
-from typing import Any, Dict, Optional, Set, Tuple
+from typing import Any, Iterable, Optional, Set, Tuple
 
 import numpy as np
 
 from corneto._constants import VarType
 from corneto._graph import BaseGraph
 from corneto._settings import sparsify
+from corneto._util import unique_iter
 from corneto.backend._base import Backend
-from corneto.methods import expand_graph_for_flows
-from corneto.methods.future.method import Dataset, FlowMethod
+from corneto.data._base import Data
+
+# from corneto.methods import expand_graph_for_flows
+from corneto.methods.future.method import FlowMethod, Method
 from corneto.methods.signal._util import (
     get_incidence_matrices_of_edges,
     get_interactions,
 )
 
-# Define a type alias to make the annotations cleaner
-# This represents the structure of your `conditions` parameter:
-#
-# {
-#   "condition_name": {
-#       "input": {
-#           "vertexA": Any,
-#           "vertexB": Any,
-#           ...
-#       },
-#       "output": {
-#           "vertexX": Any,
-#           "vertexY": Any,
-#           ...
-#       }
-#   },
-#   ...
-# }
-#
-ConditionsDict = Dict[str, Dict[str, Dict[str, Any]]]
 
-def pivoted_to_standard(pivoted_dict, metadata_key):
-    """Converts a 'pivoted' dict of the form:
-        {
-          condition: {
-            meta_value: {
-               feature_name: feature_value
-            },
-            ...
-          },
-          ...
-        }
-    into a 'standard' dict of the form:
-        {
-          condition: {
-            feature_name: {
-              "value": feature_value,
-              <metadata_key>: meta_value
-            },
-            ...
-          },
-          ...
-        }
-
-    Args:
-        pivoted_dict (dict): The pivoted dictionary.
-        metadata_key (str): The name of the metadata field to inject (e.g. "type").
-
-    Returns:
-        dict: The converted dictionary in standard format.
-    """
-    standard_dict = {}
-
-    for condition, meta_groups in pivoted_dict.items():
-        standard_dict[condition] = {}
-        for meta_val, features in meta_groups.items():
-            for feature_name, feature_value in features.items():
-                standard_dict[condition][feature_name] = {
-                    "value": feature_value,
-                    metadata_key: meta_val
-                }
-    return standard_dict
+def create_flow_graph(
+    G: BaseGraph, inputs: Iterable[Any], outputs: Iterable[Any]
+) -> BaseGraph:
+    """Add edges to the perturbed and measured nodes in graph G to make flow possible."""
+    G1 = G.copy()
+    for v in unique_iter(outputs):
+        G1.add_edge(v, ())
+    for v in unique_iter(inputs):
+        G1.add_edge((), v)
+    return G1
 
 
 def prune_graph(
-        G: BaseGraph,
-        conditions: ConditionsDict,
-        inputs_dict_key: str = "input",
-        outputs_dict_key: str = "output"
-) -> Tuple[ConditionsDict, BaseGraph]:
-    """Prune the given BaseGraph ``G`` according to specified conditions.
+    G: BaseGraph,
+    dataset: Data,
+    property_key: str = "type",
+    input_key: str = "input",
+    output_key: str = "output",
+) -> Tuple[BaseGraph, Data]:
+    """Prune the given BaseGraph according to specified dataset.
 
-    This function performs the following steps:
-
-    1. For each condition in ``conditions``:
-       - Identifies vertices relevant to the condition (intersection of the graph's vertices
-         and the condition's inputs/outputs).
-       - Prunes a subgraph from ``G`` based on these relevant vertices.
-       - Collects only the relevant input/output keys that remain within the pruned subgraph.
-    2. Collects all pruned input/output vertices across all conditions.
-    3. Finally, prunes the original graph once using all those collected vertices.
+    Steps:
+    1. For each condition in dataset:
+       - Find relevant vertices (graph vertices ∩ condition inputs/outputs)
+       - Prune subgraph using relevant vertices
+       - Collect remaining input/output keys
+    2. Collect pruned input/output vertices across conditions
+    3. Prune original graph using all collected vertices
 
     Args:
-        G (BaseGraph):
-            A graph-like object with:
-            - An attribute ``V`` (list or set of vertices).
-            - A method ``prune(inputs, outputs)`` returning a subgraph (another ``BaseGraph``).
-        conditions (ConditionsDict):
-            A dictionary where each key is a condition name (e.g. "condition1"), and
-            each value is a dict containing dictionaries for inputs/outputs. For example:
-
-                {
-                    "condition1": {
-                        "input": {"vertexA": 1.0, "vertexB": 2.0, ...},
-                        "output": {"vertexX": 3.0, "vertexY": 4.0, ...}
-                    },
-                    ...
-                }
-
-            The types inside the nested dicts can be anything (float, int, etc.).
-        inputs_dict_key (str, optional):
-            The dictionary key in each condition representing inputs.
-            Defaults to ``"input"``.
-        outputs_dict_key (str, optional):
-            The dictionary key in each condition representing outputs.
-            Defaults to ``"output"``.
+        G: Graph-like object with:
+            - V attribute (list/set of vertices)
+            - prune(inputs, outputs) method returning a subgraph
+        dataset: Dataset object containing input/output measurements
 
     Returns:
-        Tuple[ConditionsDict, BaseGraph]:
-            A tuple ``(conditions_pruned, G_pruned)`` where:
-
-            - ``conditions_pruned`` is a dictionary mirroring the structure of ``conditions``
-              but containing only the vertices that remain in each pruned subgraph.
-            - ``G_pruned`` is a new ``BaseGraph`` object pruned from the original ``G`` using
-              all relevant input and output vertices identified across all conditions.
+        Tuple[BaseGraph, Dataset]: A tuple containing:
+            - The pruned graph using all relevant vertices
+            - The pruned dataset with pruned vertices
     """
     graph_vertices: Set[Any] = set(G.V)
-    pruned_conditions: ConditionsDict = {}
-    all_input_vertices: Set[Any] = set()
-    all_output_vertices: Set[Any] = set()
+    reachable_inputs = set()
+    reachable_outputs = set()
 
-    # Process each condition
-    for cond_name, cond_data in conditions.items():
-        # Convert dict keys to sets for easier intersection
-        condition_inputs = set(cond_data[inputs_dict_key])
-        condition_outputs = set(cond_data[outputs_dict_key])
+    for sample_data in dataset.values():
+        sample_inputs = set(
+            sample_data.filter_values_by(property_key, input_key).keys()
+        )
+        sample_outputs = set(
+            sample_data.filter_values_by(property_key, output_key).keys()
+        )
 
         # Intersect with the current graph's vertices
-        relevant_inputs = graph_vertices & condition_inputs
-        relevant_outputs = graph_vertices & condition_outputs
+        inputs_in_graph = graph_vertices & sample_inputs
+        outputs_in_graph = graph_vertices & sample_outputs
 
         # Prune the graph based on relevant inputs and outputs
-        sub_graph = G.prune(list(relevant_inputs), list(relevant_outputs))
-        sub_vertices = set(sub_graph.V)
-
-        # Gather only input/output items that remain in the pruned subgraph
-        pruned_inputs = {
-            i: cond_data[inputs_dict_key].get(i, 0)
-            for i in sub_vertices & condition_inputs
-        }
-        pruned_outputs = {
-            o: cond_data[outputs_dict_key].get(o, 0)
-            for o in sub_vertices & condition_outputs
-        }
-
-        # Store the pruned condition
-        pruned_conditions[cond_name] = {
-            inputs_dict_key: pruned_inputs,
-            outputs_dict_key: pruned_outputs,
-        }
-
-        # Collect all inputs/outputs for final pruning of the original graph
-        all_input_vertices.update(pruned_inputs)
-        all_output_vertices.update(pruned_outputs)
+        sub_graph = G.prune(list(inputs_in_graph), list(outputs_in_graph))
+        subgraph_vertices = set(sub_graph.V)
+        reachable_inputs.update(inputs_in_graph & subgraph_vertices)
+        reachable_outputs.update(outputs_in_graph & subgraph_vertices)
 
     # Prune the original graph with all collected inputs/outputs
-    pruned_graph = G.prune(list(all_input_vertices), list(all_output_vertices))
+    pruned_graph = G.prune(list(reachable_inputs), list(reachable_outputs))
 
-    return pruned_conditions, pruned_graph
+    return pruned_graph, dataset.subset_features(list(pruned_graph.V))
 
 
-class Carnival(FlowMethod):
+def create_signed_error_expression(
+    P, values, index_of_vertices=None, condition_index=None, vertex_variable=None
+):
+    # If variable not provided, assumes we have the expected variables in the problem
+    if vertex_variable is None:
+        if "vertex_value" not in P.expr:
+            raise ValueError("vertex_variable must be provided if not in the problem")
+        vertex_variable = P.expr.vertex_value
+    if index_of_vertices is None:
+        index_of_vertices = range(vertex_variable.shape[0])
+    if len(index_of_vertices) != len(values):
+        raise ValueError("index_of_vertices must be the same length as values")
+    if len(vertex_variable.shape) > 2:
+        raise ValueError("vertex_variable must be 1D or 2D")
+    if len(vertex_variable.shape) == 2:
+        if condition_index is None:
+            raise ValueError(
+                "condition_index must be provided if there are more than one sample"
+            )
+        return (
+            1
+            - vertex_variable[index_of_vertices, condition_index].multiply(
+                np.sign(values)
+            )
+        ).multiply(abs(values))
+    else:
+        if condition_index is not None and condition_index > 0:
+            raise ValueError(
+                "condition_index must be None or 0 if there is only one single sample"
+            )
+        return (
+            1 - vertex_variable[index_of_vertices].multiply(np.sign(values))
+        ).multiply(abs(values))
+
+
+class CarnivalFlow(FlowMethod):
+    """Flow-base, multi-sample CARNIVAL method for intracellular signaling.
+
+    Implements multi-sample intracellular network inference using
+    an extension of the CARNIVAL method to model signal propagation.
+
+    Args:
+        exclusive_signal_paths: Whether proteins cannot be simultaneously
+            activated/inhibited through different paths. Default: True
+        lambda_reg: Regularization for edge signals across samples.
+            Higher values give sparser solutions. Default: 0.0
+        max_graph_size: Upper limit on the number of edges for any
+            solution. Default: 1000
+        backend: Optimization backend to use. Default: None
+
+    """
+
     def __init__(
         self,
-        exclusive_vertex_values=True,
-        lambd=0.0,
+        lambda_reg=0.0,
+        exclusive_signal_paths=True,
+        max_graph_size=1000,
+        data_type_key="type",
+        data_input_key="input",
+        data_output_key="output",
         backend: Optional[Backend] = None,
     ):
-        super().__init__(backend=backend, lambd=lambd, reg_varname="edge_has_signal")
-        self.exclusive_vertex_values = exclusive_vertex_values
+        super().__init__(
+            backend=backend,
+            lambda_reg=lambda_reg,
+            reg_varname="edge_has_signal",
+            flow_upper_bound=max_graph_size,
+        )
+        self.exclusive_signal_paths = exclusive_signal_paths
+        self.data_type_key = data_type_key
+        self.data_input_key = data_input_key
+        self.data_output_key = data_output_key
 
-    def preprocess(self, graph: BaseGraph, data: Dataset) -> Tuple[BaseGraph, Dataset]:
-        data, graph = prune_graph(graph, data.to_dict(key="type", return_value_only=True))
-        graph = expand_graph_for_flows(graph, data)
-        return graph, Dataset.from_dict(pivoted_to_standard(data, "type"))
+    def preprocess(self, graph: BaseGraph, data: Data) -> Tuple[BaseGraph, Data]:
+        """Preprocess the input graph and dataset before optimization.
 
-    def create_flow_based_problem(self, flow_problem, graph: BaseGraph, data: Dataset):
-        data = data.to_dict(key="type", return_value_only=True)
-        P = flow_problem
+        This method performs two main preprocessing steps:
+        1. Prunes the graph based on the input conditions to remove irrelevant vertices
+        2. Expands the graph to accommodate flow-based constraints
+
+        Args:
+            graph (BaseGraph): The input network graph to be processed
+            data (Dataset): The experimental dataset containing input and output measurements
+
+        Returns:
+            Tuple[BaseGraph, Dataset]: A tuple containing:
+                - The preprocessed graph with expanded flow capabilities
+                - The preprocessed dataset with standardized format
+        """
+        pruned_graph, pruned_data = prune_graph(
+            graph, data, self.data_type_key, self.data_input_key, self.data_output_key
+        )
+
+        # We use the inputs/outputs of the dataset to expand the graph into a flow graph
+        inputs = pruned_data.collect_features(self.data_type_key, self.data_input_key)
+        outputs = pruned_data.collect_features(self.data_type_key, self.data_output_key)
+        flow_graph = create_flow_graph(pruned_graph, inputs, outputs)
+        return flow_graph, pruned_data
+
+    def create_flow_based_problem(self, flow_problem, graph: BaseGraph, data: Data):
+        """Create the optimization problem with flow-based constraints.
+
+        Sets up an integer linear programming problem by:
+        1. Creating binary variables for edge activations and inhibitions.
+        2. Defining signal propagation constraints.
+        3. Enforcing acyclic signal flow.
+        4. Incorporating experimental measurements into the objective.
+
+        Args:
+            flow_problem: The base optimization problem to build upon.
+            graph (BaseGraph): The preprocessed network graph.
+            data (Data): The experimental dataset.
+
+        Returns:
+            The configured optimization problem.
+        """
+        # Alias for convenience and extract key constants
+        problem = flow_problem
+        num_experiments = len(data)
+        ones = np.ones((1, num_experiments))
+
+        # Get incidence matrices and interactions from the graph
         At, Ah = get_incidence_matrices_of_edges(graph)
         interaction = get_interactions(graph)
 
-        #if self.penalty_on == "flow":
-        #    P += self.backend.Indicator()
-
         # Create binary variables for edge activations and inhibitions
         Eact = self.backend.Variable(
-            "edge_activates", (graph.num_edges, len(data)), vartype=VarType.BINARY
+            "edge_activates", (graph.num_edges, num_experiments), vartype=VarType.BINARY
         )
         Einh = self.backend.Variable(
-            "edge_inhibits", (graph.num_edges, len(data)), vartype=VarType.BINARY
+            "edge_inhibits", (graph.num_edges, num_experiments), vartype=VarType.BINARY
         )
+        # Prevent an edge from activating and inhibiting simultaneously
+        problem += Eact + Einh <= 1
 
-        # Ensure edges cannot activate and inhibit at the same time
-        P += Eact + Einh <= 1
-
-        # Calculate vertex values based on incoming activations and inhibitions
+        # Calculate vertex signal: activations minus inhibitions
         Va = At @ Eact
         Vi = At @ Einh
         V = Va - Vi
 
-        if self.exclusive_vertex_values:
-            # Ensure vertices are either active or inactive through different paths
-            P += Va + Vi <= 1
+        # Optionally enforce exclusive signal paths
+        if self.exclusive_signal_paths:
+            problem += Va + Vi <= 1
 
-        # Register variables for use in constraints and objectives
-        P.register("vertex_value", V)
-        P.register("vertex_inhibited", Vi)
-        P.register("vertex_activated", Va)
-        P.register("edge_value", Eact - Einh)
-        P.register("edge_has_signal", Eact + Einh)
+        # Register key variables for later use
+        problem.register("vertex_value", V)
+        problem.register("vertex_activated", Va)
+        problem.register("vertex_inhibited", Vi)
+        problem.register("edge_value", Eact - Einh)
+        problem.register("edge_has_signal", Eact + Einh)
 
-        # Add acyclic constraints to ensure signal does not propagate in cycles
-        P = self.backend.Acyclic(graph, P, indicator_positive_var_name="edge_has_signal")
+        # Add acyclic constraints to prevent cycles in signal propagation
+        problem = self.backend.Acyclic(
+            graph, problem, indicator_positive_var_name="edge_has_signal"
+        )
 
         # Identify edges with outgoing connections (heads)
         edges_with_head = np.flatnonzero(np.sum(np.abs(Ah), axis=0) > 0)
 
-        # Extend flows across all experiments
-        F = P.expr.flow.reshape((Eact.shape[0], 1)) @ np.ones((1, len(data)))
+        # Extend flows across experiments and ensure signals propagate only where flow exists
+        F = problem.expr.flow.reshape((Eact.shape[0], 1)) @ ones
+        # Note: we might require scaling F, since this imposes that every edge
+        # with signal needs to have a flow equal or greater than 1. Upper bound
+        # of flow constrains the maximum size of the union graph.
+        problem += Eact + Einh <= F
 
-        # Ensure signal propagates only where flow exists
-        P += Eact + Einh <= F
+        # Broadcast and sparsify the interaction matrix for all experiments
+        Int = sparsify(np.reshape(interaction, (interaction.shape[0], 1)) @ ones)
 
-        # Sparsify the interaction matrix for computational efficiency
-        Int = sparsify(
-            np.reshape(interaction, (interaction.shape[0], 1))
-            @ np.ones((1, len(data)))
-        )
-        # Add constraints on activations and inhibitions based on upstream signals
-        sum_upstream_act = (Ah.T @ Va)[edges_with_head, :].multiply(
-            (Int[edges_with_head, :] > 0).astype(int)
-        )
-        sum_upstream_inh = (Ah.T @ Vi)[edges_with_head, :].multiply(
-            (Int[edges_with_head, :] < 0).astype(int)
-        )
-        P += Eact[edges_with_head, :] <= sum_upstream_act + sum_upstream_inh
+        # Precompute upstream signal contributions for edges with heads
+        upstream_Va = (Ah.T @ Va)[edges_with_head, :]
+        upstream_Vi = (Ah.T @ Vi)[edges_with_head, :]
 
-        sum_upstream_act = (Ah.T @ Va)[edges_with_head, :].multiply(
-            (Int[edges_with_head, :] < 0).astype(int)
-        )
-        sum_upstream_inh = (Ah.T @ Vi)[edges_with_head, :].multiply(
-            (Int[edges_with_head, :] > 0).astype(int)
-        )
-        P += Einh[edges_with_head, :] <= sum_upstream_act + sum_upstream_inh
+        # Constrain activations based on upstream signals
+        cond_act = (Int[edges_with_head, :] > 0).astype(int)
+        cond_inh = (Int[edges_with_head, :] < 0).astype(int)
+        problem += Eact[edges_with_head, :] <= upstream_Va.multiply(
+            cond_act
+        ) + upstream_Vi.multiply(cond_inh)
 
-        all_inputs = set(
-            v for exp in data for v in data[exp]["input"]
-        )
+        # Constrain inhibitions (swapping conditions)
+        cond_act_inv = (Int[edges_with_head, :] < 0).astype(int)
+        cond_inh_inv = (Int[edges_with_head, :] > 0).astype(int)
+        problem += Einh[edges_with_head, :] <= upstream_Va.multiply(
+            cond_act_inv
+        ) + upstream_Vi.multiply(cond_inh_inv)
 
-        # Restrict which inputs can be used in different conditions.
-        # Make sure that in each condition, only the given perturbation can be active
-        # We need to take the incoming flow edges that are not part of the
-        # perturbation and block them
-        if len(data) > 1:
-            for i, exp in enumerate(data):
-                p_nodes = list(data[exp]["input"].keys())
-                other_inputs = all_inputs - set(p_nodes)
+        # Pre-collect all input features for use in designated perturbation constraints
+        all_inputs = data.collect_features(self.data_type_key, self.data_input_key)
+
+        # Consolidate per-experiment constraints and objectives into a single loop
+        for i, sample in enumerate(data.values()):
+            # --- Input Perturbation Constraints ---
+            sample_inputs = sample.filter_values_by(
+                self.data_type_key, self.data_input_key
+            )
+
+            # If multiple experiments, enforce that only designated perturbation inputs are active.
+            if num_experiments > 1:
+                p_nodes_set = set(sample_inputs.keys())
+                other_inputs = all_inputs - p_nodes_set
                 other_input_edges = [
                     idx
                     for v in other_inputs
                     for (idx, _) in graph.in_edges(v)
                     if len(graph.get_edge(idx)[0]) == 0
                 ]
-                if len(other_input_edges) > 0:
-                    P += Eact[other_input_edges, i] == 0
-                    P += Einh[other_input_edges, i] == 0
+                if other_input_edges:
+                    problem += Eact[other_input_edges, i] == 0
+                    problem += Einh[other_input_edges, i] == 0
 
-        # For each experiment, set constraints and add error to the objective function
-        for i, exp in enumerate(data):
-            p_nodes = list(data[exp]["input"].keys())
-            p_values = list(data[exp]["input"].values())
-            p_nodes_positions = [graph.V.index(key) for key in p_nodes]
+            # Enforce equality constraints on nonzero input perturbations
+            p_nodes = list(sample_inputs.keys())
+            p_values = list(sample_inputs.values())
+            p_positions = [graph.V.index(node) for node in p_nodes]
+            # Filter out zero perturbations and only use nonzero signals
+            nonzero_positions = [
+                pos for pos, val in zip(p_positions, p_values) if val != 0
+            ]
+            nonzero_signs = [np.sign(val) for val in p_values if val != 0]
+            if nonzero_positions:
+                problem += V[np.array(nonzero_positions), i] == np.array(nonzero_signs)
 
-            p_nodes_nz_idx = []
-            p_nodes_values = []
-            for p_node_idx, p_node_val in zip(p_nodes_positions, p_values):
-                if p_node_val != 0:
-                    p_nodes_nz_idx.append(p_node_idx)
-                    p_nodes_values.append(np.sign(p_node_val))
-            if len(p_nodes_nz_idx) > 0:
-                P += V[np.array(p_nodes_nz_idx), i] == np.array(p_nodes_values)
-        # Add error terms
-        for i, exp in enumerate(data):
-            m_nodes = list(data[exp]["output"].keys())
-            m_values = np.array(list(data[exp]["output"].values()))
-            m_nodes_positions = [graph.V.index(key) for key in m_nodes]
-            # Inconsistency between PICOS norm and CVXPY, also CVXPY supports axis, whereas PICOS does not.
-            # We need to compute norm per sample.
-            if len(data) > 1:
-                val = V[m_nodes_positions, i]
+            # --- Objective: Error Terms from Experimental Outputs ---
+            sample_outputs = sample.filter_values_by(
+                self.data_type_key, self.data_output_key
+            )
+            m_nodes = list(sample_outputs.keys())
+            m_values = np.array(list(sample_outputs.values()))
+            m_positions = [graph.V.index(node) for node in m_nodes]
+            # Choose vertex values based on experiment count
+            # val = V[m_positions, i] if num_experiments > 1 else V[m_positions]
+            error_expr = create_signed_error_expression(
+                problem,
+                m_values,
+                index_of_vertices=m_positions,
+                condition_index=i,
+                vertex_variable=V,
+            )
+            problem.add_objectives(sum(error_expr))
+
+        return problem
+
+
+class CarnivalILP(Method):
+    """Improved version of the original CARNIVAL ILP method implementation.
+
+    Implements CARNIVAL as a standard optimization problem without flows.
+    Uses binary variables and ILP constraints to model signal propagation.
+
+    Args:
+        beta_weight: Regularization term weight. Default: 0.2
+        max_dist: Max distance between vertices. If None, uses vertex count.
+            Default: None
+        penalize: What to regularize - 'nodes'/'edges'/'both'. Default: 'edges'
+        use_perturbation_weights: Include perturbation weights. Default: False
+        interaction_graph_attribute: Edge attribute for interactions.
+            Default: 'interaction'
+        disable_acyclicity: Skip acyclicity constraints. Default: False
+        backend: Optimization backend. Default: None
+    """
+
+    def __init__(
+        self,
+        beta_weight: float = 0.2,
+        max_dist: Optional[int] = None,
+        penalize: str = "edges",
+        use_perturbation_weights: bool = False,
+        interaction_graph_attribute: str = "interaction",
+        disable_acyclicity: bool = False,
+        data_type_key: str = "type",
+        data_input_key: str = "input",
+        data_output_key: str = "output",
+        backend: Optional[Backend] = None,
+    ):
+        super().__init__(lambda_reg=0, backend=backend)
+        self.beta_weight = beta_weight
+        self.max_dist = max_dist
+        self.penalize = penalize
+        self.use_perturbation_weights = use_perturbation_weights
+        self.interaction_graph_attribute = interaction_graph_attribute
+        self.disable_acyclicity = disable_acyclicity
+        self.data_type_key = data_type_key
+        self.data_input_key = data_input_key
+        self.data_output_key = data_output_key
+
+    def preprocess(self, graph: BaseGraph, data: Data) -> Tuple[BaseGraph, Data]:
+        """Preprocess the input graph and dataset before optimization.
+
+        This method performs:
+        1. Graph pruning based on input conditions to remove irrelevant vertices
+        2. Data standardization for optimization
+
+        Args:
+            graph: The input network graph
+            data: Experimental dataset with inputs/outputs
+
+        Returns:
+            A tuple containing preprocessed graph and dataset
+        """
+        pruned_graph, pruned_data = prune_graph(
+            graph, data, self.data_type_key, self.data_input_key, self.data_output_key
+        )
+        return pruned_graph, pruned_data
+
+    def create_problem(self, graph: BaseGraph, data: Data):
+        """Create the ILP optimization problem.
+
+        This method implements the core CARNIVAL optimization problem by:
+        1. Creating binary variables for vertex and edge states
+        2. Setting up consistency constraints
+        3. Adding acyclicity constraints if enabled
+        4. Incorporating measurements into the objective
+
+        Args:
+            graph: The preprocessed network graph
+            data: The preprocessed dataset
+
+        Returns:
+            The configured optimization problem
+        """
+        if len(data) > 1:
+            raise ValueError("CARNIVAL ILP does not support multiple conditions")
+
+        max_dist = self.max_dist if self.max_dist is not None else graph.num_vertices
+
+        # Create the problem
+        P = self.backend.Problem()
+
+        # Create variables
+        V_act = self.backend.Variable(
+            "vertex_activated", shape=(len(graph.V),), vartype=VarType.BINARY
+        )
+        V_inh = self.backend.Variable(
+            "vertex_inhibited", shape=(len(graph.V),), vartype=VarType.BINARY
+        )
+        E_act = self.backend.Variable(
+            "edge_activating", shape=(len(graph.E),), vartype=VarType.BINARY
+        )
+        E_inh = self.backend.Variable(
+            "edge_inhibiting", shape=(len(graph.E),), vartype=VarType.BINARY
+        )
+        V_pos = self.backend.Variable(
+            "vertex_position",
+            shape=(len(graph.V),),
+            lb=0,
+            ub=max_dist,
+            vartype=VarType.CONTINUOUS,
+        )
+
+        V_index = {v: i for i, v in enumerate(graph.V)}
+
+        # A vertex can be activated or inhibited, but not both
+        P += V_act + V_inh <= 1
+        # An edge can activate or inhibit, but not both
+        P += E_act + E_inh <= 1
+
+        for i, (s, t) in enumerate(graph.E):
+            s = list(s)
+            t = list(t)
+            if len(s) == 0:
+                continue
+            if len(s) > 1:
+                raise ValueError("Only one source vertex allowed")
+            if len(t) > 1:
+                raise ValueError("Only one target vertex allowed")
+            s = s[0]
+            t = t[0]
+            # An edge can activate its downstream (target vertex) (E_act=1, E_inh=0),
+            # inhibit it (E_act=0, E_inh=1), or do nothing (E_act=0, E_inh=0)
+            si = V_index[s]
+            ti = V_index[t]
+            interaction = int(
+                graph.get_attr_edge(i).get(self.interaction_graph_attribute)
+            )
+            # If edge interaction type is activatory, it can only activate the downstream
+            # vertex if the source vertex is activated
+            # NOTE: The 4 constraints can be merged by 2, but kept like this for clarity
+            # This implements the basics of the sign consistency rules
+            if interaction == 1:
+                # Edge is activatory: E_act can only be 1 if V_act[source] is 1
+                # edge (s->t) can activate t only if s is activated
+                P += E_act[i] <= V_act[si]
+                # edge (s->t) can inhibit t only if s is inhibited
+                P += E_inh[i] <= V_inh[si]
+            elif interaction == -1:
+                # edge (s-|t) can activate t only if s is inhibited
+                P += E_act[i] <= V_inh[si]
+                # edge (s-|t) can inhibit t only if s is activated
+                P += E_inh[i] <= V_act[si]
             else:
-                val = V[m_nodes_positions]
-            err =  (val - np.sign(m_values)).multiply(np.abs(m_values)).norm(p=1)
-            P.add_objectives(err)
+                raise ValueError(
+                    f"Invalid interaction value for edge {i}: {interaction}"
+                )
+
+            # If the edge is selected, then we must respect the order of the vertices:
+            # V_pos[target] - V_pos[source] >= 1
+            # E.g., if a partial solution is A -> B -> C, and the ordering assigned is
+            # A(0) -> B(1) -> C(2), we cannot select an edge C -> A since 2 > 0
+            # The maximum numbering possible, starting with 0, cannot exceed the
+            # number of vertices of the graph.
+            # Note that there are two possible orderings: or target vertex is greater
+            # than source (then edge can be selected), or less or equal to 0
+            # (in which case the edge cannot be selected).
+            # The acyclicity constraint is reduced to this simple constraint:
+            # - if edge selected, then target vertex must be greater than source (diff >= 1)
+            # - if edge not selected, then the diff. does not matter (we can assign any value)
+            # IMPORTANT: acyclicity can be disabled, but then self activatory loops that are
+            # not downstream the perturbations can appear in the solution.
+            if not self.disable_acyclicity:
+                edge_selected = E_act[i] + E_inh[i]
+                P += V_pos[ti] - V_pos[si] >= 1 - max_dist * (1 - edge_selected)
+
+        perturbations = next(iter(data.values())).filter_values_by(
+            self.data_type_key, self.data_input_key
+        )
+        measurements = next(iter(data.values())).filter_values_by(
+            self.data_type_key, self.data_output_key
+        )
+
+        for v in graph.V:
+            in_edges_idx = [i for i, _ in graph.in_edges(v)]
+            i = V_index[v]
+            perturbed_value = 0
+            perturbed = v in perturbations
+            if perturbed:
+                perturbed_value = np.sign(perturbations[v])
+            in_edges_selected = [E_act[i] + E_inh[i] for i in in_edges_idx]
+            if len(in_edges_idx) > 0:
+                P += sum(in_edges_selected) <= 1
+            # And the value of the target vertex equals the value of the selected edge
+            # If no edge is selected, then the value is 0]
+            incoming_activating = (
+                sum(E_act[j] for j in in_edges_idx) if len(in_edges_idx) > 0 else 0
+            )
+            incoming_inhibiting = (
+                sum(E_inh[j] for j in in_edges_idx) if len(in_edges_idx) > 0 else 0
+            )
+            P += V_act[i] <= int(perturbed) + incoming_activating
+            P += V_inh[i] <= int(perturbed) + incoming_inhibiting
+            # If perturbed but value is 0, then perturbation can take any value,
+            # otherwise it must be the same as the perturbation
+            if perturbed_value > 0:
+                P += V_act[i] == 1
+                P += V_inh[i] == 0
+            elif perturbed_value < 0:
+                P += V_act[i] == 0
+                P += V_inh[i] == 1
+
+        data = measurements.copy()
+        if self.use_perturbation_weights:
+            data.update(perturbations)
+
+        error_terms = []
+        for k, v in data.items():
+            i = V_index[k]
+            prediction = V_act[i] - V_inh[i]  # -1, 0, 1
+            sign = np.sign(v)
+            if sign > 0:
+                error_terms.append(np.abs(v) * (sign - prediction))
+            elif sign < 0:
+                error_terms.append(np.abs(v) * (prediction - sign))
+        obj = sum(error_terms)
+        reg = 0
+        P.add_objectives(obj)
+        if self.beta_weight > 0:
+            if self.penalize == "nodes":
+                reg = sum(V_act) + sum(V_inh)
+            elif self.penalize == "edges":
+                reg = sum(E_act) + sum(E_inh)
+            elif self.penalize == "both":
+                # This is the default implemented in CarnivalR,
+                # although regularization by edges should be preferred
+                reg = sum(V_act) + sum(V_inh) + sum(E_act) + sum(E_inh)
+            P.add_objectives(reg, weights=self.beta_weight)
+
+        # Finally, register some aliases for convenience
+        P.register("vertex_values", V_act - V_inh)
+        P.register("edge_values", E_act - E_inh)
 
         return P
-
-

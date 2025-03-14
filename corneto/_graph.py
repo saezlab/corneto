@@ -31,6 +31,12 @@ T = TypeVar("T")
 
 
 class EdgeType(str, Enum):
+    """Edge type enumeration.
+    
+    Attributes:
+        DIRECTED: Represents a directed edge
+        UNDIRECTED: Represents an undirected edge
+    """
     DIRECTED = "directed"
     UNDIRECTED = "undirected"
 
@@ -40,6 +46,16 @@ def _wrap(
     container: Callable[[Iterable[Any]], T],
     skip: Optional[Type[T]] = None,
 ) -> T:
+    """Helper function to wrap elements in a container type.
+
+    Args:
+        elements: Element or iterable of elements to wrap
+        container: Container type constructor (e.g. frozenset, tuple)
+        skip: Optional type to skip wrapping if elements is already that type
+
+    Returns:
+        Container instance containing the elements
+    """
     if skip is not None and isinstance(elements, skip):
         return elements
     if isinstance(elements, str):
@@ -50,32 +66,55 @@ def _wrap(
 
 
 def _fset(elements: Union[Any, Iterable[Any]]) -> FrozenSet[Any]:
+    """Convert elements to a frozenset.
+
+    Args:
+        elements: Element or iterable of elements
+
+    Returns:
+        FrozenSet containing the elements
+    """
     return _wrap(elements, frozenset, frozenset)
 
 
 def _tpl(elements: Union[Any, Iterable[Any]]) -> Tuple[Any, ...]:
+    """Convert elements to a tuple.
+
+    Args:
+        elements: Element or iterable of elements
+    
+    Returns:
+        Tuple containing the elements
+    """
     return _wrap(elements, tuple, tuple)
 
 
 class BaseGraph(abc.ABC):
-    """BaseGraph class for graphs or hypergraphs with directed/undirected/mixed
-    and self edges
+    """Abstract base class for graphs and hypergraphs.
+
+    Defines the interface and common functionality for graph implementations.
+    Supports directed/undirected/mixed edges and self-edges.
     """
 
     def __init__(self, default_edge_type: EdgeType = EdgeType.DIRECTED) -> None:
-        """Initialize BaseGraph with default edge type.
+        """Initialize BaseGraph.
 
-        Parameters
-        ----------
-        default_edge_type : EdgeType
-            Default type for edges.
-
+        Args:
+            default_edge_type: Default type for edges when not specified
         """
         super().__init__()
         self._default_edge_type = default_edge_type
 
     @staticmethod
     def _parse_vertices(s):
+        """Parse vertices from different input formats.
+
+        Args:
+            s: Input that could be dict, str, number or iterable
+
+        Returns:
+            Dict mapping vertices to their attributes
+        """
         if isinstance(s, dict):
             return {
                 k: v if isinstance(v, (dict, Number)) else ValueError()
@@ -88,6 +127,14 @@ class BaseGraph(abc.ABC):
 
     @staticmethod
     def _extract_ve_attr(s):
+        """Extract vertex attributes from input.
+
+        Args:
+            s: Input that could be dict, str, number or iterable
+
+        Returns:
+            Dict mapping vertices to their attributes
+        """
         if isinstance(s, dict):
             return {
                 k: v if isinstance(v, (dict, Number)) else ValueError()
@@ -113,46 +160,127 @@ class BaseGraph(abc.ABC):
         edge_target_attr: Optional[Attributes] = None,
         **kwargs,
     ) -> int:
+        """Add edge to the graph.
+
+        Args:
+            source: Source vertices
+            target: Target vertices
+            type: Edge type
+            edge_source_attr: Optional attributes for source vertices
+            edge_target_attr: Optional attributes for target vertices
+            **kwargs: Additional edge attributes
+
+        Returns:
+            Index of the new edge
+        """
         raise NotImplementedError()
 
     @abc.abstractmethod
     def _add_vertex(self, vertex: Any, **kwargs) -> int:
+        """Add vertex to the graph.
+
+        Args:
+            vertex: Vertex to add
+            **kwargs: Additional vertex attributes
+
+        Returns:
+            Index of the new vertex
+        """
         raise NotImplementedError()
 
     @abc.abstractmethod
     def get_edge(self, index: int) -> Edge:
+        """Get edge by index.
+
+        Args:
+            index: Index of the edge
+
+        Returns:
+            Edge at the specified index
+        """
         raise NotImplementedError()
 
     @abc.abstractmethod
     def _get_vertices(self) -> Iterable:
-        # Returns vertices by order of insertion
+        """Get all vertices in the graph.
+
+        Returns:
+            Iterable of vertices
+        """
         raise NotImplementedError()
 
     @abc.abstractmethod
     def _get_incident_edges(self, vertex) -> Iterable[int]:
+        """Get incident edges for a vertex.
+
+        Args:
+            vertex: Vertex to get incident edges for
+
+        Returns:
+            Iterable of incident edge indices
+        """
         raise NotImplementedError()
 
     @abc.abstractmethod
     def _get_edge_attributes(self, index: int) -> Attributes:
+        """Get attributes for an edge.
+
+        Args:
+            index: Index of the edge
+
+        Returns:
+            Attributes of the edge
+        """
         raise NotImplementedError()
 
     @abc.abstractmethod
     def _get_vertex_attributes(self, v) -> Attributes:
+        """Get attributes for a vertex.
+
+        Args:
+            v: Vertex to get attributes for
+
+        Returns:
+            Attributes of the vertex
+        """
         raise NotImplementedError()
 
     @abc.abstractmethod
     def get_graph_attributes(self) -> Attributes:
+        """Get global graph attributes.
+
+        Returns:
+            Attributes of the graph
+        """
         raise NotImplementedError()
 
     @abc.abstractmethod
     def _num_vertices(self) -> int:
+        """Get number of vertices in the graph.
+
+        Returns:
+            Number of vertices
+        """
         raise NotImplementedError()
 
     @abc.abstractmethod
     def _num_edges(self) -> int:
+        """Get number of edges in the graph.
+
+        Returns:
+            Number of edges
+        """
         raise NotImplementedError()
 
     def edge_subgraph(self, edges: Union[Iterable[int], np.ndarray]):
+        """Create subgraph induced by a set of edges.
+
+        Args:
+            edges: Indices of edges to include in the subgraph
+
+        Returns:
+            Subgraph induced by the specified edges
+        """
         if isinstance(edges, np.ndarray):
             # Check if its a logical array:
             if edges.dtype == bool:
@@ -160,43 +288,117 @@ class BaseGraph(abc.ABC):
         return self.extract_subgraph(vertices=None, edges=edges)
 
     def subgraph(self, vertices: Iterable):
+        """Create subgraph induced by a set of vertices.
+
+        Args:
+            vertices: Vertices to include in the subgraph
+
+        Returns:
+            Subgraph induced by the specified vertices
+        """
         return self.extract_subgraph(vertices=vertices, edges=None)
 
     @abc.abstractmethod
     def extract_subgraph(
         self, vertices: Optional[Iterable] = None, edges: Optional[Iterable[int]] = None
     ):
+        """Extract subgraph induced by a set of vertices and/or edges.
+
+        Args:
+            vertices: Optional vertices to include in the subgraph
+            edges: Optional edges to include in the subgraph
+
+        Returns:
+            Subgraph induced by the specified vertices and/or edges
+        """
         raise NotImplementedError()
 
     @property
     def num_vertices(self) -> int:
+        """Number of vertices in the graph.
+
+        Returns:
+            Number of vertices
+        """
         return self._num_vertices()
 
     @property
     def num_edges(self) -> int:
+        """Number of edges in the graph.
+
+        Returns:
+            Number of edges
+        """
         return self._num_edges()
 
     def hash(self) -> str:
+        """Compute hash of the graph based on its content.
+
+        Returns:
+            Hash string representing the graph content
+        """
         return obj_content_hash(self)
 
     def get_attr_edge(self, index: int) -> Attributes:
+        """Get attributes of an edge.
+
+        Args:
+            index: Index of the edge
+
+        Returns:
+            Attributes of the edge
+        """
         return self._get_edge_attributes(index)
 
     def get_attr_vertex(self, v) -> Attributes:
+        """Get attributes of a vertex.
+
+        Args:
+            v: Vertex to get attributes for
+
+        Returns:
+            Attributes of the vertex
+        """
         return self._get_vertex_attributes(v)
 
     def get_attr_edges(
         self, indexes: Optional[Iterable[int]] = None
     ) -> List[Attributes]:
+        """Get attributes of multiple edges.
+
+        Args:
+            indexes: Optional indices of edges to get attributes for
+
+        Returns:
+            List of attributes for the specified edges
+        """
         if indexes is None:
             indexes = range(self.num_edges)
         return [self._get_edge_attributes(i) for i in indexes]
 
     def get_attr_from_edges(self, attr: str, default: Any = None) -> List[Any]:
+        """Get specific attribute from all edges.
+
+        Args:
+            attr: Attribute name to get
+            default: Default value if attribute is not present
+
+        Returns:
+            List of attribute values for all edges
+        """
         attrs = self.get_attr_edges()
         return [a.get(attr, default) for a in attrs]
 
     def get_edges_by_attr(self, key: str, value: Any) -> Iterable[int]:
+        """Get edges by specific attribute value.
+
+        Args:
+            key: Attribute name to filter by
+            value: Attribute value to filter by
+
+        Returns:
+            Iterable of edge indices with the specified attribute value
+        """
         for i, e in enumerate(self.get_attr_edges()):
             if key in e and e[key] == value:
                 yield i
@@ -204,16 +406,41 @@ class BaseGraph(abc.ABC):
     def get_attr_vertices(
         self, vertices: Optional[Iterable] = None
     ) -> List[Attributes]:
+        """Get attributes of multiple vertices.
+
+        Args:
+            vertices: Optional vertices to get attributes for
+
+        Returns:
+            List of attributes for the specified vertices
+        """
         if vertices is None:
             vertices = self.V
         return [self._get_vertex_attributes(v) for v in vertices]
 
     def get_edges(self, indexes: Iterable[int]) -> Iterable[Edge]:
+        """Get multiple edges by their indices.
+
+        Args:
+            indexes: Indices of edges to get
+
+        Returns:
+            Iterable of edges at the specified indices
+        """
         return (self.get_edge(i) for i in indexes)
 
     def get_vertex(self, index: int) -> Any:
-        # O(n) unless vertices are also indexed by position.
-        # This method is added for convenience but shouldn't be required.
+        """Get vertex by its index.
+
+        Args:
+            index: Index of the vertex
+
+        Returns:
+            Vertex at the specified index
+
+        Raises:
+            IndexError: If index is out of range
+        """
         for i, v in enumerate(self._get_vertices()):
             if i == index:
                 return v
@@ -222,6 +449,14 @@ class BaseGraph(abc.ABC):
         )
 
     def get_incident_edges(self, vertices) -> Iterable[int]:
+        """Get incident edges for multiple vertices.
+
+        Args:
+            vertices: Vertices to get incident edges for
+
+        Returns:
+            Iterable of incident edge indices
+        """
         combined = chain.from_iterable(self._get_incident_edges(v) for v in vertices)
         seen: Set[int] = set()
         for e in combined:
@@ -230,6 +465,14 @@ class BaseGraph(abc.ABC):
                 yield e
 
     def get_common_incident_edges(self, vertices) -> Iterable[int]:
+        """Get common incident edges for multiple vertices.
+
+        Args:
+            vertices: Vertices to get common incident edges for
+
+        Returns:
+            Iterable of common incident edge indices
+        """
         vset = set(vertices)
         seen: Set[int] = set()
         for e in self.get_incident_edges(vertices):
@@ -240,8 +483,14 @@ class BaseGraph(abc.ABC):
                     yield e
 
     def edges(self, vertices=None) -> Iterable[Tuple[int, Edge]]:
-        # TODO: return in the order of the edges!
-        # Add test case to check the order
+        """Get edges in the graph.
+
+        Args:
+            vertices: Optional vertices to get edges for
+
+        Returns:
+            Iterable of edge indices and edges
+        """
         if vertices is not None:
             vertices = _tpl(vertices)
             eidx = self.get_incident_edges(vertices)
@@ -250,15 +499,35 @@ class BaseGraph(abc.ABC):
             return ((i, self.get_edge(i)) for i in range(self.num_edges))
 
     def copy(self) -> "BaseGraph":
+        """Create a deep copy of the graph.
+
+        Returns:
+            Deep copy of the graph
+        """
         return deepcopy(self)
 
     @abc.abstractmethod
     def reverse(self) -> "BaseGraph":
+        """Reverse the direction of all edges in the graph.
+
+        Returns:
+            Graph with reversed edges
+        """
         return NotImplementedError()
 
     def _edges_by_dir(
         self, vertices, direction: Optional[str] = None
     ) -> Iterable[Tuple[int, Edge]]:
+        """Get edges by direction relative to vertices.
+
+        Args:
+            vertices: Vertices to get edges for
+            direction: Direction of edges - 'in' for incoming, 'out' for outgoing,
+                      None for both directions
+
+        Returns:
+            Iterator yielding (edge index, Edge tuple) pairs
+        """
         vertices = _tpl(vertices)
         for idx, (s, t) in self.edges(vertices=vertices):
             attr = self.get_attr_edge(idx)
@@ -276,12 +545,36 @@ class BaseGraph(abc.ABC):
                 yield idx, (s, t)
 
     def in_edges(self, vertices) -> Iterable[Tuple[int, Edge]]:
+        """Get incoming edges for vertices.
+
+        Args:
+            vertices: Vertices to get incoming edges for
+
+        Returns:
+            Iterator yielding (edge index, Edge tuple) pairs for incoming edges
+        """
         yield from self._edges_by_dir(vertices, "in")
 
     def out_edges(self, vertices) -> Iterable[Tuple[int, Edge]]:
+        """Get outgoing edges for vertices.
+
+        Args:
+            vertices: Vertices to get outgoing edges for
+
+        Returns:
+            Iterator yielding (edge index, Edge tuple) pairs for outgoing edges
+        """
         yield from self._edges_by_dir(vertices, "out")
 
     def _successors(self, vertex) -> Iterable:
+        """Get successor vertices for a vertex.
+
+        Args:
+            vertex: Vertex to get successors for
+
+        Returns:
+            Iterable of successor vertices
+        """
         def succ():
             for i, (s, t) in self._edges_by_dir(vertex, direction="out"):
                 attr = self.get_attr_edge(i)
@@ -298,10 +591,26 @@ class BaseGraph(abc.ABC):
         return unique_iter(chain.from_iterable(succ()))
 
     def successors(self, vertices) -> Iterable:
+        """Get successor vertices for multiple vertices.
+
+        Args:
+            vertices: Vertices to get successors for
+
+        Returns:
+            Iterable of successor vertices
+        """
         vertices = _tpl(vertices)
         return unique_iter(chain.from_iterable((self._successors(v) for v in vertices)))
 
     def _predecessors(self, vertex) -> Iterable:
+        """Get predecessor vertices for a vertex.
+
+        Args:
+            vertex: Vertex to get predecessors for
+
+        Returns:
+            Iterable of predecessor vertices
+        """
         def succ():
             for i, (s, t) in self._edges_by_dir(vertex, direction="in"):
                 attr = self.get_attr_edge(i)
@@ -318,43 +627,102 @@ class BaseGraph(abc.ABC):
         return unique_iter(chain.from_iterable(succ()))
 
     def predecessors(self, vertices) -> Iterable:
+        """Get predecessor vertices for multiple vertices.
+
+        Args:
+            vertices: Vertices to get predecessors for
+
+        Returns:
+            Iterable of predecessor vertices
+        """
         vertices = _tpl(vertices)
         return unique_iter(
             chain.from_iterable((self._predecessors(v) for v in vertices))
         )
 
     def neighbors(self, vertex) -> Iterable:
-        # Ignores direction of edge
+        """Get neighbors of a vertex (ignoring edge direction).
+
+        Args:
+            vertex: Vertex to get neighbors for
+
+        Returns:
+            Iterable of neighbor vertices
+        """
         iter_vertices = (
             s | t for _, (s, t) in self._edges_by_dir(vertex, direction=None)
         )
         return unique_iter(chain.from_iterable(iter_vertices))
 
     def is_hypergraph(self) -> bool:
+        """Check if the graph is a hypergraph.
+
+        Returns:
+            True if the graph is a hypergraph, False otherwise
+        """
         return any(len(s) > 1 or len(t) > 1 for _, (s, t) in self.edges())
 
     @property
     def E(self) -> Tuple[Edge, ...]:
+        """Edges in the graph.
+
+        Returns:
+            Tuple of edges
+        """
         return tuple(e for _, e in self.edges())
 
     @property
     def V(self) -> Tuple[Any, ...]:
+        """Vertices in the graph.
+
+        Returns:
+            Tuple of vertices
+        """
         return tuple(self._get_vertices())
 
     @property
     def vertices(self) -> Tuple[Any, ...]:
+        """Vertices in the graph.
+
+        Returns:
+            Tuple of vertices
+
+        Note:
+            Alias for V property
+        """
         return self.V
 
     @property
     def nv(self) -> int:
+        """Number of vertices in the graph.
+
+        Returns:
+            Number of vertices
+
+        Note:
+            Alias for num_vertices property
+        """
         return self.num_vertices
 
     @property
     def ne(self) -> int:
+        """Number of edges in the graph.
+
+        Returns:
+            Number of edges
+
+        Note:
+            Alias for num_edges property
+        """
         return self.num_edges
 
     @property
     def shape(self) -> Tuple[int, int]:
+        """Shape of the graph (number of vertices, number of edges).
+
+        Returns:
+            Tuple of number of vertices and number of edges
+        """
         return (self.nv, self.ne)
 
     def add_edge(
@@ -366,12 +734,23 @@ class BaseGraph(abc.ABC):
         edge_target_attr: Optional[Attributes] = None,
         **kwargs,
     ) -> int:
-        # In self loops, or hyperedges with partial self loops
-        # important to have dupl. vertices!. E.g {A: -1, A: 1} A (-1)->(1) A
+        """Add edge to the graph.
+
+        Args:
+            source: Source vertices
+            target: Target vertices
+            type: Edge type
+            edge_source_attr: Optional attributes for source vertices
+            edge_target_attr: Optional attributes for target vertices
+            **kwargs: Additional edge attributes
+
+        Returns:
+            Index of the new edge
+        """
         if type is None:
             type = self._default_edge_type
-        ve_s = Graph._extract_ve_attr(source)  # {vertex: value}
-        ve_t = Graph._extract_ve_attr(target)
+        ve_s = self._extract_ve_attr(source)  # {vertex: value}
+        ve_t = self._extract_ve_attr(target)
         if edge_source_attr is None:
             edge_source_attr = Attributes()
         if edge_target_attr is None:
@@ -399,18 +778,54 @@ class BaseGraph(abc.ABC):
         type: EdgeType = EdgeType.DIRECTED,
         **kwargs,
     ) -> List[int]:
+        """Add multiple edges to the graph.
+
+        Args:
+            edges: Iterable of (source, target) pairs
+            type: Edge type
+            **kwargs: Additional edge attributes
+
+        Returns:
+            List of indices of the new edges
+        """
         eidxs = []
         for s, t in edges:
             eidxs.append(self.add_edge(s, t, type=type, **kwargs))
         return eidxs
 
     def add_vertex(self, v: Any, **kwargs) -> int:
+        """Add vertex to the graph.
+
+        Args:
+            v: Vertex to add
+            **kwargs: Additional vertex attributes
+
+        Returns:
+            Index of the new vertex
+        """
         return self._add_vertex(v, **kwargs)
 
     def add_vertices(self, vertices: List, **kwargs) -> List[int]:
+        """Add multiple vertices to the graph.
+
+        Args:
+            vertices: List of vertices to add
+            **kwargs: Additional vertex attributes
+
+        Returns:
+            List of indices of the new vertices
+        """
         return [self.add_vertex(v, **kwargs) for v in vertices]
 
     def get_vertex_incidence_matrix_as_lists(self, values: bool = False):
+        """Get vertex incidence matrix as lists.
+
+        Args:
+            values: Whether to include edge values in the matrix
+
+        Returns:
+            Tuple of data, (row indices, column indices)
+        """
         row_ind = []
         col_ind = []
         data = []
@@ -451,7 +866,14 @@ class BaseGraph(abc.ABC):
         return data, (row_ind, col_ind)
 
     def vertex_incidence_matrix(self, values: bool = False):
-        # Returns V x E matrix
+        """Get vertex incidence matrix.
+
+        Args:
+            values: Whether to include edge values in the matrix
+
+        Returns:
+            Vertex incidence matrix as a numpy array
+        """
         A = np.zeros((self.num_vertices, self.num_edges))
         data, (row_ind, col_ind) = self.get_vertex_incidence_matrix_as_lists(values)
         A[row_ind, col_ind] = data
@@ -460,6 +882,16 @@ class BaseGraph(abc.ABC):
     def bfs(
         self, starting_vertices: Any, reverse: bool = False, undirected: bool = False
     ) -> Dict[Any, int]:
+        """Perform breadth-first search (BFS) traversal.
+
+        Args:
+            starting_vertices: Starting vertices for BFS
+            reverse: Whether to traverse in reverse direction
+            undirected: Whether to treat edges as undirected
+
+        Returns:
+            Dictionary mapping vertices to their BFS layer
+        """
         starting_vertices = _tpl(starting_vertices)
         next_vertices = self.successors
         if reverse and undirected:
@@ -489,6 +921,15 @@ class BaseGraph(abc.ABC):
         source: Optional[List] = None,
         target: Optional[List] = None,
     ) -> "Graph":
+        """Prune the graph to include only reachable vertices.
+
+        Args:
+            source: Source vertices to start pruning from
+            target: Target vertices to reach
+
+        Returns:
+            Pruned subgraph
+        """
         if source is None:
             source = list(self.V)
         if target is None:
@@ -499,6 +940,20 @@ class BaseGraph(abc.ABC):
         return self.subgraph(reachable)
 
     def plot(self, **kwargs):
+        """Plot the graph using Graphviz.
+
+        Renders the graph structure visually using Graphviz.
+        Falls back to Viz.js rendering if SVG+XML rendering fails.
+
+        Args:
+            **kwargs: Additional plotting options passed to Graphviz
+
+        Returns:
+            Graphviz plot object
+
+        Raises:
+            OSError: If Graphviz rendering fails
+        """
         Gv = self.to_graphviz(**kwargs)
         try:
             # Check if the object is able to produce a MIME bundle
@@ -526,6 +981,17 @@ class BaseGraph(abc.ABC):
     def plot_values(
         self, vertex_values=None, edge_values=None, vertex_props=None, edge_props=None
     ):
+        """Plot graph with vertex and edge values visualized.
+
+        Args:
+            vertex_values: Optional values to display on vertices
+            edge_values: Optional values to display on edges  
+            vertex_props: Optional dict of vertex drawing properties
+            edge_props: Optional dict of edge drawing properties
+
+        Returns:
+            Graphviz plot object with values visualized
+        """
         from corneto._plotting import (
             create_graphviz_edge_attributes,
             create_graphviz_vertex_attributes,
@@ -554,6 +1020,14 @@ class BaseGraph(abc.ABC):
         )
 
     def to_graphviz(self, **kwargs):
+        """Convert graph to Graphviz representation.
+
+        Args:
+            **kwargs: Additional options for Graphviz conversion
+
+        Returns:
+            Graphviz object representing the graph structure
+        """
         from corneto._plotting import to_graphviz
 
         return to_graphviz(self, **kwargs)
@@ -564,6 +1038,20 @@ class BaseGraph(abc.ABC):
         vertex_ids: Union[List[str], np.ndarray],
         edge_ids: Union[List[str], np.ndarray],
     ):
+        """Create graph from vertex incidence matrix and labels.
+
+        Args:
+            A: Vertex incidence matrix. Rows are vertices, columns are edges.
+               Non-zero entries indicate edge-vertex connections.
+            vertex_ids: Labels for vertices corresponding to matrix rows
+            edge_ids: Labels for edges corresponding to matrix columns
+
+        Returns:
+            Graph instance constructed from incidence matrix
+
+        Raises:
+            ValueError: If dimensions of inputs don't match
+        """
         g = Graph()
         if len(vertex_ids) != A.shape[0]:
             raise ValueError(
@@ -588,6 +1076,19 @@ class BaseGraph(abc.ABC):
         return g
 
     def save(self, filename: str, compressed: Optional[bool] = True) -> None:
+        """Save graph to file.
+
+        Args:
+            filename: Path to save graph to
+            compressed: Whether to use compression. If True, uses LZMA compression.
+
+        Raises:
+            ValueError: If filename is empty
+
+        Note:
+            If compressed=True, '.xz' extension is added if not present
+            If '.pkl' extension is missing, it will be added
+        """
         if not filename:
             raise ValueError("Filename must not be empty.")
 
@@ -607,6 +1108,20 @@ class BaseGraph(abc.ABC):
 
     @staticmethod
     def load(filename: str) -> "BaseGraph":
+        """Load graph from a saved file.
+
+        Supports various compression formats:
+        - .gz (gzip)
+        - .bz2 (bzip2)  
+        - .xz (LZMA)
+        - .zip (zip archive, reads first file)
+
+        Args:
+            filename: Path to saved graph file
+
+        Returns:
+            Loaded graph instance
+        """
         if filename.endswith(".gz"):
             import gzip
 
@@ -633,6 +1148,14 @@ class BaseGraph(abc.ABC):
             return pickle.load(f)
 
     def toposort(self):
+        """Perform topological sort on the graph using Kahn's algorithm.
+        
+        Returns:
+            List of vertices in topological order
+
+        Raises:
+            ValueError: If graph contains cycles
+        """
         # Topological sort using Kahn's algorithm
         in_degree = {v: len(set(self.predecessors(v))) for v in self._get_vertices()}
 
@@ -668,6 +1191,20 @@ class BaseGraph(abc.ABC):
         expand_outputs=True,
         max_printed_outputs=10,
     ):
+        """Perform reachability analysis from input nodes to output nodes.
+
+        Args:
+            input_nodes: Starting nodes for analysis
+            output_nodes: Target nodes to reach
+            subset_edges: Optional subset of edges to consider
+            verbose: Whether to print progress information
+            early_stop: Stop when all outputs are reached
+            expand_outputs: Continue expanding from output nodes
+            max_printed_outputs: Max outputs to show in verbose mode
+
+        Returns:
+            Set of edge indices used in paths from inputs to outputs
+        """
         visited = set(input_nodes)
         current = set(input_nodes)
         unreached_outputs = set(output_nodes)
@@ -720,10 +1257,23 @@ class BaseGraph(abc.ABC):
         return selected_edges
 
     def to_networkx(self):
+        """Convert graph to NetworkX format.
+
+        Raises:
+            NotImplementedError: Not implemented in base class
+        """
         raise NotImplementedError()
 
     @staticmethod
     def from_networkx(G: Union[NxGraph, NxDiGraph]):
+        """Create graph from NetworkX graph.
+
+        Args:
+            G: NetworkX graph instance
+
+        Returns:
+            Graph instance with equivalent structure
+        """
         Gc = Graph()
         is_directed = G.is_directed()
         for edge in G.edges():
@@ -737,24 +1287,26 @@ class BaseGraph(abc.ABC):
 
 
 class Graph(BaseGraph):
-    """Default Graph class with support for undirected, directed, parallel and hypergedes.
+    """Concrete graph implementation supporting directed/undirected edges and hyperedges.
 
-    Parameters
-    ----------
-    default_edge_type
-        Default edge type :class:`~corneto._graph.EdgeType`.
+    Allows parallel edges (multiple edges between same vertices) and hyperedges
+    (edges connecting multiple vertices). Edges and vertices can have attributes.
 
     Examples:
-    --------
-    >>> graph = corneto.Graph()
-    >>> graph.add_edge(1, 2)
-    >>> graph.plot()
-
+        >>> graph = corneto.Graph() 
+        >>> graph.add_edge(1, 2)
+        >>> graph.plot()
     """
 
     def __init__(
         self, default_edge_type: EdgeType = EdgeType.DIRECTED, **kwargs
     ) -> None:
+        """Initialize Graph.
+
+        Args:
+            default_edge_type: Default type for new edges
+            **kwargs: Additional graph attributes
+        """
         super().__init__(default_edge_type=default_edge_type)
         # Allow edges with same s/t vertices. Edges are represented as a tuple
         # (S, T) where S is the set of nodes as the source/head of the edge, and T the
@@ -783,6 +1335,19 @@ class Graph(BaseGraph):
         edge_target_attr: Optional[Attributes] = None,
         **kwargs,
     ) -> int:
+        """Add edge to graph.
+
+        Args:
+            source: Source vertices
+            target: Target vertices 
+            type: Edge type
+            edge_source_attr: Optional attributes for source vertices
+            edge_target_attr: Optional attributes for target vertices
+            **kwargs: Additional edge attributes
+
+        Returns:
+            Index of new edge
+        """
         sv = frozenset(source)
         tv = frozenset(target)
         # uv = sv | tv
@@ -812,6 +1377,15 @@ class Graph(BaseGraph):
         return idx
 
     def _add_vertex(self, vertex: Any, **kwargs) -> int:
+        """Add vertex to the graph.
+
+        Args:
+            vertex: Vertex to add
+            **kwargs: Additional vertex attributes
+
+        Returns:
+            Index of the new vertex
+        """
         if vertex not in self._vertices:
             self._vertices[vertex] = set()
             self._vertex_attr[vertex] = Attributes(kwargs)
@@ -827,34 +1401,95 @@ class Graph(BaseGraph):
         return idx
 
     def get_edge(self, index: int) -> Edge:
+        """Get edge at specified index.
+
+        Args:
+            index: Edge index to retrieve
+
+        Returns:
+            Edge tuple (source vertices, target vertices)
+        """
         return self._edges[index]
 
     def _get_vertices(self) -> Iterable:
+        """Get iterator over all vertices in graph.
+
+        Returns:
+            Iterator yielding graph vertices
+        """
         return iter(self._vertices.keys())
 
     def _get_incident_edges(self, vertex) -> Iterable[int]:
+        """Get edges incident to vertex.
+
+        Args:
+            vertex: Vertex to find incident edges for
+
+        Returns:
+            Iterator yielding indices of incident edges
+        """
         return self._vertices[vertex]
 
     def _get_edge_attributes(self, index: int) -> Attributes:
+        """Get attributes of edge at index.
+
+        Args:
+            index: Edge index to get attributes for
+
+        Returns:
+            Attributes object containing edge properties
+        """
         return self._edge_attr[index]
 
     def _get_vertex_attributes(self, v) -> Attributes:
+        """Get attributes of vertex.
+
+        Args:
+            v: Vertex to get attributes for
+
+        Returns:
+            Attributes object containing vertex properties
+        """
         if v in self._vertex_attr:
             return self._vertex_attr[v]
         return Attributes()
 
     def get_graph_attributes(self) -> Attributes:
+        """Get global graph attributes.
+
+        Returns:
+            Attributes object containing graph-level properties
+        """
         return self._graph_attr
 
     def _num_vertices(self) -> int:
+        """Get number of vertices in graph.
+
+        Returns:
+            Total vertex count
+        """
         return len(self._vertices)
 
     def _num_edges(self) -> int:
+        """Get number of edges in graph.
+
+        Returns:
+            Total edge count
+        """
         return len(self._edges)
 
     def extract_subgraph(
         self, vertices: Optional[Iterable] = None, edges: Optional[Iterable[int]] = None
     ):
+        """Extract subgraph induced by vertices and/or edges.
+
+        Args:
+            vertices: Optional vertices to include
+            edges: Optional edge indices to include
+
+        Returns:
+            New Graph containing only specified vertices/edges and their incident edges
+        """
         # Graph induced by the set of vertices + selected edges
         n_v = 0
         g = Graph()
@@ -904,10 +1539,20 @@ class Graph(BaseGraph):
             g.add_edge(s, t, **attr)
         return g
 
-    # TODO: Validate and replace the extract_subgraph with this one
     def _extract_subgraph_keep_order(
         self, vertices: Optional[Iterable] = None, edges: Optional[Iterable[int]] = None
     ):
+        """Extract subgraph while preserving vertex and edge order.
+
+        Internal method that maintains insertion order of vertices and edges.
+
+        Args:
+            vertices: Optional vertices to include
+            edges: Optional edge indices to include
+
+        Returns:
+            New Graph with preserved ordering
+        """
         # Create a new graph
         g = Graph()
         g._graph_attr = deepcopy(self._graph_attr)
@@ -957,7 +1602,11 @@ class Graph(BaseGraph):
         return g
 
     def reverse(self) -> "Graph":
-        """Create a new graph and reverse the direction of all edges in the graph."""
+        """Create new graph with all edge directions reversed.
+
+        Returns:
+            New Graph with reversed edges
+        """
         G = self.copy()
         rev_edges = [(t, s) for s, t in G.E]
         G._edges = rev_edges
@@ -974,6 +1623,15 @@ class Graph(BaseGraph):
         filter_vertex: Optional[Callable[[Any], bool]] = None,
         filter_edge: Optional[Callable[[int], bool]] = None,
     ):
+        """Create filtered graph based on vertex and edge predicates.
+
+        Args:
+            filter_vertex: Optional function that returns True for vertices to keep
+            filter_edge: Optional function that returns True for edges to keep
+
+        Returns:
+            New Graph containing only elements that pass filters
+        """
         g = Graph()
         g._graph_attr = deepcopy(self._graph_attr)
         if filter_vertex is not None:
@@ -996,6 +1654,14 @@ class Graph(BaseGraph):
                 g.add_edge(s, t, **attr)
 
     def _subgraph(self, vertices: Iterable):
+        """Internal method to create vertex-induced subgraph.
+
+        Args:
+            vertices: Vertices to include
+
+        Returns:
+            New Graph containing vertices and their incident edges
+        """
         g = Graph()
         g._graph_attr = deepcopy(self._graph_attr)
         if isinstance(vertices, str):
@@ -1026,6 +1692,14 @@ class Graph(BaseGraph):
         return g
 
     def _edge_subgraph(self, edges: Iterable[int]):
+        """Internal method to create edge-induced subgraph.
+
+        Args:
+            edges: Edge indices to include
+
+        Returns:
+            New Graph containing edges and their incident vertices
+        """
         g = Graph()
         g._graph_attr = deepcopy(self._graph_attr)
         vertices = set()
@@ -1047,6 +1721,11 @@ class Graph(BaseGraph):
         return g
 
     def copy(self) -> "Graph":
+        """Create deep copy of graph.
+
+        Returns:
+            New Graph with copied structure and attributes
+        """
         return deepcopy(self)
 
     @staticmethod
@@ -1057,6 +1736,18 @@ class Graph(BaseGraph):
         discard_self_loops: Optional[bool] = True,
         column_order: List[int] = [0, 1, 2],
     ):
+        """Create graph from Simple Interaction Format (SIF) file.
+
+        Args:
+            sif_file: Path to SIF file
+            delimiter: Column delimiter in file
+            has_header: Whether file has a header row
+            discard_self_loops: Whether to ignore self-loops
+            column_order: Order of source, interaction, target columns
+
+        Returns:
+            New Graph loaded from SIF file
+        """
         from corneto._io import _read_sif_iter
 
         it = _read_sif_iter(
@@ -1070,6 +1761,14 @@ class Graph(BaseGraph):
 
     @staticmethod
     def from_sif_tuples(tuples: Iterable[Tuple]):
+        """Create graph from iterable of SIF tuples.
+
+        Args:
+            tuples: Iterable of (source, interaction, target) tuples
+
+        Returns:
+            New Graph created from SIF data
+        """
         g = Graph()
         for s, v, t in tuples:
             g.add_edge(s, t, interaction=v)
@@ -1077,6 +1776,14 @@ class Graph(BaseGraph):
 
     @staticmethod
     def from_cobra_model(model: CobraModel):
+        """Create graph from COBRA metabolic model.
+
+        Args:
+            model: COBRApy model instance
+
+        Returns:
+            New Graph representing the metabolic network
+        """
         S, R, M = import_cobra_model(model)
         G = Graph.from_vertex_incidence(S, M["id"], R["id"])
         # Add metadata to the graph, such as default lb/ub for reactions
@@ -1089,6 +1796,14 @@ class Graph(BaseGraph):
 
     @staticmethod
     def from_miom_model(model):
+        """Create graph from MIOM metabolic model.
+
+        Args:
+            model: MIOM model instance or path to compressed model file
+
+        Returns:
+            New Graph representing the metabolic network
+        """
         if isinstance(model, str):
             from corneto._io import _load_compressed_gem
 

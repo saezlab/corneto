@@ -1,47 +1,50 @@
-# Configuration file for the Sphinx documentation builder.
-#
-# For the full list of built-in configuration values, see the documentation:
-# https://www.sphinx-doc.org/en/master/usage/configuration.html
+"""Sphinx configuration file for the CORNETO project.
 
-import os
+This file contains the configuration settings for building the CORNETO documentation
+using Sphinx. For more details, see:
+https://www.sphinx-doc.org/en/master/usage/configuration.html
+"""
+
 import sys
+from datetime import datetime
 from pathlib import Path
+import inspect
 
-# import pydata_sphinx_theme
-# from sphinx.application import Sphinx
+# -- Path setup --------------------------------------------------------------
+# Add the project root directory to sys.path to enable autodoc to locate modules.
+sys.path.insert(0, str(Path(".").resolve()))
 
-sys.path.append(str(Path(".").resolve()))
+# Import the project module to retrieve version information.
+import corneto
 
 # -- Project information -----------------------------------------------------
-# https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
-
 project = "CORNETO"
-copyright = "2023, Saez-Rodriguez group"
+copyright = (
+    f"2023-{datetime.now().year}, Saez-Rodriguez lab. (EMBL-EBI, Heidelberg University)"
+)
 author = "Pablo Rodriguez-Mier"
 
-
 # -- General configuration ---------------------------------------------------
-# https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
-
+# Sphinx extension module names.
 extensions = [
-    # "myst_parser",
-    "myst_nb",
-    "sphinx_design",
-    "sphinx.ext.autodoc",
-    "sphinx.ext.mathjax",
-    "sphinx.ext.napoleon",
-    "sphinx_autodoc_typehints",
-    "sphinx.ext.extlinks",
-    "sphinx.ext.autosummary",
-    "sphinxcontrib.mermaid",
-    "sphinx.ext.intersphinx",
-    "sphinx.ext.doctest",
-    "sphinx_favicon",
-    "hoverxref.extension",
-    "sphinx_multiversion",
-    "_extension.gallery_directive",
+    # "myst_parser",  # Alternative parser (currently not in use).
+    "myst_nb",  # Support for MyST Notebook (Jupyter notebooks).
+    "sphinx_design",  # Provides design elements.
+    "sphinx.ext.autodoc",  # Automatic documentation from docstrings.
+    "sphinx.ext.mathjax",  # Math rendering.
+    "sphinx.ext.napoleon",  # Support for Google and NumPy style docstrings.
+    "sphinx_autodoc_typehints",  # Better integration of type hints.
+    "sphinx.ext.extlinks",  # Shortcut for external links.
+    "sphinx.ext.autosummary",  # Generate summary tables.
+    "sphinxcontrib.mermaid",  # Support for Mermaid diagrams.
+    "sphinx.ext.intersphinx",  # Link to other projects' documentation.
+    "sphinx.ext.doctest",  # Test embedded code snippets.
+    "sphinx_favicon",  # Favicon support.
+    "sphinx_multiversion",  # Build documentation for multiple versions.
+    "_extension.gallery_directive",  # Custom gallery directive.
 ]
 
+# Enable specific MyST extensions.
 myst_enable_extensions = [
     "amsmath",
     "colon_fence",
@@ -52,43 +55,37 @@ myst_enable_extensions = [
     "substitution",
 ]
 
-html_context = {
-    "display_github": True,
-    "github_user": "saezlab",
-    "github_repo": "corneto",
-    "github_version": "main",
-    "conf_py_path": "/docs/",
-}
-
-myst_url_schemes = ("http", "https", "mailto")
-nb_output_stderr = "remove"
-nb_execution_mode = "cache"
-nb_execution_timeout = 300
-nb_merge_streams = True
-typehints_defaults = "braces"
-
-
-import corneto
-
+# Substitutions to be used in MyST documents.
 myst_substitutions = {
     "version": corneto.__version__,
 }
 
+# File types and their corresponding parsers.
 source_suffix = {
     ".rst": "restructuredtext",
     ".ipynb": "myst-nb",
     ".myst": "myst-nb",
 }
 
+# Notebook execution settings (used by myst_nb).
+nb_output_stderr = "remove"
+nb_execution_mode = "cache"
+nb_execution_timeout = 300
+nb_merge_streams = True
+
+# Formatting for typehints in the documentation.
+typehints_defaults = "braces"
+
+# Configuration for Mermaid diagrams.
 mermaid_params = [
-    "-t",
-    "default",
-    "-b",
-    "transparent",
+    "-t", "default",
+    "-b", "transparent",
 ]
 
+# Paths that contain templates, relative to this directory.
 templates_path = ["_templates"]
 
+# Patterns to ignore when looking for source files.
 exclude_patterns = [
     "_build",
     "Thumbs.db",
@@ -97,21 +94,36 @@ exclude_patterns = [
     "**/_*.ipynb",
 ]
 
-
+# Autosummary and autodoc settings.
 autosummary_generate = True
 autodoc_member_order = "bysource"
 autodoc_typehints = "description"
-bibtex_reference_style = "author_year"
+
+autodoc_default_options = {
+    'members': True,
+    'imported-members': True,
+    'undoc-members': True,
+    'show-inheritance': True,
+}
+
+# Napoleon settings (for parsing Google/NumPy style docstrings).
 napoleon_google_docstring = True
 napoleon_numpy_docstring = True
 napoleon_include_init_with_doc = False
 napoleon_use_rtype = True
 napoleon_use_param = True
+
+# BibTeX reference style (if using sphinxcontrib-bibtex).
+bibtex_reference_style = "author_year"
+
+# Whether to include todo items.
 todo_include_todos = False
 
-# -- Options for HTML output -------------------------------------------------
-# https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
-
+# -- Options for HTML output --
+html_baseurl = 'https://saezlab.github.io/corneto'
+html_favicon = '_static/favicon.ico'
+html_show_sourcelink = False
+add_function_parentheses = False
 html_theme = "pydata_sphinx_theme"
 html_static_path = ["_static"]
 html_logo = "_static/logo.png"
@@ -119,7 +131,18 @@ html_css_files = [
     "css/custom.css",
 ]
 html_show_sphinx = False
+# Specify sidebars only for index and install pages
+html_sidebars = {
+    "index": [],
+    "install": []
+}
+# do not show source links
+html_show_sourcelink = False
 
+# link to document:section
+autosectionlabel_prefix_document = True
+
+# Theme-specific options.
 html_theme_options = {
     "primary_sidebar_end": ["sidebar-ethical-ads"],
     "header_links_before_dropdown": 4,
@@ -132,37 +155,33 @@ html_theme_options = {
     "navbar_start": ["navbar-logo", "version-switcher"],
 }
 
+# Additional HTML context for templates.
+html_context = {
+    "display_github": True,
+    "github_user": "saezlab",
+    "github_repo": "corneto",
+    "github_version": "main",
+    "conf_py_path": "/docs/",
+    "default_mode": "light",
+}
+
+# -- Intersphinx configuration --
+# Maps external projects to their documentation.
 intersphinx_mapping = {
     "scipy": ("https://docs.scipy.org/doc/scipy/", None),
     "numpy": ("https://numpy.org/doc/stable/", None),
     "python": ("https://docs.python.org/3/", None),
-    # "corneto": ("./_build/dirhtml", None),
+    "pandas": ("https://pandas.pydata.org/pandas-docs/stable", None),
 }
 
-html_context = {"default_mode": "light"}
 
-# -- Config for hoverxref -------------------------------------------
-
-hoverx_default_type = "tooltip"
-hoverxref_domains = ["py"]
-hoverxref_role_types = dict.fromkeys(
-    ["ref", "class", "func", "meth", "attr", "exc", "data", "mod"],
-    "tooltip",
-)
-hoverxref_intersphinx = [
-    "python",
-    "numpy",
-    "scipy",
-    "pandas",
-]
-
-# use proxied API endpoint on rtd to avoid CORS issues
-if os.environ.get("READTHEDOCS"):
-    hoverxref_api_host = "/_"
-
-
+# -- Setup function --
 def setup(app):
-    """App setup hook."""
+    """Sphinx setup hook.
+
+    Adds additional configuration values for recommonmark to enable features such as
+    automatic table of contents generation and math support in reStructuredText.
+    """
     app.add_config_value(
         "recommonmark_config",
         {

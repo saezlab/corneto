@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "corneto"
-version = "1.0.0.dev3"
+version = "1.0.0.dev4"
 description = "CORNETO: A Unified Framework for Omics-Driven Network Inference"
 authors = ["Pablo Rodriguez-Mier <pablo.rodriguez-mier@uni-heidelberg.de>"]
 classifiers = [
@@ -27,20 +27,32 @@ python = ">=3.10"
 numpy = ">=1.25"
 cvxpy-base = {version = "^1.6.0", optional = true}
 scipy = {version = ">=1.11.0,<1.15", optional = true}
-picos = {version = "^2.4.1", optional = true}
 
 [tool.poetry.group.dev.dependencies]
 scipy = "^1.14.1"
-pyscipopt = "^5.1.1"
+pyscipopt = "^5.3.0"
 graphviz = "^0.20.1"
 cobra = "^0.29.0"
 networkx = "^3.2.1"
 ipython = "^8.7.0"
 ipykernel = "^6.23.1"
-PICOS = "^2.4.1"
+PICOS = "^2.6.0"
 matplotlib = "^3.5.2"
 cvxpy-base = "^1.6.0"
 highspy = ">=1.9.0"
+pytest = "^8.1.1"
+flake8 = "^7.0.0"
+pre-commit = "^3.7.0"
+pydocstyle = "^6.3.0"
+asv = "^0.6.4"
+keras = "^3.8.0"
+scikit-learn = "^1.6.0"
+pandas = "^2.2.3"
+
+[tool.poetry.group.docs]
+optional = true
+
+[tool.poetry.group.docs.dependencies]
 sphinx = ">=5.0"
 myst-parser = ">=0.18.1"
 pydata-sphinx-theme = ">=0.15.2"
@@ -54,14 +66,6 @@ sphinx-favicon = "^1.0.1"
 myst-nb = ">= 0.17.2"
 sphinx-autodoc-typehints = "^1.21.8"
 sphinx-hoverxref = "^1.3.0"
-pytest = "^8.1.1"
-flake8 = "^7.0.0"
-pre-commit = "^3.7.0"
-pydocstyle = "^6.3.0"
-asv = "^0.6.4"
-keras = "^3.8.0"
-scikit-learn = "^1.6.0"
-pandas = "^2.2.3"
 
 [tool.poetry.extras]
 os = ["cvxpy-base", "scipy", "highspy", "pyscipopt"]
@@ -70,12 +74,25 @@ os = ["cvxpy-base", "scipy", "highspy", "pyscipopt"]
 fix = true
 
 [tool.ruff.lint]
-ignore-init-module-imports = true
-select = ["E", "F", "W", "I", "D", "RUF"]
-ignore = ["D101","D102"]
+ignore-init-module-imports = true  # Allow __init__.py to include import statements without usage
 
-[tool.ruff.lint.flake8-quotes]
-docstring-quotes = "double"
+select = [
+  "E",   # Select error codes (e.g., syntax errors)
+  "F",   # Select Flake8-specific error codes (formatting and logical errors)
+  "W",   # Select warning codes (stylistic warnings)
+  "I",   # Select import-related issues (import order, unused imports, etc.)
+  "D",   # Select docstring-related errors (documentation style)
+  "RUF", # Select Ruff-specific rules
+]
+
+ignore = [
+  "D105", # Ignore missing docstring in magic methods (e.g., __str__, __repr__)
+  "D107", # Ignore missing docstring in the __init__ method
+  "D301", # Ignore module-level docstring formatting issues (specifics depend on your style guide)
+  "D205", # Ignore rule that enforces a one-line docstring summary to be on the same line as the opening quotes
+  "D214", # Ignore rule regarding the indentation of sections in multi-line docstrings
+  "D415", # Ignore rule that requires the first line of a docstring to end with a period
+]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"

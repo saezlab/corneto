@@ -1,3 +1,9 @@
+<style>
+    .prev-next-footer {
+        display: none;
+    }
+</style>
+
 # Tutorials
 
 ```{toctree}

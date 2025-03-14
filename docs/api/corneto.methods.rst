@@ -1,53 +1,18 @@
-corneto.methods package
-=======================
+Network inference (:mod:`corneto.methods.future`)
+=================================================
+.. currentmodule:: corneto.methods.future
 
-Subpackages
------------
+.. automodule:: corneto.methods.future
+    :no-members:
 
-.. toctree::
-   :maxdepth: 4
+Signaling
+---------
 
-   corneto.methods.metabolism
+Network methods to infer signaling networks from omics data.
 
-Submodules
-----------
+.. autosummary::
+    :toctree: generated/
 
-corneto.methods.carnival module
--------------------------------
-
-.. automodule:: corneto.methods.carnival
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-corneto.methods.shortest\_path module
--------------------------------------
-
-.. automodule:: corneto.methods.shortest_path
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-corneto.methods.signaling module
---------------------------------
-
-.. automodule:: corneto.methods.signaling
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-corneto.methods.steiner module
-------------------------------
-
-.. automodule:: corneto.methods.steiner
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: corneto.methods
-   :members:
-   :undoc-members:
-   :show-inheritance:
+    
+    CarnivalFlow
+    CarnivalILP

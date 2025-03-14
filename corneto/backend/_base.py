@@ -131,7 +131,7 @@ class CExpression(abc.ABC):
     def _reshape(self, shape: Tuple[int, ...]) -> "CExpression":
         pass
 
-    @_delegate
+    @_delegate(override=True)
     def reshape(self, shape: Union[int, Tuple[int, ...]]) -> "CExpression":
         this_shape = self.shape
         num_elements = 1
@@ -826,7 +826,9 @@ class Backend(abc.ABC):
             if len(p.weights) != len(p.objectives):
                 raise ValueError("Number of weights must match number of objectives")
             # auto-convert to a weighted sum
-            # type: ignore
+            # TODO: support the use of parameters as weights. Comment line below
+            # for future version
+            #o = sum(p.weights[i] * p.objectives[i] for i in range(len(p.objectives)))
             o = sum(
                 p.weights[i] * p.objectives[i] if p.weights[i] != 0.0 else 0.0  # type: ignore
                 for i in range(len(p.objectives))
@@ -1009,9 +1011,15 @@ class Backend(abc.ABC):
         vix = {v: i for i, v in enumerate(g.vertices)}
         for i_order in range(n_order):
             if Ip is not None:
-                Ip_i_order = Ip[:, i_order]
+                if len(Ip.shape) == 1:
+                    Ip_i_order = Ip
+                else:
+                    Ip_i_order = Ip[:, i_order]
             if In is not None:
-                In_i_order = In[:, i_order]
+                if len(In.shape) == 1:
+                    In_i_order = In
+                else:
+                    In_i_order = In[:, i_order]
 
             if Ip is not None:
                 # Get edges s->t that can have a positive flow

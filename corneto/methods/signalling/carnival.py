@@ -250,7 +250,18 @@ def create_carnival_problem(
         p_values = list(experiment_list[exp]["input"].values())
         p_nodes_positions = [G.V.index(key) for key in p_nodes]
 
-        P += V[p_nodes_positions, i] == p_values
+        # Get the p_nodes_positiosn for which their values are non-zero
+        p_nodes_positions_nz = [
+            p_nodes_positions[i] for i in range(len(p_nodes_positions)) if p_values[i] != 0
+        ]
+        # Get also the values of the non zero
+        p_values_nz = [p_values[i] for i in range(len(p_values)) if p_values[i] != 0]
+
+        # We dont want to force if v = 0 (in this case is free to be -1, 0 or 1)
+        #P += V[p_nodes_positions, i] == p_values
+        if len(p_nodes_positions_nz) > 0:
+            P += V[p_nodes_positions_nz, i] == p_values_nz
+
         # Make sure that in each condition, only the given perturbation can be active
         # We need to take the incoming flow edges that are not part of the perturbation and block them
         if len(experiment_list) > 1:

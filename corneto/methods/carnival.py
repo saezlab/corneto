@@ -1178,7 +1178,7 @@ def milp_carnival(
 ):
     """Improved port of the original Carnival R method.
 
-    This implementation uses the CORNETO backend capabilities to create a MILP problem.
+    This implementation uses the CORNETO backend capabilities to create a ILP problem.
     However, it does not use the flow formulation and multi-sample capabilities of the
     novel method implemented in CORNETO. This method is kept for compatibility with the
     original Carnival R method and for comparison purposes.

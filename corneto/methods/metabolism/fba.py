@@ -12,9 +12,25 @@ from corneto.backend._base import (
     ProblemDef,
     VarType,
 )
+import warnings
 
 
 class FBAProblem(ProblemDef):
+    """A class representing a Flux Balance Analysis optimization problem.
+
+    This class extends ProblemDef to implement Flux Balance Analysis (FBA),
+    a mathematical method for calculating the flow of metabolites through a
+    metabolic network.
+
+    Args:
+        graph (BaseGraph): The metabolic network graph.
+        create_reaction_indicators (bool, optional): Whether to create binary indicators
+            for reactions. Defaults to False.
+        reaction_objective (Union[int, str], optional): The reaction to optimize.
+            Can be reaction index or ID. Defaults to None.
+        backend (Backend, optional): The optimization backend to use. Defaults to K.
+    """
+
     def __init__(
         self,
         graph: BaseGraph,
@@ -38,12 +54,23 @@ class FBAProblem(ProblemDef):
             self.add_objectives(self.symbols["_flow"][reaction_objective])
 
     def get_fluxes(self) -> np.ndarray:
+        """Get the computed reaction fluxes.
+
+        Returns:
+            np.ndarray: Array of flux values for each reaction. Returns NaN for
+                unsolved problems.
+        """
         fluxes = self.symbols["_flow"].value
         if fluxes is None:
             return np.full(self._graph.ne, np.nan)
         return fluxes
 
     def get_fluxes_dict(self) -> Dict:
+        """Get the computed reaction fluxes as a dictionary.
+
+        Returns:
+            Dict: Dictionary mapping reaction IDs to their flux values.
+        """
         fluxes = self.get_fluxes()
         reaction_ids = [
             self._graph.get_attr_edge(i).get("id") for i in range(self._graph.ne)
@@ -52,6 +79,19 @@ class FBAProblem(ProblemDef):
 
 
 def fba_problem(G, create_reaction_indicators=False, num_fluxes=1, eps=1e-4, backend=K):
+    """Creates a basic FBA problem definition.
+
+    Args:
+        G (BaseGraph): The metabolic network graph.
+        create_reaction_indicators (bool, optional): Whether to create binary indicators
+            for reactions. Defaults to False.
+        num_fluxes (int, optional): Number of flux variables per reaction. Defaults to 1.
+        eps (float, optional): Tolerance for considering a flux as non-zero. Defaults to 1e-4.
+        backend (Backend, optional): The optimization backend to use. Defaults to K.
+
+    Returns:
+        ProblemDef: The FBA problem definition.
+    """
     lb, ub = [], []
     for i in range(G.ne):
         attr = G.get_attr_edge(i)
@@ -69,11 +109,43 @@ def multicondition_imat(
     model,
     w,
     alpha=1e-3,
+    lambd=None,
     eps=1e-2,
     use_unblocked_flux_indicators=False,
     scale=False,
     backend=K,
 ):
+    """Implements the multi-condition iMAT (integrative Metabolic Analysis Tool) algorithm.
+
+    This function creates an optimization problem that integrates gene expression data
+    with metabolic network analysis across multiple conditions.
+
+    Args:
+        model (BaseGraph): The metabolic network model.
+        w (np.ndarray): Expression weights matrix. If 1D, treated as single condition.
+            Positive values indicate desired active reactions, negative values indicate
+            desired inactive reactions.
+        alpha (float, optional): Network size regularization parameter. Defaults to 1e-3.
+        lambd (float, optional): Deprecated parameter, use alpha instead. Defaults to None.
+        eps (float, optional): Tolerance for considering a flux as non-zero. Defaults to 1e-2.
+        use_unblocked_flux_indicators (bool, optional): Whether to use additional indicators
+            for unblocked reactions. Defaults to False.
+        scale (bool, optional): Whether to scale the weights and regularization term.
+            Defaults to False.
+        backend (Backend, optional): The optimization backend to use. Defaults to K.
+
+    Returns:
+        ProblemDef: The multi-condition iMAT problem definition.
+
+    Raises:
+        ValueError: If scale=True and alpha is not between 0 and 1.
+    """
+    if alpha is not None and lambd is not None:
+        warnings.warn("Overriding alpha with `lambd`. Use `lambd` instead.")
+        alpha = lambd
+    if alpha is None and lambd is not None:
+        alpha = lambd
+
     # Use or of blocked reactions (indicator=0)
     if len(w.shape) == 1:
         n_conditions = 1
