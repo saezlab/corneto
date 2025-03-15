@@ -49,9 +49,9 @@ jobs:
         run: |
           poetry run python docs/generate_switcher.py
 
-      - name: Deploy Global Switcher
+      - name: Copy switcher to root
         run: |
-          cp docs/switcher.json .
+          cp docs/switcher.json docs/_build/html/switcher.json
 
       - name: Deploy versioned docs
         uses: peaceiris/actions-gh-pages@v4
