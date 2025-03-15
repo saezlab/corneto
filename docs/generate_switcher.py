@@ -1,5 +1,6 @@
 import json
 import os
+import re
 import subprocess
 
 
@@ -37,6 +38,27 @@ def get_deployed_versions():
         return set()
 
 
+def get_version_from_branch(branch):
+    """Extract the package version from pyproject.toml on the given branch.
+
+    This function attempts to read the pyproject.toml file from the branch
+    and extract the version value using a regular expression.
+    """
+    try:
+        # Adjust the path below if your pyproject.toml is located elsewhere.
+        file_path = "pyproject.toml"
+        output = subprocess.check_output(
+            ["git", "show", f"origin/{branch}:{file_path}"], text=True
+        )
+        match = re.search(r'^version\s*=\s*["\']([^"\']+)["\']', output, re.M)
+        if match:
+            return match.group(1)
+    except subprocess.CalledProcessError:
+        pass
+    # Fallback: if extraction fails, return the branch name
+    return branch
+
+
 def main():
     # Derive GitHub username from the environment variable.
     repo = os.environ.get("GITHUB_REPOSITORY", "username/corneto")
@@ -48,7 +70,9 @@ def main():
     # Process branches: include "main" (preferred/stable) and "dev".
     for branch in ["main", "dev"]:
         if remote_branch_exists(f"origin/{branch}"):
-            entry = {"name": branch, "version": branch, "url": f"{base_url}/{branch}/"}
+            # Instead of using the branch name, get the real package version from pyproject.toml.
+            version = get_version_from_branch(branch)
+            entry = {"name": branch, "version": version, "url": f"{base_url}/{branch}/"}
             if branch == "main":
                 entry["preferred"] = True
             switcher.append(entry)
