@@ -6,6 +6,7 @@ https://www.sphinx-doc.org/en/master/usage/configuration.html
 """
 
 import sys
+import os
 from datetime import datetime
 from pathlib import Path
 import inspect
@@ -16,6 +17,11 @@ sys.path.insert(0, str(Path(".").resolve()))
 
 # Import the project module to retrieve version information.
 import corneto
+
+
+# Derive GitHub username (set in GitHub Actions; use a default for local builds)
+repo = os.environ.get("GITHUB_REPOSITORY", "username/corneto")
+username = repo.split("/")[0]
 
 # -- Project information -----------------------------------------------------
 project = "CORNETO"
@@ -118,7 +124,8 @@ bibtex_reference_style = "author_year"
 todo_include_todos = False
 
 # -- Options for HTML output --
-html_baseurl = 'https://saezlab.github.io/corneto'
+#html_baseurl = 'https://saezlab.github.io/corneto'
+html_baseurl = f"https://{username}.github.io/corneto"
 html_favicon = '_static/favicon.ico'
 html_show_sourcelink = False
 add_function_parentheses = False
@@ -147,7 +154,8 @@ html_theme_options = {
     "show_toc_level": 1,
     "navbar_align": "left",
     "switcher": {
-        "json_url": "https://saezlab.github.io/corneto/dev/_static/switcher.json",
+        # The switcher.json file is now available at the root.
+        "json_url": f"{html_baseurl}/switcher.json",
         "version_match": corneto.__version__,
     },
     "navbar_start": ["navbar-logo", "version-switcher"],

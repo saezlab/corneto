@@ -49,6 +49,10 @@ jobs:
         run: |
           poetry run python docs/generate_switcher.py
 
+      - name: Deploy Global Switcher
+        run: |
+          cp docs/switcher.json .
+
       - name: Deploy versioned docs
         uses: peaceiris/actions-gh-pages@v4
         with:
