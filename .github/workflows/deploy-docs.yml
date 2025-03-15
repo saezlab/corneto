@@ -45,6 +45,10 @@ jobs:
               echo "doc_version=dev" >> $GITHUB_OUTPUT
           fi
 
+      - name: Generate switcher.json
+        run: |
+          poetry run python docs/generate_switcher.py
+
       - name: Deploy versioned docs
         uses: peaceiris/actions-gh-pages@v4
         with:
