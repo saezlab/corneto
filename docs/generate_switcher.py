@@ -72,7 +72,11 @@ def main():
         if remote_branch_exists(f"origin/{branch}"):
             # Instead of using the branch name, get the real package version from pyproject.toml.
             version = get_version_from_branch(branch)
-            entry = {"name": branch, "version": version, "url": f"{base_url}/{branch}/"}
+            entry = {
+                "name": "latest" if branch == "main" else branch,
+                "version": version,
+                "url": f"{base_url}/{branch}/",
+            }
             if branch == "main":
                 entry["preferred"] = True
             switcher.append(entry)
