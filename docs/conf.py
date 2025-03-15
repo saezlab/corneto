@@ -33,14 +33,12 @@ extensions = [
     "sphinx.ext.autodoc",  # Automatic documentation from docstrings.
     "sphinx.ext.mathjax",  # Math rendering.
     "sphinx.ext.napoleon",  # Support for Google and NumPy style docstrings.
-    "sphinx_autodoc_typehints",  # Better integration of type hints.
+    #"sphinx_autodoc_typehints",  # Better integration of type hints.
     "sphinx.ext.extlinks",  # Shortcut for external links.
     "sphinx.ext.autosummary",  # Generate summary tables.
-    "sphinxcontrib.mermaid",  # Support for Mermaid diagrams.
     "sphinx.ext.intersphinx",  # Link to other projects' documentation.
     "sphinx.ext.doctest",  # Test embedded code snippets.
     "sphinx_favicon",  # Favicon support.
-    "sphinx_multiversion",  # Build documentation for multiple versions.
     "_extension.gallery_directive",  # Custom gallery directive.
 ]
 
