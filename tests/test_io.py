@@ -1,28 +1,25 @@
 import pathlib
 
-import pytest
-
 
 def test_read_sif():
     from corneto._io import _read_sif
 
     file = pathlib.Path(__file__).parent.joinpath("sif", "PKN-LiverDREAM.sif")
     tpl = _read_sif(file)
-    if len(tpl) != 58:
-        pytest.fail(
-            f"Detected incorrent number of SIF tuples in file ({len(tpl)}. Expected 58)."
-        )
+
+    # Check number of SIF tuples
+    assert len(tpl) == 58, f"Expected 58 SIF tuples, got {len(tpl)}"
+
+    # Check number of reactants
     reactants = set(l for l, _, _ in tpl)
-    if len(reactants) != 37:
-        pytest.fail(
-            f"Detected incorrect number of reactants in SIF file ({len(reactants)}). Expected 37."
-        )
+    assert len(reactants) == 37, f"Expected 37 unique reactants, got {len(reactants)}"
+
+    # Check number of products
     products = set(r for _, _, r in tpl)
-    if len(products) != 36:
-        pytest.fail(
-            f"Detected incorrect number of products in SIF file ({len(reactants)}). Expected 36."
-        )
-    return True
+    assert len(products) == 36, f"Expected 36 unique products, got {len(products)}"
+
+    # Optional: Check for specific expected entries (example)
+    # assert ("NodeX", "activation", "NodeY") in tpl, "Expected specific reaction not found in SIF data"
 
 
 def test_load_compressed_gem():
@@ -30,6 +27,9 @@ def test_load_compressed_gem():
 
     file = pathlib.Path(__file__).parent.joinpath("gem", "mitocore.xz")
     S, R, M = _load_compressed_gem(file)
-    assert S.shape == (441, 555)
-    assert R.shape == (555,)
-    assert M.shape == (441,)
+
+    # Check matrix dimensions
+    assert S.shape == (441, 555), f"Expected stoichiometric matrix shape (441, 555), got {S.shape}"
+    assert R.shape == (555,), f"Expected reaction vector shape (555,), got {R.shape}"
+    assert M.shape == (441,), f"Expected metabolite vector shape (441,), got {M.shape}"
+
