@@ -25,32 +25,58 @@ jobs:
       - name: Setup Graphviz
         uses: ts-graphviz/setup-graphviz@v2
 
+      - name: Cache Poetry packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pypoetry
+          key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Cache pip packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/poetry.lock') }}
+
       - name: Install Dependencies
         run: |
+          set -e
           pip install poetry
           poetry install --with dev,docs
 
       - name: Build Docs
         run: |
+          set -e
           poetry run sphinx-build -b html docs docs/_build/html
 
       - name: Determine doc version
         id: set_version
         run: |
-          if [[ $GITHUB_REF == refs/tags/* ]]; then
-              echo "doc_version=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
-          elif [[ $GITHUB_REF == refs/heads/main ]]; then
-              echo "doc_version=latest" >> $GITHUB_OUTPUT
-          elif [[ $GITHUB_REF == refs/heads/dev ]]; then
-              echo "doc_version=dev" >> $GITHUB_OUTPUT
-          fi
+          set -e
+          case "${GITHUB_REF}" in
+            refs/tags/*)
+              version="${GITHUB_REF#refs/tags/}"
+              ;;
+            refs/heads/main)
+              version="latest"
+              ;;
+            refs/heads/dev)
+              version="dev"
+              ;;
+            *)
+              echo "Unexpected branch/ref: ${GITHUB_REF}"
+              version="dev"
+              ;;
+          esac
+          echo "doc_version=${version}" >> $GITHUB_OUTPUT
 
       - name: Generate switcher.json
         run: |
+          set -e
           poetry run python docs/generate_switcher.py
 
       - name: Prepare switcher for root deployment
         run: |
+          set -e
           mkdir -p temp_root
           cp docs/switcher.json temp_root/switcher.json
       
@@ -78,3 +104,6 @@ jobs:
           publish_dir: ./docs/_build/html
           destination_dir: ./
           keep_files: true
+
+      - name: Clean up temporary files
+        run: rm -rf temp_root
