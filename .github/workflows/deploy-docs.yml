@@ -74,13 +74,27 @@ jobs:
           set -e
           poetry run python docs/generate_switcher.py
 
-      - name: Prepare switcher for root deployment
+      - name: Create root redirect to latest
         run: |
           set -e
           mkdir -p temp_root
           cp docs/switcher.json temp_root/switcher.json
+          cat > temp_root/index.html << EOF
+          <!DOCTYPE html>
+          <html>
+            <head>
+              <meta charset="utf-8">
+              <title>Redirecting to latest documentation</title>
+              <meta http-equiv="refresh" content="0; URL=./latest/">
+              <link rel="canonical" href="./latest/">
+            </head>
+            <body>
+              <p>Redirecting to <a href="./latest/">latest documentation</a>...</p>
+            </body>
+          </html>
+          EOF
       
-      - name: Deploy switcher to root
+      - name: Deploy content to root
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
