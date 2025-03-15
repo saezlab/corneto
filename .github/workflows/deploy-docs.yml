@@ -49,9 +49,18 @@ jobs:
         run: |
           poetry run python docs/generate_switcher.py
 
-      - name: Copy switcher to root
+      - name: Prepare switcher for root deployment
         run: |
-          cp docs/switcher.json docs/_build/html/switcher.json
+          mkdir -p temp_root
+          cp docs/switcher.json temp_root/switcher.json
+      
+      - name: Deploy switcher to root
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./temp_root
+          destination_dir: ./
+          keep_files: true
 
       - name: Deploy versioned docs
         uses: peaceiris/actions-gh-pages@v4
