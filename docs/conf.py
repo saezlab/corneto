@@ -147,6 +147,10 @@ html_show_sourcelink = False
 # link to document:section
 autosectionlabel_prefix_document = True
 
+
+# Make sure switcher.json (located in docs/) is copied to the build root
+html_extra_path = ['switcher.json']
+
 # Theme-specific options.
 html_theme_options = {
     "primary_sidebar_end": ["sidebar-ethical-ads"],
