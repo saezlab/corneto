@@ -576,6 +576,13 @@ class ProblemDef:
     ) -> Any:
         if self._backend is None:
             raise ValueError("No backend assigned.")
+        if solver is not None:
+            avail_solvers = self._backend.available_solvers()
+            # We need to match solver with the available solvers
+            # being case-insensitive
+            solver = next(
+                (s for s in avail_solvers if s.lower() == solver.lower()), None
+            )
         return self._backend.solve(
             self,
             solver=solver,

@@ -688,12 +688,7 @@ def test_acyclic_flow_undirected_edge(backend):
     P = backend.AcyclicFlow(G, lb=lb, ub=ub)
     # obj = P.get_symbol(VAR_FLOW + "_ipos") + P.get_symbol(VAR_FLOW + "_ineg")
     P.add_objectives(-sum(P.expr.with_flow))
-    solver = None
-    if isinstance(backend, PicosBackend):
-        # Picos choses ECOS solver for this...
-        # TODO: overwrite solver preferences
-        solver = "glpk"
-    P.solve(solver=solver)
+    P.solve()
     sol = np.round(P.expr.with_flow.value).ravel()
     vsol1 = [1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0]
     vsol2 = [1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0]
@@ -711,10 +706,7 @@ def test_feasible_loop(backend):
     P = backend.Flow(G)
     P += P.expr.flow[2] >= 1
     P += P.expr.flow[3] >= 1
-    if isinstance(backend, PicosBackend):
-        P.solve(solver="glpk")
-    else:
-        P.solve()
+    P.solve()
     assert np.sum(P.expr.flow.value) >= 2
 
 
@@ -745,8 +737,5 @@ def test_l2_norm(backend):
     n = diff.norm()
     P += [diff == x - y]
     P.add_objectives(n)
-    if isinstance(backend, PicosBackend):
-        P.solve(solver="cvxopt")
-    else:
-        P.solve(solver="CVXOPT")
+    P.solve(solver="cvxopt")
     assert np.isclose(n.value, expected_result, rtol=1e-5)
