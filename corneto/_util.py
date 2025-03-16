@@ -220,8 +220,7 @@ def info():
         import base64
         from importlib.resources import files
 
-        from IPython.core.display import display
-        from IPython.display import HTML
+        from IPython.display import HTML, display
 
         # logo_path = pkg_resources.resource_filename(__name__, "resources/logo.png")
         logo_path = files("corneto").joinpath("resources/logo.png")
