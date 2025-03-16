@@ -828,11 +828,11 @@ class Backend(abc.ABC):
             # auto-convert to a weighted sum
             # TODO: support the use of parameters as weights. Comment line below
             # for future version
-            #o = sum(p.weights[i] * p.objectives[i] for i in range(len(p.objectives)))
-            o = sum(
-                p.weights[i] * p.objectives[i] if p.weights[i] != 0.0 else 0.0  # type: ignore
-                for i in range(len(p.objectives))
-            )
+            o = sum(p.weights[i] * p.objectives[i] for i in range(len(p.objectives)))
+            #o = sum(
+            #    p.weights[i] * p.objectives[i] if p.weights[i] != 0.0 else 0.0  # type: ignore
+            #    for i in range(len(p.objectives))
+            #)
         else:
             o = (
                 p.weights[0] * p.objectives[0]

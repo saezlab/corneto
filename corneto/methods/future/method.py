@@ -31,7 +31,9 @@ class Method(ABC):
         if backend is None:
             backend = DEFAULT_BACKEND
         self._backend = backend
-        self._lambda_reg = lambda_reg
+        self.lambda_reg_param = backend.Parameter(
+            name="lambda_reg_param", value=lambda_reg
+        )
         self._reg_varname = reg_varname
         self._reg_varname_suffix = reg_varname_suffix
         self.problem = None
@@ -93,22 +95,21 @@ class Method(ABC):
         self.problem = self.create_problem(self.processed_graph, self.processed_data)
 
         # Add structured sparsity regularization if needed.
-        if self._lambda_reg > 0:
-            lambd = self._backend.Parameter(name="lambda_reg_param", value=self._lambda_reg)
-            if self._reg_varname is not None:
-                reg_var = self.problem.expr[self._reg_varname]
-                newvar_name = self._reg_varname + self._reg_varname_suffix
-                self.problem += self._backend.linear_or(
-                    reg_var, axis=1, varname=newvar_name
-                )
-                self.problem.add_objectives(
-                    # TODO: replace by lambd parameter instead of self._lambda_reg
-                    self.problem.expr[newvar_name].sum(), weights=self._lambda_reg
-                )
-            else:
-                raise ValueError(
-                    "Parameter lambda_reg > 0 but no regularization variable name provided"
-                )
+        if self._reg_varname is not None:
+            reg_var = self.problem.expr[self._reg_varname]
+            newvar_name = self._reg_varname + self._reg_varname_suffix
+            self.problem += self._backend.linear_or(
+                reg_var, axis=1, varname=newvar_name
+            )
+            self.problem.add_objectives(
+                # TODO: replace by lambd parameter instead of self._lambda_reg
+                self.problem.expr[newvar_name].sum(),
+                weights=self.lambda_reg_param,
+            )
+        else:
+            raise ValueError(
+                "Parameter lambda_reg > 0 but no regularization variable name provided"
+            )
         return self.problem
 
     @property
@@ -174,10 +175,10 @@ class FlowMethod(Method):
                 - 'shared_bounds': Whether bounds are shared across flows (bool)
         """
         return {
-            'lb': self._flow_lb,
-            'ub': self._flow_ub,
-            'n_flows': self._num_flows,
-            'shared_bounds': self._shared_flow_bounds,
+            "lb": self._flow_lb,
+            "ub": self._flow_ub,
+            "n_flows": self._num_flows,
+            "shared_bounds": self._shared_flow_bounds,
         }
 
     @abstractmethod
@@ -200,7 +201,7 @@ class FlowMethod(Method):
     def create_problem(self, graph: BaseGraph, data: Data):
         """Create the optimization problem using a flow-based formulation.
 
-        Internally, this method gets flow bounds, creates a base flow problem using the backend, 
+        Internally, this method gets flow bounds, creates a base flow problem using the backend,
         and then extends it by invoking create_flow_based_problem.
 
         Args:
@@ -213,9 +214,9 @@ class FlowMethod(Method):
         flow_params = self.get_flow_bounds(graph, data)
         flow_problem = self.backend.Flow(
             graph,
-            lb=flow_params['lb'],
-            ub=flow_params['ub'],
-            n_flows=flow_params['n_flows'],
-            shared_bounds=flow_params['shared_bounds'],
+            lb=flow_params["lb"],
+            ub=flow_params["ub"],
+            n_flows=flow_params["n_flows"],
+            shared_bounds=flow_params["shared_bounds"],
         )
         return self.create_flow_based_problem(flow_problem, graph, data)
