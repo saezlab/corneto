@@ -131,8 +131,11 @@ class CarnivalFlow(FlowMethod):
             activated/inhibited through different paths. Default: True
         lambda_reg: Regularization for edge signals across samples.
             Higher values give sparser solutions. Default: 0.0
-        max_graph_size: Upper limit on the number of edges for any
-            solution. Default: 1000
+        max_flow: Upper limit on the flow. It relates to the maximum number
+            of branches in the signaling tree. Minimum value is 1. Reducing
+            this number decreases the size of the solutions. Decrease it
+            to reduce the solution space size and increase optimization speed.
+            Default: 1000.
         backend: Optimization backend to use. Default: None
 
     """
@@ -141,7 +144,7 @@ class CarnivalFlow(FlowMethod):
         self,
         lambda_reg=0.0,
         exclusive_signal_paths=True,
-        max_graph_size=1000,
+        max_flow=1000,
         data_type_key="type",
         data_input_key="input",
         data_output_key="output",
@@ -151,7 +154,7 @@ class CarnivalFlow(FlowMethod):
             backend=backend,
             lambda_reg=lambda_reg,
             reg_varname="edge_has_signal",
-            flow_upper_bound=max_graph_size,
+            flow_upper_bound=max_flow,
         )
         self.exclusive_signal_paths = exclusive_signal_paths
         self.data_type_key = data_type_key

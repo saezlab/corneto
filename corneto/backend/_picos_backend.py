@@ -228,6 +228,9 @@ class PicosBackend(Backend):
         **options,
     ):
         P = pc.Problem()
+        # Use default solver tolerances
+        P.options["*_tol"] = None
+        #P.options["primals"] = False
         for c in p.constraints:
             P += c.e
         if objective is not None:

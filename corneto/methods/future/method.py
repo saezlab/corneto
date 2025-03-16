@@ -102,7 +102,6 @@ class Method(ABC):
                 reg_var, axis=1, varname=newvar_name
             )
             self.problem.add_objectives(
-                # TODO: replace by lambd parameter instead of self._lambda_reg
                 self.problem.expr[newvar_name].sum(),
                 weights=self.lambda_reg_param,
             )

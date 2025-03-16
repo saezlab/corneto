@@ -41,7 +41,6 @@ def test_picos_convex():
     assert np.all(np.array(x.value).T > np.array([-1e-6, 0.62, 0.36, -1e-6, -1e-6]))
 
 
-@pytest.mark.skip()
 def test_cvxpy_convex():
     backend = CvxpyBackend()
     P = backend.Problem()
@@ -53,12 +52,11 @@ def test_cvxpy_convex():
     P.add_objectives(
         cp.sum_squares((A @ x - b).e), inplace=True
     )  # TODO: add sum squares
-    P.solve(solver="osqp", verbosity=1)
+    P.solve(solver="CVXOPT", verbosity=1)
     assert np.all(np.array(x.value) < np.array([1e-6, 0.64, 0.37, 1e-6, 1e-6]))
     assert np.all(np.array(x.value) > np.array([-1e-6, 0.62, 0.36, -1e-6, -1e-6]))
 
 
-@pytest.mark.skip()
 def test_cvxpy_convex_apply():
     backend = CvxpyBackend()
     P = backend.Problem()
@@ -68,7 +66,7 @@ def test_cvxpy_convex_apply():
     P += sum(x) == 1, x >= 0  # type: ignore
     # Convex optimization problem
     P.add_objectives((A @ x - b).apply(cp.sum_squares), inplace=True)
-    P.solve(solver="osqp", verbosity=1)
+    P.solve(solver="CVXOPT", verbosity=1)
     assert np.all(np.array(x.value) < np.array([1e-6, 0.64, 0.37, 1e-6, 1e-6]))
     assert np.all(np.array(x.value) > np.array([-1e-6, 0.62, 0.36, -1e-6, -1e-6]))
 
@@ -135,18 +133,6 @@ def test_opt_delegate_sum_axis1(backend):
     P.add_objectives(esum, weights=-1)
     P.solve()
     assert np.isclose(esum.value, 60)
-
-
-@pytest.mark.skip()
-def test_abs(backend):
-    P = backend.Problem()
-    y_pred = backend.Variable(shape=(3, 2))
-    y_true = np.array([[-1, 1], [2, -1], [-3, 1]])
-    P += y_pred >= 0
-    P.add_objectives((y_true - y_pred).abs().sum())
-    P.solve()
-    assert np.isclose((y_true - y_pred.value).sum(), -5.0)
-    assert np.isclose(P.objectives[0].value, 5.0)
 
 
 def test_vstack_matrix(backend):
@@ -750,7 +736,6 @@ def test_acyclic_unfeasible_loop(backend):
     assert np.all(P.expr.flow.value == None)
 
 
-@pytest.mark.skip(reason="Only a small subset of solvers support this")
 def test_l2_norm(backend):
     x = np.array([1, 2])
     y = np.array([3, 4])
@@ -760,5 +745,8 @@ def test_l2_norm(backend):
     n = diff.norm()
     P += [diff == x - y]
     P.add_objectives(n)
-    P.solve()
+    if isinstance(backend, PicosBackend):
+        P.solve(solver="cvxopt")
+    else:
+        P.solve(solver="CVXOPT")
     assert np.isclose(n.value, expected_result, rtol=1e-5)

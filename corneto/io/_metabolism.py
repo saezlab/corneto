@@ -8,13 +8,12 @@ It is organized into several functional areas.
 
 """
 
-from typing import Dict, Iterable, List, Optional, Set, Tuple, Union
+from typing import Dict, List, Set, Tuple, Union
 
 import numpy as np
-from cobra.io import read_sbml_model
 
-from corneto._types import CobraModel, TupleSIF
-from corneto.graph import BaseGraph, Graph
+from corneto._types import CobraModel
+from corneto.graph import Graph
 
 from ._base import graph_from_vertex_incidence
 from ._util import _download, _is_url
@@ -29,6 +28,10 @@ def import_cobra_model(path: str) -> Graph:
     Returns:
         Graph: A CORNETO graph representing the metabolic network
     """
+    try:
+        from cobra.io import read_sbml_model
+    except ImportError as e:
+        raise ImportError("COBRApy not installed.", e)
     model = read_sbml_model(str(path))
     return cobra_model_to_graph(model)
 
