@@ -116,10 +116,13 @@ def test_carnivalflow_two_samples_inverse(backend, graph_two_samples):
     assert P.expr.edge_value.shape == (16, 2)
     assert carnival.processed_graph.shape == (9, 16)
     #TODO: This fails with PICOS/GLPK only on the CI
-    assert vertex_values_s1["r1"] == 1
-    assert vertex_values_s1["r2"] == 0
-    assert vertex_values_s2["r1"] == 0
-    assert vertex_values_s2["r2"] == -1
+    sol = [
+        vertex_values_s1["r1"],
+        vertex_values_s1["r2"],
+        vertex_values_s2["r1"],
+        vertex_values_s2["r2"]
+    ]
+    assert np.allclose(sol, [1, 0, 0, -1], atol=1e-4)
 
 
 def test_carnivalflow_two_samples(backend, graph_two_samples):
