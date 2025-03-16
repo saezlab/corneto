@@ -363,7 +363,7 @@ class CarnivalILP(Method):
         data_output_key: str = "output",
         backend: Optional[Backend] = None,
     ):
-        super().__init__(lambda_reg=0, backend=backend)
+        super().__init__(lambda_reg=0, backend=backend, disable_structured_sparsity=True)
         self.beta_weight = beta_weight
         self.max_dist = max_dist
         self.penalize = penalize

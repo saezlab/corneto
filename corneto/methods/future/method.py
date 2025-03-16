@@ -26,6 +26,7 @@ class Method(ABC):
         lambda_reg: float = 0.0,
         reg_varname: Optional[str] = None,
         reg_varname_suffix: str = "_OR",
+        disable_structured_sparsity: bool = False,
         backend: Optional[Backend] = None,
     ):
         if backend is None:
@@ -39,6 +40,7 @@ class Method(ABC):
         self.problem = None
         self.processed_data = None
         self.processed_graph = None
+        self.disable_structured_sparsity = disable_structured_sparsity
 
     @abstractmethod
     def preprocess(self, graph: BaseGraph, data: Data) -> Tuple[BaseGraph, Data]:
@@ -95,20 +97,21 @@ class Method(ABC):
         self.problem = self.create_problem(self.processed_graph, self.processed_data)
 
         # Add structured sparsity regularization if needed.
-        if self._reg_varname is not None:
-            reg_var = self.problem.expr[self._reg_varname]
-            newvar_name = self._reg_varname + self._reg_varname_suffix
-            self.problem += self._backend.linear_or(
-                reg_var, axis=1, varname=newvar_name
-            )
-            self.problem.add_objectives(
-                self.problem.expr[newvar_name].sum(),
-                weights=self.lambda_reg_param,
-            )
-        else:
-            raise ValueError(
-                "Parameter lambda_reg > 0 but no regularization variable name provided"
-            )
+        if not self.disable_structured_sparsity:
+            if self._reg_varname is not None:
+                reg_var = self.problem.expr[self._reg_varname]
+                newvar_name = self._reg_varname + self._reg_varname_suffix
+                self.problem += self._backend.linear_or(
+                    reg_var, axis=1, varname=newvar_name
+                )
+                self.problem.add_objectives(
+                    self.problem.expr[newvar_name].sum(),
+                    weights=self.lambda_reg_param,
+                )
+            else:
+                raise ValueError(
+                    "Parameter lambda_reg > 0 but no regularization variable name provided"
+                )
         return self.problem
 
     @property
