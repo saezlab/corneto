@@ -34,6 +34,9 @@ def build_docs(force=False, stop_on_warning=False, clean=False):
         # The -W flag tells Sphinx to treat warnings as errors.
         sphinx_cmd.append("-W")
 
+    print("Running Sphinx build command:")
+    print(" ".join(sphinx_cmd))
+
     # Run sphinx-build command
     result = subprocess.run(
         sphinx_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
