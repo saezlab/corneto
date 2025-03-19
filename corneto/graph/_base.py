@@ -865,18 +865,27 @@ class BaseGraph(abc.ABC):
                     data.append(value)
         return data, (row_ind, col_ind)
 
-    def vertex_incidence_matrix(self, values: bool = False):
+    def vertex_incidence_matrix(self, values: bool = False, sparse: bool = False):
         """Get vertex incidence matrix.
 
         Args:
-            values: Whether to include edge values in the matrix
+            values: Whether to include edge values in the matrix.
+            sparse: If True, returns the matrix as a sparse CSR matrix (default is False, which returns a dense NumPy array).
 
         Returns:
-            Vertex incidence matrix as a numpy array
+            Vertex incidence matrix as a numpy array or a sparse matrix.
         """
-        A = np.zeros((self.num_vertices, self.num_edges))
         data, (row_ind, col_ind) = self.get_vertex_incidence_matrix_as_lists(values)
-        A[row_ind, col_ind] = data
+        
+        if sparse:
+            from scipy.sparse import csr_matrix
+            # Create a sparse CSR matrix
+            A = csr_matrix((data, (row_ind, col_ind)), shape=(self.num_vertices, self.num_edges))
+        else:
+            # Create a dense matrix
+            A = np.zeros((self.num_vertices, self.num_edges))
+            A[row_ind, col_ind] = data
+
         return A
 
     def bfs(

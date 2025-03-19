@@ -136,6 +136,8 @@ class CarnivalFlow(FlowMethod):
             this number decreases the size of the solutions. Decrease it
             to reduce the solution space size and increase optimization speed.
             Default: 1000.
+        enable_bfs_heuristic: Use BFS heuristic to strengthen acyclicity
+            constraints. Default: True
         backend: Optimization backend to use. Default: None
 
     """
@@ -144,7 +146,9 @@ class CarnivalFlow(FlowMethod):
         self,
         lambda_reg=0.0,
         exclusive_signal_paths=True,
+        vertex_lb_dist=None,
         max_flow=1000,
+        enable_bfs_heuristic=True,
         data_type_key="type",
         data_input_key="input",
         data_output_key="output",
@@ -160,6 +164,8 @@ class CarnivalFlow(FlowMethod):
         self.data_type_key = data_type_key
         self.data_input_key = data_input_key
         self.data_output_key = data_output_key
+        self.vertex_lb_dist = vertex_lb_dist
+        self.use_heuristic_bfs = enable_bfs_heuristic
 
     def preprocess(self, graph: BaseGraph, data: Data) -> Tuple[BaseGraph, Data]:
         """Preprocess the input graph and dataset before optimization.
@@ -204,13 +210,39 @@ class CarnivalFlow(FlowMethod):
         Returns:
             The configured optimization problem.
         """
+        lb_dist = []
+        unreachable_vertices_per_sample_idx = []
+        if self.use_heuristic_bfs:
+            vertex_idx = {v: i for i, v in enumerate(graph.V)}
+            graph_vertices = frozenset(vertex_idx.keys())
+            for sample in data.values():
+                sample_inputs = sample.filter_values_by(
+                    self.data_type_key, self.data_input_key
+                )
+                sample_outputs = sample.filter_values_by(
+                    self.data_type_key, self.data_output_key
+                )
+                sample_inputs = list(sample_inputs.keys())
+                sample_outputs = list(sample_outputs.keys())
+                #print(len(sample_inputs), len(sample_outputs))
+                # Get the distance between inputs and outputs
+                dist_dict = graph.bfs(sample_inputs, sample_outputs)
+                pruned_g = graph.prune(sample_inputs, sample_outputs)
+                unreachable = graph_vertices - set(pruned_g.V)
+                print(f"Unreachable vertices for sample: {len(unreachable)}")
+                lb_dist.append(dist_dict)
+                unreachable_vertices_per_sample_idx.append(
+                    [vertex_idx[v] for v in unreachable]
+                )
+            self.vertex_lb_dist = lb_dist
+
         # Alias for convenience and extract key constants
         problem = flow_problem
         num_experiments = len(data)
         ones = np.ones((1, num_experiments))
 
         # Get incidence matrices and interactions from the graph
-        At, Ah = get_incidence_matrices_of_edges(graph)
+        At, Ah = get_incidence_matrices_of_edges(graph, sparse=True)
         interaction = get_interactions(graph)
 
         # Create binary variables for edge activations and inhibitions
@@ -223,10 +255,25 @@ class CarnivalFlow(FlowMethod):
         # Prevent an edge from activating and inhibiting simultaneously
         problem += Eact + Einh <= 1
 
+        # PICOS requires a constant for a sparse matrix on the
+        # left hand side, otherwise it fails.
+        At_c = self.backend.Constant(At)
+        Ah_c = self.backend.Constant(Ah)
         # Calculate vertex signal: activations minus inhibitions
-        Va = At @ Eact
-        Vi = At @ Einh
+        Va = At_c @ Eact
+        Vi = At_c @ Einh
         V = Va - Vi
+
+        # Unreachable vertices are set to 0 (if heuristics are used)
+        if self.use_heuristic_bfs:
+            for sample_idx, unreachable in enumerate(
+                unreachable_vertices_per_sample_idx
+            ):
+                if len(unreachable) == 0:
+                    continue
+                problem += V[unreachable, sample_idx] == 0
+                problem += Va[unreachable, sample_idx] == 0
+                problem += Vi[unreachable, sample_idx] == 0
 
         # Optionally enforce exclusive signal paths
         if self.exclusive_signal_paths:
@@ -241,7 +288,10 @@ class CarnivalFlow(FlowMethod):
 
         # Add acyclic constraints to prevent cycles in signal propagation
         problem = self.backend.Acyclic(
-            graph, problem, indicator_positive_var_name="edge_has_signal"
+            graph,
+            problem,
+            indicator_positive_var_name="edge_has_signal",
+            vertex_lb_dist=self.vertex_lb_dist,
         )
 
         # Identify edges with outgoing connections (heads)
@@ -258,8 +308,8 @@ class CarnivalFlow(FlowMethod):
         Int = sparsify(np.reshape(interaction, (interaction.shape[0], 1)) @ ones)
 
         # Precompute upstream signal contributions for edges with heads
-        upstream_Va = (Ah.T @ Va)[edges_with_head, :]
-        upstream_Vi = (Ah.T @ Vi)[edges_with_head, :]
+        upstream_Va = (Ah_c.T @ Va)[edges_with_head, :]
+        upstream_Vi = (Ah_c.T @ Vi)[edges_with_head, :]
 
         # Constrain activations based on upstream signals
         cond_act = (Int[edges_with_head, :] > 0).astype(int)
@@ -327,7 +377,10 @@ class CarnivalFlow(FlowMethod):
                 condition_index=i,
                 vertex_variable=V,
             )
-            problem.add_objectives(sum(error_expr))
+            #ones = np.ones((len(m_nodes), 1))  # Column vector of ones
+            #problem.add_objectives(sum(error_expr))
+            #problem.add_objectives(error_expr @ ones)
+            problem.add_objectives(error_expr.sum())
 
         return problem
 
@@ -363,7 +416,9 @@ class CarnivalILP(Method):
         data_output_key: str = "output",
         backend: Optional[Backend] = None,
     ):
-        super().__init__(lambda_reg=0, backend=backend, disable_structured_sparsity=True)
+        super().__init__(
+            lambda_reg=0, backend=backend, disable_structured_sparsity=True
+        )
         self.beta_weight = beta_weight
         self.max_dist = max_dist
         self.penalize = penalize
