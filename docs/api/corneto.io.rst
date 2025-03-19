@@ -25,7 +25,7 @@ Metabolism
     parse_cobra_model
     cobra_model_to_graph
     import_cobra_model
-    miom_model_to_graph
+    import_miom_model
 
 
 Signaling

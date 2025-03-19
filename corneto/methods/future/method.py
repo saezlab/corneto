@@ -101,8 +101,12 @@ class Method(ABC):
             if self._reg_varname is not None:
                 reg_var = self.problem.expr[self._reg_varname]
                 newvar_name = self._reg_varname + self._reg_varname_suffix
+                ax = 0 if len(reg_var.shape) == 1 else 1
+                #if len(reg_var.shape) == 1 or (len(reg_var.shape) == 2 and reg_var.shape[1] == 1):
+                    # If reg_var is a 1D array, no need to compute or
+                #    reg_var = reg_var[:, None]
                 self.problem += self._backend.linear_or(
-                    reg_var, axis=1, varname=newvar_name
+                    reg_var, axis=ax, varname=newvar_name
                 )
                 self.problem.add_objectives(
                     self.problem.expr[newvar_name].sum(),
@@ -143,21 +147,25 @@ class FlowMethod(Method):
         flow_upper_bound: float = 1000,
         num_flows: int = 1,
         shared_flow_bounds: bool = False,
+        use_flow_coefficients: bool = False,
         lambda_reg: float = 0.0,
         reg_varname: Optional[str] = None,
         reg_varname_suffix: str = "_OR",
+        disable_structured_sparsity: bool = False,
         backend: Optional[Backend] = None,
     ):
         super().__init__(
             lambda_reg=lambda_reg,
             reg_varname=reg_varname,
             reg_varname_suffix=reg_varname_suffix,
+            disable_structured_sparsity=disable_structured_sparsity,
             backend=backend,
         )
         self._flow_lb = flow_lower_bound
         self._flow_ub = flow_upper_bound
         self._num_flows = num_flows
         self._shared_flow_bounds = shared_flow_bounds
+        self._use_flow_coefficients = use_flow_coefficients
 
     def get_flow_bounds(self, graph: BaseGraph, data: Data) -> Dict[str, Data]:
         """Get the flow bounds and parameters for creating a flow problem.
@@ -219,6 +227,7 @@ class FlowMethod(Method):
             lb=flow_params["lb"],
             ub=flow_params["ub"],
             n_flows=flow_params["n_flows"],
+            values=self._use_flow_coefficients,
             shared_bounds=flow_params["shared_bounds"],
         )
         return self.create_flow_based_problem(flow_problem, graph, data)

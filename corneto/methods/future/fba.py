@@ -28,7 +28,9 @@ class MultiSampleFBA(FlowMethod):
     def __init__(
         self,
         lambda_reg=0.0,
-        rxn_obj: Optional[Dict[str, Optional[float]]] = None,
+        beta_reg=0.0,
+        flux_indicator_name: str = "edge_has_flux",
+        disable_structured_sparsity: bool = False,
         backend: Optional[Backend] = None,
     ):
         """Initialize a MultiSampleFBA instance.
@@ -40,9 +42,14 @@ class MultiSampleFBA(FlowMethod):
             backend (Optional[Backend], optional): The optimization backend. Defaults to None.
         """
         super().__init__(
-            backend=backend, lambda_reg=lambda_reg, reg_varname="edge_has_flux"
+            backend=backend,
+            lambda_reg=lambda_reg,
+            reg_varname=flux_indicator_name,
+            disable_structured_sparsity=disable_structured_sparsity,
+            use_flow_coefficients=True,
         )
-        self.rxn_obj = rxn_obj
+        self.flux_indicator_name = flux_indicator_name
+        self.beta_reg = self.backend.Parameter(name="beta_reg_param", value=beta_reg)
 
     def preprocess(self, graph: BaseGraph, data: Data) -> Tuple[BaseGraph, Data]:
         """Preprocess the graph and data before solving.
@@ -92,18 +99,44 @@ class MultiSampleFBA(FlowMethod):
         """
         # The flow_problem is already created in the parent class
         F = flow_problem.expr.flow
-        if self.lambda_reg_param.value > 0:
-            # Indicator creates a new binary variable vector (_flow_i)
-            # where each position of the vector indicates if the flux
-            # of the reaction is unblocked or not. Minimising this
-            # vector is eq. to blocking (removing) as many reactions as
-            # possiblE
-            flow_problem += cn.opt.Indicator(F)
-            flow_problem.add_objectives(sum(flow_problem.expr._flow_i))
-        if self.rxn_obj is not None:
-            for rxn_id, min_flux in self.rxn_obj.items():
-                rxn_obj = graph.get_edges_by_attr("id", rxn_id)
-            if min_flux is not None:
-                flow_problem += F[rxn_obj] >= min_flux
-            flow_problem.add_objectives(F[rxn_obj], weights=-1)
+        flow_problem += self.backend.Indicator(F, name=self.flux_indicator_name)
+        for i, (sample_id, sample_data) in enumerate(data.items()):
+            rxn_objectives = []
+            rxn_weights = []
+            lb_rxn = []
+            ub_rxn = []
+            sample_flux = F[:, i] if len(F.shape) > 1 else F
+            objs = sample_data.filter_by("type", "objective")
+            for rxn_id, metadata in objs.items():
+                rxn_obj = next(iter(graph.get_edges_by_attr("id", rxn_id)))
+                weight = metadata.get("weight", -1.0)
+                rxn_objectives.append(rxn_obj)
+                rxn_weights.append(weight)
+
+            for rxn_id, metadata in sample_data.features.items():
+                rid = next(iter(graph.get_edges_by_attr("id", rxn_id)))
+                if metadata.get("lower_bound", None) is not None:
+                    lb_rxn.append((rid, float(metadata["lower_bound"])))
+                if metadata.get("upper_bound", None) is not None:
+                    ub_rxn.append((rid, float(metadata["upper_bound"])))
+            if lb_rxn:
+                lb_rxn_id, lb_vals = map(list, zip(*lb_rxn))
+                #print(lb_rxn_id, lb_vals)
+                flow_problem += sample_flux[lb_rxn_id] >= np.array(lb_vals)
+            if ub_rxn:
+                ub_rxn_id, ub_vals = map(list, zip(*ub_rxn))
+                #print(ub_rxn_id, ub_vals)
+                flow_problem += sample_flux[ub_rxn_id] <= np.array(ub_vals)
+            if rxn_objectives:
+                #print(rxn_objectives, rxn_weights)
+                # Add the objective for this sample
+                flow_problem.add_objectives(
+                    sample_flux[rxn_objectives].multiply(np.array(rxn_weights)).sum()
+                )
+            if self.beta_reg.value > 0:
+                # Add the regularization term
+                flow_problem.add_objectives(
+                    flow_problem.expr[self.flux_indicator_name].sum(), weights=self.beta_reg
+                )
+
         return flow_problem

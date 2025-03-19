@@ -211,7 +211,7 @@ def cobra_model_to_graph(model: CobraModel) -> Graph:
     return G
 
 
-def miom_model_to_graph(model_or_path: Union[str, np.ndarray]) -> Graph:
+def import_miom_model(model_or_path: Union[str, np.ndarray]) -> Graph:
     """Create graph from MIOM metabolic model.
 
     Args:
