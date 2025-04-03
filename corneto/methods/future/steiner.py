@@ -233,25 +233,34 @@ class SteinerTreeFlow(FlowMethod):
                 # Extracted flow through terminals (only for terminals!)
                 #if len(all_vertices_with_data) > 0:
                 #    flow_problem += F[vertices_edgeflow_idx] >= 1
+                # Only force flow for terminals, not for prized vertices
                 if len(terminals_edgeflow_idx) > 0:
                     flow_problem += F[terminals_edgeflow_idx] >= 1
             else:
                 # Root selection through optimization
-                if len(terminals) > 0:
+                if len(all_vertices_with_data) > 0:
                     flow_problem += self.backend.NonZeroIndicator(
                         F,
-                        indexes=terminals_edgeflow_idx,
+                        indexes=vertices_edgeflow_idx,
                         tolerance=self.epsilon,
                         suffix_pos=f"_terminal_pos_{i}",
                         suffix_neg=f"_terminal_neg_{i}",
                     )
                     terminal_pos = self.flow_name + f"_terminal_pos_{i}"
                     terminal_neg = self.flow_name + f"_terminal_neg_{i}"
-                    # We need to force the selection of terminals
-                    flow_problem += (
-                        flow_problem.expr[terminal_pos].sum() == len(terminals) - 1
-                    )
+                    # Only one terminal can be selected as root. Since all edges
+                    # when no root is provided are pointing outwards, the injection
+                    # of flow has negative sign. We only allow one of the edges to
+                    # inject or extract flow to take the inflow direction
                     flow_problem += flow_problem.expr[terminal_neg].sum() == 1
+                    # All others except the selected root, have to extract the flow.
+                    # This only applies to terminal vertices, not the root neither
+                    # other vertices which are optional.
+                    t_idx = [vertices_edgeflow_idx.index(idx) for idx in terminals_edgeflow_idx]
+                    if len(t_idx) > 0:
+                        flow_problem += (
+                            flow_problem.expr[terminal_pos][t_idx].sum() == len(t_idx) - 1
+                        )
 
             # Add edge costs to the objective
             edge_costs = np.ones((len(edge_ids))) * self.default_edge_cost
