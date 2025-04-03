@@ -835,11 +835,8 @@ class Backend(abc.ABC):
             # auto-convert to a weighted sum
             # TODO: support the use of parameters as weights. Comment line below
             # for future version
+            #ov = self.vstack(p.objectives)
             o = sum(p.weights[i] * p.objectives[i] for i in range(len(p.objectives)))
-            # o = sum(
-            #    p.weights[i] * p.objectives[i] if p.weights[i] != 0.0 else 0.0  # type: ignore
-            #    for i in range(len(p.objectives))
-            # )
         else:
             o = (
                 p.weights[0] * p.objectives[0]
@@ -1191,7 +1188,8 @@ class Backend(abc.ABC):
             if Ip is not None:
                 # Get edges that can have a positive flow.
                 if hasattr(Ip, "ub"):
-                    e_pos = [(i, g.get_edge(i)) for i in np.flatnonzero(Ip.ub > 0)]
+                    ub = Ip.ub if len(Ip.shape) == 1 else Ip.ub[:, i_sample]
+                    e_pos = [(i, g.get_edge(i)) for i in np.flatnonzero(ub > 0)]
                     e_ix = np.array([i for i, (s, t) in e_pos if s and t])
                 else:
                     e_ix = np.array([i for i, (s, t) in enumerate(g.E) if s and t])
@@ -1207,7 +1205,8 @@ class Backend(abc.ABC):
             if In is not None:
                 # Negative flows are handled as reversed directed edges.
                 if hasattr(In, "lb"):
-                    e_neg = [(i, g.get_edge(i)) for i in np.flatnonzero(In.lb < 0)]
+                    lb = In.lb if len(In.shape) == 1 else In.lb[:, i_sample]
+                    e_neg = [(i, g.get_edge(i)) for i in np.flatnonzero(lb < 0)]
                     e_ix = np.array([i for i, (s, t) in e_neg if s and t])
                 else:
                     e_ix = np.array([i for i, (s, t) in enumerate(g.E) if s and t])
@@ -1420,8 +1419,8 @@ class Backend(abc.ABC):
             S >= I_neg.multiply(lb) + I_pos * tolerance,
             S <= I_pos.multiply(ub) - I_neg * tolerance,
         ]
-        P = self.Problem(c)
-        P.register(EXPR_NAME_FLOW_NZI, I)
+        #P = self.Problem(c)
+        #P.register(EXPR_NAME_FLOW_NZI, I)
         return self.Problem(c)
 
     # TODO: Remove function

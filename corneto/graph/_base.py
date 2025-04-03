@@ -31,8 +31,8 @@ T = TypeVar("T")
 
 
 class EdgeType(str, Enum):
-    """Edge type enumeration.
-    
+    """Edge type (DIRECTED, UNDIRECTED).
+
     Attributes:
         DIRECTED: Represents a directed edge
         UNDIRECTED: Represents an undirected edge

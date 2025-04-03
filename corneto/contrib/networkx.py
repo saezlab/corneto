@@ -82,7 +82,7 @@ def corneto_graph_to_networkx(
         props = dict()
         if copy_attributes:
             props = G.get_attr_edge(i)
-        if source_vertex and target_vertex:
+        if source_vertex is not None and target_vertex is not None:
             Gx.add_edge(source_vertex, target_vertex, **props)
     return Gx
 
@@ -97,8 +97,10 @@ def networkx_to_corneto_graph(G: Union[NxGraph, NxDiGraph]):
         cn.Graph: A Corneto graph.
     """
     Gc = cn.Graph()
+    edge_type = cn.EdgeType.DIRECTED if G.is_directed() else cn.EdgeType.UNDIRECTED
     for edge in G.edges():
         e_data = G.get_edge_data(edge[0], edge[1], default=dict())
+        e_data[Attr.EDGE_TYPE] = edge_type
         Gc.add_edge(edge[0], edge[1], **e_data)
     # Also add node attributes
     for node, data in G.nodes(data=True):

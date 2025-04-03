@@ -12,6 +12,7 @@ from typing import Dict, List, Set, Tuple, Union
 
 import numpy as np
 
+from corneto import suppress_output
 from corneto._types import CobraModel
 from corneto.graph import Graph
 
@@ -19,7 +20,7 @@ from ._base import graph_from_vertex_incidence
 from ._util import _download, _is_url
 
 
-def import_cobra_model(path: str) -> Graph:
+def import_cobra_model(path: str, quiet: bool = True) -> Graph:
     """Import a COBRA model from an SBML file and convert it to a CORNETO graph.
 
     Args:
@@ -32,7 +33,11 @@ def import_cobra_model(path: str) -> Graph:
         from cobra.io import read_sbml_model
     except ImportError as e:
         raise ImportError("COBRApy not installed.", e)
-    model = read_sbml_model(str(path))
+    if quiet:
+        with suppress_output(suppress_stdout=True):
+            model = read_sbml_model(str(path))
+    else:
+        model = read_sbml_model(str(path))
     return cobra_model_to_graph(model)
 
 

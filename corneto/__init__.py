@@ -1,10 +1,12 @@
+import logging
 import sys
 import warnings
 
 from corneto import _plotting as pl
 from corneto._constants import *
+from corneto._data import Data, Feature, Sample
 from corneto._graph import Attr, Attributes, EdgeType, Graph
-from corneto._util import info
+from corneto._util import info, suppress_output
 from corneto.backend import DEFAULT_BACKEND, DEFAULT_SOLVER, available_backends
 
 # from corneto.backend import DEFAULT_BACKEND as K  # deprecate
@@ -21,6 +23,9 @@ from corneto.methods import (
     signflow_constraints,
 )
 from corneto.utils import Attr, Attributes
+
+logger = logging.getLogger(__name__)
+logger.addHandler(logging.NullHandler())
 
 
 def get_version():
@@ -59,15 +64,19 @@ ops = DeprecatedBackend(opt)
 
 
 __all__ = [
-    "Attr",
-    "EdgeType",
-    "Attributes",
-    "Graph",
-    "info",
     "DEFAULT_BACKEND",
-    "available_backends",
+    "Attr",
+    "Attributes",
+    "Data",
+    "EdgeType",
+    "Feature",
+    "Graph",
     "K",
+    "Sample",
+    "available_backends",
+    "info",
     "ops",
+    "suppress_output",
 ]
 
 

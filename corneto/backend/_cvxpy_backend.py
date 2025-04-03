@@ -197,6 +197,8 @@ class CvxpyBackend(Backend):
                 cfg = options.get("scipy_options", dict())
                 cfg.update({"time_limit": float(max_seconds), "disp": verbosity > 0})
                 options["scipy_options"] = cfg
+            elif s == "HIGHS":
+                options["time_limit"] = int(max_seconds)
             else:
                 # Warning that a mapping is not available, check backend documentation
                 LOGGER.warn(f"""max_seconds parameter mapping for {s} not found.

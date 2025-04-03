@@ -161,6 +161,73 @@ class Data(UserDict[Any, Sample]):
                 sample.add_feature(feat_name, feat_data)
             dataset.data[sample_id] = sample
         return dataset
+        
+    def filter(self, predicate: Callable[[str, str, Any], bool]) -> "Data":
+        """Filter features across all samples based on a predicate function.
+
+        Args:
+            predicate (Callable[[str, str, Any], bool]): A function that takes a sample ID,
+                feature name, and feature value, returning True if the feature should be included.
+
+        Returns:
+            Data: A new Data instance containing only the features that satisfy the predicate,
+                with empty samples excluded.
+
+        Examples:
+            >>> dataset = Data.from_dict({
+            ...     "cell1": {"TP53": -1, "BRCA1": 0.5},
+            ...     "cell2": {"TP53": 0, "EGFR": 1.2},
+            ... })
+            >>> filtered = dataset.filter(lambda sid, fname, fvalue: isinstance(fvalue, (int, float)) and fvalue > 0)
+            >>> filtered.data["cell1"].features
+            {'BRCA1': 0.5}
+            >>> filtered.data["cell2"].features
+            {'EGFR': 1.2}
+        """
+        new_ds = type(self)()
+        for sample_id, sample in self.data.items():
+            filtered_features = {}
+            for feat_name, feat_value in sample.features.items():
+                if predicate(sample_id, feat_name, feat_value):
+                    filtered_features[feat_name] = feat_value
+            if filtered_features:  # Only add samples that have at least one feature after filtering
+                new_sample = Sample()
+                for feat_name, feat_value in filtered_features.items():
+                    new_sample.features[feat_name] = feat_value
+                new_ds.data[sample_id] = new_sample
+        return new_ds
+
+    def filter_by(self, key: str, value: Any) -> "Data":
+        """Filter features across all samples that have metadata matching the given key and value.
+
+        Args:
+            key (str): The metadata key to filter by.
+            value (Any): The value that the metadata key should match.
+
+        Returns:
+            Data: A new Data instance containing only the features with matching metadata,
+                with empty samples excluded.
+
+        Examples:
+            >>> dataset = Data.from_dict({
+            ...     "cell1": {
+            ...         "TP53": {"value": -1, "type": "tumor_suppressor"},
+            ...         "EGFR": {"value": 0.8, "type": "oncogene"}
+            ...     },
+            ...     "cell2": {
+            ...         "KRAS": {"value": 1.2, "type": "oncogene"},
+            ...         "BRCA1": {"value": -0.5, "type": "tumor_suppressor"}
+            ...     }
+            ... })
+            >>> filtered = dataset.filter_by("type", "oncogene")
+            >>> filtered.data["cell1"].features
+            {'EGFR': {'value': 0.8, 'type': 'oncogene'}}
+            >>> filtered.data["cell2"].features
+            {'KRAS': {'value': 1.2, 'type': 'oncogene'}}
+        """
+        return self.filter(
+            lambda _, __, feat: isinstance(feat, dict) and feat.get(key) == value
+        )
 
     def subset_features(self, feature_list: List[str]) -> "Data":
         """Create a new Data instance containing only the specified features.

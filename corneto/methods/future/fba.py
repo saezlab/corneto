@@ -3,9 +3,9 @@ from typing import Any, Dict, Optional, Tuple
 import numpy as np
 
 import corneto as cn
+from corneto._data import Data
 from corneto._graph import BaseGraph
 from corneto.backend._base import Backend
-from corneto.data._base import Data
 
 # from corneto.methods import expand_graph_for_flows
 from corneto.methods.future.method import FlowMethod
@@ -51,7 +51,7 @@ class MultiSampleFBA(FlowMethod):
         >>> data = Data.from_dict({
         ...     "sample1": {
         ...         "EX_biomass_e": {
-        ...             "type": "objective",
+        ...             "role": "objective",
         ...         },
         ...     }
         ... })
@@ -67,15 +67,15 @@ class MultiSampleFBA(FlowMethod):
         Multi-sample analysis with gene knockouts:
 
         >>> # Create data with two samples - control and knockout
-        >>> data = Data.from_dict({
+        >>> data = Data.from_cdict({
         ...     "control": {
         ...         "EX_biomass_e": {
-        ...             "type": "objective",
+        ...             "role": "objective",
         ...         },
         ...     },
         ...     "knockout": {
         ...         "EX_biomass_e": {
-        ...             "type": "objective",
+        ...             "role": "objective",
         ...         },
         ...         "MDHm": {  # Malate dehydrogenase knockout
         ...             "lower_bound": 0,
@@ -183,7 +183,7 @@ class MultiSampleFBA(FlowMethod):
         return {
             "lb": np.array(graph.get_attr_from_edges("default_lb")),
             "ub": np.array(graph.get_attr_from_edges("default_ub")),
-            "n_flows": len(data),
+            "n_flows": len(data.samples),
             "shared_bounds": False,
         }
 
@@ -209,7 +209,7 @@ class MultiSampleFBA(FlowMethod):
         F = flow_problem.expr.flow
         flow_problem += self.backend.Indicator(F, name=self.flux_indicator_name)
 
-        for i, (sample_id, sample_data) in enumerate(data.items()):
+        for i, sample_data in enumerate(data.samples.values()):
             rxn_objectives = []
             rxn_weights = []
             lb_rxn = []
@@ -217,20 +217,39 @@ class MultiSampleFBA(FlowMethod):
             sample_flux = F[:, i] if len(F.shape) > 1 else F
 
             # Process objective reactions
-            objs = sample_data.filter_by("type", "objective")
-            for rxn_id, metadata in objs.items():
+            #objs = sample_data.filter_by("type", "objective")
+            objs = dict(
+                sample_data.query.filter(
+                    lambda f: f.data.get("role", None) == "objective"
+                ).pluck(lambda f: (f.id, f.value))
+            )
+            for rxn_id, value in objs.items():
                 rxn_obj = next(iter(graph.get_edges_by_attr("id", rxn_id)))
-                weight = metadata.get("weight", -1.0)
+                value = float(value) if value is not None else -1.0
+                #weight = metadata.get("weight", -1.0)
                 rxn_objectives.append(rxn_obj)
-                rxn_weights.append(weight)
+                rxn_weights.append(value)
 
             # Process reaction-specific bounds
-            for rxn_id, metadata in sample_data.features.items():
+            #for rxn_id, metadata in sample_data.features.items():
+            for feature in sample_data.features:
+                rxn_id = feature.id
+                lower_bound = feature.data.get("lower_bound", None)
+                upper_bound = feature.data.get("upper_bound", None)
                 rid = next(iter(graph.get_edges_by_attr("id", rxn_id)))
-                if metadata.get("lower_bound", None) is not None:
-                    lb_rxn.append((rid, float(metadata["lower_bound"])))
-                if metadata.get("upper_bound", None) is not None:
-                    ub_rxn.append((rid, float(metadata["upper_bound"])))
+                if rid is None:
+                    raise ValueError(
+                        f"Reaction ID {rxn_id} not found in the graph edges."
+                    )
+                if lower_bound is not None:
+                    lb_rxn.append((rid, float(lower_bound)))
+                if upper_bound is not None:
+                    ub_rxn.append((rid, float(upper_bound)))
+                #rid = next(iter(graph.get_edges_by_attr("id", rxn_id)))
+                #if metadata.get("lower_bound", None) is not None:
+                #    lb_rxn.append((rid, float(metadata["lower_bound"])))
+                #if metadata.get("upper_bound", None) is not None:
+                #    ub_rxn.append((rid, float(metadata["upper_bound"])))
 
             # Add lower bound constraints
             if lb_rxn:

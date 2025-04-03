@@ -5,17 +5,7 @@ import numpy as np
 import pytest
 
 from corneto._graph import Graph
-from corneto.backend import Backend, CvxpyBackend, PicosBackend, VarType
-
-
-@pytest.fixture(params=[CvxpyBackend, PicosBackend])
-def backend(request):
-    opt: Backend = request.param()
-    if isinstance(opt, CvxpyBackend):
-        opt._default_solver = "SCIPY"
-    elif isinstance(opt, PicosBackend):
-        opt._default_solver = "glpk"
-    return opt
+from corneto.backend import CvxpyBackend, PicosBackend, VarType
 
 
 @pytest.fixture
@@ -662,6 +652,43 @@ def test_acyclic_flow_directed_graph(backend):
     assert np.allclose(sol, a) or np.allclose(sol, b)
 
 
+def test_flow_plus_acyclic_directed_graph(backend):
+    G = Graph.from_sif_tuples(
+        [
+            ("v1", 1, "v2"),
+            ("v2", 1, "v2"),
+            ("v2", 1, "v3"),
+            ("v3", -1, "v1"),
+            ("v1", -1, "v2"),
+            ("v2", 1, "v4"),
+            ("v4", -1, "v3"),
+            ("v4", 1, "v5"),
+            ("v5", 1, "v3"),
+            ("v5", -1, "v6"),
+            ("v3", 1, "v5"),
+            ("v3", 1, "v6"),
+        ]
+    )
+    G.add_edge((), "v1")
+    G.add_edge("v6", ())
+    P = backend.Flow(G, lb=0, ub=10)
+    P += backend.NonZeroIndicator(P.expr._flow, tolerance=1e-4)
+    P += backend.Acyclic(
+        G,
+        P,
+        indicator_positive_var_name="_flow_ipos",
+        indicator_negative_var_name="_flow_ineg",
+    )
+    with_flow = P.expr._flow_ipos + P.expr._flow_ineg
+    # P.add_objectives(-with_flow.sum())
+    P.add_objectives(-sum(with_flow))
+    P.solve()
+    sol = np.round(with_flow.value).ravel()
+    a = [1.0, 0.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+    b = [1.0, 0.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0]
+    assert np.allclose(sol, a) or np.allclose(sol, b)
+
+
 def test_acyclic_flow_undirected_edge(backend):
     G = Graph.from_sif_tuples(
         [
@@ -693,6 +720,86 @@ def test_acyclic_flow_undirected_edge(backend):
     vsol1 = [1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0]
     vsol2 = [1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0]
     assert np.allclose(sol, vsol1) or np.allclose(sol, vsol2)
+
+
+def test_flow_plus_acyclic_undirected_edge(backend):
+    G = Graph.from_sif_tuples(
+        [
+            ("v1", 1, "v2"),
+            ("v2", 1, "v2"),
+            ("v2", 1, "v3"),
+            ("v3", -1, "v1"),
+            ("v1", -1, "v2"),
+            ("v2", 1, "v4"),
+            ("v4", -1, "v3"),
+            ("v4", 1, "v5"),
+            ("v5", 1, "v3"),
+            ("v5", -1, "v6"),
+            ("v3", 1, "v5"),
+            ("v3", 1, "v6"),
+        ]
+    )
+    G.add_edge((), "v1")
+    G.add_edge("v6", ())
+    lb = np.array([0] * G.ne)
+    ub = np.array([10] * G.ne)
+    lb[3] = -10  # reversible v3 <-> v1
+    P = backend.Flow(G, lb=lb, ub=ub)
+    P += backend.NonZeroIndicator(P.expr._flow, tolerance=1e-6)
+    P += backend.Acyclic(
+        G,
+        P,
+        indicator_positive_var_name="_flow_ipos",
+        indicator_negative_var_name="_flow_ineg",
+    )
+    with_flow = P.expr._flow_ipos + P.expr._flow_ineg
+    P.add_objectives(-with_flow.sum())
+    P.solve()
+    sol = np.round(with_flow.value).ravel()
+    vsol1 = [1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+    vsol2 = [1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0]
+    assert np.allclose(sol, vsol1) or np.allclose(sol, vsol2)
+
+
+def test_two_sample_flow_plus_acyclic_undirected_edge(backend):
+    G = Graph.from_sif_tuples(
+        [
+            ("v1", 1, "v2"),
+            ("v2", 1, "v2"),
+            ("v2", 1, "v3"),
+            ("v3", -1, "v1"),
+            ("v1", -1, "v2"),
+            ("v2", 1, "v4"),
+            ("v4", -1, "v3"),
+            ("v4", 1, "v5"),
+            ("v5", 1, "v3"),
+            ("v5", -1, "v6"),
+            ("v3", 1, "v5"),
+            ("v3", 1, "v6"),
+        ]
+    )
+    G.add_edge((), "v1")
+    G.add_edge("v6", ())
+    lb = np.array([0] * G.ne)
+    ub = np.array([10] * G.ne)
+    lb[3] = -10  # reversible v3 <-> v1
+    P = backend.Flow(G, lb=lb, ub=ub, n_flows=2)
+    P += backend.NonZeroIndicator(P.expr._flow, tolerance=1e-6)
+    P += backend.Acyclic(
+        G,
+        P,
+        indicator_positive_var_name="_flow_ipos",
+        indicator_negative_var_name="_flow_ineg",
+    )
+    with_flow = P.expr._flow_ipos + P.expr._flow_ineg
+    P.add_objectives(-with_flow.sum().sum())
+    P.solve()
+    sol_s1 = np.round(with_flow.value[:,0]).ravel()
+    sol_s2 = np.round(with_flow.value[:,1]).ravel()
+    vsol1 = [1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+    vsol2 = [1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0]
+    assert np.allclose(sol_s1, vsol1) or np.allclose(sol_s1, vsol2)
+    assert np.allclose(sol_s2, vsol1) or np.allclose(sol_s2, vsol2)
 
 
 def test_feasible_loop(backend):

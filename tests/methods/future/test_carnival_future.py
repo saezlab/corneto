@@ -4,20 +4,10 @@ import pickle
 import numpy as np
 import pytest
 
+from corneto._data import Data
 from corneto.backend import Backend, CvxpyBackend, PicosBackend
-from corneto.data import Data
 from corneto.graph import Graph
 from corneto.methods.future.carnival import CarnivalFlow
-
-
-@pytest.fixture(params=[CvxpyBackend, PicosBackend])
-def backend(request):
-    opt: Backend = request.param()
-    if isinstance(opt, CvxpyBackend):
-        opt._default_solver = "SCIPY"
-    elif isinstance(opt, PicosBackend):
-        opt._default_solver = "glpk"
-    return opt
 
 
 @pytest.fixture
@@ -54,26 +44,35 @@ def graph_two_samples():
         "s1": {
             "r1": {
                 "value": 1,
-                "type": "input",
+                "role": "input",
+                "mapping": "vertex"
             },
             "tf1": {
                 "value": 1,
-                "type": "output",
+                "role": "output",
+                "mapping": "vertex"
             },
             "tf2": {
                 "value": 1,
-                "type": "output",
+                "role": "output",
+                "mapping": "vertex"
             },
         },
         "s2": {
-            "r2": {"value": 1, "type": "input"},
+            "r2": {
+                "value": 1,
+                "role": "input",
+                "mapping": "vertex"
+            },
             "tf1": {
                 "value": 1,
-                "type": "output",
+                "role": "output",
+                "mapping": "vertex"
             },
             "tf2": {
                 "value": -1,
-                "type": "output",
+                "role": "output",
+                "mapping": "vertex"
             },
         },
     }
@@ -82,8 +81,8 @@ def graph_two_samples():
 
 def test_carnivalflow_large_dataset_one_sample(backend, large_dataset):
     G, samples = large_dataset
-    data = Data.from_dict(samples)
-    carnival = CarnivalFlow(lambda_reg=0, backend=backend)
+    data = Data.from_cdict(samples)
+    carnival = CarnivalFlow(lambda_reg=0, backend=backend, data_type_key="type")
     P = carnival.build(G, data)
     P.solve()
     # Check that the first objective is 32.6251 (up to 4 decimal places)
@@ -94,7 +93,7 @@ def test_carnivalflow_two_samples_inverse(backend, graph_two_samples):
     G, samples = graph_two_samples
     samples["s1"]["r1"]["value"] = 0
     samples["s2"]["r2"]["value"] = 0
-    data = Data.from_dict(samples)
+    data = Data.from_cdict(samples)
     carnival = CarnivalFlow(lambda_reg=1e-3, backend=backend)
     P = carnival.build(G, data)
     P.solve()
@@ -129,7 +128,7 @@ def test_carnivalflow_two_samples_inverse(backend, graph_two_samples):
 
 def test_carnivalflow_two_samples(backend, graph_two_samples):
     G, samples = graph_two_samples
-    data = Data.from_dict(samples)
+    data = Data.from_cdict(samples)
     carnival = CarnivalFlow(lambda_reg=1e-3, backend=backend)
     P = carnival.build(G, data)
     P.solve()

@@ -3,11 +3,13 @@ from typing import Any, Iterable, Optional, Set, Tuple
 import numpy as np
 
 from corneto._constants import VarType
+
+# from corneto.data._base import Data
+from corneto._data import Data
 from corneto._graph import BaseGraph
 from corneto._settings import sparsify
 from corneto._util import unique_iter
 from corneto.backend._base import Backend
-from corneto.data._base import Data
 
 # from corneto.methods import expand_graph_for_flows
 from corneto.methods.future.method import FlowMethod, Method
@@ -31,7 +33,7 @@ def create_flow_graph(
 
 def prune_graph(
     G: BaseGraph,
-    dataset: Data,
+    data: Data,
     property_key: str = "type",
     input_key: str = "input",
     output_key: str = "output",
@@ -50,10 +52,10 @@ def prune_graph(
         G: Graph-like object with:
             - V attribute (list/set of vertices)
             - prune(inputs, outputs) method returning a subgraph
-        dataset: Dataset object containing input/output measurements
+        data: Data object containing input/output measurements
 
     Returns:
-        Tuple[BaseGraph, Dataset]: A tuple containing:
+        Tuple[BaseGraph, Data]: A tuple containing:
             - The pruned graph using all relevant vertices
             - The pruned dataset with pruned vertices
     """
@@ -61,13 +63,14 @@ def prune_graph(
     reachable_inputs = set()
     reachable_outputs = set()
 
-    for sample_data in dataset.values():
-        sample_inputs = set(
-            sample_data.filter_values_by(property_key, input_key).keys()
-        )
-        sample_outputs = set(
-            sample_data.filter_values_by(property_key, output_key).keys()
-        )
+    for sample in data.samples.values():
+        sample_inputs = sample.query.select(
+            lambda f: f.data[property_key] == input_key
+        ).pluck()
+
+        sample_outputs = sample.query.select(
+            lambda f: f.data[property_key] == output_key
+        ).pluck()
 
         # Intersect with the current graph's vertices
         inputs_in_graph = graph_vertices & sample_inputs
@@ -81,8 +84,9 @@ def prune_graph(
 
     # Prune the original graph with all collected inputs/outputs
     pruned_graph = G.prune(list(reachable_inputs), list(reachable_outputs))
-
-    return pruned_graph, dataset.subset_features(list(pruned_graph.V))
+    pruned_data = data.query.filter_features(lambda f: f.id in pruned_graph.V).collect()
+    # pruned_data = data.subset(feature_predicate=lambda f: f.id in pruned_graph.V)
+    return pruned_graph, pruned_data
 
 
 def create_signed_error_expression(
@@ -149,7 +153,7 @@ class CarnivalFlow(FlowMethod):
         vertex_lb_dist=None,
         max_flow=1000,
         enable_bfs_heuristic=True,
-        data_type_key="type",
+        data_type_key="role",
         data_input_key="input",
         data_output_key="output",
         backend: Optional[Backend] = None,
@@ -188,8 +192,14 @@ class CarnivalFlow(FlowMethod):
         )
 
         # We use the inputs/outputs of the dataset to expand the graph into a flow graph
-        inputs = pruned_data.collect_features(self.data_type_key, self.data_input_key)
-        outputs = pruned_data.collect_features(self.data_type_key, self.data_output_key)
+        # inputs = pruned_data.collect_features(self.data_type_key, self.data_input_key)
+        # outputs = pruned_data.collect_features(self.data_type_key, self.data_output_key)
+        inputs = pruned_data.query.filter_features(
+            lambda f: f.data.get(self.data_type_key, None) == self.data_input_key
+        ).pluck_features()
+        outputs = pruned_data.query.filter_features(
+            lambda f: f.data.get(self.data_type_key, None) == self.data_output_key
+        ).pluck_features()
         flow_graph = create_flow_graph(pruned_graph, inputs, outputs)
         return flow_graph, pruned_data
 
@@ -215,16 +225,22 @@ class CarnivalFlow(FlowMethod):
         if self.use_heuristic_bfs:
             vertex_idx = {v: i for i, v in enumerate(graph.V)}
             graph_vertices = frozenset(vertex_idx.keys())
-            for sample in data.values():
-                sample_inputs = sample.filter_values_by(
-                    self.data_type_key, self.data_input_key
-                )
-                sample_outputs = sample.filter_values_by(
-                    self.data_type_key, self.data_output_key
-                )
-                sample_inputs = list(sample_inputs.keys())
-                sample_outputs = list(sample_outputs.keys())
-                #print(len(sample_inputs), len(sample_outputs))
+            for sample in data.samples.values():
+                # sample_inputs = sample.filter_values_by(
+                #    self.data_type_key, self.data_input_key
+                # )
+                # sample_outputs = sample.filter_values_by(
+                #    self.data_type_key, self.data_output_key
+                # )
+                # sample_inputs = list(sample_inputs.keys())
+                # sample_outputs = list(sample_outputs.keys())
+                sample_inputs = sample.query.select(
+                    lambda f: f.data[self.data_type_key] == self.data_input_key
+                ).pluck()
+                sample_outputs = sample.query.select(
+                    lambda f: f.data[self.data_type_key] == self.data_output_key
+                ).pluck()
+                # print(len(sample_inputs), len(sample_outputs))
                 # Get the distance between inputs and outputs
                 dist_dict = graph.bfs(sample_inputs, sample_outputs)
                 pruned_g = graph.prune(sample_inputs, sample_outputs)
@@ -238,7 +254,7 @@ class CarnivalFlow(FlowMethod):
 
         # Alias for convenience and extract key constants
         problem = flow_problem
-        num_experiments = len(data)
+        num_experiments = len(data.samples)
         ones = np.ones((1, num_experiments))
 
         # Get incidence matrices and interactions from the graph
@@ -326,13 +342,21 @@ class CarnivalFlow(FlowMethod):
         ) + upstream_Vi.multiply(cond_inh_inv)
 
         # Pre-collect all input features for use in designated perturbation constraints
-        all_inputs = data.collect_features(self.data_type_key, self.data_input_key)
+        # all_inputs = data.collect_features(self.data_type_key, self.data_input_key)
+        all_inputs = data.query.filter_features(
+            lambda f: f.data[self.data_type_key] == self.data_input_key
+        ).pluck_features()
 
         # Consolidate per-experiment constraints and objectives into a single loop
-        for i, sample in enumerate(data.values()):
+        for i, sample in enumerate(data.samples.values()):
             # --- Input Perturbation Constraints ---
-            sample_inputs = sample.filter_values_by(
-                self.data_type_key, self.data_input_key
+            # sample_inputs = sample.filter_values_by(
+            #    self.data_type_key, self.data_input_key
+            # )
+            sample_inputs = dict(
+                sample.query.select(
+                    lambda f: f.data[self.data_type_key] == self.data_input_key
+                ).pluck(lambda f: (f.id, f.value))
             )
 
             # If multiple experiments, enforce that only designated perturbation inputs are active.
@@ -362,9 +386,15 @@ class CarnivalFlow(FlowMethod):
                 problem += V[np.array(nonzero_positions), i] == np.array(nonzero_signs)
 
             # --- Objective: Error Terms from Experimental Outputs ---
-            sample_outputs = sample.filter_values_by(
-                self.data_type_key, self.data_output_key
+            # sample_outputs = sample.filter_values_by(
+            #    self.data_type_key, self.data_output_key
+            # )
+            sample_outputs = dict(
+                sample.query.select(
+                    lambda f: f.data[self.data_type_key] == self.data_output_key
+                ).pluck(lambda f: (f.id, f.value))
             )
+
             m_nodes = list(sample_outputs.keys())
             m_values = np.array(list(sample_outputs.values()))
             m_positions = [graph.V.index(node) for node in m_nodes]
@@ -377,9 +407,9 @@ class CarnivalFlow(FlowMethod):
                 condition_index=i,
                 vertex_variable=V,
             )
-            #ones = np.ones((len(m_nodes), 1))  # Column vector of ones
-            #problem.add_objectives(sum(error_expr))
-            #problem.add_objectives(error_expr @ ones)
+            # ones = np.ones((len(m_nodes), 1))  # Column vector of ones
+            # problem.add_objectives(sum(error_expr))
+            # problem.add_objectives(error_expr @ ones)
             problem.add_objectives(error_expr.sum())
 
         return problem
@@ -411,7 +441,7 @@ class CarnivalILP(Method):
         use_perturbation_weights: bool = False,
         interaction_graph_attribute: str = "interaction",
         disable_acyclicity: bool = False,
-        data_type_key: str = "type",
+        data_type_key: str = "role",
         data_input_key: str = "input",
         data_output_key: str = "output",
         backend: Optional[Backend] = None,
@@ -464,7 +494,7 @@ class CarnivalILP(Method):
         Returns:
             The configured optimization problem
         """
-        if len(data) > 1:
+        if len(data.samples) > 1:
             raise ValueError("CARNIVAL ILP does not support multiple conditions")
 
         max_dist = self.max_dist if self.max_dist is not None else graph.num_vertices
@@ -556,11 +586,21 @@ class CarnivalILP(Method):
                 edge_selected = E_act[i] + E_inh[i]
                 P += V_pos[ti] - V_pos[si] >= 1 - max_dist * (1 - edge_selected)
 
-        perturbations = next(iter(data.values())).filter_values_by(
-            self.data_type_key, self.data_input_key
+        # perturbations = next(iter(data.values())).filter_values_by(
+        #    self.data_type_key, self.data_input_key
+        # )
+        # measurements = next(iter(data.values())).filter_values_by(
+        #    self.data_type_key, self.data_output_key
+        # )
+        perturbations = dict(
+            data.query.filter_features(
+                lambda f: f.data[self.data_type_key] == self.data_input_key
+            ).pluck_features(lambda f: (f.id, f.value))
         )
-        measurements = next(iter(data.values())).filter_values_by(
-            self.data_type_key, self.data_output_key
+        measurements = dict(
+            data.query.filter_features(
+                lambda f: f.data[self.data_type_key] == self.data_output_key
+            ).pluck_features(lambda f: (f.id, f.value))
         )
 
         for v in graph.V:

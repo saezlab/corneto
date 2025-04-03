@@ -1,8 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import Any, Optional, Tuple, Dict
+from typing import Dict, Optional, Tuple
 
 from corneto import DEFAULT_BACKEND
-from corneto._constants import DEFAULT_LB, DEFAULT_UB
 from corneto._graph import BaseGraph
 from corneto.backend._base import Backend, ProblemDef
 from corneto.data import Data
@@ -102,16 +101,25 @@ class Method(ABC):
                 reg_var = self.problem.expr[self._reg_varname]
                 newvar_name = self._reg_varname + self._reg_varname_suffix
                 ax = 0 if len(reg_var.shape) == 1 else 1
-                #if len(reg_var.shape) == 1 or (len(reg_var.shape) == 2 and reg_var.shape[1] == 1):
-                    # If reg_var is a 1D array, no need to compute or
-                #    reg_var = reg_var[:, None]
-                self.problem += self._backend.linear_or(
-                    reg_var, axis=ax, varname=newvar_name
-                )
-                self.problem.add_objectives(
-                    self.problem.expr[newvar_name].sum(),
-                    weights=self.lambda_reg_param,
-                )
+                # If we only have a 1D vector, we dont need linear or, we compute the sum:
+                if (
+                    len(reg_var.shape) == 1
+                    or reg_var.shape[1] == 1
+                    or reg_var.shape[0] == 1
+                ):
+                    self.problem.add_objectives(
+                        reg_var.sum(),
+                        weights=self.lambda_reg_param,
+                    )
+                else:
+                    # Structured sparsity regularization
+                    self.problem += self._backend.linear_or(
+                        reg_var, axis=ax, varname=newvar_name
+                    )
+                    self.problem.add_objectives(
+                        self.problem.expr[newvar_name].sum(),
+                        weights=self.lambda_reg_param,
+                    )
             else:
                 raise ValueError(
                     "Parameter lambda_reg > 0 but no regularization variable name provided"

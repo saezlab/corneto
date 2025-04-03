@@ -1,15 +1,15 @@
 import os
-from types import MethodType
-
-from corneto._graph import BaseGraph
 from collections import deque
 
 import numpy as np
+
 try:
     import pandas as pd
+
     _PANDAS_AVAILABLE = True
 except ImportError:
     _PANDAS_AVAILABLE = False
+
 
 def _load_keras():
     # Check if keras_core is installed,
@@ -25,13 +25,12 @@ def _load_keras():
     except ImportError as e:
         raise e
 
+
 def kfold_nonzero_splits(
-    data,
-    n_splits: int = 5,
-    shuffle: bool = True,
-    random_state: int = 42
+    data, n_splits: int = 5, shuffle: bool = True, random_state: int = 42
 ):
     from sklearn.model_selection import KFold
+
     """
     Perform K-fold splitting on all nonzero cells in the input data,
     returning two structures per fold (train and val), each the same shape
@@ -86,7 +85,9 @@ def kfold_nonzero_splits(
             val_copy[r, c] = np.nan
 
         if is_pandas:
-            train_copy = pd.DataFrame(train_copy, index=data.index, columns=data.columns)
+            train_copy = pd.DataFrame(
+                train_copy, index=data.index, columns=data.columns
+            )
             val_copy = pd.DataFrame(val_copy, index=data.index, columns=data.columns)
 
         yield train_copy, val_copy
@@ -121,13 +122,12 @@ def toposort(G):
 
 def index_selector():
     keras = _load_keras()
-    
+
     # Dynamically create IndexSelector class
     @keras.saving.register_keras_serializable(package="Custom")
     class IndexSelector(keras.layers.Layer):
         def __init__(self, indexes, axis=-1, **kwargs):
-            """
-            A layer for selecting specific indices along a specified axis.
+            """A layer for selecting specific indices along a specified axis.
 
             Args:
                 indexes (list or array): The indices to select.
@@ -138,14 +138,12 @@ def index_selector():
             self.axis = axis
 
         def call(self, inputs):
-            """
-            Apply index selection along the specified axis.
+            """Apply index selection along the specified axis.
             """
             return keras.ops.take(inputs, self.indexes, axis=self.axis)
 
         def compute_output_shape(self, input_shape):
-            """
-            Compute the output shape after index selection.
+            """Compute the output shape after index selection.
             """
             # Convert negative axis to positive
             axis = self.axis if self.axis >= 0 else len(input_shape) + self.axis
@@ -154,14 +152,14 @@ def index_selector():
             return tuple(new_shape)
 
         def get_config(self):
-            """
-            Serialize the configuration of the layer for saving/loading models.
+            """Serialize the configuration of the layer for saving/loading models.
             """
             config = super(IndexSelector, self).get_config()
             config.update({"indexes": self.indexes, "axis": self.axis})
             return config
 
     return IndexSelector
+
 
 def build_dagnn(
     G,
@@ -194,13 +192,9 @@ def build_dagnn(
     input_index = {v: i for i, v in enumerate(input_nodes)}
     kernel_reg, bias_reg = None, None
     if kernel_reg_l1 > 0 or kernel_reg_l2 > 0:
-        kernel_reg = keras.regularizers.l1_l2(
-            l1=bias_reg_l1, l2=bias_reg_l2
-        )
+        kernel_reg = keras.regularizers.l1_l2(l1=bias_reg_l1, l2=bias_reg_l2)
     if bias_reg_l1 > 0 or bias_reg_l2 > 0:
-        bias_reg = keras.regularizers.l1_l2(
-            l1=kernel_reg_l1, l2=kernel_reg_l2
-        )
+        bias_reg = keras.regularizers.l1_l2(l1=kernel_reg_l1, l2=kernel_reg_l2)
     neurons = {}
     for v in vertices:
         neuron_inputs = []
@@ -216,19 +210,17 @@ def build_dagnn(
                 in_v_neurons.append(par)
         # Collect inputs from the input layer
         if len(in_v_inputs) > 1:
-            #inputs = _concat_indexes(input_layer, in_v_inputs, keras=k)
+            # inputs = _concat_indexes(input_layer, in_v_inputs, keras=k)
             inputs = index_selector()(in_v_inputs)(input_layer)
             if dropout > 0 and len(in_v_inputs) >= min_inputs_for_dropout:
                 inputs = keras.layers.Dropout(dropout)(inputs)
             neuron_inputs.append(inputs)
         elif len(in_v_inputs) == 1:
             j = in_v_inputs[0]
-            neuron_inputs.append(input_layer[:, j : (j+1)])
+            neuron_inputs.append(input_layer[:, j : (j + 1)])
         # Collect inputs from other neurons
         if len(in_v_neurons) > 1:
-            inputs = keras.layers.Concatenate()(
-                [neurons[p] for p in in_v_neurons]
-            )
+            inputs = keras.layers.Concatenate()([neurons[p] for p in in_v_neurons])
             if dropout > 0 and len(in_v_neurons) >= min_inputs_for_dropout:
                 inputs = keras.layers.Dropout(dropout)(inputs)
             neuron_inputs.append(inputs)
@@ -271,6 +263,7 @@ def build_dagnn(
         )
     model = keras.Model(inputs=input_layer, outputs=output_layer)
     return model
+
 
 def plot_model(model):
     return _load_keras().utils.plot_model(model)
