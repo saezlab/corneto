@@ -37,7 +37,7 @@ Note:
 from typing import Callable, Optional, Union
 
 import corneto as cn
-from corneto._graph import BaseGraph
+from corneto.graph import BaseGraph
 from corneto._types import NxDiGraph, NxGraph
 from corneto.utils import Attr, import_optional_module
 
@@ -96,7 +96,8 @@ def networkx_to_corneto_graph(G: Union[NxGraph, NxDiGraph]):
     Returns:
         cn.Graph: A Corneto graph.
     """
-    Gc = cn.Graph()
+    from corneto.graph import Graph
+    Gc = Graph()
     edge_type = cn.EdgeType.DIRECTED if G.is_directed() else cn.EdgeType.UNDIRECTED
     for edge in G.edges():
         e_data = G.get_edge_data(edge[0], edge[1], default=dict())

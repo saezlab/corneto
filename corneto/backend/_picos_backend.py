@@ -110,7 +110,7 @@ class PicosExpression(CExpression):
 
     @property
     def value(self) -> np.ndarray:
-        return self._expr.value
+        return np.array(self._expr.value)
 
     def __matmul__(self, other: Any) -> "CExpression":
         o = other

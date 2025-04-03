@@ -432,7 +432,7 @@ class GraphData:
 
         # Use a temporary directory to store the files
         with tempfile.TemporaryDirectory() as tmpdir:
-            graph_path = os.path.join(tmpdir, "graph")
+            graph_path = os.path.join(tmpdir, "graph.pkl.xz")
             data_path = os.path.join(tmpdir, "data.xz")
 
             # Save the graph and data into the temporary directory
@@ -441,7 +441,7 @@ class GraphData:
 
             # Create the zip file and add the two files
             with zipfile.ZipFile(filepath, "w") as zf:
-                zf.write(graph_path + ".pkl.xz", "graph.pkl.xz")
+                zf.write(graph_path, "graph.pkl.xz")
                 zf.write(data_path, "data.xz")
 
     @classmethod

@@ -1,4 +1,5 @@
 import abc
+import os
 import pickle
 from collections import deque
 from copy import deepcopy
@@ -22,8 +23,7 @@ from typing import (
 
 import numpy as np
 
-from corneto._io import import_cobra_model
-from corneto._types import CobraModel, Edge, NxDiGraph, NxGraph
+from corneto._types import Edge
 from corneto._util import obj_content_hash, unique_iter
 from corneto.utils import Attr, Attributes
 
@@ -37,6 +37,7 @@ class EdgeType(str, Enum):
         DIRECTED: Represents a directed edge
         UNDIRECTED: Represents an undirected edge
     """
+
     DIRECTED = "directed"
     UNDIRECTED = "undirected"
 
@@ -82,7 +83,7 @@ def _tpl(elements: Union[Any, Iterable[Any]]) -> Tuple[Any, ...]:
 
     Args:
         elements: Element or iterable of elements
-    
+
     Returns:
         Tuple containing the elements
     """
@@ -575,6 +576,7 @@ class BaseGraph(abc.ABC):
         Returns:
             Iterable of successor vertices
         """
+
         def succ():
             for i, (s, t) in self._edges_by_dir(vertex, direction="out"):
                 attr = self.get_attr_edge(i)
@@ -611,6 +613,7 @@ class BaseGraph(abc.ABC):
         Returns:
             Iterable of predecessor vertices
         """
+
         def succ():
             for i, (s, t) in self._edges_by_dir(vertex, direction="in"):
                 attr = self.get_attr_edge(i)
@@ -876,11 +879,14 @@ class BaseGraph(abc.ABC):
             Vertex incidence matrix as a numpy array or a sparse matrix.
         """
         data, (row_ind, col_ind) = self.get_vertex_incidence_matrix_as_lists(values)
-        
+
         if sparse:
             from scipy.sparse import csr_matrix
+
             # Create a sparse CSR matrix
-            A = csr_matrix((data, (row_ind, col_ind)), shape=(self.num_vertices, self.num_edges))
+            A = csr_matrix(
+                (data, (row_ind, col_ind)), shape=(self.num_vertices, self.num_edges)
+            )
         else:
             # Create a dense matrix
             A = np.zeros((self.num_vertices, self.num_edges))
@@ -994,7 +1000,7 @@ class BaseGraph(abc.ABC):
 
         Args:
             vertex_values: Optional values to display on vertices
-            edge_values: Optional values to display on edges  
+            edge_values: Optional values to display on edges
             vertex_props: Optional dict of vertex drawing properties
             edge_props: Optional dict of edge drawing properties
 
@@ -1041,82 +1047,153 @@ class BaseGraph(abc.ABC):
 
         return to_graphviz(self, **kwargs)
 
+    def _get_compression_and_filepath(
+        self, filepath: str, compression: Optional[str] = None
+    ) -> Tuple[Optional[str], str]:
+        """Helper method to determine compression type and ensure proper file extension.
 
-    def save(self, filename: str, compressed: Optional[bool] = True) -> None:
-        """Save graph to file.
+        Args:
+            filepath: Path where to save/load the file
+            compression: Optional compression format ('auto', 'gzip', 'bz2', 'xz', or None)
+
+        Returns:
+            Tuple of (compression_type, updated_filepath)
+        """
+        base, ext = os.path.splitext(filepath)
+
+        # Auto-detect compression from file extension if requested
+        if compression == "auto":
+            if ext.lower() in (".gz", ".gzip"):
+                compression = "gzip"
+            elif ext.lower() == ".bz2":
+                compression = "bz2"
+            elif ext.lower() in (".xz", ".lzma"):
+                compression = "xz"
+            else:
+                compression = None
+
+        return compression, filepath
+
+    @staticmethod
+    def _get_file_opener(compression: Optional[str] = None, mode: str = "rb"):
+        """Get appropriate file opener function based on compression type.
+
+        Args:
+            compression: Compression format ('gzip', 'bz2', 'xz', or None)
+            mode: File open mode ('rb', 'wb', 'rt', 'wt', etc.)
+
+        Returns:
+            File opener function
+        """
+        if compression == "gzip":
+            import gzip
+
+            return gzip.open
+        elif compression == "bz2":
+            import bz2
+
+            return bz2.open
+        elif compression == "xz":
+            import lzma
+
+            return lzma.open
+        elif compression == "zip":
+            import zipfile
+
+            def opener(file, mode=mode):
+                # Supports only reading the first file in a zip archive
+                with zipfile.ZipFile(file, "r") as z:
+                    return z.open(z.namelist()[0], mode=mode)
+
+            return opener
+        else:
+            return open
+
+    def save(self, filename: str, compression: Optional[str] = "auto") -> None:
+        """Save graph to file using pickle serialization.
 
         Args:
             filename: Path to save graph to
-            compressed: Whether to use compression. If True, uses LZMA compression.
+            compression: Optional compression format ('auto', 'gzip', 'bz2', 'xz', or None)
 
         Raises:
             ValueError: If filename is empty
-
-        Note:
-            If compressed=True, '.xz' extension is added if not present
-            If '.pkl' extension is missing, it will be added
         """
         if not filename:
             raise ValueError("Filename must not be empty.")
 
-        if not filename.endswith(".pkl"):
-            filename += ".pkl"
+        # Get compression type and update filepath if needed
+        compression, filepath = self._get_compression_and_filepath(
+            filename, compression
+        )
 
-        if compressed:
-            import lzma
+        # Ensure .pkl extension unless another extension is specified
+        if not os.path.splitext(filepath)[1]:
+            filepath += ".pkl"
 
-            if not filename.endswith(".xz"):
-                filename += ".xz"
-            with lzma.open(filename, "wb", preset=9) as f:
-                pickle.dump(self, f)
-        else:
-            with open(filename, "wb") as f:
-                pickle.dump(self, f)
+        # Get appropriate file opener based on compression type
+        opener = self._get_file_opener(compression, mode="wb")
+
+        # Save the graph
+        with opener(filepath, "wb") as f:
+            pickle.dump(self, f)
 
     @staticmethod
-    def load(filename: str) -> "BaseGraph":
+    def load(filename: str, compression: Optional[str] = "auto") -> "BaseGraph":
         """Load graph from a saved file.
-
-        Supports various compression formats:
-        - .gz (gzip)
-        - .bz2 (bzip2)  
-        - .xz (LZMA)
-        - .zip (zip archive, reads first file)
 
         Args:
             filename: Path to saved graph file
+            compression: Optional compression format ('auto', 'gzip', 'bz2', 'xz', or None)
+                         If 'auto', will detect from file extension.
 
         Returns:
             Loaded graph instance
         """
-        if filename.endswith(".gz"):
+        # Determine compression type based on file extension
+        base, ext = os.path.splitext(filename)
+
+        # Auto-detect compression from file extension if requested
+        if compression == "auto":
+            if ext.lower() in (".gz", ".gzip"):
+                compression = "gzip"
+            elif ext.lower() == ".bz2":
+                compression = "bz2"
+            elif ext.lower() in (".xz", ".lzma"):
+                compression = "xz"
+            else:
+                compression = None
+
+        # Get appropriate file opener based on compression type
+        if compression == "gzip":
             import gzip
 
             opener = gzip.open
-        elif filename.endswith(".bz2"):
+        elif compression == "bz2":
             import bz2
 
             opener = bz2.open
-        elif filename.endswith(".xz"):
+        elif compression == "xz":
             import lzma
 
             opener = lzma.open
-        elif filename.endswith(".zip"):
+        elif compression == "zip":
             import zipfile
 
-            def opener(file, mode="r"):
+            def opener(file, mode="rb"):
                 # Supports only reading the first file in a zip archive
                 with zipfile.ZipFile(file, "r") as z:
-                    return z.open(z.namelist()[0], mode=mode)
+                    return z.open(z.namelist()[0], mode="rb")
         else:
             opener = open
 
+        # Load the graph
         with opener(filename, "rb") as f:
             return pickle.load(f)
 
     def toposort(self):
         """Perform topological sort on the graph using Kahn's algorithm.
-        
+
         Returns:
             List of vertices in topological order
 
@@ -1145,8 +1222,9 @@ class BaseGraph(abc.ABC):
         if len(result) == self.num_vertices:
             return result
         else:
-            raise ValueError("Graph contains a cycle, so topological sort is not possible.")
-
+            raise ValueError(
+                "Graph contains a cycle, so topological sort is not possible."
+            )
 
     def reachability_analysis(
         self,
@@ -1222,6 +1300,3 @@ class BaseGraph(abc.ABC):
         if verbose:
             print(f"Finished ({len(selected_edges)} selected edges).")
         return selected_edges
-
-
-
