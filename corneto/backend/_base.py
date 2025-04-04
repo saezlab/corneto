@@ -1396,6 +1396,20 @@ class Backend(abc.ABC):
         # Avoid ambiguity: don't allow both positional indices and the 'indexes' keyword
         if args and indexes is not None:
             raise ValueError("Provide either positional indices or the 'indexes' keyword, not both.")
+        
+        # If args is not none, we need to check if it is a tuple and more than
+        # one dimension was provided.
+        if isinstance(args, tuple) and len(args) > 1:
+            diff_len_shape = len(args) - len(V.shape)
+            if diff_len_shape > 0:
+                # If the last dimension is not 0, raise an error
+                if args[-1] != 0:
+                    raise ValueError(
+                        f"Cannot use {len(args)} positional indices for a variable of shape {V.shape}"
+                    )
+                else:
+                    # We ignore the last dimension
+                    args = args[:-1]
 
         # Determine which indexing to use
         idx = args if args else indexes

@@ -248,8 +248,10 @@ class SteinerTreeFlow(FlowMethod):
                 # Root selection through optimization
                 if len(all_vertices_with_data) > 0:
                     flow_problem += self.backend.NonZeroIndicator(
-                        F,
-                        indexes=vertices_edgeflow_idx,
+                        flow_problem.expr.flow,
+                        vertices_edgeflow_idx,
+                        i,
+                        #indexes=vertices_edgeflow_idx,
                         tolerance=self.epsilon,
                         suffix_pos=f"_terminal_pos_{i}",
                         suffix_neg=f"_terminal_neg_{i}",
