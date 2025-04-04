@@ -75,7 +75,7 @@ class PrizeCollectingSteinerTree(SteinerTreeFlow):
         """
         # First process the graph normally to set up the terminals
         flow_graph, processed_data = super().preprocess(graph, data)
-
+        
         # Then add edges for prized terminals if they exist
         for sample_data in data.samples.values():
             prized_nodes = sample_data.query.select(
@@ -139,10 +139,9 @@ class PrizeCollectingSteinerTree(SteinerTreeFlow):
                     )
 
                     if self.strict_acyclic:
-                        selected_prized_flow_edges = (
-                            flow_problem.expr._flow_ipos[prized_idx]
-                            + flow_problem.expr._flow_ineg[prized_idx]
-                        )
+                        selected = flow_problem.expr._flow_ipos + flow_problem.expr._flow_ineg
+                        selected = selected if len(selected.shape) == 1 else selected[:, i]
+                        selected_prized_flow_edges = selected[prized_idx]
                     else:
                         indicator_terminal_pos = self.flow_name + f"_terminal_pos_{i}"
                         indicator_terminal_neg = self.flow_name + f"_terminal_neg_{i}"
@@ -151,8 +150,9 @@ class PrizeCollectingSteinerTree(SteinerTreeFlow):
                             or indicator_terminal_neg not in flow_problem.expr
                         ):
                             flow_problem += self.backend.NonZeroIndicator(
-                                F,
-                                indexes=prized_idx,
+                                flow_problem.expr.flow,
+                                prized_idx,
+                                i,
                                 tolerance=self.epsilon,
                                 suffix_pos=f"_terminal_pos_{i}",
                                 suffix_neg=f"_terminal_neg_{i}",
@@ -167,14 +167,11 @@ class PrizeCollectingSteinerTree(SteinerTreeFlow):
                             prized_idx_in_list = [
                                 flow_edges_idxs.index(idx) for idx in prized_idx
                             ]
-                            selected_prized_flow_edges = (
-                                flow_problem.expr[indicator_terminal_pos][
-                                    prized_idx_in_list
-                                ]
-                                + flow_problem.expr[indicator_terminal_neg][
-                                    prized_idx_in_list
-                                ]
-                            )
+                            selected = flow_problem.expr[indicator_terminal_pos] + flow_problem.expr[
+                                indicator_terminal_neg
+                            ]
+                            selected = selected if len(selected.shape) == 1 else selected[:, i]
+                            selected_prized_flow_edges = selected[prized_idx_in_list]
 
                     flow_problem.register(
                         f"selected_prized_flow_edges_{i}", selected_prized_flow_edges

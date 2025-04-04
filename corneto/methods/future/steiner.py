@@ -56,6 +56,8 @@ class SteinerTreeFlow(FlowMethod):
         self._terminal_edgeflow_idx = []
         self.flow_edges = dict()
         self.terminal_flow_edges = dict()
+        self._selected_root_vertex = root_vertex
+        self._max_flow = max_flow
 
     def preprocess(self, graph: BaseGraph, data: Data) -> Tuple[BaseGraph, Data]:
         """Preprocess the graph and data for the Steiner tree optimization.
@@ -70,6 +72,10 @@ class SteinerTreeFlow(FlowMethod):
         Returns:
             Tuple[BaseGraph, Data]: Preprocessed graph and data.
         """
+        self._selected_root_vertex = None
+        self._terminal_edgeflow_idx = []
+        self.flow_edges = dict()
+        self.terminal_flow_edges = dict()
         flow_graph = graph.copy()
         all_vertices = data.query.filter_features(
             lambda f: f.mapping == "vertex",
@@ -82,20 +88,22 @@ class SteinerTreeFlow(FlowMethod):
         #other = set(all_vertices) - set(terminals)
 
         if self.max_flow is None:
-            self.max_flow = len(all_vertices)
+            self._max_flow = len(all_vertices)
 
         in_type = self.in_flow_edge_type
         out_type = self.out_flow_edge_type
 
-        if self.root_vertex is None:
+        self._selected_root_vertex = self.root_vertex
+
+        if self._selected_root_vertex is None:
             if self.root_selection_strategy == "first":
                 # Takes the first terminal vertex as root.
                 # This does not matter if the graph is undirected
-                self.root_vertex = next(iter(terminals)) if len(terminals) > 0 else next(
+                self._selected_root_vertex = next(iter(terminals)) if len(terminals) > 0 else next(
                     iter(all_vertices)
                 )
-                idx_root = flow_graph.add_edge((), self.root_vertex, type=in_type)
-                self.flow_edges[self.root_vertex] = idx_root
+                idx_root = flow_graph.add_edge((),self._selected_root_vertex, type=in_type)
+                self.flow_edges[self._selected_root_vertex] = idx_root
             elif self.root_selection_strategy == "best":
                 # All in/out edges can inject/extract flow
                 # so no distinction. Root is selected through
@@ -106,10 +114,10 @@ class SteinerTreeFlow(FlowMethod):
                     f"Unknown root selection strategy: {self.root_selection_strategy}"
                 )
         else:
-            idx = flow_graph.add_edge((), self.root_vertex, type=in_type)
-            self.flow_edges[self.root_vertex] = idx
+            idx = flow_graph.add_edge((), self._selected_root_vertex, type=in_type)
+            self.flow_edges[self._selected_root_vertex] = idx
         for v in all_vertices:
-            if v != self.root_vertex:
+            if v != self._selected_root_vertex:
                 idx = flow_graph.add_edge(v, (), type=out_type)
                 self.flow_edges[v] = idx
         return flow_graph, data
@@ -131,14 +139,14 @@ class SteinerTreeFlow(FlowMethod):
             [
                 0
                 if prop.has_attr(Attr.EDGE_TYPE, EdgeType.DIRECTED)
-                else -self.max_flow
+                else -self._max_flow
                 for prop in graph.get_attr_edges()
             ]
         )
 
         return {
             "lb": lb,
-            "ub": self.max_flow,
+            "ub": self._max_flow,
             "n_flows": len(data.samples),
             "shared_bounds": False,
         }
@@ -200,20 +208,20 @@ class SteinerTreeFlow(FlowMethod):
                 lambda f: f.mapping == "vertex" and not f.value
             ).pluck()
             for terminal in terminals:
-                if terminal != self.root_vertex:
+                if terminal != self._selected_root_vertex:
                     idx = self.flow_edges[terminal]
                     terminals_edgeflow_idx.append(idx)
 
             # Collect terminal flow edges
             for vertex in all_vertices_with_data:
-                if vertex != self.root_vertex:
+                if vertex != self._selected_root_vertex:
                     idx = self.flow_edges[vertex]
                     vertices_edgeflow_idx.append(idx)
 
             # Sample flow edges
             sample_flow_edges = set(vertices_edgeflow_idx)
-            if self.root_vertex is not None:
-                sample_flow_edges.add(self.flow_edges[self.root_vertex])
+            if self._selected_root_vertex is not None:
+                sample_flow_edges.add(self.flow_edges[self._selected_root_vertex])
             sample_flow_edges = list(sample_flow_edges)
             # TODO: move to preprocessing, this can be used by
             # extension (e.g. PCST) to quickly get the flow edges/
@@ -227,9 +235,9 @@ class SteinerTreeFlow(FlowMethod):
             if len(other_flow_edges) > 0:
                 flow_problem += F[other_flow_edges] == 0
 
-            if self.root_vertex is not None:
+            if self._selected_root_vertex is not None:
                 # Injected flow through root
-                flow_problem += F[self.flow_edges[self.root_vertex]] == self.max_flow
+                flow_problem += F[self.flow_edges[self._selected_root_vertex]] == self._max_flow
                 # Extracted flow through terminals (only for terminals!)
                 #if len(all_vertices_with_data) > 0:
                 #    flow_problem += F[vertices_edgeflow_idx] >= 1

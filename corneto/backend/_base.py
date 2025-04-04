@@ -1381,24 +1381,36 @@ class Backend(abc.ABC):
     def NonZeroIndicator(
         self,
         V: CSymbol,
-        indexes: Optional[Union[Tuple, List, np.ndarray]] = None,
+        *args,  # new positional indices for multi-dimensional indexing
+        indexes: Optional[Union[int, slice, Tuple, List, np.ndarray]] = None,
         suffix_pos: str = "_ipos",
         suffix_neg: str = "_ineg",
         tolerance: float = 1e-3,
     ) -> ProblemDef:
-        # NOTE: This can add integer feasibility issues to the problem
-        c = []
-        S = V
-        lb = V.lb
-        ub = V.ub
+        # Ensure the variable is bounded
         if V._provided_lb is None or V._provided_ub is None:
             raise ValueError(
                 f"The continuous variable {V.name} is unbounded, indicators cannot be created."
             )
-        if indexes is not None and len(indexes) > 0:
-            S = V[indexes]
-            lb = V.lb[indexes]
-            ub = V.ub[indexes]
+        
+        # Avoid ambiguity: don't allow both positional indices and the 'indexes' keyword
+        if args and indexes is not None:
+            raise ValueError("Provide either positional indices or the 'indexes' keyword, not both.")
+
+        # Determine which indexing to use
+        idx = args if args else indexes
+
+        # If an index is provided, use it to slice the variable and its bounds
+        if idx is not None:
+            S = V[idx]
+            lb = V.lb[idx]
+            ub = V.ub[idx]
+        else:
+            S = V
+            lb = V.lb
+            ub = V.ub
+
+        c = []
         I_pos = self.Variable(
             V.name + suffix_pos, S.shape, 0, 1, vartype=VarType.BINARY
         )
@@ -1406,12 +1418,15 @@ class Backend(abc.ABC):
             V.name + suffix_neg, S.shape, 0, 1, vartype=VarType.BINARY
         )
         I = I_pos + I_neg
-        c += [I <= 1]  # mutually exclusive
+        c += [I <= 1]  # Ensure mutual exclusivity
+
+        # Disable infeasible binary indicators based on bounds
         if np.sum(ub <= 0) > 0:
             c += [I_pos[np.where(ub <= 0)[0]] == 0]
         if np.sum(lb >= 0) > 0:
             c += [I_neg[np.where(lb >= 0)[0]] == 0]
-        # I_neg and I_pos mutually exclusive (I_pos + I_neg <= 1)
+
+        # Add constraints to enforce variable behavior depending on the indicator activation:
         # If I_pos = 1 and I_neg = 0: V >= tol AND V <= ub
         # If I_pos = 0 and I_neg = 1: V >= lb AND V <= -tol
         # If I_pos = 0 and I_neg = 0: V >= 0 AND V <= 0
@@ -1419,9 +1434,9 @@ class Backend(abc.ABC):
             S >= I_neg.multiply(lb) + I_pos * tolerance,
             S <= I_pos.multiply(ub) - I_neg * tolerance,
         ]
-        #P = self.Problem(c)
-        #P.register(EXPR_NAME_FLOW_NZI, I)
+        
         return self.Problem(c)
+
 
     # TODO: Remove function
     def Indicators(
