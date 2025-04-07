@@ -1,4 +1,4 @@
-from typing import Any, Literal, Optional, Tuple
+from typing import Any, List, Literal, Optional, Tuple, Union
 
 import numpy as np
 
@@ -15,26 +15,16 @@ class PrizeCollectingSteinerTree(SteinerTreeFlow):
     This class extends the basic Steiner Tree algorithm with prize-collecting functionality.
     In a prize-collecting Steiner tree problem, terminals can have prizes (values > 0),
     making them optional terminals that provide a benefit if included in the solution.
-
-    The algorithm balances the cost of edges against the benefit of including prize nodes.
-
-    In a Prize-Collecting Steiner Tree problem, given:
-    - A graph G with edge weights (costs)
-    - A subset of vertices called terminals (required)
-    - A subset of vertices with prizes (optional)
-    - Optionally, a root node
-
-    The goal is to find a minimum-weight connected subgraph that contains all required terminals
-    and maximizes the collection of prizes from optional terminals.
+    The class now supports providing multiple max_flow and root_vertex values per sample.
     """
 
     def __init__(
         self,
         include_all_terminals: bool = True,
-        max_flow: Optional[float] = None,
+        max_flow: Optional[Union[float, List[float]]] = None,
         default_edge_cost: float = 1.0,
         flow_name: str = VAR_FLOW,
-        root_vertex: Optional[Any] = None,
+        root_vertex: Optional[Union[Any, List[Any]]] = None,
         root_selection_strategy: Literal["first", "best"] = "first",
         epsilon: float = 1,
         strict_acyclic: bool = True,
@@ -64,26 +54,24 @@ class PrizeCollectingSteinerTree(SteinerTreeFlow):
     def preprocess(self, graph: BaseGraph, data: Data) -> Tuple[BaseGraph, Data]:
         """Preprocess the graph and data for the Prize-Collecting Steiner tree optimization.
 
-        Extends the base class preprocessing to handle both terminals and prized nodes.
-
-        Args:
-            graph (BaseGraph): The input graph.
-            data (Data): The data containing terminal and prized nodes.
-
-        Returns:
-            Tuple[BaseGraph, Data]: Preprocessed graph and data.
+        Extends the base class preprocessing to handle prized nodes.
+        For each sample, we retrieve the sample-specific selected root from the base class
+        and add an out-edge for a prized node only if it is not that sample's root and
+        it does not already have a flow edge.
         """
-        # First process the graph normally to set up the terminals
+        # Process the graph normally (this sets up terminals and sample-specific roots)
         flow_graph, processed_data = super().preprocess(graph, data)
-        
-        # Then add edges for prized terminals if they exist
-        for sample_data in data.samples.values():
+
+        # For each sample, add extra edges for prized nodes
+        for i, sample_data in enumerate(data.samples.values()):
+            sample_root = self._selected_roots[i]
             prized_nodes = sample_data.query.select(
                 lambda f: f.mapping == "vertex" and f.value
             ).pluck()
-
             for prized in prized_nodes:
-                if prized != self.root_vertex and prized not in self.flow_edges:
+                # Only add an edge if the prized node is not the sample's root
+                # and it has not been already assigned a flow edge
+                if prized != sample_root and prized not in self.flow_edges:
                     idx = flow_graph.add_edge(prized, (), type=self.out_flow_edge_type)
                     self.flow_edges[prized] = idx
                     self.prized_flow_edges[prized] = idx
@@ -96,40 +84,32 @@ class PrizeCollectingSteinerTree(SteinerTreeFlow):
         """Create the flow-based Prize-Collecting Steiner tree optimization problem.
 
         Builds on the base Steiner tree problem and adds prize-collecting functionality.
-
-        Args:
-            flow_problem: The base flow problem.
-            graph (BaseGraph): The input graph.
-            data (Data): The data containing terminal and prize nodes.
-
-        Returns:
-            The configured optimization problem ready to be solved.
+        For each sample, after setting up the base flow problem (with sample-specific max_flow
+        and selected roots), we add objective terms to maximize the collected prizes.
         """
-        # Create base Steiner tree problem
+        # Create base Steiner tree problem (this uses per-sample max_flow and root values)
         flow_problem = super().create_flow_based_problem(flow_problem, graph, data)
 
-        # Add prize-collecting functionality
+        # Add prize-collecting functionality for each sample.
         for i, sample_data in enumerate(data.samples.values()):
             F = flow_problem.expr.flow
             F = F if len(F.shape) == 1 else F[:, i]
 
-            # Get prized terminals
+            # Retrieve prized terminals from the sample.
             prized_terminals = dict(
                 sample_data.query.select(
                     lambda f: f.mapping == "vertex" and f.value
                 ).pluck(lambda f: (f.id, f.value))
             )
 
-            # If there are prized terminals, add them to the objective
-            if len(prized_terminals) > 0:
+            if prized_terminals:
                 prized_idx = [
                     self.flow_edges[prized]
                     for prized in prized_terminals.keys()
                     if prized in self.flow_edges
                 ]
-
                 if prized_idx:
-                    # Vector with the prizes (same order as the flow edges)
+                    # Build a prize vector (order must match the prized_idx)
                     prizes = np.array(
                         [
                             prized_terminals[prized]
@@ -137,7 +117,6 @@ class PrizeCollectingSteinerTree(SteinerTreeFlow):
                             if prized in self.flow_edges
                         ]
                     )
-
                     if self.strict_acyclic:
                         selected = flow_problem.expr._flow_ipos + flow_problem.expr._flow_ineg
                         selected = selected if len(selected.shape) == 1 else selected[:, i]
@@ -163,13 +142,13 @@ class PrizeCollectingSteinerTree(SteinerTreeFlow):
                             )
                         else:
                             flow_edges_idxs = self._terminal_edgeflow_idx[i]
-                            # Find the indexes of the prized edges
                             prized_idx_in_list = [
                                 flow_edges_idxs.index(idx) for idx in prized_idx
                             ]
-                            selected = flow_problem.expr[indicator_terminal_pos] + flow_problem.expr[
-                                indicator_terminal_neg
-                            ]
+                            selected = (
+                                flow_problem.expr[indicator_terminal_pos]
+                                + flow_problem.expr[indicator_terminal_neg]
+                            )
                             selected = selected if len(selected.shape) == 1 else selected[:, i]
                             selected_prized_flow_edges = selected[prized_idx_in_list]
 
@@ -177,10 +156,10 @@ class PrizeCollectingSteinerTree(SteinerTreeFlow):
                         f"selected_prized_flow_edges_{i}", selected_prized_flow_edges
                     )
 
-                    # Maximize the collection of prizes
+                    # Add an objective term (with negative weight) to maximize prizes.
                     flow_problem.add_objectives(
                         prizes @ selected_prized_flow_edges,
-                        weights=-1,  # maximize the prizes
+                        weights=-1,
                     )
 
         return flow_problem

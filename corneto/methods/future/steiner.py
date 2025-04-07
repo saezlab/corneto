@@ -1,4 +1,4 @@
-from typing import Any, Dict, Literal, Optional, Tuple
+from typing import Any, Dict, Literal, Optional, Tuple, Union, List
 
 import numpy as np
 
@@ -12,24 +12,21 @@ from corneto.methods.future.method import FlowMethod
 class SteinerTreeFlow(FlowMethod):
     """Basic Steiner Tree optimization method as a flow-based problem.
 
-    This class implements the exact Steiner tree algorithm where given a graph and a set of
+    This class implements the exact Steiner tree algorithm where, given a graph and a set of
     terminal nodes, it finds a minimal-weight connected subgraph (tree) that spans all terminals.
-    The implementation extends FlowMethod.
-
-    In a Steiner tree problem, given:
-    - A graph G with edge weights
-    - A subset of vertices called terminals
-    - Optionally, a root node
-
-    The goal is to find a minimum-weight connected subgraph that contains all terminals.
+    It now accepts a single value or a list for both max_flow and root_vertex.
+    If a list is provided, its length must equal the number of samples;
+    if a single value is provided, it is used for all samples.
     """
 
     def __init__(
         self,
-        max_flow: Optional[float] = None,
+        # Accept a single value or list of values
+        max_flow: Optional[Union[float, List[float]]] = None,
         default_edge_cost: float = 1.0,
         flow_name: str = VAR_FLOW,
-        root_vertex: Optional[Any] = None,
+        # Accept a single value or list of values
+        root_vertex: Optional[Union[Any, List[Any]]] = None,
         root_selection_strategy: Literal["first", "best"] = "first",
         epsilon: float = 1,
         strict_acyclic: bool = True,
@@ -44,26 +41,48 @@ class SteinerTreeFlow(FlowMethod):
             disable_structured_sparsity=disable_structured_sparsity,
             backend=backend,
         )
+        # Store the raw values
         self.max_flow = max_flow
+        self.root_vertex = root_vertex
+        self.default_edge_cost = default_edge_cost
         self.flow_name = flow_name
         self.epsilon = epsilon
         self.strict_acyclic = strict_acyclic
         self.in_flow_edge_type = in_flow_edge_type
         self.out_flow_edge_type = out_flow_edge_type
-        self.root_vertex = root_vertex
-        self.default_edge_cost = default_edge_cost
         self.root_selection_strategy = root_selection_strategy
+
+        # Initialize containers and placeholders
         self._terminal_edgeflow_idx = []
         self.flow_edges = dict()
         self.terminal_flow_edges = dict()
-        self._selected_root_vertex = root_vertex
-        self._max_flow = max_flow
+
+        # Internal storage for per-sample values.
+        # If a list is provided, we store it separately; if a single value is provided,
+        # we “broadcast” it later.
+        self._max_flow: Optional[float] = None
+        self._max_flow_list: Optional[List[float]] = None
+        self._root_vertex: Optional[Any] = None
+        self._root_vertex_list: Optional[List[Any]] = None
+
+        if isinstance(max_flow, list):
+            self._max_flow_list = max_flow
+        else:
+            self._max_flow = max_flow
+
+        if isinstance(root_vertex, list):
+            self._root_vertex_list = root_vertex
+        else:
+            self._root_vertex = root_vertex
+
+        # This attribute will later hold the selected root for each sample.
+        self._selected_roots: List[Any] = []
 
     def preprocess(self, graph: BaseGraph, data: Data) -> Tuple[BaseGraph, Data]:
         """Preprocess the graph and data for the Steiner tree optimization.
 
-        This method prepares the graph by adding flow edges for root and terminal
-        vertices.
+        This method prepares the graph by adding flow edges for the chosen root vertices
+        (if provided) and for all other vertices.
 
         Args:
             graph (BaseGraph): The input graph.
@@ -72,60 +91,90 @@ class SteinerTreeFlow(FlowMethod):
         Returns:
             Tuple[BaseGraph, Data]: Preprocessed graph and data.
         """
-        self._selected_root_vertex = None
+        # Reset per-run attributes
         self._terminal_edgeflow_idx = []
         self.flow_edges = dict()
         self.terminal_flow_edges = dict()
+
         flow_graph = graph.copy()
         all_vertices = data.query.filter_features(
             lambda f: f.mapping == "vertex",
         ).pluck_features()
-        # Vertices which have a value are considered prized vertices,
-        # otherwise they are terminals (and forced to be included in the solution)
         terminals = data.query.filter_features(
             lambda f: f.mapping == "vertex" and not f.value,
         ).pluck_features()
-        #other = set(all_vertices) - set(terminals)
 
-        if self.max_flow is None:
-            self._max_flow = len(all_vertices)
+        num_samples = len(data.samples)
+        # Set up max_flow values per sample
+        if self._max_flow_list is not None:
+            if len(self._max_flow_list) != num_samples:
+                raise ValueError("Length of max_flow list must equal number of samples")
+        else:
+            # For single value case, use default if None
+            if self._max_flow is None:
+                self._max_flow = len(all_vertices)
 
+        # Determine the root vertex to use for each sample.
+        selected_roots: List[Any] = []
+        if self._root_vertex_list is not None:
+            if len(self._root_vertex_list) != num_samples:
+                raise ValueError("Length of root_vertex list must equal number of samples")
+            for i in range(num_samples):
+                rv = self._root_vertex_list[i]
+                if rv is None:
+                    # Use selection strategy if not provided.
+                    if self.root_selection_strategy == "first":
+                        chosen = next(iter(terminals)) if terminals else next(iter(all_vertices))
+                    elif self.root_selection_strategy == "best":
+                        chosen = None  # Will be determined by optimization.
+                    else:
+                        raise ValueError(f"Unknown root selection strategy: {self.root_selection_strategy}")
+                else:
+                    chosen = rv
+                selected_roots.append(chosen)
+        else:
+            # Single root vertex case.
+            if self._root_vertex is None:
+                # Use selection strategy for all samples.
+                if self.root_selection_strategy == "first":
+                    chosen = next(iter(terminals)) if terminals else next(iter(all_vertices))
+                elif self.root_selection_strategy == "best":
+                    chosen = None
+                else:
+                    raise ValueError(f"Unknown root selection strategy: {self.root_selection_strategy}")
+                selected_roots = [chosen] * num_samples
+            else:
+                selected_roots = [self._root_vertex] * num_samples
+
+        self._selected_roots = selected_roots
+
+        # Determine edge types based on the selected roots.
         in_type = self.in_flow_edge_type
         out_type = self.out_flow_edge_type
+        # If using "best" strategy for all samples (i.e. no root is provided), use undirected edges.
+        if all(r is None for r in selected_roots):
+            out_type = EdgeType.UNDIRECTED
 
-        self._selected_root_vertex = self.root_vertex
+        # Create an in-edge for every unique root that is not None.
+        unique_roots = set(r for r in selected_roots if r is not None)
+        for r in unique_roots:
+            idx_root = flow_graph.add_edge((), r, type=in_type)
+            self.flow_edges[r] = idx_root
 
-        if self._selected_root_vertex is None:
-            if self.root_selection_strategy == "first":
-                # Takes the first terminal vertex as root.
-                # This does not matter if the graph is undirected
-                self._selected_root_vertex = next(iter(terminals)) if len(terminals) > 0 else next(
-                    iter(all_vertices)
-                )
-                idx_root = flow_graph.add_edge((),self._selected_root_vertex, type=in_type)
-                self.flow_edges[self._selected_root_vertex] = idx_root
-            elif self.root_selection_strategy == "best":
-                # All in/out edges can inject/extract flow
-                # so no distinction. Root is selected through
-                # optimization.
-                out_type = EdgeType.UNDIRECTED
-            else:
-                raise ValueError(
-                    f"Unknown root selection strategy: {self.root_selection_strategy}"
-                )
-        else:
-            idx = flow_graph.add_edge((), self._selected_root_vertex, type=in_type)
-            self.flow_edges[self._selected_root_vertex] = idx
+        # For all other vertices, add an out-edge.
         for v in all_vertices:
-            if v != self._selected_root_vertex:
+            if v not in unique_roots:
                 idx = flow_graph.add_edge(v, (), type=out_type)
                 self.flow_edges[v] = idx
+
         return flow_graph, data
 
     def get_flow_bounds(self, graph: BaseGraph, data: Data) -> Dict[str, Any]:
         """Get the flow bounds for the optimization problem.
 
-        Determines the lower and upper bounds for flows based on graph edge types.
+        Returns per-edge lower bounds and per-sample upper bounds. If a list of max_flow
+        values was provided, then the bounds are computed for each sample separately;
+        otherwise, a single value is used.
 
         Args:
             graph (BaseGraph): The input graph.
@@ -134,19 +183,34 @@ class SteinerTreeFlow(FlowMethod):
         Returns:
             Dict[str, Any]: Dictionary with flow bounds configuration.
         """
-        # Create lower bounds based on edge types
-        lb = np.array(
-            [
-                0
-                if prop.has_attr(Attr.EDGE_TYPE, EdgeType.DIRECTED)
-                else -self._max_flow
-                for prop in graph.get_attr_edges()
+        if self._max_flow_list is not None:
+            # Create a list of lower-bound arrays (one per sample)
+            lb = [
+                np.array(
+                    [
+                        0
+                        if prop.has_attr(Attr.EDGE_TYPE, EdgeType.DIRECTED)
+                        else -mf
+                        for prop in graph.get_attr_edges()
+                    ]
+                )
+                for mf in self._max_flow_list
             ]
-        )
+            ub = self._max_flow_list
+        else:
+            lb = np.array(
+                [
+                    0
+                    if prop.has_attr(Attr.EDGE_TYPE, EdgeType.DIRECTED)
+                    else -self._max_flow
+                    for prop in graph.get_attr_edges()
+                ]
+            )
+            ub = self._max_flow
 
         return {
             "lb": lb,
-            "ub": self._max_flow,
+            "ub": ub,
             "n_flows": len(data.samples),
             "shared_bounds": False,
         }
@@ -170,11 +234,9 @@ class SteinerTreeFlow(FlowMethod):
         edge_ids = list(set(range(graph.num_edges)) - set(flow_edge_ids))
 
         if self.strict_acyclic:
-            # We need to create indicator variables for the flow
             flow_problem += self.backend.NonZeroIndicator(
                 flow_problem.expr._flow, tolerance=self.epsilon
             )
-            # TODO: Names should be provided
             flow_problem += self.backend.Acyclic(
                 graph,
                 flow_problem,
@@ -183,7 +245,6 @@ class SteinerTreeFlow(FlowMethod):
             )
             with_flow = flow_problem.expr._flow_ipos + flow_problem.expr._flow_ineg
         else:
-            # We create indicator variables for the edges except the in/out flow edges
             flow_problem += self.backend.Indicator(
                 flow_problem.expr._flow, indexes=edge_ids
             )
@@ -192,8 +253,15 @@ class SteinerTreeFlow(FlowMethod):
         flow_problem.register("with_flow", with_flow)
         self._reg_varname = "with_flow"
 
-        # Configure objectives and constraints for each sample
+        # Process each sample individually.
         for i, sample_data in enumerate(data.samples.values()):
+            # Determine the sample-specific max_flow
+            sample_max_flow = (
+                self._max_flow_list[i] if self._max_flow_list is not None else self._max_flow
+            )
+            # Determine the sample-specific root vertex
+            sample_selected_root = self._selected_roots[i]
+
             F = flow_problem.expr.flow
             F = F if len(F.shape) == 1 else F[:, i]
 
@@ -201,82 +269,63 @@ class SteinerTreeFlow(FlowMethod):
             all_vertices_with_data = sample_data.query.select(
                 lambda f: f.mapping == "vertex"
             ).pluck()
-            # Get the vertices which are considered terminals
-            # and thus must be included in the solution
             terminals_edgeflow_idx = []
             terminals = sample_data.query.select(
                 lambda f: f.mapping == "vertex" and not f.value
             ).pluck()
+            # For terminals, if a root is chosen, skip it
             for terminal in terminals:
-                if terminal != self._selected_root_vertex:
+                if sample_selected_root is None or terminal != sample_selected_root:
                     idx = self.flow_edges[terminal]
                     terminals_edgeflow_idx.append(idx)
 
-            # Collect terminal flow edges
+            # Collect flow edge indices for all vertices with data
             for vertex in all_vertices_with_data:
-                if vertex != self._selected_root_vertex:
+                if sample_selected_root is None or vertex != sample_selected_root:
                     idx = self.flow_edges[vertex]
                     vertices_edgeflow_idx.append(idx)
 
-            # Sample flow edges
             sample_flow_edges = set(vertices_edgeflow_idx)
-            if self._selected_root_vertex is not None:
-                sample_flow_edges.add(self.flow_edges[self._selected_root_vertex])
+            if sample_selected_root is not None:
+                sample_flow_edges.add(self.flow_edges[sample_selected_root])
             sample_flow_edges = list(sample_flow_edges)
-            # TODO: move to preprocessing, this can be used by
-            # extension (e.g. PCST) to quickly get the flow edges/
-            # This is for both terminals and prizes
             self._terminal_edgeflow_idx.append(sample_flow_edges)
 
             # Block flow for edges not related to this sample
-            other_flow_edges = list(
-                set(self.flow_edges.values()) - set(sample_flow_edges)
-            )
-            if len(other_flow_edges) > 0:
+            other_flow_edges = list(set(self.flow_edges.values()) - set(sample_flow_edges))
+            if other_flow_edges:
                 flow_problem += F[other_flow_edges] == 0
 
-            if self._selected_root_vertex is not None:
-                # Injected flow through root
-                flow_problem += F[self.flow_edges[self._selected_root_vertex]] == self._max_flow
-                # Extracted flow through terminals (only for terminals!)
-                #if len(all_vertices_with_data) > 0:
-                #    flow_problem += F[vertices_edgeflow_idx] >= 1
-                # Only force flow for terminals, not for prized vertices
-                if len(terminals_edgeflow_idx) > 0:
+            if sample_selected_root is not None:
+                # For samples with a designated root, force injected flow.
+                flow_problem += F[self.flow_edges[sample_selected_root]] == sample_max_flow
+                if terminals_edgeflow_idx:
                     flow_problem += F[terminals_edgeflow_idx] >= 1
             else:
-                # Root selection through optimization
-                if len(all_vertices_with_data) > 0:
+                # For "best" strategy: let optimization select the root.
+                if all_vertices_with_data:
                     flow_problem += self.backend.NonZeroIndicator(
                         flow_problem.expr.flow,
                         vertices_edgeflow_idx,
                         i,
-                        #indexes=vertices_edgeflow_idx,
                         tolerance=self.epsilon,
                         suffix_pos=f"_terminal_pos_{i}",
                         suffix_neg=f"_terminal_neg_{i}",
                     )
                     terminal_pos = self.flow_name + f"_terminal_pos_{i}"
                     terminal_neg = self.flow_name + f"_terminal_neg_{i}"
-                    # Only one terminal can be selected as root. Since all edges
-                    # when no root is provided are pointing outwards, the injection
-                    # of flow has negative sign. We only allow one of the edges to
-                    # inject or extract flow to take the inflow direction
                     flow_problem += flow_problem.expr[terminal_neg].sum() == 1
-                    # All others except the selected root, have to extract the flow.
-                    # This only applies to terminal vertices, not the root neither
-                    # other vertices which are optional.
                     t_idx = [vertices_edgeflow_idx.index(idx) for idx in terminals_edgeflow_idx]
-                    if len(t_idx) > 0:
+                    if t_idx:
                         flow_problem += (
                             flow_problem.expr[terminal_pos][t_idx].sum() == len(t_idx) - 1
                         )
 
-            # Add edge costs to the objective
+            # Add edge cost to the objective.
             edge_costs = np.ones((len(edge_ids))) * self.default_edge_cost
             selected = with_flow if len(with_flow.shape) == 1 else with_flow[:, i]
 
-            # Process any edge-specific costs from the data
+            # Incorporate edge-specific costs from the sample data.
             edge_data = sample_data.query.select(
                 lambda f: f.mapping == "edge"
             ).to_list()

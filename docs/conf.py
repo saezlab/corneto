@@ -73,9 +73,14 @@ source_suffix = {
 
 # Notebook execution settings (used by myst_nb).
 nb_output_stderr = "remove"
-nb_execution_mode = "cache"
+nb_execution_mode = "force"
 nb_execution_timeout = 300
 nb_merge_streams = True
+execution_excludepatterns = [
+    "**/*grb*.ipynb",
+    "**/kpnn-with-sc.ipynb",
+]
+execution_allow_errors = False
 
 # Formatting for typehints in the documentation.
 typehints_defaults = "braces"
