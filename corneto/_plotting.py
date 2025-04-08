@@ -1,6 +1,5 @@
 import contextlib
 import io
-import types
 from typing import Any, Dict, List, Literal, Optional, Union
 
 import numpy as np
@@ -233,7 +232,7 @@ def _create_vertices(g, e, vertex_props=None):
     return v_s, v_t
 
 
-def to_graphviz(
+def to_python_graphviz(
     graph: BaseGraph,
     graph_attr: Optional[Dict[str, str]] = None,
     node_attr: Optional[Dict[str, str]] = None,
@@ -254,7 +253,6 @@ def to_graphviz(
         custom_vertex_attr = {}
     if len(custom_vertex_attr) > 0:
         keys = list(custom_vertex_attr.keys())
-        # Check if all the keys are integers
         if all(isinstance(k, int) for k in keys):
             vertices = graph.V
             custom_vertex_attr = {
@@ -276,7 +274,6 @@ def to_graphviz(
             is_hypergraph = True
             edge_center = f"e_{i}_center"
             g.node(edge_center, shape="square", width="0.1", height="0.1", label="")
-
             for v in v_s:
                 e_attr = dict(arrowtail="none", arrowhead="none", dir="both")
                 e_attr.update(custom_edge_attr.get(i, {}))
@@ -304,3 +301,160 @@ def to_graphviz(
     if supress_warnings:
         suppress_repr_warnings(g)
     return g
+
+
+def _pydot_create_vertices(g, e, vertex_props=None):
+    import pydot
+
+    if vertex_props is None:
+        vertex_props = {}
+    v_s, v_t = [], []
+    i, (s, t) = e
+
+    def update_node_props(v_name, default_shape):
+        props = {"shape": default_shape}
+        if v_name in vertex_props:
+            props.update(vertex_props[v_name])
+        node = pydot.Node(v_name, **props)
+        g.add_node(node)
+
+    if len(s) == 0:
+        v_name = f"e_{i}_source"
+        update_node_props(v_name, "point")
+        v_s.append(v_name)
+    if len(t) == 0:
+        v_name = f"e_{i}_target"
+        update_node_props(v_name, "point")
+        v_t.append(v_name)
+    for v in s:
+        v_name = str(v)
+        v_s.append(v_name)
+        update_node_props(v_name, "circle")
+    for v in t:
+        v_name = str(v)
+        v_t.append(v_name)
+        update_node_props(v_name, "circle")
+    return v_s, v_t
+
+
+def to_pydot(
+    graph: BaseGraph,
+    graph_attr: Optional[Dict[str, str]] = None,
+    node_attr: Optional[Dict[str, str]] = None,
+    edge_attr: Optional[Dict[str, str]] = None,
+    custom_edge_attr: Optional[Dict[int, Dict[str, str]]] = None,
+    custom_vertex_attr: Optional[Dict[Union[int, str], Dict[str, str]]] = None,
+    edge_indexes: Optional[List[int]] = None,
+    layout: str = "dot",
+    orphan_edges: bool = True,
+) -> Any:
+    import pydot
+
+    is_hypergraph = False
+    if custom_edge_attr is None:
+        custom_edge_attr = {}
+    if custom_vertex_attr is None:
+        custom_vertex_attr = {}
+    if len(custom_vertex_attr) > 0:
+        keys = list(custom_vertex_attr.keys())
+        if all(isinstance(k, int) for k in keys):
+            vertices = graph.V
+            custom_vertex_attr = {
+                str(v): custom_vertex_attr[i] for i, v in enumerate(vertices)
+            }
+    # Create a pydot.Dot graph
+    g = pydot.Dot(graph_type="digraph", **(graph_attr if graph_attr else {}))
+    if node_attr is not None:
+        g.set_node_defaults(**node_attr)
+    if edge_attr is not None:
+        g.set_edge_defaults(**edge_attr)
+    for i, e in enumerate(graph.edges()):
+        if edge_indexes is not None and i not in edge_indexes:
+            continue
+        i, (s, t) = e
+        if not orphan_edges and (len(s) == 0 or len(t) == 0):
+            continue
+        v_s, v_t = _pydot_create_vertices(g, e, vertex_props=custom_vertex_attr)
+        if len(s) > 1 or len(t) > 1:
+            is_hypergraph = True
+            edge_center = f"e_{i}_center"
+            center_node = pydot.Node(
+                edge_center, shape="square", width="0.1", height="0.1", label=""
+            )
+            g.add_node(center_node)
+            for v in v_s:
+                e_attr = dict(arrowtail="none", arrowhead="none", dir="both")
+                e_attr.update(custom_edge_attr.get(i, {}))
+                edge = pydot.Edge(v, edge_center, **e_attr)
+                g.add_edge(edge)
+            for v in v_t:
+                e_attr = custom_edge_attr.get(i, {})
+                edge = pydot.Edge(edge_center, v, **e_attr)
+                g.add_edge(edge)
+        else:
+            if (
+                graph.get_attr_edge(i).get_attr(Attr.EDGE_TYPE, "")
+                == EdgeType.UNDIRECTED.value
+            ):
+                e_attr = dict(arrowhead="none", dir="none")
+                e_attr.update(custom_edge_attr.get(i, {}))
+                edge = pydot.Edge(v_s[0], v_t[0], **e_attr)
+                g.add_edge(edge)
+            else:
+                head = "normal"
+                if graph.get_attr_edge(i).get("interaction", 0) < 0:
+                    head = "tee"
+                e_attr = dict(arrowhead=head)
+                e_attr.update(custom_edge_attr.get(i, {}))
+                edge = pydot.Edge(v_s[0], v_t[0], **e_attr)
+                g.add_edge(edge)
+    if is_hypergraph and graph_attr is None:
+        g.set_splines("true")
+    return g
+
+
+def to_graphviz(
+    graph: BaseGraph,
+    graph_attr: Optional[Dict[str, str]] = None,
+    node_attr: Optional[Dict[str, str]] = None,
+    edge_attr: Optional[Dict[str, str]] = None,
+    custom_edge_attr: Optional[Dict[int, Dict[str, str]]] = None,
+    custom_vertex_attr: Optional[Dict[Union[int, str], Dict[str, str]]] = None,
+    edge_indexes: Optional[List[int]] = None,
+    layout: str = "dot",
+    orphan_edges: bool = True,
+    supress_warnings: bool = True,
+    backend: Literal["graphviz", "pydot"] = "graphviz",
+) -> Any:
+    """Generate and return a graph using the selected backend.
+    backend:
+       - 'graphviz' (default) returns a graphviz.Digraph object.
+       - 'pydot' returns a pydot.Dot graph.
+    """
+    if backend == "graphviz":
+        return to_python_graphviz(
+            graph,
+            graph_attr,
+            node_attr,
+            edge_attr,
+            custom_edge_attr,
+            custom_vertex_attr,
+            edge_indexes,
+            layout,
+            orphan_edges,
+            supress_warnings,
+        )
+    elif backend == "pydot":
+        return to_pydot(
+            graph,
+            graph_attr,
+            node_attr,
+            edge_attr,
+            custom_edge_attr,
+            custom_vertex_attr,
+            edge_indexes,
+            layout,
+            orphan_edges,
+        )
+    else:
+        raise ValueError("Unknown backend specified. Must be 'graphviz' or 'pydot'.")

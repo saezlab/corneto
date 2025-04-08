@@ -6,5 +6,6 @@
 
 prior-knowledge.ipynb
 data.ipynb
+plotting.ipynb
 constrained-optimization.ipynb
 ```

@@ -1002,17 +1002,6 @@ class BaseGraph(abc.ABC):
         edge_props=None,
         edge_indexes=None,
     ):
-        """Plot graph with vertex and edge values visualized.
-
-        Args:
-            vertex_values: Optional values to display on vertices
-            edge_values: Optional values to display on edges
-            vertex_props: Optional dict of vertex drawing properties
-            edge_props: Optional dict of edge drawing properties
-
-        Returns:
-            Graphviz plot object with values visualized
-        """
         from corneto._plotting import (
             create_graphviz_edge_attributes,
             create_graphviz_vertex_attributes,
@@ -1035,7 +1024,7 @@ class BaseGraph(abc.ABC):
             edge_drawing_props = create_graphviz_edge_attributes(
                 edge_values=edge_values, **edge_props
             )
-        return self.plot(
+        return self.to_dot(
             custom_edge_attr=edge_drawing_props,
             custom_vertex_attr=vertex_drawing_props,
             edge_indexes=edge_indexes,
@@ -1053,6 +1042,19 @@ class BaseGraph(abc.ABC):
         from corneto._plotting import to_graphviz
 
         return to_graphviz(self, **kwargs)
+
+    def to_dot(self, **kwargs):
+        """Convert graph to DOT format.
+
+        Args:
+            **kwargs: Additional options for DOT conversion
+
+        Returns:
+            DOT representation of the graph
+        """
+        from corneto._plotting import to_graphviz as _dot
+
+        return _dot(self, **kwargs)
 
     def _get_compression_and_filepath(
         self, filepath: str, compression: Optional[str] = None
