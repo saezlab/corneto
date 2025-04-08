@@ -969,6 +969,7 @@ class BaseGraph(abc.ABC):
         Raises:
             OSError: If Graphviz rendering fails
         """
+        # from corneto._util import suppress_output
         Gv = self.to_graphviz(**kwargs)
         try:
             # Check if the object is able to produce a MIME bundle
@@ -994,7 +995,12 @@ class BaseGraph(abc.ABC):
                 raise e
 
     def plot_values(
-        self, vertex_values=None, edge_values=None, vertex_props=None, edge_props=None
+        self,
+        vertex_values=None,
+        edge_values=None,
+        vertex_props=None,
+        edge_props=None,
+        edge_indexes=None,
     ):
         """Plot graph with vertex and edge values visualized.
 
@@ -1032,6 +1038,7 @@ class BaseGraph(abc.ABC):
         return self.plot(
             custom_edge_attr=edge_drawing_props,
             custom_vertex_attr=vertex_drawing_props,
+            edge_indexes=edge_indexes,
         )
 
     def to_graphviz(self, **kwargs):

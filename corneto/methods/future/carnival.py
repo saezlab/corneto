@@ -347,7 +347,6 @@ class CarnivalFlow(FlowMethod):
             lambda f: f.data[self.data_type_key] == self.data_input_key
         ).pluck_features()
 
-        # Consolidate per-experiment constraints and objectives into a single loop
         for i, sample in enumerate(data.samples.values()):
             # --- Input Perturbation Constraints ---
             # sample_inputs = sample.filter_values_by(
@@ -360,6 +359,8 @@ class CarnivalFlow(FlowMethod):
             )
 
             # If multiple experiments, enforce that only designated perturbation inputs are active.
+            # NOTE: In this version, we use a single flow, multiple acyclic signals across the 
+            # sub-graph which has flow. This means that we cannot block flow edges, only signal.
             if num_experiments > 1:
                 p_nodes_set = set(sample_inputs.keys())
                 other_inputs = all_inputs - p_nodes_set

@@ -1,9 +1,38 @@
+import contextlib
+import io
+import types
 from typing import Any, Dict, List, Literal, Optional, Union
 
 import numpy as np
 
 from corneto._graph import Attr, BaseGraph, EdgeType
 from corneto.backend._base import EXPR_NAME_FLOW
+
+
+def suppress_repr_warnings(g):
+    """Monkey-patch the _repr_* methods of an object instance (e.g. a graphviz.Digraph)
+    so that any output written to stderr during their execution is suppressed.
+
+    Parameters:
+        g : object
+            The instance whose _repr_* methods should have their warnings suppressed.
+    """
+    # Identify all representation methods (names starting with '_repr_') on the instance.
+    repr_methods = [
+        m for m in dir(g) if m.startswith("_repr_") and callable(getattr(g, m))
+    ]
+    for method_name in repr_methods:
+        original = getattr(g, method_name)
+
+        def make_wrapper(orig_func):
+            def wrapper(*args, **kwargs):
+                with contextlib.redirect_stderr(io.StringIO()):
+                    return orig_func(*args, **kwargs)
+
+            return wrapper
+
+        # Directly set the wrapped function on the instance
+        setattr(g, method_name, make_wrapper(original))
 
 
 def clip_quantiles(arr, q):
@@ -211,8 +240,10 @@ def to_graphviz(
     edge_attr: Optional[Dict[str, str]] = None,
     custom_edge_attr: Optional[Dict[int, Dict[str, str]]] = None,
     custom_vertex_attr: Optional[Dict[Union[int, str], Dict[str, str]]] = None,
+    edge_indexes: Optional[List[int]] = None,
     layout: str = "dot",
     orphan_edges: bool = True,
+    supress_warnings: bool = True,
 ) -> Any:
     import graphviz  # type: ignore
 
@@ -234,7 +265,9 @@ def to_graphviz(
     g = graphviz.Digraph(
         engine=layout, graph_attr=graph_attr, node_attr=node_attr, edge_attr=edge_attr
     )
-    for e in graph.edges():
+    for i, e in enumerate(graph.edges()):
+        if edge_indexes is not None and i not in edge_indexes:
+            continue
         i, (s, t) = e
         if not orphan_edges and (len(s) == 0 or len(t) == 0):
             continue
@@ -268,4 +301,6 @@ def to_graphviz(
                 g.edge(v_s[0], v_t[0], **e_attr)
     if is_hypergraph and graph_attr is None:
         g.graph_attr["splines"] = "true"
+    if supress_warnings:
+        suppress_repr_warnings(g)
     return g
