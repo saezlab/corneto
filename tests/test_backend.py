@@ -26,7 +26,7 @@ def test_picos_convex():
     P += sum(x) == 1, x >= 0
     # Convex optimization problem
     P.add_objectives(abs(A @ x - b), inplace=True)
-    P.solve(solver="cvxopt", verbosity=1)
+    bp = P.solve(solver="cvxopt", verbosity=1)
     assert np.all(np.array(x.value).T < np.array([1e-6, 0.64, 0.37, 1e-6, 1e-6]))
     assert np.all(np.array(x.value).T > np.array([-1e-6, 0.62, 0.36, -1e-6, -1e-6]))
 
@@ -42,7 +42,7 @@ def test_cvxpy_convex():
     P.add_objectives(
         cp.sum_squares((A @ x - b).e), inplace=True
     )  # TODO: add sum squares
-    P.solve(solver="CVXOPT", verbosity=1)
+    bp = P.solve(solver="cvxopt", verbosity=1)
     assert np.all(np.array(x.value) < np.array([1e-6, 0.64, 0.37, 1e-6, 1e-6]))
     assert np.all(np.array(x.value) > np.array([-1e-6, 0.62, 0.36, -1e-6, -1e-6]))
 

@@ -161,7 +161,7 @@ class CvxpyBackend(Backend):
             if v._provided_ub is not None:
                 extras.append(v <= v.ub)
         cstr = [c.e for c in extras + p.constraints]
-        P = cp.Problem(o, cstr)
+        cvxpy_problem = cp.Problem(o, cstr)
         s = solver
         if solver:
             s = solver.upper()
@@ -207,5 +207,5 @@ class CvxpyBackend(Backend):
                             the parameter TimeLimit can be directly passed with
                             `problem.solve(solver='GUROBI', TimeLimit=max_seconds)`""")
 
-        P.solve(solver=s, verbose=verbosity > 0, warm_start=warm_start, **options)
-        return P
+        cvxpy_problem.solve(solver=s, verbose=verbosity > 0, warm_start=warm_start, **options)
+        return cvxpy_problem

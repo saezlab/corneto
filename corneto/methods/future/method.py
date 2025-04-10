@@ -108,18 +108,20 @@ class Method(ABC):
                     or reg_var.shape[1] == 1
                     or reg_var.shape[0] == 1
                 ):
-                    self.problem.add_objectives(
+                    self.problem.add_objective(
                         reg_var.sum(),
-                        weights=self.lambda_reg_param,
+                        weight=self.lambda_reg_param,
+                        name=f"multi_sample_regularization_{self._reg_varname}"
                     )
                 else:
                     # Structured sparsity regularization
                     self.problem += self._backend.linear_or(
                         reg_var, axis=ax, varname=newvar_name
                     )
-                    self.problem.add_objectives(
+                    self.problem.add_objective(
                         self.problem.expr[newvar_name].sum(),
-                        weights=self.lambda_reg_param,
+                        weight=self.lambda_reg_param,
+                        name=f"regularization_{newvar_name}"
                     )
             else:
                 raise ValueError(

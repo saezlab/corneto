@@ -306,9 +306,13 @@ class CExpression(abc.ABC):
         pass
 
     def __str__(self) -> str:
+        if self._name:
+            return f"{self._name}: {self._expr.__str__()}"
         return self._expr.__str__()
 
     def __repr__(self) -> str:
+        if self._name:
+            return f"{self._name}: {self._expr.__repr__()}"
         return self._expr.__repr__()
 
     # TODO: add functions along axis: https://www.cvxpy.org/tutorial/functions/index.html
@@ -472,7 +476,10 @@ class ProblemDef:
         # Create a new class of problems on top of a graph
         # where edges/nodes have associated optimization variables
         # TODO: check which use cases are using _graph
-        self._graph = graph
+        if graph is not None:
+            # Warn that this is deprecated
+            warnings.warn("The graph parameter is deprecated.", DeprecationWarning)
+            self._graph = graph
 
     @property
     def symbols(self) -> Dict[str, CSymbol]:
@@ -494,6 +501,10 @@ class ProblemDef:
     def expr(self) -> Attributes:
         return self.expressions
 
+    @property
+    def backend(self) -> Optional["Backend"]:
+        return self._backend
+
     def get_symbol(self, name) -> CSymbol:
         return self.symbols[name]
 
@@ -508,9 +519,10 @@ class ProblemDef:
         for e in self._constraints + self._objectives:
             s = getattr(e, "_proxy_symbols", {})
             for x in s:
-                # TODO: x.rename(...)
+                # TODO: x.rename(...) should be a symbol specific thing
                 if hasattr(x, "_name"):
-                    if hasattr(x.e, "_symbStr"): # PICOS, move to rename
+                    # ad-hoc symbol renaming
+                    if hasattr(x.e, "_symbStr"):  # PICOS, move to rename
                         x.e._symbStr = x.e._symbStr + suffix
                     if hasattr(x.e, "_name"):
                         x.e._name = x.e._name + suffix
@@ -588,7 +600,7 @@ class ProblemDef:
             solver = next(
                 (s for s in avail_solvers if s.lower() == solver.lower()), None
             )
-        return self._backend.solve(
+        backend_problem = self._backend.solve(
             self,
             solver=solver,
             max_seconds=max_seconds,
@@ -596,6 +608,8 @@ class ProblemDef:
             verbosity=verbosity,
             **options,
         )
+        # Extract summary info (backend specific)
+        return backend_problem
 
     def merge(self, other: "ProblemDef", inplace=False) -> "ProblemDef":
         # TODO: If the other is empty (or instance of grammar?) build the problem before merging
@@ -660,6 +674,7 @@ class ProblemDef:
         objectives: Union[CExpression, List[CExpression]],
         weights: Union[float, List[float]] = 1.0,
         inplace: bool = True,
+        names: Optional[Union[str, List[str]]] = None,
     ) -> "ProblemDef":
         if not isinstance(objectives, list):
             objectives = [objectives]
@@ -667,6 +682,13 @@ class ProblemDef:
             weights = [weights] * len(objectives)
         if len(weights) != len(objectives):
             raise ValueError("Number of weights must match number of objectives")
+        if names is not None:
+            if isinstance(names, str):
+                names = [names]
+            if len(names) != len(objectives):
+                raise ValueError("Number of names must match number of objectives")
+            for i, o in enumerate(objectives):
+                o._name = names[i]
         if inplace:
             self._objectives.extend(objectives)
             self._weights.extend(weights)
@@ -678,6 +700,15 @@ class ProblemDef:
             self._expressions,
             self._weights + weights,
         )
+
+    def add_objective(
+        self,
+        objective: CExpression,
+        weight: float = 1.0,
+        inplace: bool = True,
+        name: Optional[str] = None,
+    ) -> "ProblemDef":
+        return self.add_objectives([objective], [weight], inplace=inplace, names=name)
 
     def add_expressions(
         self,
@@ -840,7 +871,7 @@ class Backend(abc.ABC):
             # auto-convert to a weighted sum
             # TODO: support the use of parameters as weights. Comment line below
             # for future version
-            #ov = self.vstack(p.objectives)
+            # ov = self.vstack(p.objectives)
             o = sum(p.weights[i] * p.objectives[i] for i in range(len(p.objectives)))
         else:
             o = (
@@ -1397,11 +1428,13 @@ class Backend(abc.ABC):
             raise ValueError(
                 f"The continuous variable {V.name} is unbounded, indicators cannot be created."
             )
-        
+
         # Avoid ambiguity: don't allow both positional indices and the 'indexes' keyword
         if args and indexes is not None:
-            raise ValueError("Provide either positional indices or the 'indexes' keyword, not both.")
-        
+            raise ValueError(
+                "Provide either positional indices or the 'indexes' keyword, not both."
+            )
+
         # If args is not none, we need to check if it is a tuple and more than
         # one dimension was provided.
         if isinstance(args, tuple) and len(args) > 1:
@@ -1453,9 +1486,8 @@ class Backend(abc.ABC):
             S >= I_neg.multiply(lb) + I_pos * tolerance,
             S <= I_pos.multiply(ub) - I_neg * tolerance,
         ]
-        
-        return self.Problem(c)
 
+        return self.Problem(c)
 
     # TODO: Remove function
     def Indicators(

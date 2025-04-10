@@ -347,7 +347,7 @@ class CarnivalFlow(FlowMethod):
             lambda f: f.data[self.data_type_key] == self.data_input_key
         ).pluck_features()
 
-        for i, sample in enumerate(data.samples.values()):
+        for i, (sample_name, sample) in enumerate(data.samples.items()):
             # --- Input Perturbation Constraints ---
             # sample_inputs = sample.filter_values_by(
             #    self.data_type_key, self.data_input_key
@@ -411,7 +411,7 @@ class CarnivalFlow(FlowMethod):
             # ones = np.ones((len(m_nodes), 1))  # Column vector of ones
             # problem.add_objectives(sum(error_expr))
             # problem.add_objectives(error_expr @ ones)
-            problem.add_objectives(error_expr.sum())
+            problem.add_objective(error_expr.sum(), name=f"error_{sample_name}_{i}")
 
         return problem
 
