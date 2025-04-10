@@ -18,7 +18,7 @@ def backend(request):
 
 
 def get_test_graph_1():
-    G1 = cn.Graph.from_sif_tuples(
+    G1 = cn.Graph.from_tuples(
         [
             ("EGF", 1, "AND1"),
             ("TNFa", 1, "AND1"),

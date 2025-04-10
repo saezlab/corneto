@@ -24,7 +24,7 @@ from typing import (
 import numpy as np
 
 from corneto._types import Edge
-from corneto._util import obj_content_hash, unique_iter
+from corneto._util import obj_canonicalized_hash, unique_iter
 from corneto.utils import Attr, Attributes
 
 T = TypeVar("T")
@@ -338,7 +338,8 @@ class BaseGraph(abc.ABC):
         Returns:
             Hash string representing the graph content
         """
-        return obj_content_hash(self)
+        #return obj_content_hash(self)
+        return obj_canonicalized_hash(self)
 
     def get_attr_edge(self, index: int) -> Attributes:
         """Get attributes of an edge.

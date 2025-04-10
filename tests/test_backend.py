@@ -61,6 +61,60 @@ def test_cvxpy_convex_apply():
     assert np.all(np.array(x.value) > np.array([-1e-6, 0.62, 0.36, -1e-6, -1e-6]))
 
 
+def test_add_suffix(backend):
+    A = backend.Variable("A", shape=(2, 3))
+    B = backend.Constant(np.zeros((2, 3)), name="B")
+    C = A + B
+    P = backend.Problem()
+    P.register("C", C)
+    P.add_objectives(C.sum())
+    P.add_suffix("_1", inplace=True)
+    assert "A_1" in P.expr
+    assert "B_1" in P.expr
+    assert "C_1" in P.expr
+    assert "A" not in P.expr
+    assert "B" not in P.expr
+    assert "C" not in P.expr
+
+
+def test_add_sufix_and_merge(backend):
+    # Create a decision variable and a constant
+    A = backend.Variable("A", shape=(2, 3))
+    B = backend.Constant(np.zeros((2, 3)), name="B")
+    C = (A + B) @ np.ones((3, 1))
+
+    # Create the first problem with an objective and a suffix
+    P1 = backend.Problem()
+    P1.register("C", C)
+    P1 += C >= 0
+    # Define the objective as the sum of all elements of C.
+    P1.add_objectives(C.sum())
+    # Add a suffix for later inspection/tracking.
+    P1.add_suffix("_1", inplace=True)
+
+    # Create a second problem with the same structure
+    P2 = backend.Problem()
+    A = backend.Variable("A", shape=(2, 3))
+    B = backend.Constant(np.zeros((2, 3)), name="B")
+    C = (A + B) @ np.ones((3, 1))
+    P2 += C >= 0
+    P2.register("C", C)
+    P2.add_objectives(C.sum().sum())
+    P2.add_suffix("_2", inplace=True)
+
+    merged_problem = P1.merge(P2)
+    merged_problem.add_constraints(A >= 0)
+    merged_problem.add_constraints(C.sum().sum() == 1)
+    # Make sure it compiles
+    merged_problem.solve()
+    assert "A_1" in merged_problem.expr
+    assert "B_1" in merged_problem.expr
+    assert "C_1" in merged_problem.expr
+    assert "A_2" in merged_problem.expr
+    assert "B_2" in merged_problem.expr
+    assert "C_2" in merged_problem.expr
+
+
 def test_sum_expr_shape(backend):
     A = backend.Variable(shape=(2, 3))
     B = backend.Variable(shape=(2, 3))
@@ -794,8 +848,8 @@ def test_two_sample_flow_plus_acyclic_undirected_edge(backend):
     with_flow = P.expr._flow_ipos + P.expr._flow_ineg
     P.add_objectives(-with_flow.sum().sum())
     P.solve()
-    sol_s1 = np.round(with_flow.value[:,0]).ravel()
-    sol_s2 = np.round(with_flow.value[:,1]).ravel()
+    sol_s1 = np.round(with_flow.value[:, 0]).ravel()
+    sol_s2 = np.round(with_flow.value[:, 1]).ravel()
     vsol1 = [1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0]
     vsol2 = [1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0]
     assert np.allclose(sol_s1, vsol1) or np.allclose(sol_s1, vsol2)

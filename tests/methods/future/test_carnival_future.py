@@ -5,9 +5,9 @@ import numpy as np
 import pytest
 
 from corneto._data import Data
-from corneto.backend import Backend, CvxpyBackend, PicosBackend
 from corneto.graph import Graph
 from corneto.methods.future.carnival import CarnivalFlow
+from corneto.methods.future.method import GeneralizedMultiSampleMethod
 
 
 @pytest.fixture
@@ -42,38 +42,14 @@ def graph_two_samples():
     )
     samples = {
         "s1": {
-            "r1": {
-                "value": 1,
-                "role": "input",
-                "mapping": "vertex"
-            },
-            "tf1": {
-                "value": 1,
-                "role": "output",
-                "mapping": "vertex"
-            },
-            "tf2": {
-                "value": 1,
-                "role": "output",
-                "mapping": "vertex"
-            },
+            "r1": {"value": 1, "role": "input", "mapping": "vertex"},
+            "tf1": {"value": 1, "role": "output", "mapping": "vertex"},
+            "tf2": {"value": 1, "role": "output", "mapping": "vertex"},
         },
         "s2": {
-            "r2": {
-                "value": 1,
-                "role": "input",
-                "mapping": "vertex"
-            },
-            "tf1": {
-                "value": 1,
-                "role": "output",
-                "mapping": "vertex"
-            },
-            "tf2": {
-                "value": -1,
-                "role": "output",
-                "mapping": "vertex"
-            },
+            "r2": {"value": 1, "role": "input", "mapping": "vertex"},
+            "tf1": {"value": 1, "role": "output", "mapping": "vertex"},
+            "tf2": {"value": -1, "role": "output", "mapping": "vertex"},
         },
     }
     return G, samples
@@ -141,5 +117,27 @@ def test_carnivalflow_two_samples(backend, graph_two_samples):
     assert P.objectives[2].value == 9.0
     assert P.expr.edge_value.shape == (16, 2)
     assert carnival.processed_graph.shape == (9, 16)
+    assert set(gsol1.V) == set(["c", "a", "r1", "tf1", "b", "tf2"])
+    assert set(gsol2.V) == set(["c", "r2", "a", "tf1", "b"])
+
+
+def test_generalized_multisample_with_carnivalflow_two_samples(
+    backend, graph_two_samples
+):
+    G, samples = graph_two_samples
+    data = Data.from_cdict(samples)
+    carnival = CarnivalFlow(lambda_reg=0, backend=backend)
+    method = GeneralizedMultiSampleMethod(
+        carnival, edge_selection_varname="edge_has_signal", lambda_reg=1e-3
+    )
+    P = method.build(G, data)
+    P.solve()
+    sol1 = np.array(P.expr.edge_value_0.value).flatten()
+    sol2 = np.array(P.expr.edge_value_1.value).flatten()
+    gsol1 = method.processed_graph[0].edge_subgraph(np.flatnonzero(sol1))
+    gsol2 = method.processed_graph[1].edge_subgraph(np.flatnonzero(sol2))
+    assert P.objectives[0].value == 0.0
+    assert P.objectives[2].value == 1.0
+    assert P.objectives[4].value == 7.0
     assert set(gsol1.V) == set(["c", "a", "r1", "tf1", "b", "tf2"])
     assert set(gsol2.V) == set(["c", "r2", "a", "tf1", "b"])

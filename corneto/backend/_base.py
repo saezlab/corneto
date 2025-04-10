@@ -508,7 +508,12 @@ class ProblemDef:
         for e in self._constraints + self._objectives:
             s = getattr(e, "_proxy_symbols", {})
             for x in s:
+                # TODO: x.rename(...)
                 if hasattr(x, "_name"):
+                    if hasattr(x.e, "_symbStr"): # PICOS, move to rename
+                        x.e._symbStr = x.e._symbStr + suffix
+                    if hasattr(x.e, "_name"):
+                        x.e._name = x.e._name + suffix
                     if x not in obs:
                         x._name = x._name + suffix
                         obs.add(x)
