@@ -111,7 +111,7 @@ class Method(ABC):
                     self.problem.add_objective(
                         reg_var.sum(),
                         weight=self.lambda_reg_param,
-                        name=f"multi_sample_regularization_{self._reg_varname}"
+                        name=f"regularization_{self._reg_varname}"
                     )
                 else:
                     # Structured sparsity regularization
