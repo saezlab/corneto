@@ -263,15 +263,17 @@ class MultiSampleFBA(FlowMethod):
 
             # Add objectives for this sample
             if rxn_objectives:
-                flow_problem.add_objectives(
-                    sample_flux[rxn_objectives].multiply(np.array(rxn_weights)).sum()
+                flow_problem.add_objective(
+                    sample_flux[rxn_objectives].multiply(np.array(rxn_weights)).sum(),
+                    name=f"objective_{rxn_id}",
                 )
 
             # Add regularization term for sparsity if requested
             if self.beta_reg.value > 0:
-                flow_problem.add_objectives(
+                flow_problem.add_objective(
                     flow_problem.expr[self.flux_indicator_name].sum(),
-                    weights=self.beta_reg,
+                    weight=self.beta_reg,
+                    name=f"{self.flux_indicator_name}_beta_reg_{i}",
                 )
 
         return flow_problem
