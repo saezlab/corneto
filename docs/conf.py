@@ -73,7 +73,7 @@ source_suffix = {
 
 # Notebook execution settings (used by myst_nb).
 nb_output_stderr = "remove"
-nb_execution_mode = "auto"
+nb_execution_mode = "cache"
 nb_execution_timeout = 300
 nb_merge_streams = True
 execution_excludepatterns = [
