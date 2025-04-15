@@ -111,7 +111,7 @@ class Method(ABC):
                     self.problem.add_objective(
                         reg_var.sum(),
                         weight=self.lambda_reg_param,
-                        name=f"regularization_{self._reg_varname}"
+                        name=f"regularization_{self._reg_varname}",
                     )
                 else:
                     # Structured sparsity regularization
@@ -121,13 +121,36 @@ class Method(ABC):
                     self.problem.add_objective(
                         self.problem.expr[newvar_name].sum(),
                         weight=self.lambda_reg_param,
-                        name=f"regularization_{newvar_name}"
+                        name=f"regularization_{newvar_name}",
                     )
             else:
                 raise ValueError(
                     "Parameter lambda_reg > 0 but no regularization variable name provided"
                 )
         return self.problem
+
+    def get_citations(self) -> list:
+        """Returns citation keys for this method.
+
+        Returns:
+            A list of citation keys that can be used to lookup BibTeX entries.
+        """
+        return []
+
+    def show_citations(self):
+        """Display formatted citations in a Jupyter notebook."""
+        from corneto.utils._citations import show_citations
+        show_citations(self.get_citations())
+
+    def show_bibtex(self):
+        """Display raw BibTeX entries in a formatted block for easy copying."""
+        from corneto.utils._citations import show_bibtex
+        show_bibtex(self.get_citations())
+
+    @property
+    def backend(self):
+        """Return the optimization backend being used."""
+        return self._backend
 
     @property
     def backend(self):
@@ -270,7 +293,7 @@ class GeneralizedMultiSampleMethod(Method):
         lambda_reg: float = 0.0,
         reg_varname: Optional[str] = None,
         reg_varname_suffix: str = "_OR",
-        disable_structured_sparsity: bool = False
+        disable_structured_sparsity: bool = False,
     ):
         # If structured sparsity is enabled and lambda_reg > 0, we'll use the edge_selection_varname
         # to create a combined regularization variable spanning all samples
@@ -334,7 +357,7 @@ class GeneralizedMultiSampleMethod(Method):
         for i, (sample_id, sample) in enumerate(data.samples.items()):
             # Create a Data object with only the current sample
             sample_data = Data()
-            #sample_data.data[sample_id] = sample
+            # sample_data.data[sample_id] = sample
             sample_data.add_sample(sample_id, sample)
 
             # Build the problem for this sample using the base method
@@ -381,7 +404,9 @@ class GeneralizedMultiSampleMethod(Method):
             and self.lambda_reg_param.value > 0
         ):
             num_samples = len(data.samples)
-            final_result = self._backend.Constant(np.zeros((graph.num_edges, num_samples)))
+            final_result = self._backend.Constant(
+                np.zeros((graph.num_edges, num_samples))
+            )
             for i, selected_edges in enumerate(list_selected_edges):
                 # The length of selected_edges matches the number of edges in preprocessed graph i
                 # It can contain None if the edge does not appear in the original graph, those we
@@ -400,7 +425,7 @@ class GeneralizedMultiSampleMethod(Method):
                 valid_mask = np.array([edge is not None for edge in selected_edges])
 
                 # Extract only the valid entries from vec (reshape as a column vector)
-                valid_vec = vec[np.flatnonzero(valid_mask)] #.reshape(-1, 1)
+                valid_vec = vec[np.flatnonzero(valid_mask)]  # .reshape(-1, 1)
 
                 # Extract the valid edge indices (they are already 0-indexed)
                 valid_edges = np.array(

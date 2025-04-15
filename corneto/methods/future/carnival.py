@@ -359,7 +359,7 @@ class CarnivalFlow(FlowMethod):
             )
 
             # If multiple experiments, enforce that only designated perturbation inputs are active.
-            # NOTE: In this version, we use a single flow, multiple acyclic signals across the 
+            # NOTE: In this version, we use a single flow, multiple acyclic signals across the
             # sub-graph which has flow. This means that we cannot block flow edges, only signal.
             if num_experiments > 1:
                 p_nodes_set = set(sample_inputs.keys())
@@ -665,3 +665,11 @@ class CarnivalILP(Method):
         P.register("edge_values", E_act - E_inh)
 
         return P
+
+    def get_citations(self):
+        """Returns citation keys for this method.
+
+        Returns:
+            A list of citation keys that can be used to lookup BibTeX entries.
+        """
+        return ["liu2019expression", "rodriguez2024unified"]
