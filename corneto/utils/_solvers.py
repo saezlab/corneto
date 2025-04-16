@@ -7,7 +7,7 @@ def check_gurobi(verbose=True, solver_verbose=False):
         import gurobipy as gp
     except ImportError:
         raise ImportError(
-            "gurobipy is not installed. Please install Gurobi and its Python bindings."
+            "Gurobipy is not installed. Please install Gurobi and its Python bindings."
         )
     if verbose:
         print("Gurobipy successfully imported.")

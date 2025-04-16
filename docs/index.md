@@ -47,6 +47,7 @@ html_theme.sidebar_secondary.remove: true
 
 </div>
 
+
 **Version**: {{version}}
 
 ----
@@ -64,7 +65,7 @@ To install CORNETO with open-source mathematical solvers (HIGHs and SCIP), use t
 
 ```
 # To install the development version, including the open-source solvers HIGHs and SCIP, use:
-pip install git+https://github.com/saezlab/corneto.git@dev pyscipopt highspy
+!pip install git+https://github.com/saezlab/corneto.git@dev scipy pyscipopt highspy cvxpy
 
 # If you have a license for Gurobi (free for academic use), you can install it with:
 pip install gurobipy

@@ -14,7 +14,7 @@
 To get started quickly with open-source solvers, run:
 
 ```bash
-pip install git+https://github.com/saezlab/corneto.git@dev pyscipopt highspy cvxpy
+pip install git+https://github.com/saezlab/corneto.git@dev scipy pyscipopt highspy cvxpy
 ```
 
 This installs:
@@ -61,7 +61,7 @@ Prefer open-source? This installs CORNETO with:
 - **CVXPY**
 
 ```bash
-pip install git+https://github.com/saezlab/corneto.git@dev pyscipopt highspy cvxpy
+pip install git+https://github.com/saezlab/corneto.git@dev scipy pyscipopt highspy cvxpy
 ```
 
 These tools are effective and don't require any licensing setup.
@@ -73,7 +73,7 @@ These tools are effective and don't require any licensing setup.
 CORNETO also supports `picos`, another modeling layer for optimization. You can install CORNETO with `picos` and several solvers it supports:
 
 ```bash
-pip install git+https://github.com/saezlab/corneto.git@dev picos swiglpk qics
+pip install git+https://github.com/saezlab/corneto.git@dev scipy picos swiglpk qics
 ```
 
 This setup uses:
@@ -104,5 +104,23 @@ If you run into installation problems:
 1. ✅ Make sure you're using **Python 3.10 or higher**
 2. 🧱 Check that you have at least **cvxpy** installed as a backend (this is the recommended one)
 3. 🔑 For Gurobi users, verify that your **license is properly installed**
+
+In case of using Gurobi, you can check if the license and installation are correct by running:
+
+```python
+from corneto.utils import check_gurobi
+check_gurobi()
+```
+
+This will perform a series of checks to ensure that Gurobi is correctly installed and configured. You should see:
+
+```plain
+Gurobipy successfully imported.
+Gurobi environment started successfully.
+Starting optimization of the test model...
+Test optimization was successful.
+Gurobi environment disposed.
+Gurobi is correctly installed and working.
+```
 
 If you're still stuck, please open an issue on our [GitHub Issues](https://github.com/saezlab/corneto/issues) page—we're happy to help!
