@@ -1,56 +1,91 @@
+
 <style>
     .prev-next-footer {
         display: none;
     }
 </style>
 
-
 # Install
 
-CORNETO provides flexible installation options depending on your needs. You can install it with different mathematical solvers, each offering different capabilities and performance characteristics.
+**CORNETO** provides flexible installation options depending on your needs. It integrates with various mathematical optimization solvers, which differ in their licensing, capabilities, and performance. Below are several installation options tailored to different use cases.
 
-## Quick Installation
+## 🔧 Quick Installation
 
-For a quick start with open-source solvers:
+To get started quickly with open-source solvers, run:
 
 ```bash
-pip install git+https://github.com/saezlab/corneto.git@dev pyscipopt highspy
+pip install git+https://github.com/saezlab/corneto.git@dev pyscipopt highspy cvxpy
 ```
 
-## Installation Options
+This installs:
+- **CORNETO** (from the development branch)
+- **PySCIPOpt**: a Python interface for SCIP (a fast open-source solver)
+- **highspy**: Python bindings for the HIGHs solver
+- **CVXPY**: a modeling language for convex optimization problems
 
-### Basic installation (dev)
+These libraries provide solid performance for most users and don’t require a commercial license.
 
-The basic installation includes the core functionality of CORNETO:
+---
+
+## 🧩 Installation Options
+
+### Basic Installation (CORNETO only)
+
+If you only want the core CORNETO package without any solver backend (useful for development or adding solvers manually later):
 
 ```bash
 pip install git+https://github.com/saezlab/corneto.git@dev
 ```
 
-### With commercial solvers
+You’ll need to install and configure a solver separately to make CORNETO fully functional.
 
-If you have access to commercial solvers like Gurobi (free for academic use), you can enhance CORNETO's capabilities:
+---
 
-```bash
-# First install CORNETO
-pip install git+https://github.com/saezlab/corneto.git@dev
+### ⚙️ Installation with Commercial Solvers
 
-# Then install Gurobi
-pip install gurobipy
-```
-
-### With open source solvers
-
-For open-source alternatives, you can use HIGHs and SCIP:
+If you have access to **Gurobi** (a powerful commercial solver, free for academic use), you can install CORNETO along with Gurobi and its supported modeling tools:
 
 ```bash
-# Install CORNETO with HIGHs and SCIP
-pip install git+https://github.com/saezlab/corneto.git@dev pyscipopt highspy
+pip install git+https://github.com/saezlab/corneto.git@dev cvxpy gurobipy
 ```
 
-## Verifying installation
+**Note:** Make sure you have a valid Gurobi license set up on your system. You can get a free academic license [here](https://www.gurobi.com/academia/academic-program-and-licenses/).
 
-You can verify your installation by running Python and importing CORNETO:
+---
+
+### 🆓 Installation with Open-Source Solvers
+
+Prefer open-source? This installs CORNETO with:
+- **SCIP** (via `pyscipopt`)
+- **HIGHs** (via `highspy`)
+- **CVXPY**
+
+```bash
+pip install git+https://github.com/saezlab/corneto.git@dev pyscipopt highspy cvxpy
+```
+
+These tools are effective and don't require any licensing setup.
+
+---
+
+### 🧪 Alternative Backend: PICOS
+
+CORNETO also supports `picos`, another modeling layer for optimization. You can install CORNETO with `picos` and several solvers it supports:
+
+```bash
+pip install git+https://github.com/saezlab/corneto.git@dev picos swiglpk qics
+```
+
+This setup uses:
+- **PICOS**: a high-level modeling tool
+- **swiglpk**: Python bindings for GLPK, a lightweight solver
+- **qics**: another solver supported by PICOS
+
+---
+
+## ✅ Verifying Installation
+
+To check that CORNETO is installed and ready:
 
 ```python
 import corneto
@@ -58,20 +93,16 @@ import corneto
 corneto.info()
 ```
 
-## Requirements
+This should print out CORNETO version info and configuration details.
 
-CORNETO requires:
+---
 
-- Python 3.10 or higher
-- Compatible mathematical solver (HIGHs, SCIP, or Gurobi)
-- The `cvxpy-base` or `cvxpy` backend
+## 🛠 Troubleshooting
 
-## Troubleshooting
+If you run into installation problems:
 
-If you encounter any issues during installation:
+1. ✅ Make sure you're using **Python 3.10 or higher**
+2. 🧱 Check that you have at least **cvxpy** installed as a backend (this is the recommended one)
+3. 🔑 For Gurobi users, verify that your **license is properly installed**
 
-1. Ensure you have Python 3.10 or higher installed
-2. Check if you have the required system dependencies for the solvers
-3. For Gurobi users, verify that your license is properly configured
-
-For more detailed troubleshooting, please visit our [GitHub Issues](https://github.com/saezlab/corneto/issues) page.
+If you're still stuck, please open an issue on our [GitHub Issues](https://github.com/saezlab/corneto/issues) page—we're happy to help!

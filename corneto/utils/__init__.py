@@ -12,6 +12,7 @@ from corneto.utils._citations import (
     show_bibtex,
     show_citations,
 )
+from corneto.utils._solvers import check_gurobi
 
 
 class OptionalModule:
@@ -112,3 +113,4 @@ def import_optional_module(module_name):
         else:
             error_msg = f"{module_name} is not installed and no version specification found in pyproject.toml. It may be an optional dependency not configured."
         raise ImportError(error_msg) from e
+

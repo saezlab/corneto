@@ -77,8 +77,8 @@ nb_execution_mode = "cache"
 nb_execution_timeout = 300
 nb_merge_streams = True
 execution_excludepatterns = [
-    "**/*grb*.ipynb",
-    "**/kpnn-with-sc.ipynb",
+    "**/*grb*.ipynb",           # grb indicates that uses Gurobi
+    "**/kpnn-with-sc.ipynb",    # very slow, requires jax, keras
 ]
 execution_allow_errors = False
 
