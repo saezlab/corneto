@@ -415,6 +415,15 @@ class CarnivalFlow(FlowMethod):
 
         return problem
 
+    @staticmethod
+    def get_citations():
+        """Returns citation keys for this method.
+
+        Returns:
+            A list of citation keys that can be used to lookup BibTeX entries.
+        """
+        return ["rodriguez2024unified", "liu2019expression"]
+
 
 class CarnivalILP(Method):
     """Improved version of the original CARNIVAL ILP method implementation.
@@ -666,7 +675,8 @@ class CarnivalILP(Method):
 
         return P
 
-    def get_citations(self):
+    @staticmethod
+    def get_citations():
         """Returns citation keys for this method.
 
         Returns:

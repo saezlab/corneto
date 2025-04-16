@@ -1,11 +1,12 @@
 from abc import ABC, abstractmethod
 from typing import Dict, Optional, Tuple
 
+import numpy as np
+
 from corneto import DEFAULT_BACKEND
+from corneto._data import Data
 from corneto._graph import BaseGraph
 from corneto.backend._base import Backend, ProblemDef
-from corneto._data import Data
-import numpy as np
 
 
 class Method(ABC):
@@ -129,7 +130,8 @@ class Method(ABC):
                 )
         return self.problem
 
-    def get_citations(self) -> list:
+    @staticmethod
+    def get_citations() -> list:
         """Returns citation keys for this method.
 
         Returns:
@@ -137,15 +139,17 @@ class Method(ABC):
         """
         return []
 
-    def show_citations(self):
+    @classmethod
+    def show_citations(cls):
         """Display formatted citations in a Jupyter notebook."""
         from corneto.utils._citations import show_citations
-        show_citations(self.get_citations())
+        show_citations(cls.get_citations())
 
-    def show_bibtex(self):
+    @classmethod
+    def show_bibtex(cls):
         """Display raw BibTeX entries in a formatted block for easy copying."""
         from corneto.utils._citations import show_bibtex
-        show_bibtex(self.get_citations())
+        show_bibtex(cls.get_citations())
 
     @property
     def backend(self):

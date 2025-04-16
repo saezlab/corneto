@@ -5,12 +5,12 @@ from pathlib import Path
 
 from corneto.utils._attr import Attr, Attributes
 from corneto.utils._citations import (
+    format_authors,
     get_bibtex_from_keys,
     parse_bibtex,
-    format_authors,
     render_citations_html,
-    show_citations,
     show_bibtex,
+    show_citations,
 )
 
 

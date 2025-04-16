@@ -9,7 +9,6 @@ from typing import Optional, Tuple, Union
 
 import numpy as np
 
-from corneto import K
 from corneto._data import Data, Feature
 from corneto._graph import BaseGraph
 from corneto.backend._base import Backend
@@ -19,6 +18,8 @@ from corneto.methods.metabolism import evaluate_gpr_expression, get_genes_from_g
 
 class MultiSampleIMAT(MultiSampleFBA):
     """Integrative Metabolic Analysis Tool (iMAT) implementation for multiple samples.
+
+    This implementation extends the original iMAT method for multi-sample analysis.
 
     iMAT integrates gene expression data with metabolic network analysis by selecting
     flux distributions that maximize the number of highly expressed reactions carrying
@@ -247,7 +248,7 @@ class MultiSampleIMAT(MultiSampleFBA):
         flow_problem += self.backend.NonZeroIndicator(F, tolerance=self.eps)
 
         active = flow_problem.expr["_flow_ineg"] + flow_problem.expr["_flow_ipos"]
-        #flow_problem.register(active, "reaction_active")
+        # flow_problem.register(active, "reaction_active")
 
         if self.use_bigm_constraints:
             # flow_problem += self.backend.Indicator(F)  # I = 0 <=> F = 0
@@ -315,3 +316,7 @@ class MultiSampleIMAT(MultiSampleFBA):
                     )
 
         return flow_problem
+
+    @staticmethod
+    def get_citations():
+        return ["shlomi2008network", "rodriguez2024unified"]
