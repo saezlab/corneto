@@ -27,7 +27,7 @@ class Attributes(dict):
     """
 
     __slots__ = ()
-    __protected_attrs = set(dir(dict))
+    __protected_attrs = set(dir(dict))  # noqa: RUF012
 
     def __setattr__(self, __name: str, __value: Any) -> None:
         """Set an attribute as a dictionary key-value pair.

@@ -18,47 +18,107 @@ jobs:
           fetch-depth: 0
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
       - name: Setup Graphviz
         uses: ts-graphviz/setup-graphviz@v2
 
+      - name: Cache Poetry packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pypoetry
+          key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Cache pip packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/poetry.lock') }}
+
       - name: Install Dependencies
         run: |
+          set -e
           pip install poetry
           poetry install --with dev,docs
 
-      - name: Build Docs with sphinx-multiversion
+      - name: Build Docs
         run: |
-          # Create a temporary directory
-          TEMP_DIR=$(mktemp -d)
-          chmod 777 $TEMP_DIR
-          echo "TEMP_DIR=$TEMP_DIR" >> $GITHUB_ENV
-          echo "Temporary directory is $TEMP_DIR"
-          poetry run sphinx-multiversion docs $TEMP_DIR
-          touch $TEMP_DIR/.nojekyll
-          echo '<meta http-equiv="refresh" content="0; URL='https://saezlab.github.io/corneto/main'" />' > $TEMP_DIR/index.html
-          
-      - name: Deploy to GitHub Pages
+          set -e
+          poetry run sphinx-build -b html docs docs/_build/html
+
+      - name: Determine doc version
+        id: set_version
         run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          
-          # Now checkout to gh-pages
-          git fetch origin gh-pages
-          git checkout gh-pages || git checkout --orphan gh-pages
-  
-          # Clean existing files for the branch and copy new ones
-          echo "Removing current folder content: $BRANCH_NAME"
-          rm -rf "./$BRANCH_NAME"
-          cp -r "$TEMP_DIR/$BRANCH_NAME" "$BRANCH_NAME"
-  
-          # Adding changes to git
-          git add .
-          git commit -m "Update docs for branch $BRANCH_NAME" --allow-empty
-          git push -u origin gh-pages
-        env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+          set -e
+          case "${GITHUB_REF}" in
+            refs/tags/*)
+              version="${GITHUB_REF#refs/tags/}"
+              ;;
+            refs/heads/main)
+              version="main"
+              ;;
+            refs/heads/dev)
+              version="dev"
+              ;;
+            *)
+              echo "Unexpected branch/ref: ${GITHUB_REF}"
+              version="dev"
+              ;;
+          esac
+          echo "doc_version=${version}" >> $GITHUB_OUTPUT
+
+      - name: Generate switcher.json
+        run: |
+          set -e
+          poetry run python docs/generate_switcher.py
+
+      - name: Create root redirect to latest
+        run: |
+          set -e
+          mkdir -p temp_root
+          cp docs/switcher.json temp_root/switcher.json
+          touch temp_root/.nojekyll
+          cat > temp_root/index.html << EOF
+          <!DOCTYPE html>
+          <html>
+            <head>
+              <meta charset="utf-8">
+              <title>Redirecting to main documentation</title>
+              <meta http-equiv="refresh" content="0; URL=./main/">
+              <link rel="canonical" href="./main/">
+            </head>
+            <body>
+              <p>Redirecting to <a href="./main/">main documentation</a>...</p>
+            </body>
+          </html>
+          EOF
+      
+      - name: Deploy content to root
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./temp_root
+          destination_dir: ./
+          keep_files: true
+
+      - name: Deploy versioned docs
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/_build/html
+          destination_dir: ${{ steps.set_version.outputs.doc_version }}
+          keep_files: true
+
+      - name: Deploy latest docs to root
+        if: ${{ steps.set_version.outputs.doc_version == 'latest' }}
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/_build/html
+          destination_dir: ./
+          keep_files: true
+
+      - name: Clean up temporary files
+        run: rm -rf temp_root

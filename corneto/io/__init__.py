@@ -9,7 +9,7 @@ from ._graphio import load_corneto_graph, save_corneto_graph
 from ._metabolism import (
     cobra_model_to_graph,
     import_cobra_model,
-    miom_model_to_graph,
+    import_miom_model,
     parse_cobra_model,
 )
 from ._signaling import load_graph_from_sif, load_graph_from_sif_tuples
@@ -21,7 +21,7 @@ __all__ = [
     "load_graph_from_sif",
     "load_graph_from_sif_tuples",
     "load_sif_from_tuples",
-    "miom_model_to_graph",
+    "import_miom_model",
     "parse_cobra_model",
     "save_corneto_graph",
 ]

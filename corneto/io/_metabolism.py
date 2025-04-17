@@ -8,19 +8,19 @@ It is organized into several functional areas.
 
 """
 
-from typing import Dict, Iterable, List, Optional, Set, Tuple, Union
+from typing import Dict, List, Set, Tuple, Union
 
 import numpy as np
-from cobra.io import read_sbml_model
 
-from corneto._types import CobraModel, TupleSIF
-from corneto.graph import BaseGraph, Graph
+from corneto import suppress_output
+from corneto._types import CobraModel
+from corneto.graph import Graph
 
 from ._base import graph_from_vertex_incidence
 from ._util import _download, _is_url
 
 
-def import_cobra_model(path: str) -> Graph:
+def import_cobra_model(path: str, quiet: bool = True) -> Graph:
     """Import a COBRA model from an SBML file and convert it to a CORNETO graph.
 
     Args:
@@ -29,7 +29,15 @@ def import_cobra_model(path: str) -> Graph:
     Returns:
         Graph: A CORNETO graph representing the metabolic network
     """
-    model = read_sbml_model(str(path))
+    try:
+        from cobra.io import read_sbml_model
+    except ImportError as e:
+        raise ImportError("COBRApy not installed.", e)
+    if quiet:
+        with suppress_output(suppress_stdout=True):
+            model = read_sbml_model(str(path))
+    else:
+        model = read_sbml_model(str(path))
     return cobra_model_to_graph(model)
 
 
@@ -208,7 +216,7 @@ def cobra_model_to_graph(model: CobraModel) -> Graph:
     return G
 
 
-def miom_model_to_graph(model_or_path: Union[str, np.ndarray]) -> Graph:
+def import_miom_model(model_or_path: Union[str, np.ndarray]) -> Graph:
     """Create graph from MIOM metabolic model.
 
     Args:

@@ -196,7 +196,7 @@ def check_exp_graph_consistency(G, exp_list):
                     )
 
 
-def cellnoptILP(G, exp_list, solver=None, alpha_flow=1e-3, verbose=False):
+def cellnoptILP(G, exp_list, solver=None, alpha_flow=1e-3, verbose=False, backend=None):
     """Create and solves the ILP model for the given graph G and the list of experiments exp_list.
 
     Parameters:
@@ -209,30 +209,35 @@ def cellnoptILP(G, exp_list, solver=None, alpha_flow=1e-3, verbose=False):
     Returns:
     - P: The ILP model.
     """
+    if backend is None:
+        backend = cn.DEFAULT_BACKEND
     check_exp_graph_consistency(G, exp_list)
 
     At, Ah = get_incidence_matrices_of_edges(G)
     interaction = get_interactions(G)
     edges_with_head = get_egdes_with_head(G)
+    edges_with_head = np.flatnonzero(np.sum(np.abs(Ah), axis=0) > 0)
     V_is_and = get_AND_gate_nodes(G)
+    and_idx = np.flatnonzero(V_is_and)
     V_is_inhibited = get_inhibited_nodes(G, exp_list)
+    inh_idx = np.flatnonzero(V_is_inhibited)
 
     # let's start with acyclic flow
-    P = cn.K.AcyclicFlow(G)
+    P = backend.AcyclicFlow(G)
 
     # vertex value is binary (0 and 1)
-    V = cn.K.Variable(
+    V = backend.Variable(
         "vertex_value", (G.num_vertices, len(exp_list)), vartype=cn.VarType.BINARY
     )
     # edge activation is also binary:
-    Eact = cn.K.Variable(
+    Eact = backend.Variable(
         "edge_activates", (G.num_edges, len(exp_list)), vartype=cn.VarType.BINARY
     )
 
     M = 100  # a large number, so sum(incoming edges)/M is always less than 1
 
     # Dummy variable for the linearization of the absolute deviation objective function
-    Z = cn.K.Variable(
+    Z = backend.Variable(
         "dummy", (G.num_vertices, len(exp_list)), vartype=cn.VarType.CONTINUOUS
     )
     P += Z >= 0
@@ -251,9 +256,9 @@ def cellnoptILP(G, exp_list, solver=None, alpha_flow=1e-3, verbose=False):
 
             # signed value of source/head node for an edge:
             V_head = (Ah.T @ V)[edges_with_head, iexp].multiply(
-                interaction[edges_with_head] > 0
+                (interaction[edges_with_head] > 0).astype(int)
             ) + (1 - (Ah.T @ V)[edges_with_head, iexp]).multiply(
-                interaction[edges_with_head] < 0
+                (interaction[edges_with_head] < 0).astype(int)
             )
             # an edge is active if there is flow AND there head node is also active
             # logical AND is translated to ILP as:
@@ -271,6 +276,7 @@ def cellnoptILP(G, exp_list, solver=None, alpha_flow=1e-3, verbose=False):
     #
     for exp, iexp in zip(exp_list, range(len(exp_list))):
         is_regular_node = np.logical_and(~V_is_and, ~V_is_inhibited[:, iexp])
+        is_regular_node = np.flatnonzero(is_regular_node)
 
         P += (
             V[is_regular_node, iexp] >= ((At @ Eact) / M)[is_regular_node, iexp]
@@ -279,7 +285,7 @@ def cellnoptILP(G, exp_list, solver=None, alpha_flow=1e-3, verbose=False):
             V[is_regular_node, iexp] <= (At @ Eact)[is_regular_node, iexp]
         )  # but it has an upper constraint, so it takes 0 when all input are 0
         if V_is_inhibited[:, iexp].any():
-            P += V[V_is_inhibited[:, iexp], iexp] == np.zeros(
+            P += V[inh_idx[:, iexp], iexp] == np.zeros(
                 sum(V_is_inhibited[:, iexp])
             )
 
@@ -289,16 +295,17 @@ def cellnoptILP(G, exp_list, solver=None, alpha_flow=1e-3, verbose=False):
     # - if sum of flow equal to the sum of incoming edge activation, i.e. all edge are activated, then the vertex is activated:
     # - to ensure that the AND gate is not active when there is no flow (an no active edge), we add the second constraint:
     if V_is_and.any():
-        sum_of_flow = At[V_is_and, :] @ P.expr.with_flow
-        sum_of_edge_activation = At[V_is_and, :] @ Eact
+        #and_idx = np.flatnonzero(V_is_and)
+        sum_of_flow = At[and_idx, :] @ P.expr.with_flow
+        sum_of_edge_activation = At[and_idx, :] @ Eact
 
         #  (sum_of_flow - sum_of_edge_activation)/M is always less than 1 and it is 0 if  all edges are activated.
         for exp, iexp in zip(exp_list, range(len(exp_list))):
             P += (
-                V[V_is_and, iexp]
+                V[and_idx, iexp]
                 <= 1 - (sum_of_flow - sum_of_edge_activation[:, iexp]) / M
             )
-            P += V[V_is_and, iexp] <= sum_of_flow
+            P += V[and_idx, iexp] <= sum_of_flow
 
         P.register("sum_of_flow", sum_of_flow)
         P.register("sum_of_edge_activation", sum_of_edge_activation)
@@ -307,14 +314,14 @@ def cellnoptILP(G, exp_list, solver=None, alpha_flow=1e-3, verbose=False):
         # activation:
         p_nodes = list(exp_list[exp]["input"].keys())
         p_values = list(exp_list[exp]["input"].values())
-        p_nodes_positions = [G.V.index(key) for key in p_nodes]
+        p_nodes_positions = np.array([G.V.index(key) for key in p_nodes])
 
         P += V[p_nodes_positions, iexp] == p_values
 
         # measurements:
         m_nodes = list(exp_list[exp]["output"].keys())
         m_values = np.array(list(exp_list[exp]["output"].values()))
-        m_nodes_positions = [G.V.index(key) for key in m_nodes]
+        m_nodes_positions = np.array([G.V.index(key) for key in m_nodes])
 
         # linearization of the ABS function: https://lpsolve.sourceforge.net/5.1/absolute.htm
         P += V[m_nodes_positions, iexp] - m_values <= Z[m_nodes_positions, iexp]

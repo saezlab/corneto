@@ -1,3 +1,5 @@
+import json
+import os
 from collections import OrderedDict
 from copy import deepcopy
 from typing import (
@@ -23,7 +25,7 @@ class Graph(BaseGraph):
     (edges connecting multiple vertices). Edges and vertices can have attributes.
 
     Examples:
-        >>> graph = corneto.Graph() 
+        >>> graph = corneto.Graph()
         >>> graph.add_edge(1, 2)
         >>> graph.plot()
     """
@@ -69,7 +71,7 @@ class Graph(BaseGraph):
 
         Args:
             source: Source vertices
-            target: Target vertices 
+            target: Target vertices
             type: Edge type
             edge_source_attr: Optional attributes for source vertices
             edge_target_attr: Optional attributes for target vertices
@@ -469,4 +471,218 @@ class Graph(BaseGraph):
             New Graph created from tuple data
         """
         from corneto.io import load_graph_from_sif_tuples
+
         return load_graph_from_sif_tuples(tuples)
+
+    def to_dict(self) -> Dict:
+        """Convert graph to a JSON-serializable dictionary.
+
+        Returns:
+            Dictionary representation of the graph
+        """
+        # Convert vertices to a dictionary with their attributes
+        vertices = {}
+        for v in self._get_vertices():
+            v_attr = self._get_vertex_attributes(v)
+            # Convert vertex to string if it's not a basic type
+            v_key = str(v) if not isinstance(v, (str, int, float, bool)) else v
+            vertices[v_key] = v_attr
+
+        # Convert edges to a list of dictionaries
+        edges = []
+        for i, edge in enumerate(self._edges):
+            source, target = edge
+            source_list = list(source)
+            target_list = list(target)
+            # Convert vertices in source and target to strings if they're not basic types
+            source_list = [
+                str(v) if not isinstance(v, (str, int, float, bool)) else v
+                for v in source_list
+            ]
+            target_list = [
+                str(v) if not isinstance(v, (str, int, float, bool)) else v
+                for v in target_list
+            ]
+
+            edge_attr = self._get_edge_attributes(i)
+            edge_dict = {
+                "source": source_list,
+                "target": target_list,
+                "attributes": edge_attr,
+            }
+            edges.append(edge_dict)
+
+        # Create the final dictionary
+        graph_dict = {
+            "vertices": vertices,
+            "edges": edges,
+            "attributes": self._graph_attr,
+        }
+
+        return graph_dict
+
+    def to_json(self, **kwargs) -> str:
+        """Serialize graph to JSON string.
+
+        Args:
+            **kwargs: Additional arguments passed to json.dumps()
+
+        Returns:
+            JSON string representation of the graph
+        """
+        return json.dumps(self.to_dict(), **kwargs)
+
+    @classmethod
+    def from_dict(cls, data: Dict) -> "Graph":
+        """Create a graph from a dictionary representation.
+
+        Args:
+            data: Dictionary containing graph data
+
+        Returns:
+            New Graph instance created from the dictionary
+        """
+        # Create a new graph with any global attributes
+        graph_attrs = data.get("attributes", {})
+        default_edge_type = (
+            graph_attrs.pop("edge_type", EdgeType.DIRECTED)
+            if "edge_type" in graph_attrs
+            else EdgeType.DIRECTED
+        )
+        g = cls(default_edge_type=default_edge_type, **graph_attrs)
+
+        # Add vertices with their attributes
+        vertices = data.get("vertices", {})
+        for v_key, attrs in vertices.items():
+            # Try to convert numeric strings to numbers
+            try:
+                if v_key.isdigit():
+                    v_key = int(v_key)
+                elif v_key.replace(".", "", 1).isdigit() and v_key.count(".") < 2:
+                    v_key = float(v_key)
+            except (ValueError, AttributeError):
+                pass
+
+            g.add_vertex(v_key, **attrs)
+
+        # Add edges with their attributes
+        edges = data.get("edges", [])
+        for edge in edges:
+            source = edge.get("source", [])
+            target = edge.get("target", [])
+            attrs = edge.get("attributes", {})
+
+            # Extract edge type
+            edge_type = (
+                attrs.pop(Attr.EDGE_TYPE.value, default_edge_type)
+                if Attr.EDGE_TYPE.value in attrs
+                else default_edge_type
+            )
+
+            # Handle source and target vertex attributes
+            source_attr = (
+                attrs.pop(Attr.SOURCE_ATTR.value, {})
+                if Attr.SOURCE_ATTR.value in attrs
+                else {}
+            )
+            target_attr = (
+                attrs.pop(Attr.TARGET_ATTR.value, {})
+                if Attr.TARGET_ATTR.value in attrs
+                else {}
+            )
+
+            # Add the edge
+            g.add_edge(
+                source,
+                target,
+                type=edge_type,
+                edge_source_attr=source_attr,
+                edge_target_attr=target_attr,
+                **attrs,
+            )
+
+        return g
+
+    @classmethod
+    def from_json(cls, json_str: str) -> "Graph":
+        """Create a graph from a JSON string.
+
+        Args:
+            json_str: JSON string containing graph data
+
+        Returns:
+            New Graph instance created from the JSON string
+        """
+        data = json.loads(json_str)
+        return cls.from_dict(data)
+
+    def save_json(
+        self,
+        filepath: str,
+        indent: Optional[int] = None,
+        compression: Optional[str] = None,
+    ) -> None:
+        """Save graph to a JSON file.
+
+        Args:
+            filepath: Path where to save the JSON file
+            indent: Optional number of spaces for indentation (for pretty printing)
+            compression: Optional compression format ('auto', 'gzip', 'bz2', 'xz', or None)
+
+        Raises:
+            ValueError: If filepath is empty
+        """
+        if not filepath:
+            raise ValueError("Filepath must not be empty.")
+
+        # Get compression type and update filepath if needed
+        compression, filepath = super()._get_compression_and_filepath(
+            filepath, compression
+        )
+
+        # Ensure .json extension unless compression is specified
+        base, ext = os.path.splitext(filepath)
+        if not ext or (compression is None and ext.lower() != ".json"):
+            filepath = f"{base}.json"
+
+        # Convert graph to JSON string
+        json_str = self.to_json(indent=indent)
+
+        # Get appropriate file opener based on compression type
+        opener = super()._get_file_opener(compression, mode="wt")
+
+        # Write with optional compression
+        with opener(filepath, "wt") as f:
+            f.write(json_str)
+
+    @classmethod
+    def load_json(cls, filepath: str, compression: Optional[str] = "auto") -> "Graph":
+        """Load graph from a JSON file.
+
+        Args:
+            filepath: Path to the JSON file
+            compression: Optional compression format ('auto', 'gzip', 'bz2', 'xz', or None)
+
+        Returns:
+            New Graph instance loaded from the file
+
+        Raises:
+            FileNotFoundError: If the file doesn't exist
+        """
+        # Create a temporary instance to access methods
+        instance = cls()
+
+        # Get compression type and update filepath if needed
+        compression, filepath = instance._get_compression_and_filepath(
+            filepath, compression
+        )
+
+        # Get appropriate file opener based on compression type
+        opener = instance._get_file_opener(compression, mode="rt")
+
+        # Read file with appropriate compression
+        with opener(filepath, "rt") as f:
+            json_str = f.read()
+
+        # Create graph from JSON string
+        return cls.from_json(json_str)

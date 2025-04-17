@@ -19,6 +19,5 @@ intro/index
 networks/index
 metabolism/index
 signaling/index
-interactomics/index
 interoperability/index
 ```

@@ -1,0 +1,20 @@
+name: Cleanup gh-pages (One-Time)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  cleanup-gh-pages:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout gh-pages branch
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+
+      - name: Remove all files
+        run: |
+          git rm -rf .
+          git commit -m "Cleanup gh-pages branch for new structure" || echo "Nothing to commit"
+          git push origin gh-pages
+

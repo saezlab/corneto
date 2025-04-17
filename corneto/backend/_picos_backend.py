@@ -110,7 +110,7 @@ class PicosExpression(CExpression):
 
     @property
     def value(self) -> np.ndarray:
-        return self._expr.value
+        return np.array(self._expr.value)
 
     def __matmul__(self, other: Any) -> "CExpression":
         o = other
@@ -228,6 +228,9 @@ class PicosBackend(Backend):
         **options,
     ):
         P = pc.Problem()
+        # Use default solver tolerances
+        P.options["*_tol"] = None
+        #P.options["primals"] = False
         for c in p.constraints:
             P += c.e
         if objective is not None:

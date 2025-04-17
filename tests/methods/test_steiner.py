@@ -4,19 +4,7 @@ import numpy as np
 import pytest
 
 from corneto._graph import BaseGraph
-from corneto.backend import Backend, CvxpyBackend, PicosBackend
 from corneto.methods.steiner import exact_steiner_tree
-
-
-@pytest.fixture(params=[CvxpyBackend, PicosBackend])
-def backend(request):
-    K: Backend = request.param()
-    # TODO: Unify solver names
-    if isinstance(K, CvxpyBackend):
-        K._default_solver = "GLPK_MI"
-    elif isinstance(K, PicosBackend):
-        K._default_solver = "glpk"
-    return K
 
 
 @pytest.fixture

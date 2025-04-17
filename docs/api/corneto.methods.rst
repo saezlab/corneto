@@ -16,3 +16,13 @@ Network methods to infer signaling networks from omics data.
     
     CarnivalFlow
     CarnivalILP
+
+Metabolism
+----------
+
+Network methods for flux balance analysis in metabolic networks.
+
+.. autosummary::
+    :toctree: generated/
+    
+    MultiSampleFBA

@@ -1,15 +1,59 @@
+import contextlib
 import hashlib
 import json
 import os
 import pickle
+import warnings
 from collections import OrderedDict
 from itertools import filterfalse
-from typing import Any, Callable, Dict, Iterable, Optional, Set, TypeVar
+from typing import Any, Callable, Dict, Iterable, Iterator, Optional, Set, TypeVar
 
 import numpy as np
 from numpy.linalg import svd
 
 T = TypeVar("T")
+
+
+@contextlib.contextmanager
+def suppress_output(
+    suppress_stdout: bool = False,
+    suppress_stderr: bool = True,
+    suppress_warnings: bool = True,
+    stdout_redirect_file: Optional[str] = None,
+    stderr_redirect_file: Optional[str] = None,
+) -> Iterator[None]:
+    """A context manager to selectively suppress stdout, stderr, and warnings.
+
+    Args:
+        suppress_stdout: If True, suppresses stdout. Defaults to True.
+        suppress_stderr: If True, suppresses stderr. Defaults to True.
+        suppress_warnings: If True, suppresses warnings. Defaults to True.
+        stdout_redirect_file: If provided, redirects stdout to this file path instead of /dev/null.
+        stderr_redirect_file: If provided, redirects stderr to this file path instead of /dev/null.
+    """
+    with contextlib.ExitStack() as stack:
+        # Handle stdout redirection/suppression
+        if suppress_stdout or stdout_redirect_file:
+            stdout_target = open(
+                stdout_redirect_file if stdout_redirect_file else os.devnull, "w"
+            )
+            stack.enter_context(stdout_target)
+            stack.enter_context(contextlib.redirect_stdout(stdout_target))
+
+        # Handle stderr redirection/suppression
+        if suppress_stderr or stderr_redirect_file:
+            stderr_target = open(
+                stderr_redirect_file if stderr_redirect_file else os.devnull, "w"
+            )
+            stack.enter_context(stderr_target)
+            stack.enter_context(contextlib.redirect_stderr(stderr_target))
+
+        # Suppress warnings if requested
+        if suppress_warnings:
+            stack.enter_context(warnings.catch_warnings())
+            warnings.simplefilter("ignore")
+
+        yield
 
 
 def obj_content_hash(obj) -> str:
@@ -220,8 +264,7 @@ def info():
         import base64
         from importlib.resources import files
 
-        from IPython.core.display import display
-        from IPython.display import HTML
+        from IPython.display import HTML, display
 
         # logo_path = pkg_resources.resource_filename(__name__, "resources/logo.png")
         logo_path = files("corneto").joinpath("resources/logo.png")

@@ -1,26 +1,43 @@
 import numpy as np
 
+try:
+    from scipy.sparse import coo_matrix, csr_matrix
+    _SPARSE_AVAILABLE = True
+except ImportError:
+    _SPARSE_AVAILABLE = False
 
-def get_incidence_matrices_of_edges(G, as_dataframe=False):
+
+def get_incidence_matrices_of_edges(G, as_dataframe=False, sparse=False):
     """Get the mapping matrices A, At, Ah from the graph G.
 
     Parameters:
-    - G: The graph object.
-    - as_dataframe: Whether to return the matrices as pandas DataFrames. Default is False.
+        G: The graph object.
+        as_dataframe: Whether to return the matrices as pandas DataFrames. Default is False.
+        sparse: If True, uses sparse matrices for the incidence matrix (default is False).
 
     Returns:
-    - At: The tail-incidence matrix.
-    - Ah: The head-incidence matrix.
+        At: The tail-incidence matrix.
+        Ah: The head-incidence matrix.
     """
-    A = G.vertex_incidence_matrix().astype(int)  # V x E
-    At = np.clip(A, 0, 1)  # V x E, 1 if vertex appears as tail of edge
-    Ah = np.clip(-A, 0, 1)  # V x E, 1 if vertex appears as head of edge
+    A = G.vertex_incidence_matrix(sparse=sparse).astype(int)  # V x E
+    if sparse:
+        # For sparse matrices, use element-wise comparisons to build incidence matrices.
+        At = (A > 0).astype(int)
+        Ah = (A < 0).astype(int)
+    else:
+        # For dense matrices, np.clip works as before.
+        At = np.clip(A, 0, 1)
+        Ah = np.clip(-A, 0, 1)
 
     if as_dataframe:
         import pandas as pd
-
-        Ah = pd.DataFrame(Ah, index=G.V, columns=G.E)
-        At = pd.DataFrame(At, index=G.V, columns=G.E)
+        # If using sparse matrices, convert to dense arrays for DataFrame conversion.
+        if sparse:
+            Ah = pd.DataFrame(Ah.toarray(), index=G.V, columns=G.E)
+            At = pd.DataFrame(At.toarray(), index=G.V, columns=G.E)
+        else:
+            Ah = pd.DataFrame(Ah, index=G.V, columns=G.E)
+            At = pd.DataFrame(At, index=G.V, columns=G.E)
 
     return At, Ah
 

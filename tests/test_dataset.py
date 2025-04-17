@@ -421,5 +421,71 @@ def test_subset_features():
     assert sub_ds.data["s2"].features["feat2"] == {"value": 40, "unit": "kg"}
 
 
+def test_data_filter():
+    """Test the filter method on the Data class."""
+    ds = Data()
+    ds.add_sample("s1", {"feat1": 10, "feat2": 20, "feat3": -5})
+    ds.add_sample("s2", {"feat1": 5, "feat2": -10, "feat4": 30})
+    
+    # Filter to keep only features with positive values
+    filtered = ds.filter(lambda sid, fname, fvalue: isinstance(fvalue, (int, float)) and fvalue > 0)
+    
+    assert "s1" in filtered.data
+    assert "s2" in filtered.data
+    assert set(filtered.data["s1"].features.keys()) == {"feat1", "feat2"}
+    assert set(filtered.data["s2"].features.keys()) == {"feat1", "feat4"}
+    assert filtered.data["s1"].features["feat1"] == 10
+    assert filtered.data["s2"].features["feat4"] == 30
+    
+    # Filter with sample ID condition
+    filtered_s1 = ds.filter(lambda sid, fname, fvalue: sid == "s1" and fvalue > 0)
+    assert "s1" in filtered_s1.data
+    assert "s2" not in filtered_s1.data
+    assert set(filtered_s1.data["s1"].features.keys()) == {"feat1", "feat2"}
+    
+    # Filter with feature name condition
+    filtered_feat1 = ds.filter(lambda sid, fname, fvalue: fname == "feat1")
+    assert "s1" in filtered_feat1.data
+    assert "s2" in filtered_feat1.data
+    assert set(filtered_feat1.data["s1"].features.keys()) == {"feat1"}
+    assert set(filtered_feat1.data["s2"].features.keys()) == {"feat1"}
+
+
+def test_data_filter_by():
+    """Test the filter_by method on the Data class."""
+    ds = Data()
+    ds.add_sample("s1", {
+        "feat1": {"value": 10, "type": "numeric", "importance": "high"},
+        "feat2": {"value": 20, "type": "numeric", "importance": "medium"},
+        "feat3": {"value": -5, "type": "numeric", "importance": "low"}
+    })
+    ds.add_sample("s2", {
+        "feat1": {"value": 5, "type": "numeric", "importance": "medium"},
+        "feat2": {"value": -10, "type": "numeric", "importance": "low"},
+        "feat4": {"value": 30, "type": "categorical", "importance": "high"}
+    })
+    
+    # Filter by type
+    filtered_numeric = ds.filter_by("type", "numeric")
+    assert "s1" in filtered_numeric.data
+    assert "s2" in filtered_numeric.data
+    assert set(filtered_numeric.data["s1"].features.keys()) == {"feat1", "feat2", "feat3"}
+    assert set(filtered_numeric.data["s2"].features.keys()) == {"feat1", "feat2"}
+    
+    # Filter by importance
+    filtered_high = ds.filter_by("importance", "high")
+    assert "s1" in filtered_high.data
+    assert "s2" in filtered_high.data
+    assert set(filtered_high.data["s1"].features.keys()) == {"feat1"}
+    assert set(filtered_high.data["s2"].features.keys()) == {"feat4"}
+    
+    # Filter that results in empty sample should exclude that sample
+    filtered_low = ds.filter_by("importance", "low")
+    assert "s1" in filtered_low.data
+    assert "s2" in filtered_low.data
+    assert set(filtered_low.data["s1"].features.keys()) == {"feat3"}
+    assert set(filtered_low.data["s2"].features.keys()) == {"feat2"}
+
+
 if __name__ == "__main__":
     pytest.main()

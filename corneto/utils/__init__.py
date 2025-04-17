@@ -4,6 +4,15 @@ from functools import wraps
 from pathlib import Path
 
 from corneto.utils._attr import Attr, Attributes
+from corneto.utils._citations import (
+    format_authors,
+    get_bibtex_from_keys,
+    parse_bibtex,
+    render_citations_html,
+    show_bibtex,
+    show_citations,
+)
+from corneto.utils._solvers import check_gurobi
 
 
 class OptionalModule:
@@ -104,3 +113,4 @@ def import_optional_module(module_name):
         else:
             error_msg = f"{module_name} is not installed and no version specification found in pyproject.toml. It may be an optional dependency not configured."
         raise ImportError(error_msg) from e
+

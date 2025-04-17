@@ -47,6 +47,7 @@ html_theme.sidebar_secondary.remove: true
 
 </div>
 
+
 **Version**: {{version}}
 
 ----
@@ -56,7 +57,7 @@ html_theme.sidebar_secondary.remove: true
 CORNETO (Constraint-based Optimization for the Reconstruction of NETworks from Omics) is a package for unified biological network inference and contextualisation from prior knowledge, developed and maintained by the [Saez-Rodriguez Lab](https://saezlab.github.io/). The library is designed with minimal dependencies and is easily extendable, making it a powerful tool for both end-users and developers. 
 
 <div style="margin: 2em 0;">
-    <img src="/_static/corneto-abstract.jpg" alt="Corneto Abstract" style="max-width: 768px; width: 100%; display: block; margin: 0 auto;">
+    <img src="_static/corneto-abstract.jpg" alt="Corneto Abstract" style="max-width: 768px; width: 100%; display: block; margin: 0 auto;">
 </div>
 
 
@@ -64,7 +65,7 @@ To install CORNETO with open-source mathematical solvers (HIGHs and SCIP), use t
 
 ```
 # To install the development version, including the open-source solvers HIGHs and SCIP, use:
-pip install git+https://github.com/saezlab/corneto.git@dev pyscipopt highspy
+!pip install git+https://github.com/saezlab/corneto.git@dev scipy pyscipopt highspy cvxpy
 
 # If you have a license for Gurobi (free for academic use), you can install it with:
 pip install gurobipy
@@ -76,11 +77,11 @@ CORNETO is developed at the [Institute for Computational Biomedicine](https://sa
 PerMedCoE project ([permedcoe.eu](https://permedcoe.eu/)) agreement no. 951773 and [DECIDER](https://www.deciderproject.eu/) (965193).
 
 <div style="margin: 1em 0;">
-    <img src="/_static/embl-ebi-logo.png" alt="EMBL-EBI logo" height="64px" style="height:64px; width:auto; margin-right: 5px;">
-    <img src="/_static/saezlab-logo.png" alt="Saez lab logo" height="64px" style="height:64px; width:auto; margin-right: 5px;">
-    <img src="/_static/ukhd-logo.jpg" alt="UKHD logo" height="64px" style="height:64px; width:auto; margin-right: 5px;"> 
-    <img src="/_static/permedcoe-eu-logo.png" alt="PerMedCoE logo" height="64px" style="height:64px; width:auto; margin-right: 5px;"> 
-    <img src="/_static/decider-eu-logo.png" alt="DECIDER logo" height="64px" style="height:64px; width:auto;">
+    <img src="_static/embl-ebi-logo.png" alt="EMBL-EBI logo" height="64px" style="height:64px; width:auto; margin-right: 5px;">
+    <img src="_static/saezlab-logo.png" alt="Saez lab logo" height="64px" style="height:64px; width:auto; margin-right: 5px;">
+    <img src="_static/ukhd-logo.jpg" alt="UKHD logo" height="64px" style="height:64px; width:auto; margin-right: 5px;"> 
+    <img src="_static/permedcoe-eu-logo.png" alt="PerMedCoE logo" height="64px" style="height:64px; width:auto; margin-right: 5px;"> 
+    <img src="_static/decider-eu-logo.png" alt="DECIDER logo" height="64px" style="height:64px; width:auto;">
 </div>
 
 ```{toctree}

@@ -204,12 +204,12 @@ class CExpression(abc.ABC):
     def max(self, axis: Optional[int] = None) -> "CExpression":
         return self._max(axis=axis)
 
-    #@abc.abstractmethod
-    #def _abs(self) -> Any:
+    # @abc.abstractmethod
+    # def _abs(self) -> Any:
     #    pass
 
-    #@_delegate
-    #def abs(self) -> "CExpression":
+    # @_delegate
+    # def abs(self) -> "CExpression":
     #    return self._abs()
 
     # These delegated methods are invoked directly in the backend
@@ -306,9 +306,13 @@ class CExpression(abc.ABC):
         pass
 
     def __str__(self) -> str:
+        if self._name:
+            return f"{self._name}: {self._expr.__str__()}"
         return self._expr.__str__()
 
     def __repr__(self) -> str:
+        if self._name:
+            return f"{self._name}: {self._expr.__repr__()}"
         return self._expr.__repr__()
 
     # TODO: add functions along axis: https://www.cvxpy.org/tutorial/functions/index.html
@@ -472,7 +476,10 @@ class ProblemDef:
         # Create a new class of problems on top of a graph
         # where edges/nodes have associated optimization variables
         # TODO: check which use cases are using _graph
-        self._graph = graph
+        if graph is not None:
+            # Warn that this is deprecated
+            warnings.warn("The graph parameter is deprecated.", DeprecationWarning)
+            self._graph = graph
 
     @property
     def symbols(self) -> Dict[str, CSymbol]:
@@ -494,6 +501,10 @@ class ProblemDef:
     def expr(self) -> Attributes:
         return self.expressions
 
+    @property
+    def backend(self) -> Optional["Backend"]:
+        return self._backend
+
     def get_symbol(self, name) -> CSymbol:
         return self.symbols[name]
 
@@ -508,7 +519,13 @@ class ProblemDef:
         for e in self._constraints + self._objectives:
             s = getattr(e, "_proxy_symbols", {})
             for x in s:
+                # TODO: x.rename(...) should be a symbol specific thing
                 if hasattr(x, "_name"):
+                    # ad-hoc symbol renaming
+                    if hasattr(x.e, "_symbStr"):  # PICOS, move to rename
+                        x.e._symbStr = x.e._symbStr + suffix
+                    if hasattr(x.e, "_name"):
+                        x.e._name = x.e._name + suffix
                     if x not in obs:
                         x._name = x._name + suffix
                         obs.add(x)
@@ -576,7 +593,14 @@ class ProblemDef:
     ) -> Any:
         if self._backend is None:
             raise ValueError("No backend assigned.")
-        return self._backend.solve(
+        if solver is not None:
+            avail_solvers = self._backend.available_solvers()
+            # We need to match solver with the available solvers
+            # being case-insensitive
+            solver = next(
+                (s for s in avail_solvers if s.lower() == solver.lower()), None
+            )
+        backend_problem = self._backend.solve(
             self,
             solver=solver,
             max_seconds=max_seconds,
@@ -584,6 +608,8 @@ class ProblemDef:
             verbosity=verbosity,
             **options,
         )
+        # Extract summary info (backend specific)
+        return backend_problem
 
     def merge(self, other: "ProblemDef", inplace=False) -> "ProblemDef":
         # TODO: If the other is empty (or instance of grammar?) build the problem before merging
@@ -648,6 +674,7 @@ class ProblemDef:
         objectives: Union[CExpression, List[CExpression]],
         weights: Union[float, List[float]] = 1.0,
         inplace: bool = True,
+        names: Optional[Union[str, List[str]]] = None,
     ) -> "ProblemDef":
         if not isinstance(objectives, list):
             objectives = [objectives]
@@ -655,6 +682,13 @@ class ProblemDef:
             weights = [weights] * len(objectives)
         if len(weights) != len(objectives):
             raise ValueError("Number of weights must match number of objectives")
+        if names is not None:
+            if isinstance(names, str):
+                names = [names]
+            if len(names) != len(objectives):
+                raise ValueError("Number of names must match number of objectives")
+            for i, o in enumerate(objectives):
+                o._name = names[i]
         if inplace:
             self._objectives.extend(objectives)
             self._weights.extend(weights)
@@ -666,6 +700,15 @@ class ProblemDef:
             self._expressions,
             self._weights + weights,
         )
+
+    def add_objective(
+        self,
+        objective: CExpression,
+        weight: float = 1.0,
+        inplace: bool = True,
+        name: Optional[str] = None,
+    ) -> "ProblemDef":
+        return self.add_objectives([objective], [weight], inplace=inplace, names=name)
 
     def add_expressions(
         self,
@@ -828,11 +871,8 @@ class Backend(abc.ABC):
             # auto-convert to a weighted sum
             # TODO: support the use of parameters as weights. Comment line below
             # for future version
-            #o = sum(p.weights[i] * p.objectives[i] for i in range(len(p.objectives)))
-            o = sum(
-                p.weights[i] * p.objectives[i] if p.weights[i] != 0.0 else 0.0  # type: ignore
-                for i in range(len(p.objectives))
-            )
+            # ov = self.vstack(p.objectives)
+            o = sum(p.weights[i] * p.objectives[i] for i in range(len(p.objectives)))
         else:
             o = (
                 p.weights[0] * p.objectives[0]
@@ -920,7 +960,7 @@ class Backend(abc.ABC):
         P.register(alias_flow, F)
         return P
 
-    def Acyclic(
+    def Acyclic0(
         self,
         g: BaseGraph,
         P: ProblemDef,
@@ -1000,26 +1040,26 @@ class Backend(abc.ABC):
                     P += np.ones((len(edges_idx),)) @ I[edges_idx] <= max
         # detect the number of DAG layers to add
         if len(I.shape) == 1:
-            n_order = 1
+            n_samples = 1
         else:
-            n_order = I.shape[1]
+            n_samples = I.shape[1]
 
         # Create a DAG layer num for each vertex
         L = self.Variable(
-            acyclic_var_name, (g.num_vertices, n_order), 0, g.num_vertices - 1
+            acyclic_var_name, (g.num_vertices, n_samples), 0, g.num_vertices - 1
         )
         vix = {v: i for i, v in enumerate(g.vertices)}
-        for i_order in range(n_order):
+        for i_sample in range(n_samples):
             if Ip is not None:
                 if len(Ip.shape) == 1:
                     Ip_i_order = Ip
                 else:
-                    Ip_i_order = Ip[:, i_order]
+                    Ip_i_order = Ip[:, i_sample]
             if In is not None:
                 if len(In.shape) == 1:
                     In_i_order = In
                 else:
-                    In_i_order = In[:, i_order]
+                    In_i_order = In[:, i_sample]
 
             if Ip is not None:
                 # Get edges s->t that can have a positive flow
@@ -1040,10 +1080,10 @@ class Backend(abc.ABC):
                 # The layer position in a DAG of the target vertex of the edge
                 # has to be greater than the source vertex, otherwise Ip (pos flow) has to be 0
                 if len(e_ix) > 0:
-                    P += L[t_idx, i_order] - L[s_idx, i_order] >= Ip_i_order[e_ix] + (
+                    P += L[t_idx, i_sample] - L[s_idx, i_sample] >= Ip_i_order[e_ix] + (
                         1 - g.num_vertices
                     ) * (1 - Ip_i_order[e_ix])
-                    P += L[t_idx, i_order] - L[s_idx, i_order] <= g.num_vertices - 1
+                    P += L[t_idx, i_sample] - L[s_idx, i_sample] <= g.num_vertices - 1
             if In is not None:
                 # NOTE: Negative flows eq. to reversed directed edge
                 # Get edges s->t that can have a positive flow
@@ -1061,11 +1101,183 @@ class Backend(abc.ABC):
                 s_idx = np.array([vix[list(s)[0]] for (s, _) in edges])
                 t_idx = np.array([vix[list(t)[0]] for (_, t) in edges])
                 if len(e_ix) > 0:
-                    P += L[s_idx, i_order] - L[t_idx, i_order] >= In_i_order[e_ix] + (
+                    P += L[s_idx, i_sample] - L[t_idx, i_sample] >= In_i_order[e_ix] + (
                         1 - g.num_vertices
                     ) * (1 - In_i_order[e_ix])
-                    P += L[s_idx, i_order] - L[t_idx, i_order] <= g.num_vertices - 1
+                    P += L[s_idx, i_sample] - L[t_idx, i_sample] <= g.num_vertices - 1
             # TODO: Raise error if hypergraph
+        return P
+
+    def Acyclic(
+        self,
+        g: BaseGraph,
+        P: ProblemDef,
+        indicator_positive_var_name: Optional[str] = None,
+        indicator_negative_var_name: Optional[str] = None,
+        acyclic_var_name: str = VAR_DAG,
+        max_parents: Optional[Union[int, Dict[Any, int]]] = None,
+        vertex_lb_dist: Optional[List[Dict[Any, int]]] = None,
+        vertex_ub_dist: Optional[List[Dict[Any, int]]] = None,
+    ) -> ProblemDef:
+        """Create Acyclicity Constraint.
+
+        This function creates acyclicity constraints, ensuring that the selected edges
+        form an acyclic graph, meaning there are no cycles on the given property.
+        Acyclicity can be applied, for example, over flow constraints or signal properties.
+
+        Parameters
+        ----------
+        g : BaseGraph
+            The graph that defines the problem.
+        P : ProblemDef
+            The problem definition.
+        indicator_positive_var_name : str
+            The name of the indicator variable, i.e., which edges are selected.
+            Default is EXPR_NAME_FLOW_IPOS.
+        indicator_negative_var_name : str, optional
+            The name of the indicator variable for negative flows. Default is None.
+            If a negative flow appears, the source and target nodes of the edge are reversed.
+            For example, A->B with positive flow implies order(B) > order(A), with negative
+            flow it implies order(A) > order(B).
+        acyclic_var_name : str, optional
+            The name of the acyclic variable. Default is VAR_DAG.
+        max_parents : Optional[Union[int, Dict[Any, int]]], optional
+            The maximum number of parents per node. If an integer is provided, the maximum
+            number of parents is the same for all nodes. If a dictionary is provided, the
+            maximum number of parents can be different for each node. Default is None.
+        vertex_lb_dist : Optional[List[Dict[Any, int]]], optional
+            A list (one entry per experiment) of dictionaries that assign a lower bound
+            (minimum layer/distance) for each vertex.
+        vertex_ub_dist : Optional[List[Dict[Any, int]]], optional
+            A list (one entry per experiment) of dictionaries that assign an upper bound
+            (maximum layer/distance) for each vertex.
+
+        Returns:
+        -------
+        ProblemDef
+            The problem definition with acyclic constraints.
+
+        Raises:
+        ------
+        NotImplementedError
+            If hyperedges are used.
+        """
+        # Check that hyperedges are not used
+        for s, t in g.E:
+            if len(s) > 1 or len(t) > 1:
+                raise NotImplementedError("Hyperedges not supported")
+
+        # Process max_parents argument: if an int is provided, convert it to a dict
+        if isinstance(max_parents, int):
+            max_parents = {v: max_parents for v in g.vertices}
+
+        Ip = In = None
+        if (
+            indicator_positive_var_name is not None
+            and indicator_negative_var_name is not None
+        ):
+            Ip = P.expressions[indicator_positive_var_name]
+            In = P.expressions[indicator_negative_var_name]
+            I = Ip + In
+        elif indicator_positive_var_name is not None:
+            Ip = P.expressions[indicator_positive_var_name]
+            I = Ip
+        elif indicator_negative_var_name is not None:
+            In = P.expressions[indicator_negative_var_name]
+            I = In
+        else:
+            raise ValueError("At least one indicator variable name is required")
+
+        # Limit the number of parents per node, if requested
+        if max_parents is not None:
+            for v, max_val in max_parents.items():
+                edges_idx = [i for i, _ in g.in_edges(v)]
+                if edges_idx:
+                    # Sum selected parent edges
+                    P += np.ones((len(edges_idx),)) @ I[edges_idx] <= max_val
+
+        # Determine number of samples (if I is 1D, assume 1 sample)
+        if len(I.shape) == 1:
+            n_samples = 1
+        else:
+            n_samples = I.shape[1]
+
+        # Create a DAG layer variable for each vertex, one per sample.
+        L = self.Variable(
+            acyclic_var_name, (g.num_vertices, n_samples), 0, g.num_vertices - 1
+        )
+        vix = {v: i for i, v in enumerate(g.vertices)}
+
+        # If bounds lists are provided, ensure their length matches the number of samples.
+        if vertex_lb_dist is not None and len(vertex_lb_dist) != n_samples:
+            raise ValueError("Length of vertex_lb_dist must match number of samples")
+        if vertex_ub_dist is not None and len(vertex_ub_dist) != n_samples:
+            raise ValueError("Length of vertex_ub_dist must match number of samples")
+
+        # Loop over samples to add constraints based on indicator variables and the bounds.
+        for i_sample in range(n_samples):
+            if Ip is not None:
+                Ip_i_order = Ip if len(Ip.shape) == 1 else Ip[:, i_sample]
+            if In is not None:
+                In_i_order = In if len(In.shape) == 1 else In[:, i_sample]
+
+            if Ip is not None:
+                # Get edges that can have a positive flow.
+                if hasattr(Ip, "ub"):
+                    ub = Ip.ub if len(Ip.shape) == 1 else Ip.ub[:, i_sample]
+                    e_pos = [(i, g.get_edge(i)) for i in np.flatnonzero(ub > 0)]
+                    e_ix = np.array([i for i, (s, t) in e_pos if s and t])
+                else:
+                    e_ix = np.array([i for i, (s, t) in enumerate(g.E) if s and t])
+                edges = [g.get_edge(i) for i in e_ix]
+                s_idx = np.array([vix[list(s)[0]] for (s, _) in edges])
+                t_idx = np.array([vix[list(t)[0]] for (_, t) in edges])
+                if len(e_ix) > 0:
+                    P += L[t_idx, i_sample] - L[s_idx, i_sample] >= Ip_i_order[e_ix] + (
+                        1 - g.num_vertices
+                    ) * (1 - Ip_i_order[e_ix])
+                    P += L[t_idx, i_sample] - L[s_idx, i_sample] <= g.num_vertices - 1
+
+            if In is not None:
+                # Negative flows are handled as reversed directed edges.
+                if hasattr(In, "lb"):
+                    lb = In.lb if len(In.shape) == 1 else In.lb[:, i_sample]
+                    e_neg = [(i, g.get_edge(i)) for i in np.flatnonzero(lb < 0)]
+                    e_ix = np.array([i for i, (s, t) in e_neg if s and t])
+                else:
+                    e_ix = np.array([i for i, (s, t) in enumerate(g.E) if s and t])
+                edges = [g.get_edge(i) for i in e_ix]
+                s_idx = np.array([vix[list(s)[0]] for (s, _) in edges])
+                t_idx = np.array([vix[list(t)[0]] for (_, t) in edges])
+                if len(e_ix) > 0:
+                    P += L[s_idx, i_sample] - L[t_idx, i_sample] >= In_i_order[e_ix] + (
+                        1 - g.num_vertices
+                    ) * (1 - In_i_order[e_ix])
+                    P += L[s_idx, i_sample] - L[t_idx, i_sample] <= g.num_vertices - 1
+
+            # --- New: Add vertex lower and upper bound constraints ---
+            if vertex_lb_dist is not None:
+                list_vix = []
+                list_dist = []
+                for v in g.V:
+                    idx = vix[v]
+                    if v in vertex_lb_dist[i_sample]:
+                        list_vix.append(idx)
+                        list_dist.append(vertex_lb_dist[i_sample][v])
+                if list_vix:
+                    P += L[np.array(list_vix), i_sample] >= np.array(list_dist)
+            if vertex_ub_dist is not None:
+                list_vix = []
+                list_dist = []
+                for v in g.V:
+                    idx = vix[v]
+                    if v in vertex_ub_dist[i_sample]:
+                        list_vix.append(idx)
+                        list_dist.append(vertex_ub_dist[i_sample][v])
+                if list_vix:
+                    P += L[np.array(list_vix), i_sample] <= np.array(list_dist)
+
+            # TODO: Raise error if hypergraph is used
         return P
 
     def AcyclicFlow(
@@ -1205,24 +1417,52 @@ class Backend(abc.ABC):
     def NonZeroIndicator(
         self,
         V: CSymbol,
-        indexes: Optional[Union[Tuple, List, np.ndarray]] = None,
+        *args,  # new positional indices for multi-dimensional indexing
+        indexes: Optional[Union[int, slice, Tuple, List, np.ndarray]] = None,
         suffix_pos: str = "_ipos",
         suffix_neg: str = "_ineg",
         tolerance: float = 1e-3,
     ) -> ProblemDef:
-        # NOTE: This can add integer feasibility issues to the problem
-        c = []
-        S = V
-        lb = V.lb
-        ub = V.ub
+        # Ensure the variable is bounded
         if V._provided_lb is None or V._provided_ub is None:
             raise ValueError(
                 f"The continuous variable {V.name} is unbounded, indicators cannot be created."
             )
-        if indexes is not None and len(indexes) > 0:
-            S = V[indexes]
-            lb = V.lb[indexes]
-            ub = V.ub[indexes]
+
+        # Avoid ambiguity: don't allow both positional indices and the 'indexes' keyword
+        if args and indexes is not None:
+            raise ValueError(
+                "Provide either positional indices or the 'indexes' keyword, not both."
+            )
+
+        # If args is not none, we need to check if it is a tuple and more than
+        # one dimension was provided.
+        if isinstance(args, tuple) and len(args) > 1:
+            diff_len_shape = len(args) - len(V.shape)
+            if diff_len_shape > 0:
+                # If the last dimension is not 0, raise an error
+                if args[-1] != 0:
+                    raise ValueError(
+                        f"Cannot use {len(args)} positional indices for a variable of shape {V.shape}"
+                    )
+                else:
+                    # We ignore the last dimension
+                    args = args[:-1]
+
+        # Determine which indexing to use
+        idx = args if args else indexes
+
+        # If an index is provided, use it to slice the variable and its bounds
+        if idx is not None:
+            S = V[idx]
+            lb = V.lb[idx]
+            ub = V.ub[idx]
+        else:
+            S = V
+            lb = V.lb
+            ub = V.ub
+
+        c = []
         I_pos = self.Variable(
             V.name + suffix_pos, S.shape, 0, 1, vartype=VarType.BINARY
         )
@@ -1230,12 +1470,15 @@ class Backend(abc.ABC):
             V.name + suffix_neg, S.shape, 0, 1, vartype=VarType.BINARY
         )
         I = I_pos + I_neg
-        c += [I <= 1]  # mutually exclusive
+        c += [I <= 1]  # Ensure mutual exclusivity
+
+        # Disable infeasible binary indicators based on bounds
         if np.sum(ub <= 0) > 0:
             c += [I_pos[np.where(ub <= 0)[0]] == 0]
         if np.sum(lb >= 0) > 0:
             c += [I_neg[np.where(lb >= 0)[0]] == 0]
-        # I_neg and I_pos mutually exclusive (I_pos + I_neg <= 1)
+
+        # Add constraints to enforce variable behavior depending on the indicator activation:
         # If I_pos = 1 and I_neg = 0: V >= tol AND V <= ub
         # If I_pos = 0 and I_neg = 1: V >= lb AND V <= -tol
         # If I_pos = 0 and I_neg = 0: V >= 0 AND V <= 0
@@ -1243,8 +1486,7 @@ class Backend(abc.ABC):
             S >= I_neg.multiply(lb) + I_pos * tolerance,
             S <= I_pos.multiply(ub) - I_neg * tolerance,
         ]
-        P = self.Problem(c)
-        P.register(EXPR_NAME_FLOW_NZI, I)
+
         return self.Problem(c)
 
     # TODO: Remove function

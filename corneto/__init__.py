@@ -1,10 +1,11 @@
+import logging
 import sys
 import warnings
 
 from corneto import _plotting as pl
 from corneto._constants import *
-from corneto._graph import Attr, Attributes, EdgeType, Graph
-from corneto._util import info
+from corneto._data import Data, Feature, Sample
+from corneto._util import info, suppress_output
 from corneto.backend import DEFAULT_BACKEND, DEFAULT_SOLVER, available_backends
 
 # from corneto.backend import DEFAULT_BACKEND as K  # deprecate
@@ -13,6 +14,9 @@ from corneto.backend import DEFAULT_BACKEND as opt
 from corneto.backend._base import HammingLoss as hamming_loss
 from corneto.backend._base import Indicator, NonZeroIndicator
 
+#from corneto._graph import Attr, Attributes, EdgeType, Graph
+from corneto.graph import Attr, Attributes, EdgeType, Graph
+from corneto.io import load_graph_from_sif
 # from corneto._core import GReNet as Graph
 from corneto.methods import (
     create_flow_graph,
@@ -21,6 +25,9 @@ from corneto.methods import (
     signflow_constraints,
 )
 from corneto.utils import Attr, Attributes
+
+logger = logging.getLogger(__name__)
+logger.addHandler(logging.NullHandler())
 
 
 def get_version():
@@ -59,19 +66,24 @@ ops = DeprecatedBackend(opt)
 
 
 __all__ = [
-    "Attr",
-    "EdgeType",
-    "Attributes",
-    "Graph",
-    "info",
     "DEFAULT_BACKEND",
-    "available_backends",
+    "Attr",
+    "Attributes",
+    "Data",
+    "EdgeType",
+    "Feature",
+    "Graph",
     "K",
+    "Sample",
+    "available_backends",
+    "info",
     "ops",
+    "suppress_output",
 ]
 
 
-import_sif = Graph.from_sif
+#import_sif = Graph.from_sif
+import_sif = load_graph_from_sif
 
 try:
     # Python 3.8 and newer

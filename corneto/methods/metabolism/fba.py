@@ -1,3 +1,4 @@
+import warnings
 from typing import Dict, Optional, Union
 
 import numpy as np
@@ -12,7 +13,6 @@ from corneto.backend._base import (
     ProblemDef,
     VarType,
 )
-import warnings
 
 
 class FBAProblem(ProblemDef):

@@ -11,5 +11,6 @@
 
 context-specific-metabolic-omics.ipynb
 single-sample-carnival-transcriptomics.ipynb
+network-sampler.ipynb
 kpnn-with-sc.ipynb
 ```
