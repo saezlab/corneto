@@ -6,7 +6,6 @@ CORNETO can be used to infer and contextualize metabolic networks. In this tutor
 :maxdepth: 3
 
 flux-balance-analysis.ipynb
-sparse-fba.ipynb
 multicondition-sfba.ipynb
 imat.ipynb
 multicondition-imat.ipynb

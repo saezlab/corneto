@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Context-specific metabolic model from transcriptomics data &#8212; CORNETO  documentation</title>
+    <title>Context-specific metabolic networks from omics &#8212; CORNETO  documentation</title>
   
   
   
@@ -32,16 +32,8 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster.custom.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster.bundle.min.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster-sideTip-shadow.min.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster-sideTip-punk.min.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster-sideTip-noir.min.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster-sideTip-light.min.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster-sideTip-borderless.min.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/micromodal.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=e238a3f6" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=5ec6e6de" />
   
   <!-- So that users can add custom icons -->
   <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
@@ -49,25 +41,20 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/jquery.js?v=5d32c60e"></script>
-    <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
     <script src="../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../_static/js/hoverxref.js"></script>
-    <script src="../_static/js/tooltipster.bundle.min.js"></script>
-    <script src="../_static/js/micromodal.min.js"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
-    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/context-specific-metabolic-omics';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://saezlab.github.io/corneto/dev/_static/switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.0.0.dev3';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://saezlab.github.io/corneto/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.0.0.dev5';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
+    <link rel="canonical" href="https://saezlab.github.io/corneto/tutorials/context-specific-metabolic-omics.html" />
+    <link rel="icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Single sample intracellular signalling network inference" href="single-sample-carnival-transcriptomics.html" />
@@ -175,8 +162,15 @@
   <ul class="bd-navbar-elements navbar-nav">
     
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../install.html">
+    Install
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../guide/index.html">
-    User guide
+    Guide
   </a>
 </li>
 
@@ -190,17 +184,27 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../api/index.html">
-    API Reference
+    Reference
   </a>
 </li>
 
-
-<li class="nav-item ">
-  <a class="nav-link nav-external" href="https://github.com/saezlab/corneto">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-external" href="https://github.com/saezlab/corneto">
     GitHub
   </a>
 </li>
 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
       
@@ -275,8 +279,15 @@
   <ul class="bd-navbar-elements navbar-nav">
     
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../install.html">
+    Install
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../guide/index.html">
-    User guide
+    Guide
   </a>
 </li>
 
@@ -290,7 +301,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../api/index.html">
-    API Reference
+    Reference
   </a>
 </li>
 
@@ -329,8 +340,9 @@
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Context-specific metabolic model from transcriptomics data</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Context-specific metabolic networks from omics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="single-sample-carnival-transcriptomics.html">Single sample intracellular signalling network inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="network-sampler.html">Implementing an alternative network sampler</a></li>
 <li class="toctree-l1"><a class="reference internal" href="kpnn-with-sc.html">Knowledge-primed Neural Networks (KPNNs) for single cell data</a></li>
 </ul>
 </div>
@@ -375,7 +387,7 @@
     
     <li class="breadcrumb-item"><a href="index.html" class="nav-link">Tutorials</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Context-specific metabolic model from transcriptomics data</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Context-specific metabolic networks from omics</span></li>
   </ul>
 </nav>
 </div>
@@ -392,14 +404,15 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="context-specific-metabolic-model-from-transcriptomics-data">
-<h1>Context-specific metabolic model from transcriptomics data<a class="headerlink" href="#context-specific-metabolic-model-from-transcriptomics-data" title="Link to this heading">#</a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="context-specific-metabolic-networks-from-omics">
+<h1>Context-specific metabolic networks from omics<a class="headerlink" href="#context-specific-metabolic-networks-from-omics" title="Link to this heading">#</a></h1>
+<p>Here we will illustrate the use of the iMAT method, as implemented in CORNETO, to extract context specific metabolic networks from transcriptomics. CORNETO implements an extension of iMAT to support multiple samples, and also gives more control for customization.</p>
+<p>We will use the core <a class="reference external" href="https://systemsbiology.ucsd.edu/Downloads/E_coli_Core">E. coli PKN</a>, and microarray-based gene <a class="reference external" href="http://systemsbiology.ucsd.edu/InSilicoOrganisms/Ecoli/EcoliExpression2">expression data</a> corresponding to a anaerobic growth on glucose of a wild-type E. coli strain. This tutorial is based on the original <a class="reference external" href="https://opencobra.github.io/cobratoolbox/stable/tutorials/tutorial_extractionTranscriptomic.html">COBRA tutorial</a>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">corneto</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cn</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-
-<span class="kn">import</span><span class="w"> </span><span class="nn">corneto</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cn</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="n">cn</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
 </pre></div>
@@ -414,7 +427,7 @@
             </td>
             <td>
             <table>
-                <tr><td>Installed version:</td><td style='text-align:left'>v1.0.0.dev3 (latest stable: v1.0.0-alpha)</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.6.0, PICOS v2.5.1</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CVXOPT, GLPK, GLPK_MI, HIGHS, SCIP, SCIPY</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.3</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href=https://github.com/saezlab/corneto>https://github.com/saezlab/corneto</a></td></tr>
+                <tr><td>Installed version:</td><td style='text-align:left'>v1.0.0.dev5 (latest stable: v1.0.0-alpha)</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.6.5, PICOS v2.6.1</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CVXOPT, GLPK, GLPK_MI, HIGHS, SCIP, SCIPY</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.3</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href=https://github.com/saezlab/corneto>https://github.com/saezlab/corneto</a></td></tr>
             </table>
             </td>
         </tr>
@@ -422,23 +435,24 @@
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">cobra.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_sbml_model</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods.future.imat</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiSampleIMAT</span>
 
-<span class="n">model</span> <span class="o">=</span> <span class="n">read_sbml_model</span><span class="p">(</span><span class="s2">&quot;../../tests/gem/ecoli_core.zip&quot;</span><span class="p">)</span>
-<span class="n">G</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Graph</span><span class="o">.</span><span class="n">from_cobra_model</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
-<span class="n">G</span><span class="o">.</span><span class="n">shape</span>
+<span class="n">MultiSampleIMAT</span><span class="o">.</span><span class="n">show_citations</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(77, 91)
-</pre></div>
+<div class="output text_html"><ul><li><strong>Tomer Shlomi, Moran N Cabili, Markus J Herrgård, Bernhard Ø Palsson, Eytan Ruppin</strong>. <em>Network-based prediction of human tissue-specific metabolism</em>. <em>Nature biotechnology</em>, Vol. 26, No. 9, pp. 1003--1010 (2008).</li><li><strong>Pablo Rodriguez-Mier, Martin Garrido-Rodriguez, Attila Gabor, Julio Saez-Rodriguez</strong>. <em>Unified knowledge-driven network inference from omics data</em>. <em>bioRxiv</em>, pp. 10 (2024).</li></ul></div></div>
 </div>
-</div>
-</div>
+<section id="loading-data-from-cobra">
+<h2>Loading data from COBRA<a class="headerlink" href="#loading-data-from-cobra" title="Link to this heading">#</a></h2>
+<p>We will use the ecoli core metabolic network and ecoli data example obtained from the COBRA package. This dataset contains 4 biological replicates. In this tutorial, we will use the single sample iMAT, we will average the expression and use this for analysis, since we are not interesed in analysing differences of the replicates</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_expr</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;../../tests/gem/ecoli_example_data.zip&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">import_cobra_model</span>
+
+<span class="n">G</span> <span class="o">=</span> <span class="n">import_cobra_model</span><span class="p">(</span><span class="s2">&quot;../../tests/gem/ecoli_core.zip&quot;</span><span class="p">)</span>
+<span class="n">df_expr</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;../../tests/gem/ecoli_example_data.zip&quot;</span><span class="p">)</span>
 <span class="n">df_expr</span>
 </pre></div>
 </div>
@@ -577,6 +591,69 @@
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">G</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(77, 91)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We can inspect the content of the network</span>
+<span class="n">G</span><span class="o">.</span><span class="n">get_attr_edges</span><span class="p">()[:</span><span class="mi">5</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[{&#39;__edge_type&#39;: &#39;directed&#39;,
+  &#39;id&#39;: &#39;EX_ac_b&#39;,
+  &#39;__source_attr&#39;: {&#39;ac_b&#39;: {&#39;__value&#39;: np.float64(-1.0)}},
+  &#39;__target_attr&#39;: {},
+  &#39;default_lb&#39;: np.float64(-1000.0),
+  &#39;default_ub&#39;: np.float64(1000.0),
+  &#39;GPR&#39;: &#39;&#39;},
+ {&#39;__edge_type&#39;: &#39;directed&#39;,
+  &#39;id&#39;: &#39;EX_akg_b&#39;,
+  &#39;__source_attr&#39;: {&#39;akg_b&#39;: {&#39;__value&#39;: np.float64(-1.0)}},
+  &#39;__target_attr&#39;: {},
+  &#39;default_lb&#39;: np.float64(-1000.0),
+  &#39;default_ub&#39;: np.float64(1000.0),
+  &#39;GPR&#39;: &#39;&#39;},
+ {&#39;__edge_type&#39;: &#39;directed&#39;,
+  &#39;id&#39;: &#39;EX_co2_b&#39;,
+  &#39;__source_attr&#39;: {&#39;co2_b&#39;: {&#39;__value&#39;: np.float64(-1.0)}},
+  &#39;__target_attr&#39;: {},
+  &#39;default_lb&#39;: np.float64(-1000.0),
+  &#39;default_ub&#39;: np.float64(1000.0),
+  &#39;GPR&#39;: &#39;&#39;},
+ {&#39;__edge_type&#39;: &#39;directed&#39;,
+  &#39;id&#39;: &#39;EX_etoh_b&#39;,
+  &#39;__source_attr&#39;: {&#39;etoh_b&#39;: {&#39;__value&#39;: np.float64(-1.0)}},
+  &#39;__target_attr&#39;: {},
+  &#39;default_lb&#39;: np.float64(-1000.0),
+  &#39;default_ub&#39;: np.float64(1000.0),
+  &#39;GPR&#39;: &#39;&#39;},
+ {&#39;__edge_type&#39;: &#39;directed&#39;,
+  &#39;id&#39;: &#39;EX_for_b&#39;,
+  &#39;__source_attr&#39;: {&#39;for_b&#39;: {&#39;__value&#39;: np.float64(-1.0)}},
+  &#39;__target_attr&#39;: {},
+  &#39;default_lb&#39;: np.float64(-1000.0),
+  &#39;default_ub&#39;: np.float64(1000.0),
+  &#39;GPR&#39;: &#39;&#39;}]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="mapping-data-using-gene-protein-reaction-gpr-rules">
+<h2>Mapping data using Gene-Protein-Reaction (GPR) rules<a class="headerlink" href="#mapping-data-using-gene-protein-reaction-gpr-rules" title="Link to this heading">#</a></h2>
+<p>We need to compute reaction scores from gene expression data. For this, we will classify genes as highly expressed and lowly expressed based on thresholds applied to the marginal distribution of gene intensities. Then, we will map these values by applying the Gene-Protein-Reaction (GPR) rules included in the Ecoli PKN.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods.metabolism</span><span class="w"> </span><span class="kn">import</span> <span class="n">evaluate_gpr_expression</span><span class="p">,</span> <span class="n">get_unique_genes</span>
 
 <span class="n">genes</span> <span class="o">=</span> <span class="n">get_unique_genes</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">startswith</span><span class="o">=</span><span class="s2">&quot;b&quot;</span><span class="p">)</span>
@@ -592,15 +669,12 @@
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_expr</span><span class="p">[[</span><span class="s2">&quot;value&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">bins</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_expr</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;gene&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">stack</span><span class="p">()</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;expression&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">bins</span><span class="o">=</span><span class="mi">30</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[&lt;Axes: title={&#39;center&#39;: &#39;value&#39;}&gt;]], dtype=object)
-</pre></div>
-</div>
-<img alt="../_images/88eaf2f75cc634af428878b1342d1d9c6bf00859712e42bc64179fe6250f78b7.png" src="../_images/88eaf2f75cc634af428878b1342d1d9c6bf00859712e42bc64179fe6250f78b7.png" />
+<img alt="../_images/e284dff9c8e6c0c7b66c731fe744be7caab4bfb448410370d15bb62974ecec53.png" src="../_images/e284dff9c8e6c0c7b66c731fe744be7caab4bfb448410370d15bb62974ecec53.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -790,22 +864,182 @@
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods.metabolism.fba</span><span class="w"> </span><span class="kn">import</span> <span class="n">multicondition_imat</span>
-
-<span class="n">P</span> <span class="o">=</span> <span class="n">multicondition_imat</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
-<span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;SCIP&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">G</span><span class="o">.</span><span class="n">get_attr_from_edges</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">),</span> <span class="s2">&quot;score&quot;</span><span class="p">:</span> <span class="n">e</span><span class="p">})</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Problem(Minimize(Expression(AFFINE, UNKNOWN, ())), [Inequality(Constant(CONSTANT, UNKNOWN, (91,))), Inequality(Variable((91,), _flow)), Equality(Expression(AFFINE, UNKNOWN, (77,)), Constant(CONSTANT, ZERO, ())), Inequality(Expression(AFFINE, NONNEGATIVE, (91,))), Equality(Expression(AFFINE, NONNEGATIVE, (36,)), Constant(CONSTANT, ZERO, ())), Inequality(Expression(AFFINE, UNKNOWN, (91,))), Inequality(Variable((91,), _flow)), Inequality(Expression(AFFINE, NONNEGATIVE, (91,))), Inequality(Variable((91,), _or, boolean=True))])
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>id</th>
+      <th>score</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>EX_ac_b</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>EX_akg_b</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>EX_co2_b</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>EX_etoh_b</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>EX_for_b</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>86</th>
+      <td>TALA</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>87</th>
+      <td>THD2</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>88</th>
+      <td>TKT1</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>89</th>
+      <td>TKT2</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>90</th>
+      <td>TPI</td>
+      <td>1</td>
+    </tr>
+  </tbody>
+</table>
+<p>91 rows × 2 columns</p>
+</div></div></div>
+</div>
+</section>
+<section id="context-specific-network-inference">
+<h2>Context-specific network inference<a class="headerlink" href="#context-specific-network-inference" title="Link to this heading">#</a></h2>
+<p>We will use the reaction scores to create a <code class="docutils literal notranslate"><span class="pre">Data</span></code> object. The <code class="docutils literal notranslate"><span class="pre">id</span></code> corresponds to the reaction id of the PKN, and the value to the reaction score. We indicate that these features map to edges (reactions) with <code class="docutils literal notranslate"><span class="pre">mapping</span></code> = <code class="docutils literal notranslate"><span class="pre">edge</span></code>. Note that if <code class="docutils literal notranslate"><span class="pre">mapping</span></code> = <code class="docutils literal notranslate"><span class="pre">none</span></code>, then it will be assumed that the dataset contains genes, and automatic GPR will be performed to translate from genes to reaction scores.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a dataset (here we only have 1 sample, which is the mean of the four measurements)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">corneto._data</span><span class="w"> </span><span class="kn">import</span> <span class="n">Data</span>
+
+<span class="n">feats</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">edge</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">get_attr_from_edges</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">),</span> <span class="n">e</span><span class="p">):</span>
+    <span class="n">feats</span><span class="p">[</span><span class="n">edge</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">val</span><span class="p">,</span> <span class="s2">&quot;mapping&quot;</span><span class="p">:</span> <span class="s2">&quot;edge&quot;</span><span class="p">}</span>
+<span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;sample1&quot;</span><span class="p">:</span> <span class="n">feats</span>
+<span class="p">}</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">Data</span><span class="o">.</span><span class="n">from_cdict</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="n">data</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Data(n_samples=1, n_feats=[91])
+</pre></div>
+</div>
+</div>
+</div>
+<p>We run the iMAT method (in this case, only 1 sample, which is the mean of the 4 biological replicates)</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># eps is the min absolute flux value that we will consider</span>
+<span class="c1"># for reactions with positive scores, i.e., if a reaction</span>
+<span class="c1"># with a positive score is included in the context specific</span>
+<span class="c1"># metabolic network, it has to be able to carry an absolute</span>
+<span class="c1"># metabolic flux value above eps.</span>
+<span class="n">eps</span> <span class="o">=</span> <span class="mf">1e-2</span>
+
+<span class="c1"># We will also add a small penalty to make networks sparser.</span>
+<span class="c1"># When we have more than 1 sample, this parameter controls </span>
+<span class="c1"># the regularization across samples, blocking entire groups</span>
+<span class="c1"># of reactions across samples. Here, we are just penalizing</span>
+<span class="c1"># the inclusion of reactions not needed to fit the reaction</span>
+<span class="c1"># scores</span>
+<span class="n">m</span> <span class="o">=</span> <span class="n">MultiSampleIMAT</span><span class="p">(</span><span class="n">lambda_reg</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="n">eps</span><span class="p">)</span>
+<span class="n">P</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+<span class="n">P</span><span class="o">.</span><span class="n">expr</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_flow&#39;: _flow: Variable((91,), _flow),
+ &#39;edge_has_flux&#39;: edge_has_flux: Variable((91,), edge_has_flux, boolean=True),
+ &#39;_flow_ipos&#39;: _flow_ipos: Variable((91,), _flow_ipos, boolean=True),
+ &#39;_flow_ineg&#39;: _flow_ineg: Variable((91,), _flow_ineg, boolean=True),
+ &#39;flow&#39;: _flow: Variable((91,), _flow)}
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_sol</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;scipy&quot;</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">0</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The final result indicates that 1 reaction with positive score was not selected, and 1 reaction with negative score was included. In total, the network contains 61 reactions with fluxes. The last value corresponds to the number of reactions that were not blocked.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">P</span><span class="o">.</span><span class="n">objectives</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1.0
+1.0
+60.0
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Metabolic fluxes correspond to values of the flow variable</span>
+<span class="c1"># Note that there are 91 values, corresponding to the 91 reactions</span>
+<span class="c1"># in the PKN</span>
+
+<span class="n">df_sol</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
     <span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">G</span><span class="o">.</span><span class="n">get_attr_from_edges</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">),</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;flux&quot;</span><span class="p">]</span>
 <span class="p">)</span>
 <span class="n">df_sol</span>
@@ -837,23 +1071,23 @@
   <tbody>
     <tr>
       <th>EX_ac_b</th>
-      <td>7.898471</td>
+      <td>3.935488e+00</td>
     </tr>
     <tr>
       <th>EX_akg_b</th>
-      <td>0.000000</td>
+      <td>3.469447e-18</td>
     </tr>
     <tr>
       <th>EX_co2_b</th>
-      <td>0.000000</td>
+      <td>0.000000e+00</td>
     </tr>
     <tr>
       <th>EX_etoh_b</th>
-      <td>8.360426</td>
+      <td>4.095543e+00</td>
     </tr>
     <tr>
       <th>EX_for_b</th>
-      <td>17.263878</td>
+      <td>8.299186e+00</td>
     </tr>
     <tr>
       <th>...</th>
@@ -861,23 +1095,23 @@
     </tr>
     <tr>
       <th>TALA</th>
-      <td>0.043172</td>
+      <td>1.000000e-02</td>
     </tr>
     <tr>
       <th>THD2</th>
-      <td>3.595203</td>
+      <td>8.404543e-01</td>
     </tr>
     <tr>
       <th>TKT1</th>
-      <td>0.043172</td>
+      <td>1.000000e-02</td>
     </tr>
     <tr>
       <th>TKT2</th>
-      <td>-0.043172</td>
+      <td>-1.000000e-02</td>
     </tr>
     <tr>
       <th>TPI</th>
-      <td>9.676129</td>
+      <td>4.391463e+00</td>
     </tr>
   </tbody>
 </table>
@@ -886,20 +1120,33 @@
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">selected_reactions</span> <span class="o">=</span> <span class="n">df_sol</span><span class="p">[</span><span class="n">df_sol</span><span class="o">.</span><span class="n">flux</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="mf">1e-6</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_sol</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">bins</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[&lt;Axes: title={&#39;center&#39;: &#39;flux&#39;}&gt;]], dtype=object)
+</pre></div>
+</div>
+<img alt="../_images/d9585fb7b00a8f35d203ce8301fa8668ce70f93af24a0809a55cfeff8f4a3b08.png" src="../_images/d9585fb7b00a8f35d203ce8301fa8668ce70f93af24a0809a55cfeff8f4a3b08.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">selected_reactions</span> <span class="o">=</span> <span class="n">df_sol</span><span class="p">[</span><span class="n">df_sol</span><span class="o">.</span><span class="n">flux</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="n">eps</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">eps</span><span class="p">)]</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
 <span class="nb">len</span><span class="p">(</span><span class="n">selected_reactions</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>59
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>60
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">sum</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">_flow_ipos</span><span class="o">.</span><span class="n">value</span> <span class="o">+</span> <span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">_flow_ineg</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">edge_has_flux</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -909,6 +1156,102 @@
 </div>
 </div>
 </div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Extract the context specific network</span>
+<span class="n">G_ctx</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">edge_subgraph</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">edge_has_flux</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
+<span class="n">G_ctx</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(57, 60)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">G_ctx</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">layout</span><span class="o">=</span><span class="s2">&quot;neato&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/280699531c43bc2d5d7b01c049923922966e791947d6731df5fbb81da0b54533.svg" src="../_images/280699531c43bc2d5d7b01c049923922966e791947d6731df5fbb81da0b54533.svg" />
+</div>
+</div>
+</section>
+<section id="old-version">
+<h2>Old version<a class="headerlink" href="#old-version" title="Link to this heading">#</a></h2>
+<p>Original experiments in the manuscript used the old <code class="docutils literal notranslate"><span class="pre">multicondition_imat</span></code>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods.metabolism.fba</span><span class="w"> </span><span class="kn">import</span> <span class="n">multicondition_imat</span>
+
+<span class="n">P</span> <span class="o">=</span> <span class="n">multicondition_imat</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">e</span><span class="p">),</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="n">eps</span><span class="p">)</span>
+<span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;scipy&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">P</span><span class="o">.</span><span class="n">objectives</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2.0
+60.0
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="citations">
+<h2>Citations<a class="headerlink" href="#citations" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">MultiSampleIMAT</span><span class="o">.</span><span class="n">show_bibtex</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html">
+    <div style='
+        background-color: #f7f7f9;
+        border: 1px solid #e1e1e8;
+        border-radius: 8px;
+        padding: 1em 1.5em;
+        font-family: Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;
+        font-size: 0.9em;
+        line-height: 1.6;
+        color: #333;
+        overflow-x: auto;
+        white-space: pre;
+    '>@article{shlomi2008network,
+    title={Network-based prediction of human tissue-specific metabolism},
+    author={Shlomi, Tomer and Cabili, Moran N and Herrg{\aa}rd, Markus J and Palsson, Bernhard {\O} and Ruppin, Eytan},
+    journal={Nature biotechnology},
+    volume={26},
+    number={9},
+    pages={1003--1010},
+    year={2008},
+    publisher={Nature Publishing Group US New York}
+}
+
+@article{rodriguez2024unified,
+    title={Unified knowledge-driven network inference from omics data},
+    author={Rodriguez-Mier, Pablo and Garrido-Rodriguez, Martin and Gabor, Attila and Saez-Rodriguez, Julio},
+    journal={bioRxiv},
+    pages={10},
+    year={2024},
+    publisher={Cold Spring Harbor Laboratory}
+}</div>
+    </div></div>
+</div>
+</section>
 </section>
 
 
@@ -951,13 +1294,20 @@
 
 
   <div class="sidebar-secondary-item">
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="../_sources/tutorials/context-specific-metabolic-omics.ipynb.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div></div>
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loading-data-from-cobra">Loading data from COBRA</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mapping-data-using-gene-protein-reaction-gpr-rules">Mapping data using Gene-Protein-Reaction (GPR) rules</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#context-specific-network-inference">Context-specific network inference</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#old-version">Old version</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#citations">Citations</a></li>
+</ul>
+  </nav></div>
 
 </div></div>
               
@@ -984,7 +1334,7 @@
 
   <p class="copyright">
     
-      © Copyright 2023, Saez-Rodriguez group.
+      © Copyright 2023-2025, Saez-Rodriguez lab. (EMBL-EBI, Heidelberg University).
       <br/>
     
   </p>

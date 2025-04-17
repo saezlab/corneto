@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Steiner Trees (STs) &#8212; CORNETO  documentation</title>
+    <title>Steiner trees &#8212; CORNETO  documentation</title>
   
   
   
@@ -32,16 +32,8 @@
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster.custom.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster.bundle.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster-sideTip-shadow.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster-sideTip-punk.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster-sideTip-noir.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster-sideTip-light.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster-sideTip-borderless.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/micromodal.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=e238a3f6" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=5ec6e6de" />
   
   <!-- So that users can add custom icons -->
   <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
@@ -49,29 +41,24 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/jquery.js?v=5d32c60e"></script>
-    <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
     <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../../_static/js/hoverxref.js"></script>
-    <script src="../../_static/js/tooltipster.bundle.min.js"></script>
-    <script src="../../_static/js/micromodal.min.js"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
-    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'guide/networks/steiner-trees';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://saezlab.github.io/corneto/dev/_static/switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.0.0.dev3';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://saezlab.github.io/corneto/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.0.0.dev5';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
+    <link rel="canonical" href="https://saezlab.github.io/corneto/guide/networks/steiner-trees.html" />
+    <link rel="icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Prize-Collecting Steiner Trees (PCSTs)" href="pcst.html" />
-    <link rel="prev" title="Multi-sample shortest paths" href="multi-sample-shortest-paths.html" />
+    <link rel="next" title="Prize-Collecting Steiner Trees (PCST)" href="pcst.html" />
+    <link rel="prev" title="Acyclic Flows" href="acyclic-flows.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -174,9 +161,16 @@
 <nav>
   <ul class="bd-navbar-elements navbar-nav">
     
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install.html">
+    Install
+  </a>
+</li>
+
+
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="../index.html">
-    User guide
+    Guide
   </a>
 </li>
 
@@ -190,17 +184,27 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../api/index.html">
-    API Reference
+    Reference
   </a>
 </li>
 
-
-<li class="nav-item ">
-  <a class="nav-link nav-external" href="https://github.com/saezlab/corneto">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-external" href="https://github.com/saezlab/corneto">
     GitHub
   </a>
 </li>
 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
       
@@ -274,9 +278,16 @@
 <nav>
   <ul class="bd-navbar-elements navbar-nav">
     
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install.html">
+    Install
+  </a>
+</li>
+
+
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="../index.html">
-    User guide
+    Guide
   </a>
 </li>
 
@@ -290,7 +301,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../api/index.html">
-    API Reference
+    Reference
   </a>
 </li>
 
@@ -331,21 +342,23 @@
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../intro/index.html">Getting started</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../intro/prior-knowledge.html">Prior Knowledge and Graphs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/data.html">Working with data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/plotting.html">Plotting</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../intro/constrained-optimization.html">Constrained Optimization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../intro/multi-commodity-network-flows.html">Multi-commodity Network Flows</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../intro/acyclic-flows.html">Acyclic Flows</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Network methods</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="shortest-paths.html">Shortest paths</a></li>
 <li class="toctree-l2"><a class="reference internal" href="multi-sample-shortest-paths.html">Multi-sample shortest paths</a></li>
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">Steiner Trees (STs)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pcst.html">Prize-Collecting Steiner Trees (PCSTs)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multi-commodity-network-flows.html">Multi-commodity Network Flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="acyclic-flows.html">Acyclic Flows</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Steiner trees</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pcst.html">Prize-Collecting Steiner Trees (PCST)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multi-pcst-grb.html">Multi-sample PCST</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../metabolism/index.html">Metabolism</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../metabolism/flux-balance-analysis.html">Flux Balance Analysis (FBA)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../metabolism/sparse-fba.html">Sparse FBA</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../metabolism/multicondition-sfba.html">Multi-condition sparse FBA</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../metabolism/imat.html">Context-specific models (iMAT)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../metabolism/multicondition-imat.html">Multi-condition iMAT</a></li>
@@ -353,13 +366,10 @@
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../signaling/index.html">Signaling</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../signaling/carnival.html">CARNIVAL</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../signaling/multicondition-carnival.html">Multi-condition CARNIVAL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../signaling/multisample-carnival.html">Multi-sample CARNIVAL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../signaling/cellnopt_ILP.html">Acyclic boolean models of cell signaling (experimental)</a></li>
 
 
-</ul>
-</details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../interactomics/index.html">Interactomics</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../interoperability/index.html">Interoperability</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -413,12 +423,12 @@
       </a>
     </li>
     
-    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">User guide</a></li>
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Guide</a></li>
     
     
     <li class="breadcrumb-item"><a href="index.html" class="nav-link">Network methods</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Steiner Trees (STs)</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Steiner trees</span></li>
   </ul>
 </nav>
 </div>
@@ -435,185 +445,50 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="steiner-trees-sts">
-<h1>Steiner Trees (STs)<a class="headerlink" href="#steiner-trees-sts" title="Link to this heading">#</a></h1>
-<p>A Steiner tree is a concept stemming from combinatorial optimization that seeks to connect a given set of vertices (or nodes) in the shortest possible total distance, but with the added provision that additional nodes not in the original set can be included if they reduce the overall connecting distance.</p>
-<p>Given a weighted graph <span class="math notranslate nohighlight">\( G = (V, E) \)</span> and a subset <span class="math notranslate nohighlight">\( T \subseteq V \)</span> of terminal vertices, the goal of the Steiner Tree problem is to find a tree of minimum weight in <span class="math notranslate nohighlight">\( G \)</span> that spans all vertices in <span class="math notranslate nohighlight">\( T \)</span>. This tree can include vertices not in <span class="math notranslate nohighlight">\( T \)</span>, and these additional vertices are called Steiner vertices. The objective is to connect all the terminals using the shortest possible total edge weight.</p>
-<p>One notable application of Steiner trees is in the analysis and modeling of biological networks. By using Steiner trees, researchers can identify minimal subnetworks that connect a given set of proteins or genes, potentially pinpointing previously unobserved or unknown elements (analogous to the Steiner points) that play crucial roles in these networks. Such insights can help in understanding disease mechanisms, drug targets, and the fundamental underpinnings of biological processes.</p>
-<p>The Steiner tree problem, like many other combinatorial challenges, is an NP-hard optimization problem. This implies that finding optimal solutions for large instances of the problem can be computationally hard. To tackle this, numerous heuristic methods have been developed which offer reasonably good solutions within an acceptable timeframe. However, many of these methods are typically tailored for specific cases, for example undirected graphs. Certain assumptions inherent in these methods can make them difficult to modify or adapt for different problem scenarios.</p>
-<p>CORNETO stands as a robust tool in this realm, offering flexible modeling capabilities for Steiner trees. By modelling steiner tree problems as Integer Linear Programming problems, CORNETO offers a more advanced and flexible approach to modeling Steiner trees. This allows users to model and solve Steiner tree problems in a variety of ways, including:</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="steiner-trees">
+<h1>Steiner trees<a class="headerlink" href="#steiner-trees" title="Link to this heading">#</a></h1>
+<section id="what-are-steiner-trees">
+<h2>What are Steiner Trees?<a class="headerlink" href="#what-are-steiner-trees" title="Link to this heading">#</a></h2>
+<p>Steiner trees are a fundamental concept in network optimization. Given a graph with weighted edges and a subset of vertices called terminals, a Steiner tree is the minimum-cost tree that connects all the terminal nodes. Unlike a minimum spanning tree which must include all vertices in the graph, a Steiner tree may include additional non-terminal vertices (called Steiner points) to minimize the overall cost.</p>
+<p>Steiner tree problems are widely used for the analysis of biological networks, such as protein-protein interaction networks.</p>
+</section>
+<section id="how-corneto-solves-steiner-tree-problems">
+<h2>How CORNETO Solves Steiner Tree Problems<a class="headerlink" href="#how-corneto-solves-steiner-tree-problems" title="Link to this heading">#</a></h2>
+<p>CORNETO provides powerful capabilities for exactly solving Steiner tree problems through its <code class="docutils literal notranslate"><span class="pre">SteinerTreeFlow</span></code> method. Unlike approximation algorithms, CORNETO offers exact solutions using mathematical programming formulations.</p>
+<section id="key-features">
+<h3>Key Features:<a class="headerlink" href="#key-features" title="Link to this heading">#</a></h3>
+<ol class="arabic simple">
+<li><p><strong>Graph Flexibility</strong>: CORNETO supports various graph types:</p>
 <ul class="simple">
-<li><p><strong>Directed/undirected edge support</strong>: Unlike many tools that restrict you to either directed or undirected edges, CORNETO supports both simultaneously. This is particularly useful when modeling systems where interactions can be both reciprocal (undirected) and one-way (directed), which is often the case in biological networks.</p></li>
-<li><p><strong>Solution flexibility</strong>: With CORNETO, users can decide how strict they want to be with their Steiner tree solutions.</p>
-<ul>
-<li><p>For cases where only Steiner tree solutions are acceptable, CORNETO can enforce infeasibility for non-Steiner trees. This means every solution provided, even if not the best possible, will always be a valid Steiner tree.</p></li>
-<li><p>Alternatively, if users prefer to explore a broader range of solutions before arriving at an optimal Steiner tree, CORNETO permits non-Steiner tree solutions. Only the optimal solution, once identified, is guaranteed to be a true Steiner tree.</p></li>
+<li><p><strong>Undirected graphs</strong>: Find the optimal tree connecting terminals with bidirectional edges</p></li>
+<li><p><strong>Directed graphs</strong>: Connect terminals respecting edge directions, with optimal root selection</p></li>
+<li><p><strong>Mixed graphs</strong>: Combine directed and undirected edges in the same problem</p></li>
 </ul>
 </li>
-<li><p><strong>Problem extensions</strong>: By transparently modeling the Steiner tree problem as an Integer Linear Programming task in CORNETO, users gain the flexibility to introduce additional constraints or modify the objective function as they wish. For instance, they can set a limit on the number of Steiner points included in the solution or define a maximum distance between any two nodes within that solution. This adaptability enables users to customize the problem according to their unique requirements.</p></li>
+<li><p><strong>Root Selection Strategies</strong>:</p>
+<ul class="simple">
+<li><p>Automatically find the optimal root node</p></li>
+<li><p>Specify a particular node as the root</p></li>
 </ul>
-<p>In this tutorial, we will demonstrate how to model and solve undirected Steiner tree problems using CORNETO. We will use a small example network to illustrate the process, and we will compare the solutions with those obtained with the very well known <code class="docutils literal notranslate"><span class="pre">networkx</span></code> graph library.</p>
-<section id="heuristic-steiner-tree-from-networkx">
-<h2>Heuristic steiner tree from NetworkX<a class="headerlink" href="#heuristic-steiner-tree-from-networkx" title="Link to this heading">#</a></h2>
-<p>First, we will create a random undirected graph with random weights between 1 an 10. Then we will run the heuristic steiner tree algorithm from NetworkX to see which solution it finds.</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">networkx</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nx</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">networkx.algorithms.approximation</span><span class="w"> </span><span class="kn">import</span> <span class="n">steiner_tree</span>
-
-<span class="c1"># Generate a random graph with networkx</span>
-
-
-<span class="k">def</span><span class="w"> </span><span class="nf">create_random_graph</span><span class="p">(</span><span class="n">n_nodes</span><span class="p">,</span> <span class="n">prob</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
-    <span class="n">random_graph</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">erdos_renyi_graph</span><span class="p">(</span><span class="n">n_nodes</span><span class="p">,</span> <span class="n">prob</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
-    <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">random_graph</span><span class="o">.</span><span class="n">edges</span><span class="p">))</span>
-    <span class="n">edges_r</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">random_graph</span><span class="o">.</span><span class="n">edges</span><span class="p">())</span>
-    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">weight</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">weights</span><span class="p">):</span>
-        <span class="n">edge</span> <span class="o">=</span> <span class="n">edges_r</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-        <span class="n">random_graph</span><span class="p">[</span><span class="n">edge</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="n">edge</span><span class="p">[</span><span class="mi">1</span><span class="p">]][</span><span class="s2">&quot;weight&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">weight</span>
-    <span class="k">return</span> <span class="n">random_graph</span>
-
-
-<span class="n">random_graph</span> <span class="o">=</span> <span class="n">create_random_graph</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Select 10 random vertices from the networkx graph as terminal nodes:</span>
-
-<span class="n">terminals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">random_graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="n">stree</span> <span class="o">=</span> <span class="n">steiner_tree</span><span class="p">(</span><span class="n">random_graph</span><span class="p">,</span> <span class="n">terminals</span><span class="p">)</span>
-<span class="n">total_weight</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">random_graph</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">v</span><span class="p">][</span><span class="s2">&quot;weight&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">stree</span><span class="o">.</span><span class="n">edges</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cost:&quot;</span><span class="p">,</span> <span class="n">total_weight</span><span class="p">)</span>
-<span class="n">nx</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">stree</span><span class="p">,</span> <span class="n">with_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">ValueError</span><span class="g g-Whitespace">                                </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">line</span> <span class="mi">4</span>
-<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="c1"># Select 10 random vertices from the networkx graph as terminal nodes:</span>
-<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">terminals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">random_graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="ne">----&gt; </span><span class="mi">4</span> <span class="n">stree</span> <span class="o">=</span> <span class="n">steiner_tree</span><span class="p">(</span><span class="n">random_graph</span><span class="p">,</span> <span class="n">terminals</span><span class="p">)</span>
-<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="n">total_weight</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">random_graph</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">v</span><span class="p">][</span><span class="s2">&quot;weight&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">stree</span><span class="o">.</span><span class="n">edges</span><span class="p">)</span>
-<span class="g g-Whitespace">      </span><span class="mi">6</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cost:&quot;</span><span class="p">,</span> <span class="n">total_weight</span><span class="p">)</span>
-
-<span class="nn">File ~/.cache/pypoetry/virtualenvs/corneto-lU1q7eKj-py3.11/lib/python3.11/site-packages/networkx/utils/decorators.py:788,</span> in <span class="ni">argmap.__call__.&lt;locals&gt;.func</span><span class="nt">(_argmap__wrapper, *args, **kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">787</span> <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">__wrapper</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="ne">--&gt; </span><span class="mi">788</span>     <span class="k">return</span> <span class="n">argmap</span><span class="o">.</span><span class="n">_lazy_compile</span><span class="p">(</span><span class="n">__wrapper</span><span class="p">)(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
-<span class="nn">File &lt;class &#39;networkx.utils.decorators.argmap&#39;&gt; compilation 18:4,</span> in <span class="ni">argmap_steiner_tree_14</span><span class="nt">(G, terminal_nodes, weight, method, backend, **backend_kwargs)</span>
-<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="kn">import</span><span class="w"> </span><span class="nn">collections</span>
-<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="kn">import</span><span class="w"> </span><span class="nn">gzip</span>
-<span class="ne">----&gt; </span><span class="mi">4</span> <span class="kn">import</span><span class="w"> </span><span class="nn">inspect</span>
-<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="kn">import</span><span class="w"> </span><span class="nn">itertools</span>
-<span class="g g-Whitespace">      </span><span class="mi">6</span> <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
-
-<span class="nn">File ~/.cache/pypoetry/virtualenvs/corneto-lU1q7eKj-py3.11/lib/python3.11/site-packages/networkx/utils/backends.py:967,</span> in <span class="ni">_dispatchable.__call__</span><span class="nt">(self, backend, *args, **kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">965</span>     <span class="k">if</span> <span class="n">backend</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">backend</span> <span class="o">!=</span> <span class="s2">&quot;networkx&quot;</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">966</span>         <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">backend</span><span class="si">}</span><span class="s2">&#39; backend is not installed&quot;</span><span class="p">)</span>
-<span class="ne">--&gt; </span><span class="mi">967</span>     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">orig_func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">969</span> <span class="c1"># Use `backend_name` in this function instead of `backend`.</span>
-<span class="g g-Whitespace">    </span><span class="mi">970</span> <span class="c1"># This is purely for aesthetics and to make it easier to search for this</span>
-<span class="g g-Whitespace">    </span><span class="mi">971</span> <span class="c1"># variable since &quot;backend&quot; is used in many comments and log/error messages.</span>
-<span class="g g-Whitespace">    </span><span class="mi">972</span> <span class="n">backend_name</span> <span class="o">=</span> <span class="n">backend</span>
-
-<span class="nn">File ~/.cache/pypoetry/virtualenvs/corneto-lU1q7eKj-py3.11/lib/python3.11/site-packages/networkx/algorithms/approximation/steinertree.py:224,</span> in <span class="ni">steiner_tree</span><span class="nt">(G, terminal_nodes, weight, method)</span>
-<span class="g g-Whitespace">    </span><span class="mi">221</span> <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">222</span>     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2"> is not a valid choice for an algorithm.&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
-<span class="ne">--&gt; </span><span class="mi">224</span> <span class="n">edges</span> <span class="o">=</span> <span class="n">algo</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">terminal_nodes</span><span class="p">,</span> <span class="n">weight</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">225</span> <span class="c1"># For multigraph we should add the minimal weight edge keys</span>
-<span class="g g-Whitespace">    </span><span class="mi">226</span> <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">is_multigraph</span><span class="p">():</span>
-
-<span class="nn">File ~/.cache/pypoetry/virtualenvs/corneto-lU1q7eKj-py3.11/lib/python3.11/site-packages/networkx/algorithms/approximation/steinertree.py:51,</span> in <span class="ni">_mehlhorn_steiner_tree</span><span class="nt">(G, terminal_nodes, weight)</span>
-<span class="g g-Whitespace">     </span><span class="mi">50</span> <span class="k">def</span><span class="w"> </span><span class="nf">_mehlhorn_steiner_tree</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">terminal_nodes</span><span class="p">,</span> <span class="n">weight</span><span class="p">):</span>
-<span class="ne">---&gt; </span><span class="mi">51</span>     <span class="n">paths</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">multi_source_dijkstra_path</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">terminal_nodes</span><span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">53</span>     <span class="n">d_1</span> <span class="o">=</span> <span class="p">{}</span>
-<span class="g g-Whitespace">     </span><span class="mi">54</span>     <span class="n">s</span> <span class="o">=</span> <span class="p">{}</span>
-
-<span class="nn">File ~/.cache/pypoetry/virtualenvs/corneto-lU1q7eKj-py3.11/lib/python3.11/site-packages/networkx/utils/decorators.py:788,</span> in <span class="ni">argmap.__call__.&lt;locals&gt;.func</span><span class="nt">(_argmap__wrapper, *args, **kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">787</span> <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">__wrapper</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="ne">--&gt; </span><span class="mi">788</span>     <span class="k">return</span> <span class="n">argmap</span><span class="o">.</span><span class="n">_lazy_compile</span><span class="p">(</span><span class="n">__wrapper</span><span class="p">)(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
-<span class="nn">File &lt;class &#39;networkx.utils.decorators.argmap&#39;&gt; compilation 22:3,</span> in <span class="ni">argmap_multi_source_dijkstra_path_19</span><span class="nt">(G, sources, cutoff, weight, backend, **backend_kwargs)</span>
-<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="kn">import</span><span class="w"> </span><span class="nn">bz2</span>
-<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="kn">import</span><span class="w"> </span><span class="nn">collections</span>
-<span class="ne">----&gt; </span><span class="mi">3</span> <span class="kn">import</span><span class="w"> </span><span class="nn">gzip</span>
-<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="kn">import</span><span class="w"> </span><span class="nn">inspect</span>
-<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="kn">import</span><span class="w"> </span><span class="nn">itertools</span>
-
-<span class="nn">File ~/.cache/pypoetry/virtualenvs/corneto-lU1q7eKj-py3.11/lib/python3.11/site-packages/networkx/utils/backends.py:967,</span> in <span class="ni">_dispatchable.__call__</span><span class="nt">(self, backend, *args, **kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">965</span>     <span class="k">if</span> <span class="n">backend</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">backend</span> <span class="o">!=</span> <span class="s2">&quot;networkx&quot;</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">966</span>         <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">backend</span><span class="si">}</span><span class="s2">&#39; backend is not installed&quot;</span><span class="p">)</span>
-<span class="ne">--&gt; </span><span class="mi">967</span>     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">orig_func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">969</span> <span class="c1"># Use `backend_name` in this function instead of `backend`.</span>
-<span class="g g-Whitespace">    </span><span class="mi">970</span> <span class="c1"># This is purely for aesthetics and to make it easier to search for this</span>
-<span class="g g-Whitespace">    </span><span class="mi">971</span> <span class="c1"># variable since &quot;backend&quot; is used in many comments and log/error messages.</span>
-<span class="g g-Whitespace">    </span><span class="mi">972</span> <span class="n">backend_name</span> <span class="o">=</span> <span class="n">backend</span>
-
-<span class="nn">File ~/.cache/pypoetry/virtualenvs/corneto-lU1q7eKj-py3.11/lib/python3.11/site-packages/networkx/algorithms/shortest_paths/weighted.py:564,</span> in <span class="ni">multi_source_dijkstra_path</span><span class="nt">(G, sources, cutoff, weight)</span>
-<span class="g g-Whitespace">    </span><span class="mi">494</span> <span class="nd">@nx</span><span class="o">.</span><span class="n">_dispatchable</span><span class="p">(</span><span class="n">edge_attrs</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">495</span> <span class="k">def</span><span class="w"> </span><span class="nf">multi_source_dijkstra_path</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">sources</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">):</span>
-<span class="g g-Whitespace">    </span><span class="mi">496</span><span class="w">     </span><span class="sd">&quot;&quot;&quot;Find shortest weighted paths in G from a given set of source</span>
-<span class="g g-Whitespace">    </span><span class="mi">497</span><span class="sd">     nodes.</span>
-<span class="g g-Whitespace">    </span><span class="mi">498</span><span class="sd"> </span>
-<span class="sd">   (...)</span>
-<span class="g g-Whitespace">    </span><span class="mi">562</span><span class="sd"> </span>
-<span class="g g-Whitespace">    </span><span class="mi">563</span><span class="sd">     &quot;&quot;&quot;</span>
-<span class="ne">--&gt; </span><span class="mi">564</span>     <span class="n">length</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="n">multi_source_dijkstra</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">sources</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="n">cutoff</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">weight</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">565</span>     <span class="k">return</span> <span class="n">path</span>
-
-<span class="nn">File ~/.cache/pypoetry/virtualenvs/corneto-lU1q7eKj-py3.11/lib/python3.11/site-packages/networkx/utils/decorators.py:788,</span> in <span class="ni">argmap.__call__.&lt;locals&gt;.func</span><span class="nt">(_argmap__wrapper, *args, **kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">787</span> <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">__wrapper</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="ne">--&gt; </span><span class="mi">788</span>     <span class="k">return</span> <span class="n">argmap</span><span class="o">.</span><span class="n">_lazy_compile</span><span class="p">(</span><span class="n">__wrapper</span><span class="p">)(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
-<span class="nn">File &lt;class &#39;networkx.utils.decorators.argmap&#39;&gt; compilation 26:3,</span> in <span class="ni">argmap_multi_source_dijkstra_23</span><span class="nt">(G, sources, target, cutoff, weight, backend, **backend_kwargs)</span>
-<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="kn">import</span><span class="w"> </span><span class="nn">bz2</span>
-<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="kn">import</span><span class="w"> </span><span class="nn">collections</span>
-<span class="ne">----&gt; </span><span class="mi">3</span> <span class="kn">import</span><span class="w"> </span><span class="nn">gzip</span>
-<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="kn">import</span><span class="w"> </span><span class="nn">inspect</span>
-<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="kn">import</span><span class="w"> </span><span class="nn">itertools</span>
-
-<span class="nn">File ~/.cache/pypoetry/virtualenvs/corneto-lU1q7eKj-py3.11/lib/python3.11/site-packages/networkx/utils/backends.py:967,</span> in <span class="ni">_dispatchable.__call__</span><span class="nt">(self, backend, *args, **kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">965</span>     <span class="k">if</span> <span class="n">backend</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">backend</span> <span class="o">!=</span> <span class="s2">&quot;networkx&quot;</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">966</span>         <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">backend</span><span class="si">}</span><span class="s2">&#39; backend is not installed&quot;</span><span class="p">)</span>
-<span class="ne">--&gt; </span><span class="mi">967</span>     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">orig_func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">969</span> <span class="c1"># Use `backend_name` in this function instead of `backend`.</span>
-<span class="g g-Whitespace">    </span><span class="mi">970</span> <span class="c1"># This is purely for aesthetics and to make it easier to search for this</span>
-<span class="g g-Whitespace">    </span><span class="mi">971</span> <span class="c1"># variable since &quot;backend&quot; is used in many comments and log/error messages.</span>
-<span class="g g-Whitespace">    </span><span class="mi">972</span> <span class="n">backend_name</span> <span class="o">=</span> <span class="n">backend</span>
-
-<span class="nn">File ~/.cache/pypoetry/virtualenvs/corneto-lU1q7eKj-py3.11/lib/python3.11/site-packages/networkx/algorithms/shortest_paths/weighted.py:750,</span> in <span class="ni">multi_source_dijkstra</span><span class="nt">(G, sources, target, cutoff, weight)</span>
-<span class="g g-Whitespace">    </span><span class="mi">650</span> <span class="nd">@nx</span><span class="o">.</span><span class="n">_dispatchable</span><span class="p">(</span><span class="n">edge_attrs</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">651</span> <span class="k">def</span><span class="w"> </span><span class="nf">multi_source_dijkstra</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">sources</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">):</span>
-<span class="g g-Whitespace">    </span><span class="mi">652</span><span class="w">     </span><span class="sd">&quot;&quot;&quot;Find shortest weighted paths and lengths from a given set of</span>
-<span class="g g-Whitespace">    </span><span class="mi">653</span><span class="sd">     source nodes.</span>
-<span class="g g-Whitespace">    </span><span class="mi">654</span><span class="sd"> </span>
-<span class="sd">   (...)</span>
-<span class="g g-Whitespace">    </span><span class="mi">748</span><span class="sd"> </span>
-<span class="g g-Whitespace">    </span><span class="mi">749</span><span class="sd">     &quot;&quot;&quot;</span>
-<span class="ne">--&gt; </span><span class="mi">750</span>     <span class="k">if</span> <span class="ow">not</span> <span class="n">sources</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">751</span>         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;sources must not be empty&quot;</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">752</span>     <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">sources</span><span class="p">:</span>
-
-<span class="ne">ValueError</span>: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
-</pre></div>
-</div>
-</div>
-</div>
-<p>We need to check if the solution is the optimal one or not. <strong>Since we’ve used an heuristic (but fast) method, we don’t have any proof about optimality</strong>. We will see now how CORNETO can be used to get a better solution (which is also the optimal). Due to CORNETO’s exact modeling of the problem, and the use of advanced mathematical solvers, we can not only achieve a solution superior to that of NetworkX, but also have the guarantees that the solution is optimal and no better network exists.</p>
-</section>
-<section id="exact-steiner-trees-with-corneto">
-<h2>Exact Steiner Trees with CORNETO<a class="headerlink" href="#exact-steiner-trees-with-corneto" title="Link to this heading">#</a></h2>
-<p>Now, we will do the same using CORNETO to convert the random graph to a corneto graph and then we will create an ILP steiner tree problem, which is exact, and we will solve it using the SCIP solver (open source).</p>
+</li>
+<li><p><strong>Customization Options</strong>:</p>
+<ul class="simple">
+<li><p>Edge costs can be specified individually</p></li>
+<li><p>Regularization to control tree complexity</p></li>
+<li><p>Strict acyclic constraint enforcement</p></li>
+<li><p>Optimize multiple samples simultaneously with structured sparsity regularization</p></li>
+</ul>
+</li>
+<li><p><strong>Solver Flexibility</strong>: Compatible with many MILP mathematical programming solvers (SCIP, HIGHS, GUROBI, etc.)</p></li>
+</ol>
+<p>This notebook demonstrates how to use CORNETO to solve Steiner tree problems on both undirected and directed graphs, comparing the results with NetworkX’s approximation algorithms.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">corneto</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cn</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">networkx</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nx</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">networkx.algorithms.approximation</span><span class="w"> </span><span class="kn">import</span> <span class="n">steiner_tree</span>
 
 <span class="n">cn</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
 </pre></div>
@@ -628,300 +503,486 @@
             </td>
             <td>
             <table>
-                <tr><td>Installed version:</td><td style='text-align:left'>v1.0.0.dev0 (up to date)</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.5.1, PICOS v2.4.17</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CLARABEL, CVXOPT, ECOS, ECOS_BB, GLPK, GLPK_MI, GUROBI, OSQP, SCIP, SCIPY, SCS</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.3</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href=https://github.com/saezlab/corneto>https://github.com/saezlab/corneto</a></td></tr>
+                <tr><td>Installed version:</td><td style='text-align:left'>v1.0.0.dev5 (latest stable: v1.0.0-alpha)</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.6.5, PICOS v2.6.1</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CVXOPT, GLPK, GLPK_MI, HIGHS, SCIP, SCIPY</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.3</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href=https://github.com/saezlab/corneto>https://github.com/saezlab/corneto</a></td></tr>
             </table>
             </td>
         </tr>
         </table></div></div>
 </div>
-<p>We need some code to convert the <code class="docutils literal notranslate"><span class="pre">networkx</span></code> graph into a <code class="docutils literal notranslate"><span class="pre">corneto</span></code> Graph:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto._graph</span><span class="w"> </span><span class="kn">import</span> <span class="n">EdgeType</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">generate_random_graph</span><span class="p">(</span><span class="n">num_nodes</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">probability</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">num_terminals</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generates a random weighted graph using the Erdős-Rényi model</span>
+<span class="sd">    and randomly selects terminal nodes.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        G: The generated graph with weighted edges.</span>
+<span class="sd">        terminals: A list of terminal nodes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">erdos_renyi_graph</span><span class="p">(</span><span class="n">num_nodes</span><span class="p">,</span> <span class="n">probability</span><span class="p">)</span>
+    <span class="c1"># Assign random weights to each edge</span>
+    <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">():</span>
+        <span class="n">G</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">v</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+    
+    <span class="c1"># Select terminal nodes ensuring not to exceed the available nodes</span>
+    <span class="n">terminals</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">()),</span> <span class="nb">min</span><span class="p">(</span><span class="n">num_terminals</span><span class="p">,</span> <span class="n">G</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">()))</span>
+    <span class="c1"># Set node attribute &quot;terminal&quot;</span>
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">():</span>
+        <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">node</span><span class="p">][</span><span class="s1">&#39;terminal&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">terminals</span>
+    <span class="k">return</span> <span class="n">G</span><span class="p">,</span> <span class="n">terminals</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">to_graph</span><span class="p">(</span><span class="n">nx_graph</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">directed</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="n">G</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
-    <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">weights</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">nx_graph</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">)]</span>
-    <span class="k">for</span> <span class="n">e</span><span class="p">,</span> <span class="n">w</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">nx_graph</span><span class="o">.</span><span class="n">edges</span><span class="p">,</span> <span class="n">weights</span><span class="p">):</span>
-        <span class="n">etype</span> <span class="o">=</span> <span class="n">EdgeType</span><span class="o">.</span><span class="n">DIRECTED</span> <span class="k">if</span> <span class="n">directed</span> <span class="k">else</span> <span class="n">EdgeType</span><span class="o">.</span><span class="n">UNDIRECTED</span>
-        <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">weight</span><span class="o">=</span><span class="n">w</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">etype</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">G</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">calculate_cost</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">T</span><span class="p">):</span>
+    <span class="n">total_cost</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">T</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">total_cost</span>
 
 
-<span class="n">G</span> <span class="o">=</span> <span class="n">to_graph</span><span class="p">(</span><span class="n">random_graph</span><span class="p">)</span>
-<span class="n">G</span><span class="o">.</span><span class="n">shape</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_steiner_tree_cost</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">terminals</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the Steiner tree approximation on graph G for given terminal nodes</span>
+<span class="sd">    and returns the tree along with its total cost (sum of edge weights).</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:</span>
+<span class="sd">        G: A weighted networkx graph.</span>
+<span class="sd">        terminals: A list of terminal nodes for the Steiner tree.</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        T: The Steiner tree as a subgraph of G.</span>
+<span class="sd">        total_cost: Sum of the weights of the edges in T.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">steiner_tree</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">terminals</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s1">&#39;value&#39;</span><span class="p">)</span>
+    <span class="c1"># Calculate the total cost by summing up the weights of each edge in the tree</span>
+    <span class="k">return</span> <span class="n">T</span><span class="p">,</span> <span class="n">calculate_cost</span><span class="p">(</span><span class="n">G</span><span class="p">,</span><span class="n">T</span><span class="p">)</span>
+
+
+<span class="n">num_nodes</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">probability</span> <span class="o">=</span> <span class="mf">0.1</span>
+<span class="n">num_terminals</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">G</span><span class="p">,</span> <span class="n">terminals</span> <span class="o">=</span> <span class="n">generate_random_graph</span><span class="p">(</span><span class="n">num_nodes</span><span class="p">,</span> <span class="n">probability</span><span class="p">,</span> <span class="n">num_terminals</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Terminal nodes: </span><span class="si">{</span><span class="n">terminals</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Compute the Steiner tree and its cost</span>
+<span class="n">T</span><span class="p">,</span> <span class="n">cost</span> <span class="o">=</span> <span class="n">compute_steiner_tree_cost</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">terminals</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Computed Steiner tree has </span><span class="si">{</span><span class="n">T</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">()</span><span class="si">}</span><span class="s2"> nodes and </span><span class="si">{</span><span class="n">T</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">()</span><span class="si">}</span><span class="s2"> edges.&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total cost of the Steiner tree: </span><span class="si">{</span><span class="n">cost</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(50, 145)
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Terminal nodes: [58, 14, 68, 62, 95, 41, 23, 39, 64, 13]
+Computed Steiner tree has 19 nodes and 18 edges.
+Total cost of the Steiner tree: 46.7653
 </pre></div>
 </div>
 </div>
 </div>
-<p>We will use the <code class="docutils literal notranslate"><span class="pre">exact_steiner_tree</span></code> method. This method converts the original graph into a network flow problem equivalent to the steiner tree problem. The method returns the optimization problem and a new graph, which is an augmented version of the original graph, containing few extra edges required for the network flow problem</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods.steiner</span><span class="w"> </span><span class="kn">import</span> <span class="n">exact_steiner_tree</span>
-
-<span class="n">P</span><span class="p">,</span> <span class="n">G_steiner</span> <span class="o">=</span> <span class="n">exact_steiner_tree</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">terminals</span><span class="p">,</span> <span class="n">out_flow_edge_type</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">EdgeType</span><span class="o">.</span><span class="n">DIRECTED</span><span class="p">)</span>
-
-<span class="c1"># The problem contains two vector variables, _flow and _flow_i.</span>
-<span class="c1"># _flow is the normal _flow variable to define a network flow problem on the graph.</span>
-<span class="c1"># _flow_i is an indicator binary vector. If _flow_i[i] = 1, then _flow[i] = 0.</span>
-<span class="c1"># The _flow_i variable contains the edges that are selected in the Steiner tree.</span>
-<span class="n">P</span><span class="o">.</span><span class="n">symbols</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_flow&#39;: Variable((155,), _flow),
- &#39;_flow_i&#39;: Variable((155,), _flow_i, boolean=True)}
+<img alt="../../_images/aa622aa6108f5d4c80c0b10b7f668474c161cfdaa46840c3878504c74182fdf8.png" src="../../_images/aa622aa6108f5d4c80c0b10b7f668474c161cfdaa46840c3878504c74182fdf8.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">T</span><span class="o">.</span><span class="n">edges</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>EdgeView([(64, 41), (64, 68), (64, 83), (64, 94), (68, 8), (68, 28), (8, 14), (8, 73), (73, 95), (12, 33), (12, 62), (13, 43), (83, 58), (23, 33), (28, 39), (30, 43), (30, 95), (94, 33)])
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="importing-data-to-corneto">
+<h2>Importing data to CORNETO<a class="headerlink" href="#importing-data-to-corneto" title="Link to this heading">#</a></h2>
+<p>CORNETO offers a simple way to import networkx graphs as CORNETO graphs. We will convert first the networkx G, and then we will extract the values to create a <code class="docutils literal notranslate"><span class="pre">Data</span></code> object to use the CORNETO Steiner Tree method. Note that, even though CORNETO supports graph attributes, we typically distinguish between prior knowledge data (this is embedded in the graphs as attributes) and our experimental data (e.g., deregulated proteins that we want to connect using information in G).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.contrib.networkx</span><span class="w"> </span><span class="kn">import</span> <span class="n">networkx_to_corneto_graph</span><span class="p">,</span> <span class="n">corneto_graph_to_networkx</span>
+<span class="n">Gc</span> <span class="o">=</span> <span class="n">networkx_to_corneto_graph</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+<span class="n">Gc</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(100, 511)
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;SCIP&quot;</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">G_steiner</span><span class="o">.</span><span class="n">edge_subgraph</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">symbols</span><span class="p">[</span><span class="s2">&quot;_flow_i&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
-    <span class="n">orphan_edges</span><span class="o">=</span><span class="kc">False</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto._data</span><span class="w"> </span><span class="kn">import</span> <span class="n">Data</span>
+
+<span class="n">features</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="c1"># We create a list of features, where each feature contains</span>
+<span class="c1"># id: the id of the edge.</span>
+<span class="c1"># mapping: if the feature maps to edges/nodes of the graph,</span>
+<span class="c1">#          in this case, each feature is the cost of the edge</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">attr</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">Gc</span><span class="o">.</span><span class="n">get_attr_edges</span><span class="p">()):</span>
+    <span class="n">features</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="s2">&quot;edge&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">attr</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
+
+<span class="c1"># We also add information about which of the vertices from the</span>
+<span class="c1"># graph are the terminals to connect with a steiner tree</span>
+<span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">Gc</span><span class="o">.</span><span class="n">V</span><span class="p">:</span>
+    <span class="n">attr</span> <span class="o">=</span> <span class="n">Gc</span><span class="o">.</span><span class="n">get_attr_vertex</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">attr</span><span class="p">[</span><span class="s1">&#39;terminal&#39;</span><span class="p">]:</span>
+        <span class="n">features</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">v</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="s2">&quot;vertex&quot;</span><span class="p">,</span> <span class="n">role</span><span class="o">=</span><span class="s2">&quot;terminal&quot;</span><span class="p">))</span>
+
+<span class="n">features</span><span class="p">[:</span><span class="mi">5</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[{&#39;id&#39;: 0, &#39;mapping&#39;: &#39;edge&#39;, &#39;value&#39;: 6.846636018985803},
+ {&#39;id&#39;: 1, &#39;mapping&#39;: &#39;edge&#39;, &#39;value&#39;: 3.6607884661297745},
+ {&#39;id&#39;: 2, &#39;mapping&#39;: &#39;edge&#39;, &#39;value&#39;: 4.92734092175005},
+ {&#39;id&#39;: 3, &#39;mapping&#39;: &#39;edge&#39;, &#39;value&#39;: 4.0719471869531425},
+ {&#39;id&#39;: 4, &#39;mapping&#39;: &#39;edge&#39;, &#39;value&#39;: 6.894624813053817}]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We create the data object, we only have 1 sample (1 steiner tree to recover)</span>
+<span class="n">D</span> <span class="o">=</span> <span class="n">Data</span><span class="o">.</span><span class="n">from_dict</span><span class="p">({</span><span class="s2">&quot;s1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;features&quot;</span><span class="p">:</span> <span class="n">features</span><span class="p">}})</span>
+<span class="n">D</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Data(n_samples=1, n_feats=[521])
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="solving-the-problem-with-the-exact-steiner-tree">
+<h2>Solving the problem with the exact steiner tree<a class="headerlink" href="#solving-the-problem-with-the-exact-steiner-tree" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods.future.steiner</span><span class="w"> </span><span class="kn">import</span> <span class="n">SteinerTreeFlow</span>
+
+<span class="c1"># We create a SteinerTreeFlow problem. If edges do not have data, we</span>
+<span class="c1"># assume the cost is 1 (in this case, every edge in our data object has</span>
+<span class="c1"># a cost, so this is ignored</span>
+<span class="n">m</span> <span class="o">=</span> <span class="n">SteinerTreeFlow</span><span class="p">(</span><span class="n">lambda_reg</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">strict_acyclic</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default_edge_cost</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">P</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">Gc</span><span class="p">,</span> <span class="n">D</span><span class="p">)</span>
+<span class="n">P</span><span class="o">.</span><span class="n">expr</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_flow&#39;: _flow: Variable((521,), _flow),
+ &#39;_flow_ipos&#39;: _flow_ipos: Variable((521,), _flow_ipos, boolean=True),
+ &#39;_flow_ineg&#39;: _flow_ineg: Variable((521,), _flow_ineg, boolean=True),
+ &#39;_dag_layer&#39;: _dag_layer: Variable((100, 1), _dag_layer),
+ &#39;flow&#39;: _flow: Variable((521,), _flow),
+ &#39;with_flow&#39;: Expression(AFFINE, NONNEGATIVE, (521,))}
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># For larger problems, use a solver like GUROBI.</span>
+<span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;scipy&quot;</span><span class="p">);</span>
+
+<span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">P</span><span class="o">.</span><span class="n">objectives</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>35.85180933414298
+28.0
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="extracting-the-tree-and-plotting">
+<h2>Extracting the tree and plotting<a class="headerlink" href="#extracting-the-tree-and-plotting" title="Link to this heading">#</a></h2>
+<p>Once solved, we can access the variable <code class="docutils literal notranslate"><span class="pre">with_flow</span></code> to see which edges were selected by the method</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sol</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">processed_graph</span><span class="o">.</span><span class="n">edge_subgraph</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">with_flow</span><span class="o">.</span><span class="n">value</span><span class="o">&gt;</span><span class="mf">0.5</span><span class="p">))</span>
+<span class="n">sol</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">orphan_edges</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">layout</span><span class="o">=</span><span class="s2">&quot;neato&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/0224a837a52ae24de75cf31795b296cc76402ca3830d9e2a7491a2a52e0cb7b5.svg" src="../../_images/0224a837a52ae24de75cf31795b296cc76402ca3830d9e2a7491a2a52e0cb7b5.svg" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># This is the total cost of the steiner tree</span>
+<span class="nb">sum</span><span class="p">([</span><span class="n">attr</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">sol</span><span class="o">.</span><span class="n">get_attr_edges</span><span class="p">()])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>35.85180933414298
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We can check that the cost is correct using the original networkx data</span>
+<span class="n">sel_edges</span> <span class="o">=</span> <span class="p">[(</span><span class="nb">list</span><span class="p">(</span><span class="n">s</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">list</span><span class="p">(</span><span class="n">t</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">sol</span><span class="o">.</span><span class="n">E</span> <span class="k">if</span> <span class="n">s</span> <span class="ow">and</span> <span class="n">t</span><span class="p">]</span>
+<span class="n">T_corneto</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">edge_subgraph</span><span class="p">(</span><span class="n">sel_edges</span><span class="p">)</span>
+<span class="n">calculate_cost</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">T_corneto</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>35.85180933414298
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We check that all terminals are contained in the solution</span>
+<span class="nb">set</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">V</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">terminals</span><span class="p">)</span> <span class="o">==</span> <span class="nb">set</span><span class="p">(</span><span class="n">terminals</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>True
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">nx</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/be126d8ce49c682f5aa9a3d73b83e3500822f2ae497f7543fcec5886eccef00e.png" src="../../_images/be126d8ce49c682f5aa9a3d73b83e3500822f2ae497f7543fcec5886eccef00e.png" />
+</div>
+</div>
+</section>
+<section id="directed-graphs">
+<h2>Directed graphs<a class="headerlink" href="#directed-graphs" title="Link to this heading">#</a></h2>
+<p>CORNETO supports also directed steiner trees (and even a mixed set of directed or undirected edges). In the directed case, the selection of a root node is important, since not every vertex is reachable in a tree, depending on the directions. CORNETO can also find the best root possible, so it explores the entire space of potential trees, starting from different roots.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We create a directed version of the graph</span>
+<span class="n">G_dir</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">to_directed</span><span class="p">()</span>
+<span class="n">Gc</span> <span class="o">=</span> <span class="n">networkx_to_corneto_graph</span><span class="p">(</span><span class="n">G_dir</span><span class="p">)</span>
+
+<span class="n">features</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">attr</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">Gc</span><span class="o">.</span><span class="n">get_attr_edges</span><span class="p">()):</span>
+    <span class="n">features</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="s2">&quot;edge&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">attr</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">Gc</span><span class="o">.</span><span class="n">V</span><span class="p">:</span>
+    <span class="n">attr</span> <span class="o">=</span> <span class="n">Gc</span><span class="o">.</span><span class="n">get_attr_vertex</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">attr</span><span class="p">[</span><span class="s1">&#39;terminal&#39;</span><span class="p">]:</span>
+        <span class="n">features</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">v</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="s2">&quot;vertex&quot;</span><span class="p">,</span> <span class="n">role</span><span class="o">=</span><span class="s2">&quot;terminal&quot;</span><span class="p">))</span>
+
+<span class="n">D</span> <span class="o">=</span> <span class="n">Data</span><span class="o">.</span><span class="n">from_dict</span><span class="p">({</span><span class="s2">&quot;s1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;features&quot;</span><span class="p">:</span> <span class="n">features</span><span class="p">}})</span>
+<span class="n">D</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Data(n_samples=1, n_feats=[1032])
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We find the best root, but we can provide one</span>
+<span class="n">m</span> <span class="o">=</span> <span class="n">SteinerTreeFlow</span><span class="p">(</span><span class="n">lambda_reg</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">strict_acyclic</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">root_selection_strategy</span><span class="o">=</span><span class="s2">&quot;best&quot;</span><span class="p">)</span>
+<span class="n">P</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">Gc</span><span class="p">,</span> <span class="n">D</span><span class="p">)</span>
+<span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;scipy&quot;</span><span class="p">);</span>
+
+<span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">P</span><span class="o">.</span><span class="n">objectives</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>35.85180933414293
+27.999999999999986
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sol</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">processed_graph</span><span class="o">.</span><span class="n">edge_subgraph</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">with_flow</span><span class="o">.</span><span class="n">value</span><span class="p">)</span><span class="o">&gt;</span><span class="mf">0.5</span><span class="p">))</span>
+<span class="n">sol</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">orphan_edges</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/5f496eb7891903297d02126fa68fb22530db46a5c86b48a43eaf7933f6ab053b.svg" src="../../_images/5f496eb7891903297d02126fa68fb22530db46a5c86b48a43eaf7933f6ab053b.svg" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">set</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">V</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">terminals</span><span class="p">)</span> <span class="o">==</span> <span class="nb">set</span><span class="p">(</span><span class="n">terminals</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>True
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">sum</span><span class="p">([</span><span class="n">attr</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">sol</span><span class="o">.</span><span class="n">get_attr_edges</span><span class="p">()])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>35.85180933414298
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sel_edges</span> <span class="o">=</span> <span class="p">[(</span><span class="nb">list</span><span class="p">(</span><span class="n">s</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">list</span><span class="p">(</span><span class="n">t</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">sol</span><span class="o">.</span><span class="n">E</span> <span class="k">if</span> <span class="n">s</span> <span class="ow">and</span> <span class="n">t</span><span class="p">]</span>
+<span class="n">calculate_cost</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">G</span><span class="o">.</span><span class="n">edge_subgraph</span><span class="p">(</span><span class="n">sel_edges</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>35.85180933414298
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="mixed-graphs">
+<h2>Mixed graphs<a class="headerlink" href="#mixed-graphs" title="Link to this heading">#</a></h2>
+<p>Mixed graphs (graphs with directed edges, undirected edges, multiple edges) are naturally supported by CORNETO. Here we see the different steiner trees that we can obtain from a mixed graph, depending on the direction of the edges</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">G_mixed</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+<span class="n">G_mixed</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">EdgeType</span><span class="o">.</span><span class="n">DIRECTED</span><span class="p">)</span>
+<span class="n">G_mixed</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">EdgeType</span><span class="o">.</span><span class="n">UNDIRECTED</span><span class="p">)</span>
+<span class="n">G_mixed</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">EdgeType</span><span class="o">.</span><span class="n">UNDIRECTED</span><span class="p">)</span>
+<span class="n">G_mixed</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">EdgeType</span><span class="o">.</span><span class="n">UNDIRECTED</span><span class="p">)</span>
+<span class="n">G_mixed</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">EdgeType</span><span class="o">.</span><span class="n">UNDIRECTED</span><span class="p">)</span>
+<span class="n">G_mixed</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">EdgeType</span><span class="o">.</span><span class="n">DIRECTED</span><span class="p">)</span> <span class="c1"># UNDIR</span>
+<span class="n">G_mixed</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">EdgeType</span><span class="o">.</span><span class="n">DIRECTED</span><span class="p">)</span>
+<span class="n">G_mixed</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">EdgeType</span><span class="o">.</span><span class="n">UNDIRECTED</span><span class="p">)</span>
+<span class="n">G_mixed</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">EdgeType</span><span class="o">.</span><span class="n">UNDIRECTED</span><span class="p">)</span>
+<span class="n">G_mixed</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">EdgeType</span><span class="o">.</span><span class="n">UNDIRECTED</span><span class="p">)</span>
+<span class="n">G_mixed</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/e19c37cb3bf371c8df76cd0e7a7326f3e39a583e86cdcf5727d304904b20626b.svg" src="../../_images/e19c37cb3bf371c8df76cd0e7a7326f3e39a583e86cdcf5727d304904b20626b.svg" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">D</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Data</span><span class="o">.</span><span class="n">from_cdict</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;steiner&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="mi">0</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;mapping&quot;</span><span class="p">:</span> <span class="s2">&quot;vertex&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;terminal&quot;</span>
+            <span class="p">},</span>
+            <span class="mi">5</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;mapping&quot;</span><span class="p">:</span> <span class="s2">&quot;vertex&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;terminal&quot;</span>
+            <span class="p">},</span>
+            <span class="mi">6</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;mapping&quot;</span><span class="p">:</span> <span class="s2">&quot;vertex&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;terminal&quot;</span>
+            <span class="p">},</span> 
+            <span class="mi">4</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;mapping&quot;</span><span class="p">:</span> <span class="s2">&quot;vertex&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;terminal&quot;</span>
+            <span class="p">},</span> 
+        <span class="p">}</span>
+    <span class="p">}</span>
 <span class="p">)</span>
+
+<span class="n">m</span> <span class="o">=</span> <span class="n">SteinerTreeFlow</span><span class="p">(</span><span class="n">root_selection_strategy</span><span class="o">=</span><span class="s2">&quot;best&quot;</span><span class="p">)</span>
+<span class="n">P</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">G_mixed</span><span class="p">,</span> <span class="n">D</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>===============================================================================
-                                     CVXPY                                     
-                                     v1.5.1                                    
-===============================================================================
-(CVXPY) May 14 09:33:51 PM: Your problem has 310 variables, 680 constraints, and 0 parameters.
-(CVXPY) May 14 09:33:51 PM: It is compliant with the following grammars: DCP, DQCP
-(CVXPY) May 14 09:33:51 PM: (If you need to solve this problem multiple times, but with different data, consider using parameters.)
-(CVXPY) May 14 09:33:51 PM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
-(CVXPY) May 14 09:33:51 PM: Your problem is compiled with the CPP canonicalization backend.
--------------------------------------------------------------------------------
-                                  Compilation                                  
--------------------------------------------------------------------------------
-(CVXPY) May 14 09:33:51 PM: Compiling problem (target solver=SCIP).
-(CVXPY) May 14 09:33:51 PM: Reduction chain: Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; SCIP
-(CVXPY) May 14 09:33:51 PM: Applying reduction Dcp2Cone
-(CVXPY) May 14 09:33:52 PM: Applying reduction CvxAttr2Constr
-(CVXPY) May 14 09:33:52 PM: Applying reduction ConeMatrixStuffing
-(CVXPY) May 14 09:33:52 PM: Applying reduction SCIP
-(CVXPY) May 14 09:33:52 PM: Finished problem compilation (took 4.779e-02 seconds).
--------------------------------------------------------------------------------
-                                Numerical solver                               
--------------------------------------------------------------------------------
-(CVXPY) May 14 09:33:52 PM: Invoking solver SCIP  to obtain a solution.
-presolving:
-(round 1, fast)       13 del vars, 342 del conss, 0 add conss, 315 chg bounds, 0 chg sides, 0 chg coeffs, 0 upgd conss, 0 impls, 0 clqs
-(round 2, fast)       22 del vars, 342 del conss, 0 add conss, 315 chg bounds, 0 chg sides, 0 chg coeffs, 0 upgd conss, 0 impls, 0 clqs
-(round 3, exhaustive) 22 del vars, 342 del conss, 0 add conss, 315 chg bounds, 0 chg sides, 0 chg coeffs, 290 upgd conss, 0 impls, 0 clqs
-   (0.0s) probing: 51/145 (35.2%) - 0 fixings, 0 aggregations, 0 implications, 0 bound changes
-   (0.0s) probing aborted: 50/50 successive totally useless probings
-   (0.0s) symmetry computation started: requiring (bin +, int +, cont +), (fixed: bin -, int -, cont -)
-   (0.0s) symmetry computation finished: 1 generators found (max: 1500, log10 of symmetry group size: 0.0) (symcode time: 0.00)
-dynamic symmetry handling statistics:
-   orbitopal reduction:       no components
-   orbital reduction:         no components
-   lexicographic reduction:   no permutations
-handled 1 out of 1 symmetry components
-(round 4, exhaustive) 22 del vars, 342 del conss, 1 add conss, 315 chg bounds, 0 chg sides, 0 chg coeffs, 290 upgd conss, 290 impls, 1 clqs
-(round 5, exhaustive) 22 del vars, 342 del conss, 1 add conss, 315 chg bounds, 0 chg sides, 0 chg coeffs, 291 upgd conss, 290 impls, 1 clqs
-presolving (6 rounds: 6 fast, 4 medium, 4 exhaustive):
- 22 deleted vars, 342 deleted constraints, 1 added constraints, 315 tightened bounds, 0 added holes, 0 changed sides, 0 changed coefficients
- 290 implications, 1 cliques
-presolved problem has 288 variables (145 bin, 0 int, 0 impl, 143 cont) and 339 constraints
-    290 constraints of type &lt;varbound&gt;
-      1 constraints of type &lt;setppc&gt;
-     48 constraints of type &lt;linear&gt;
-transformed objective value is always integral (scale: 1)
-Presolving Time: 0.00
-
- time | node  | left  |LP iter|LP it/n|mem/heur|mdpt |vars |cons |rows |cuts |sepa|confs|strbr|  dualbound   | primalbound  |  gap   | compl. 
-p 0.0s|     1 |     0 |   115 |     - |   locks|   0 | 288 | 339 | 339 |   0 |  0 |   0 |   0 | 0.000000e+00 | 6.870000e+02 |    Inf | unknown
-i 0.0s|     1 |     0 |   115 |     - |  oneopt|   0 | 288 | 339 | 339 |   0 |  0 |   0 |   0 | 0.000000e+00 | 6.050000e+02 |    Inf | unknown
-  0.0s|     1 |     0 |   497 |     - |  6409k |   0 | 288 | 339 | 339 |   0 |  0 |   0 |   0 | 8.181818e+00 | 6.050000e+02 |7294.44%| unknown
-r 0.0s|     1 |     0 |   497 |     - |simplero|   0 | 288 | 339 | 339 |   0 |  0 |   0 |   0 | 8.181818e+00 | 5.300000e+01 | 547.78%| unknown
-  0.0s|     1 |     0 |   571 |     - |  6654k |   0 | 288 | 339 | 346 |   7 |  1 |   0 |   0 | 2.345455e+01 | 5.300000e+01 | 125.97%| unknown
-  0.0s|     1 |     0 |   639 |     - |  6749k |   0 | 288 | 339 | 352 |  13 |  2 |   0 |   0 | 2.772727e+01 | 5.300000e+01 |  91.15%| unknown
-  0.0s|     1 |     0 |   677 |     - |  6907k |   0 | 288 | 339 | 357 |  18 |  3 |   0 |   0 | 2.854545e+01 | 5.300000e+01 |  85.67%| unknown
-  0.0s|     1 |     0 |   741 |     - |  7029k |   0 | 288 | 339 | 363 |  24 |  4 |   0 |   0 | 2.886860e+01 | 5.300000e+01 |  83.59%| unknown
-  0.0s|     1 |     0 |   797 |     - |  7240k |   0 | 288 | 339 | 368 |  29 |  5 |   0 |   0 | 2.929293e+01 | 5.300000e+01 |  80.93%| unknown
-  0.0s|     1 |     0 |   908 |     - |  7447k |   0 | 288 | 339 | 372 |  33 |  6 |   0 |   0 | 3.044215e+01 | 5.300000e+01 |  74.10%| unknown
-  0.0s|     1 |     0 |   981 |     - |  7656k |   0 | 288 | 339 | 377 |  38 |  7 |   0 |   0 | 3.086909e+01 | 5.300000e+01 |  71.69%| unknown
-  0.0s|     1 |     0 |  1082 |     - |  7828k |   0 | 288 | 339 | 383 |  44 |  8 |   0 |   0 | 3.150000e+01 | 5.300000e+01 |  68.25%| unknown
-  0.0s|     1 |     0 |  1166 |     - |  8065k |   0 | 288 | 339 | 387 |  48 |  9 |   0 |   0 | 3.212121e+01 | 5.300000e+01 |  65.00%| unknown
-  0.0s|     1 |     0 |  1207 |     - |  8437k |   0 | 288 | 339 | 389 |  50 | 10 |   0 |   0 | 3.276923e+01 | 5.300000e+01 |  61.74%| unknown
-  0.0s|     1 |     0 |  1240 |     - |  8482k |   0 | 288 | 339 | 393 |  54 | 11 |   0 |   0 | 3.281239e+01 | 5.300000e+01 |  61.52%| unknown
- time | node  | left  |LP iter|LP it/n|mem/heur|mdpt |vars |cons |rows |cuts |sepa|confs|strbr|  dualbound   | primalbound  |  gap   | compl. 
-  0.0s|     1 |     0 |  1279 |     - |  8527k |   0 | 288 | 339 | 399 |  60 | 12 |   0 |   0 | 3.282571e+01 | 5.300000e+01 |  61.46%| unknown
-  0.0s|     1 |     0 |  1330 |     - |  8868k |   0 | 288 | 339 | 403 |  64 | 13 |   0 |   0 | 3.285455e+01 | 5.300000e+01 |  61.32%| unknown
-  0.0s|     1 |     0 |  1435 |     - |  8969k |   0 | 288 | 339 | 407 |  68 | 14 |   0 |   0 | 3.293114e+01 | 5.300000e+01 |  60.94%| unknown
-  0.0s|     1 |     0 |  1452 |     - |  9017k |   0 | 288 | 339 | 411 |  72 | 15 |   0 |   0 | 3.293339e+01 | 5.300000e+01 |  60.93%| unknown
-  0.0s|     1 |     0 |  1478 |     - |  9078k |   0 | 288 | 339 | 408 |  76 | 16 |   0 |   0 | 3.295789e+01 | 5.300000e+01 |  60.81%| unknown
-  0.0s|     1 |     0 |  1490 |     - |  9161k |   0 | 288 | 339 | 411 |  79 | 17 |   0 |   0 | 3.298752e+01 | 5.300000e+01 |  60.67%| unknown
-  0.0s|     1 |     0 |  1505 |     - |  9406k |   0 | 288 | 339 | 414 |  82 | 18 |   0 |   0 | 3.302375e+01 | 5.300000e+01 |  60.49%| unknown
-  0.0s|     1 |     0 |  1509 |     - |  9451k |   0 | 288 | 339 | 416 |  84 | 19 |   0 |   0 | 3.303714e+01 | 5.300000e+01 |  60.43%| unknown
-  0.0s|     1 |     0 |  1522 |     - |  9605k |   0 | 288 | 339 | 419 |  87 | 20 |   0 |   0 | 3.304510e+01 | 5.300000e+01 |  60.39%| unknown
-  0.0s|     1 |     0 |  1542 |     - |  9738k |   0 | 288 | 339 | 422 |  90 | 21 |   0 |   0 | 3.306189e+01 | 5.300000e+01 |  60.31%| unknown
-  1.0s|     1 |     0 |  1564 |     - |  9752k |   0 | 288 | 339 | 410 |  93 | 22 |   0 |   0 | 3.308676e+01 | 5.300000e+01 |  60.18%| unknown
-  1.0s|     1 |     0 |  1603 |     - |  9760k |   0 | 288 | 339 | 413 |  96 | 23 |   0 |   0 | 3.313949e+01 | 5.300000e+01 |  59.93%| unknown
-  1.0s|     1 |     0 |  1639 |     - |  9831k |   0 | 288 | 339 | 415 |  98 | 24 |   0 |   0 | 3.316628e+01 | 5.300000e+01 |  59.80%| unknown
-  1.0s|     1 |     0 |  1669 |     - |  9854k |   0 | 288 | 339 | 418 | 101 | 25 |   0 |   0 | 3.317514e+01 | 5.300000e+01 |  59.76%| unknown
-  1.0s|     1 |     0 |  1679 |     - |    10M |   0 | 288 | 339 | 420 | 103 | 26 |   0 |   0 | 3.318084e+01 | 5.300000e+01 |  59.73%| unknown
- time | node  | left  |LP iter|LP it/n|mem/heur|mdpt |vars |cons |rows |cuts |sepa|confs|strbr|  dualbound   | primalbound  |  gap   | compl. 
-  1.0s|     1 |     0 |  1694 |     - |    10M |   0 | 288 | 339 | 423 | 106 | 27 |   0 |   0 | 3.318096e+01 | 5.300000e+01 |  59.73%| unknown
-  1.0s|     1 |     0 |  1708 |     - |    10M |   0 | 288 | 339 | 403 | 108 | 28 |   0 |   0 | 3.318136e+01 | 5.300000e+01 |  59.73%| unknown
-  1.0s|     1 |     0 |  1714 |     - |    10M |   0 | 288 | 339 | 406 | 111 | 29 |   0 |   0 | 3.318234e+01 | 5.300000e+01 |  59.72%| unknown
-  1.0s|     1 |     0 |  1729 |     - |    10M |   0 | 288 | 339 | 408 | 113 | 30 |   0 |   0 | 3.318395e+01 | 5.300000e+01 |  59.72%| unknown
-  1.0s|     1 |     0 |  1797 |     - |    10M |   0 | 288 | 339 | 410 | 115 | 31 |   0 |   0 | 3.326683e+01 | 5.300000e+01 |  59.32%| unknown
-  1.0s|     1 |     0 |  1811 |     - |    10M |   0 | 288 | 339 | 413 | 118 | 32 |   0 |   0 | 3.326746e+01 | 5.300000e+01 |  59.31%| unknown
-  1.0s|     1 |     0 |  1856 |     - |    10M |   0 | 288 | 339 | 418 | 123 | 33 |   0 |   0 | 3.331122e+01 | 5.300000e+01 |  59.11%| unknown
-  1.0s|     1 |     0 |  1866 |     - |    10M |   0 | 288 | 339 | 410 | 127 | 34 |   0 |   0 | 3.332546e+01 | 5.300000e+01 |  59.04%| unknown
-  1.0s|     1 |     0 |  1966 |     - |    10M |   0 | 288 | 339 | 417 | 134 | 35 |   0 |   0 | 3.334509e+01 | 5.300000e+01 |  58.94%| unknown
-  1.0s|     1 |     0 |  1970 |     - |    10M |   0 | 288 | 339 | 419 | 136 | 36 |   0 |   0 | 3.334647e+01 | 5.300000e+01 |  58.94%| unknown
-  1.0s|     1 |     0 |  1976 |     - |    10M |   0 | 288 | 339 | 421 | 138 | 37 |   0 |   0 | 3.335103e+01 | 5.300000e+01 |  58.92%| unknown
-  2.0s|     1 |     0 |  1983 |     - |    10M |   0 | 288 | 339 | 425 | 142 | 38 |   0 |   0 | 3.335784e+01 | 5.300000e+01 |  58.88%| unknown
-  2.0s|     1 |     0 |  1990 |     - |    10M |   0 | 288 | 339 | 429 | 146 | 39 |   0 |   0 | 3.336041e+01 | 5.300000e+01 |  58.87%| unknown
-  2.0s|     1 |     0 |  2001 |     - |    10M |   0 | 288 | 339 | 419 | 150 | 40 |   0 |   0 | 3.337361e+01 | 5.300000e+01 |  58.81%| unknown
-  2.0s|     1 |     0 |  2027 |     - |    10M |   0 | 288 | 339 | 423 | 154 | 41 |   0 |   0 | 3.340026e+01 | 5.300000e+01 |  58.68%| unknown
- time | node  | left  |LP iter|LP it/n|mem/heur|mdpt |vars |cons |rows |cuts |sepa|confs|strbr|  dualbound   | primalbound  |  gap   | compl. 
-  2.0s|     1 |     0 |  2040 |     - |    10M |   0 | 288 | 339 | 426 | 157 | 42 |   0 |   0 | 3.340426e+01 | 5.300000e+01 |  58.66%| unknown
-  2.0s|     1 |     0 |  2070 |     - |    10M |   0 | 288 | 339 | 431 | 162 | 43 |   0 |   0 | 3.340995e+01 | 5.300000e+01 |  58.64%| unknown
-  2.0s|     1 |     0 |  2086 |     - |    10M |   0 | 288 | 339 | 437 | 168 | 44 |   0 |   0 | 3.341025e+01 | 5.300000e+01 |  58.63%| unknown
-  2.0s|     1 |     0 |  2106 |     - |    10M |   0 | 288 | 339 | 441 | 172 | 45 |   0 |   0 | 3.341140e+01 | 5.300000e+01 |  58.63%| unknown
-  2.0s|     1 |     0 |  2117 |     - |    10M |   0 | 288 | 339 | 429 | 177 | 46 |   0 |   0 | 3.341336e+01 | 5.300000e+01 |  58.62%| unknown
-  2.0s|     1 |     0 |  2121 |     - |    10M |   0 | 288 | 339 | 432 | 180 | 47 |   0 |   0 | 3.341343e+01 | 5.300000e+01 |  58.62%| unknown
-  3.0s|     1 |     0 |  2147 |     - |    10M |   0 | 288 | 339 | 435 | 183 | 48 |   0 |   0 | 3.341428e+01 | 5.300000e+01 |  58.61%| unknown
-  3.0s|     1 |     0 |  2155 |     - |    10M |   0 | 288 | 339 | 437 | 185 | 49 |   0 |   0 | 3.341428e+01 | 5.300000e+01 |  58.61%| unknown
-  3.0s|     1 |     0 |  2159 |     - |    10M |   0 | 288 | 339 | 439 | 187 | 50 |   0 |   0 | 3.341428e+01 | 5.300000e+01 |  58.61%| unknown
-  3.0s|     1 |     0 |  2169 |     - |    10M |   0 | 288 | 339 | 440 | 188 | 51 |   0 |   0 | 3.341428e+01 | 5.300000e+01 |  58.61%| unknown
-  3.0s|     1 |     0 |  2171 |     - |    10M |   0 | 288 | 339 | 419 | 189 | 52 |   0 |   0 | 3.341606e+01 | 5.300000e+01 |  58.61%| unknown
-  3.0s|     1 |     0 |  2173 |     - |    10M |   0 | 288 | 339 | 421 | 191 | 53 |   0 |   0 | 3.341606e+01 | 5.300000e+01 |  58.61%| unknown
-d 3.0s|     1 |     0 |  2878 |     - |farkasdi|   0 | 288 | 339 | 421 |   0 | 53 |   0 |   0 | 3.341606e+01 | 4.900000e+01 |  46.64%| unknown
-d 3.0s|     1 |     0 |  2954 |     - |farkasdi|   0 | 288 | 339 | 421 |   0 | 53 |   0 |   0 | 3.341606e+01 | 4.400000e+01 |  31.67%| unknown
-L 4.0s|     1 |     0 |  3068 |     - |    rens|   0 | 288 | 339 | 421 | 191 | 53 |   0 |   0 | 3.341606e+01 | 4.300000e+01 |  28.68%| unknown
- time | node  | left  |LP iter|LP it/n|mem/heur|mdpt |vars |cons |rows |cuts |sepa|confs|strbr|  dualbound   | primalbound  |  gap   | compl. 
-  4.0s|     1 |     0 |  3068 |     - |    11M |   0 | 288 | 339 | 421 | 191 | 53 |   0 |   0 | 3.341606e+01 | 4.300000e+01 |  28.68%| unknown
-  4.0s|     1 |     0 |  3068 |     - |    11M |   0 | 288 | 339 | 421 | 191 | 53 |   0 |   0 | 3.341606e+01 | 4.300000e+01 |  28.68%| unknown
-  4.0s|     1 |     0 |  3075 |     - |    11M |   0 | 288 | 339 | 409 | 193 | 54 |   0 |   0 | 3.341606e+01 | 4.300000e+01 |  28.68%| unknown
-  4.0s|     1 |     0 |  3076 |     - |    11M |   0 | 288 | 339 | 410 | 194 | 55 |   0 |   0 | 3.341606e+01 | 4.300000e+01 |  28.68%| unknown
-  4.0s|     1 |     2 |  3076 |     - |    11M |   0 | 288 | 333 | 410 | 194 | 55 |   0 |  24 | 3.373205e+01 | 4.300000e+01 |  27.48%| unknown
-  7.0s|   100 |    99 | 10349 |  83.7 |    23M |  15 | 288 | 333 | 416 | 751 |  4 |   9 | 371 | 3.394705e+01 | 4.300000e+01 |  26.67%| unknown
-  9.0s|   200 |   175 | 15838 |  69.2 |    23M |  21 | 288 | 334 | 388 |1132 |  2 |  10 | 425 | 3.457121e+01 | 4.300000e+01 |  24.38%| unknown
-L 9.0s|   201 |   151 | 15906 |  69.2 |crossove|  21 | 288 | 334 | 399 |1132 |  2 |  10 | 425 | 3.460508e+01 | 4.200000e+01 |  21.37%| unknown
- 11.0s|   300 |   240 | 25811 |  79.4 |    25M |  21 | 288 | 348 | 422 |1719 |  2 |  33 | 443 | 3.501772e+01 | 4.200000e+01 |  19.94%|  10.88%
- 13.0s|   400 |   324 | 34250 |  80.7 |    25M |  21 | 288 | 360 | 412 |2301 |  2 |  50 | 457 | 3.516032e+01 | 4.200000e+01 |  19.45%|  14.35%
- 14.0s|   500 |   388 | 41238 |  78.5 |    26M |  21 | 288 | 363 | 406 |2876 |  2 |  58 | 461 | 3.569818e+01 | 4.200000e+01 |  17.65%|  18.88%
- 16.0s|   600 |   438 | 48449 |  77.4 |    27M |  21 | 288 | 371 | 414 |3664 |  5 |  72 | 467 | 3.589782e+01 | 4.200000e+01 |  17.00%|  21.02%
- 17.0s|   700 |   496 | 55278 |  76.1 |    27M |  23 | 288 | 371 | 423 |4283 |  2 |  73 | 474 | 3.606494e+01 | 4.200000e+01 |  16.46%|  22.67%
- 19.0s|   800 |   552 | 63005 |  76.3 |    28M |  25 | 288 | 371 | 426 |5046 |  2 |  75 | 485 | 3.619668e+01 | 4.200000e+01 |  16.03%|  24.48%
- 20.0s|   900 |   606 | 67077 |  72.3 |    28M |  25 | 288 | 370 | 431 |5240 |  0 |  78 | 492 | 3.632900e+01 | 4.200000e+01 |  15.61%|  26.53%
- time | node  | left  |LP iter|LP it/n|mem/heur|mdpt |vars |cons |rows |cuts |sepa|confs|strbr|  dualbound   | primalbound  |  gap   | compl. 
- 21.0s|  1000 |   660 | 71410 |  69.4 |    28M |  25 | 288 | 373 | 430 |5498 |  0 |  84 | 498 | 3.656061e+01 | 4.200000e+01 |  14.88%|  28.09%
- 21.0s|  1100 |   720 | 75926 |  67.2 |    30M |  28 | 288 | 373 | 396 |5749 |  2 |  88 | 499 | 3.667087e+01 | 4.200000e+01 |  14.53%|  29.10%
- 22.0s|  1200 |   774 | 80197 |  65.2 |    30M |  28 | 288 | 374 | 442 |6051 |  8 |  92 | 508 | 3.667087e+01 | 4.200000e+01 |  14.53%|  29.89%
- 23.0s|  1300 |   838 | 84668 |  63.6 |    31M |  28 | 288 | 375 | 438 |6271 |  2 |  95 | 515 | 3.673913e+01 | 4.200000e+01 |  14.32%|  30.45%
- 24.0s|  1400 |   888 | 89337 |  62.4 |    31M |  33 | 288 | 375 | 427 |6648 |  1 |  95 | 516 | 3.692692e+01 | 4.200000e+01 |  13.74%|  31.11%
-r25.0s|  1460 |   642 | 91671 |  61.4 |ziroundi|  33 | 288 | 379 | 441 |6820 |  2 | 100 | 518 | 3.694039e+01 | 4.100000e+01 |  10.99%|  39.05%
- 25.0s|  1500 |   646 | 92518 |  60.3 |    31M |  33 | 288 | 379 | 436 |6902 |  1 | 100 | 518 | 3.694039e+01 | 4.100000e+01 |  10.99%|  39.60%
- 25.0s|  1600 |   672 | 94905 |  58.1 |    31M |  33 | 288 | 379 | 437 |7094 |  2 | 102 | 519 | 3.702133e+01 | 4.100000e+01 |  10.75%|  40.41%
- 26.0s|  1700 |   690 | 96613 |  55.6 |    31M |  33 | 288 | 384 | 438 |7185 |  2 | 107 | 519 | 3.704513e+01 | 4.100000e+01 |  10.68%|  42.00%
- 26.0s|  1800 |   708 | 98148 |  53.4 |    31M |  33 | 288 | 386 | 426 |7291 |  4 | 110 | 519 | 3.705311e+01 | 4.100000e+01 |  10.65%|  42.94%
- 26.0s|  1900 |   724 | 99711 |  51.4 |    31M |  33 | 288 | 389 | 426 |7347 |  1 | 113 | 520 | 3.705810e+01 | 4.100000e+01 |  10.64%|  43.81%
- 27.0s|  2000 |   726 |102052 |  50.0 |    31M |  33 | 288 | 390 | 430 |7517 |  2 | 116 | 523 | 3.706469e+01 | 4.100000e+01 |  10.62%|  45.65%
- 27.0s|  2100 |   734 |103965 |  48.5 |    31M |  33 | 288 | 391 | 400 |7642 |  0 | 117 | 524 | 3.711633e+01 | 4.100000e+01 |  10.46%|  46.38%
- 27.0s|  2200 |   754 |105916 |  47.2 |    31M |  33 | 288 | 392 | 422 |7774 |  1 | 118 | 526 | 3.717277e+01 | 4.100000e+01 |  10.30%|  47.80%
- 28.0s|  2300 |   758 |106834 |  45.6 |    31M |  33 | 288 | 392 | 431 |7807 |  1 | 120 | 527 | 3.717277e+01 | 4.100000e+01 |  10.30%|  48.27%
- time | node  | left  |LP iter|LP it/n|mem/heur|mdpt |vars |cons |rows |cuts |sepa|confs|strbr|  dualbound   | primalbound  |  gap   | compl. 
- 28.0s|  2400 |   756 |108012 |  44.2 |    31M |  34 | 288 | 392 | 394 |7871 |  1 | 122 | 530 | 3.722356e+01 | 4.100000e+01 |  10.15%|  49.32%
- 28.0s|  2500 |   758 |110597 |  43.4 |    31M |  34 | 288 | 392 | 405 |8051 |  2 | 123 | 531 | 3.726690e+01 | 4.100000e+01 |  10.02%|  50.86%
- 28.0s|  2600 |   758 |111932 |  42.3 |    31M |  34 | 288 | 395 | 408 |8070 |  2 | 129 | 535 | 3.727273e+01 | 4.100000e+01 |  10.00%|  52.12%
- 29.0s|  2700 |   766 |114122 |  41.5 |    31M |  34 | 288 | 395 | 421 |8174 |  0 | 135 | 535 | 3.729089e+01 | 4.100000e+01 |   9.95%|  53.25%
- 29.0s|  2800 |   770 |115754 |  40.6 |    31M |  34 | 288 | 395 | 434 |8308 |  0 | 136 | 535 | 3.730722e+01 | 4.100000e+01 |   9.90%|  53.67%
- 30.0s|  2900 |   780 |117900 |  40.0 |    31M |  34 | 288 | 395 | 419 |8459 |  0 | 138 | 537 | 3.731818e+01 | 4.100000e+01 |   9.87%|  54.71%
- 30.0s|  3000 |   776 |119853 |  39.3 |    31M |  34 | 288 | 395 | 414 |8589 |  1 | 139 | 540 | 3.736112e+01 | 4.100000e+01 |   9.74%|  55.99%
- 30.0s|  3100 |   780 |121910 |  38.7 |    31M |  34 | 288 | 395 | 415 |8747 |  2 | 140 | 541 | 3.740066e+01 | 4.100000e+01 |   9.62%|  56.71%
- 30.0s|  3200 |   764 |123732 |  38.0 |    31M |  34 | 288 | 396 | 441 |8853 |  1 | 141 | 542 | 3.760828e+01 | 4.100000e+01 |   9.02%|  58.52%
- 31.0s|  3300 |   754 |125494 |  37.4 |    32M |  34 | 288 | 396 | 421 |8950 |  2 | 143 | 542 | 3.766299e+01 | 4.100000e+01 |   8.86%|  59.62%
- 31.0s|  3400 |   732 |127786 |  37.0 |    32M |  34 | 288 | 399 | 434 |9127 |  0 | 147 | 542 | 3.775000e+01 | 4.100000e+01 |   8.61%|  61.33%
- 31.0s|  3500 |   716 |129147 |  36.3 |    32M |  34 | 288 | 399 | 414 |9174 |  1 | 147 | 542 | 3.775157e+01 | 4.100000e+01 |   8.60%|  62.37%
- 32.0s|  3600 |   702 |130999 |  35.8 |    32M |  34 | 288 | 399 | 439 |9293 |  0 | 147 | 542 | 3.777922e+01 | 4.100000e+01 |   8.53%|  63.58%
- 32.0s|  3700 |   692 |132309 |  35.2 |    32M |  34 | 288 | 400 | 418 |9393 |  0 | 148 | 543 | 3.778982e+01 | 4.100000e+01 |   8.49%|  64.28%
- 32.0s|  3800 |   678 |134000 |  34.7 |    32M |  34 | 288 | 400 | 425 |9442 |  1 | 148 | 545 | 3.786189e+01 | 4.100000e+01 |   8.29%|  65.26%
- time | node  | left  |LP iter|LP it/n|mem/heur|mdpt |vars |cons |rows |cuts |sepa|confs|strbr|  dualbound   | primalbound  |  gap   | compl. 
- 32.0s|  3900 |   656 |135542 |  34.2 |    32M |  34 | 288 | 403 | 435 |9548 |  0 | 151 | 549 | 3.788285e+01 | 4.100000e+01 |   8.23%|  66.44%
- 33.0s|  4000 |   642 |137266 |  33.8 |    32M |  34 | 288 | 403 | 425 |9676 |  2 | 153 | 553 | 3.790909e+01 | 4.100000e+01 |   8.15%|  67.83%
- 33.0s|  4100 |   616 |138514 |  33.3 |    32M |  34 | 288 | 408 | 408 |9714 |  0 | 160 | 557 | 3.793831e+01 | 4.100000e+01 |   8.07%|  69.09%
- 33.0s|  4200 |   604 |140118 |  32.9 |    32M |  34 | 288 | 408 | 420 |9814 |  0 | 160 | 563 | 3.800000e+01 | 4.100000e+01 |   7.89%|  69.87%
- 33.0s|  4300 |   586 |141853 |  32.5 |    32M |  34 | 288 | 412 | 397 |9848 |  0 | 164 | 568 | 3.800455e+01 | 4.100000e+01 |   7.88%|  71.09%
- 34.0s|  4400 |   566 |143321 |  32.1 |    32M |  34 | 288 | 412 | 434 |9929 |  0 | 166 | 570 | 3.803162e+01 | 4.100000e+01 |   7.81%|  72.12%
- 34.0s|  4500 |   558 |144967 |  31.8 |    32M |  34 | 288 | 412 | 444 |  10k|  0 | 166 | 575 | 3.808914e+01 | 4.100000e+01 |   7.64%|  72.66%
- 34.0s|  4600 |   542 |146062 |  31.3 |    32M |  34 | 288 | 412 | 430 |  10k|  1 | 167 | 577 | 3.813379e+01 | 4.100000e+01 |   7.52%|  73.61%
- 34.0s|  4700 |   514 |147495 |  30.9 |    32M |  34 | 288 | 412 | 426 |  10k|  0 | 168 | 583 | 3.817586e+01 | 4.100000e+01 |   7.40%|  75.33%
- 34.0s|  4800 |   494 |149374 |  30.7 |    32M |  34 | 288 | 412 | 410 |  10k|  0 | 168 | 586 | 3.829369e+01 | 4.100000e+01 |   7.07%|  76.78%
- 35.0s|  4900 |   470 |150640 |  30.3 |    32M |  34 | 288 | 412 | 435 |  10k|  0 | 168 | 589 | 3.829717e+01 | 4.100000e+01 |   7.06%|  77.83%
- 35.0s|  5000 |   434 |151894 |  30.0 |    32M |  34 | 288 | 412 | 418 |  10k|  0 | 168 | 595 | 3.836446e+01 | 4.100000e+01 |   6.87%|  79.64%
- 35.0s|  5100 |   418 |153162 |  29.6 |    32M |  34 | 288 | 412 | 440 |  10k|  1 | 168 | 599 | 3.838528e+01 | 4.100000e+01 |   6.81%|  80.72%
- 35.0s|  5200 |   404 |154211 |  29.3 |    32M |  34 | 288 | 414 | 412 |  10k|  1 | 170 | 608 | 3.843067e+01 | 4.100000e+01 |   6.69%|  81.67%
- 35.0s|  5300 |   376 |155576 |  29.0 |    32M |  34 | 288 | 410 | 410 |  10k|  1 | 170 | 613 | 3.843551e+01 | 4.100000e+01 |   6.67%|  82.73%
- time | node  | left  |LP iter|LP it/n|mem/heur|mdpt |vars |cons |rows |cuts |sepa|confs|strbr|  dualbound   | primalbound  |  gap   | compl. 
- 35.0s|  5400 |   346 |157124 |  28.7 |    32M |  34 | 288 | 410 | 431 |  10k|  0 | 171 | 618 | 3.843790e+01 | 4.100000e+01 |   6.67%|  84.03%
- 36.0s|  5500 |   322 |158520 |  28.5 |    32M |  34 | 288 | 408 | 436 |  10k|  0 | 173 | 623 | 3.859626e+01 | 4.100000e+01 |   6.23%|  85.29%
- 36.0s|  5600 |   256 |159844 |  28.2 |    32M |  34 | 288 | 408 | 417 |  10k|  0 | 173 | 623 | 3.866704e+01 | 4.100000e+01 |   6.03%|  88.86%
- 36.0s|  5700 |   224 |161060 |  27.9 |    32M |  34 | 288 | 406 | 416 |  10k|  0 | 173 | 626 | 3.879340e+01 | 4.100000e+01 |   5.69%|  90.10%
- 36.0s|  5800 |   186 |162331 |  27.6 |    32M |  34 | 288 | 406 | 428 |  10k|  1 | 175 | 628 | 3.891748e+01 | 4.100000e+01 |   5.35%|  92.57%
- 36.0s|  5900 |   146 |163520 |  27.4 |    32M |  34 | 288 | 406 | 425 |  10k|  0 | 175 | 635 | 3.901409e+01 | 4.100000e+01 |   5.09%|  93.77%
- 36.0s|  6000 |   108 |164822 |  27.1 |    32M |  34 | 288 | 406 | 420 |  10k|  0 | 175 | 639 | 3.902481e+01 | 4.100000e+01 |   5.06%|  94.92%
- 37.0s|  6100 |    68 |166069 |  26.9 |    32M |  34 | 288 | 406 | 603 |  10k|  0 | 175 | 648 | 3.916924e+01 | 4.100000e+01 |   4.67%|  96.40%
- 37.0s|  6200 |    28 |167592 |  26.7 |    32M |  34 | 288 | 405 | 498 |  10k|  0 | 175 | 650 | 3.930665e+01 | 4.100000e+01 |   4.31%|  98.77%
-
-SCIP Status        : problem is solved [optimal solution found]
-Solving Time (sec) : 37.00
-Solving Nodes      : 6230
-Primal Bound       : +4.10000000000000e+01 (779 solutions)
-Dual Bound         : +4.10000000000000e+01
-Gap                : 0.00 %
--------------------------------------------------------------------------------
-                                    Summary                                    
--------------------------------------------------------------------------------
-(CVXPY) May 14 09:34:29 PM: Problem status: optimal
-(CVXPY) May 14 09:34:29 PM: Optimal value: 4.100e+01
-(CVXPY) May 14 09:34:29 PM: Compilation took 4.779e-02 seconds
-(CVXPY) May 14 09:34:29 PM: Solver (including time spent in interface) took 3.735e+01 seconds
-</pre></div>
-</div>
-<img alt="../../_images/70c2bfcdd437bfe3381782aa28321c0695917a1cc072c8f22437908bd59aa9e4.svg" src="../../_images/70c2bfcdd437bfe3381782aa28321c0695917a1cc072c8f22437908bd59aa9e4.svg" />
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># The cost is lower than the solution we obtained with networkx</span>
-<span class="n">P</span><span class="o">.</span><span class="n">objectives</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">m</span><span class="o">.</span><span class="n">processed_graph</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>41.0
-</pre></div>
+<img alt="../../_images/fc24a50d0737ae905fd1d91a22b7a29d10fbedb3c0bc3351fda4f7e0a96be7cc.svg" src="../../_images/fc24a50d0737ae905fd1d91a22b7a29d10fbedb3c0bc3351fda4f7e0a96be7cc.svg" />
 </div>
 </div>
-</div>
-<p>The Steiner problem is only guaranteed to yield a Steiner tree when we allow the solver to run until optimality is proven. However, we can enforce the tree structure more strictly by setting <code class="docutils literal notranslate"><span class="pre">strict_acyclic=True</span></code>. In this scenario, instead of using a standard network flow problem, it employs an acyclic network flow. While this approach introduces more variables, it also adds more constraints. These additional constraints exclude many structures that aren’t trees from the feasible space, potentially aiding solvers in finding the optimal solution more quickly. Moreover, we can stop the solver early, even before optimality is confirmed, and still obtain a valid Steiner tree.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">P</span><span class="p">,</span> <span class="n">G_steiner</span> <span class="o">=</span> <span class="n">exact_steiner_tree</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">terminals</span><span class="p">,</span> <span class="n">strict_acyclic</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;SCIPY&quot;</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Optimal value:&quot;</span><span class="p">,</span> <span class="n">P</span><span class="o">.</span><span class="n">objectives</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
-<span class="n">G_steiner</span><span class="o">.</span><span class="n">edge_subgraph</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">symbols</span><span class="p">[</span><span class="s2">&quot;_flow_i&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
-    <span class="n">orphan_edges</span><span class="o">=</span><span class="kc">False</span>
-<span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;scipy&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sol</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">processed_graph</span><span class="o">.</span><span class="n">edge_subgraph</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">with_flow</span><span class="o">.</span><span class="n">value</span><span class="p">)</span><span class="o">&gt;</span><span class="mf">0.5</span><span class="p">))</span>
+<span class="n">sol</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">orphan_edges</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/f7b0fefda8639e4d73c1379567eb41ce91056ec177dd640bb2ba55f4d1f4dfda.svg" src="../../_images/f7b0fefda8639e4d73c1379567eb41ce91056ec177dd640bb2ba55f4d1f4dfda.svg" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">G_mixed</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">EdgeType</span><span class="o">.</span><span class="n">UNDIRECTED</span><span class="p">)</span>
+<span class="n">G_mixed</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/623b24ff42196f02fbee613caa10e12d490ec744860c03f37ba59667d6cdcd47.svg" src="../../_images/623b24ff42196f02fbee613caa10e12d490ec744860c03f37ba59667d6cdcd47.svg" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">m</span> <span class="o">=</span> <span class="n">SteinerTreeFlow</span><span class="p">(</span><span class="n">root_selection_strategy</span><span class="o">=</span><span class="s2">&quot;best&quot;</span><span class="p">)</span>
+<span class="n">P</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">G_mixed</span><span class="p">,</span> <span class="n">D</span><span class="p">)</span>
+<span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;scipy&quot;</span><span class="p">)</span>
+
+<span class="n">sol</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">processed_graph</span><span class="o">.</span><span class="n">edge_subgraph</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">with_flow</span><span class="o">.</span><span class="n">value</span><span class="p">)</span><span class="o">&gt;</span><span class="mf">0.5</span><span class="p">))</span>
+<span class="n">sol</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">orphan_edges</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/8853df7875c64821c36cd7e7f21ba652613f91c7092e6167bf68a42c75983bb3.svg" src="../../_images/8853df7875c64821c36cd7e7f21ba652613f91c7092e6167bf68a42c75983bb3.svg" />
 </div>
 </div>
 </section>
@@ -938,12 +999,12 @@ Gap                : 0.00 %
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="multi-sample-shortest-paths.html"
+       href="acyclic-flows.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Multi-sample shortest paths</p>
+        <p class="prev-next-title">Acyclic Flows</p>
       </div>
     </a>
     <a class="right-next"
@@ -951,7 +1012,7 @@ Gap                : 0.00 %
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Prize-Collecting Steiner Trees (PCSTs)</p>
+        <p class="prev-next-title">Prize-Collecting Steiner Trees (PCST)</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -974,19 +1035,18 @@ Gap                : 0.00 %
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#heuristic-steiner-tree-from-networkx">Heuristic steiner tree from NetworkX</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exact-steiner-trees-with-corneto">Exact Steiner Trees with CORNETO</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-are-steiner-trees">What are Steiner Trees?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-corneto-solves-steiner-tree-problems">How CORNETO Solves Steiner Tree Problems</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#key-features">Key Features:</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#importing-data-to-corneto">Importing data to CORNETO</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#solving-the-problem-with-the-exact-steiner-tree">Solving the problem with the exact steiner tree</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#extracting-the-tree-and-plotting">Extracting the tree and plotting</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#directed-graphs">Directed graphs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mixed-graphs">Mixed graphs</a></li>
 </ul>
   </nav></div>
-
-  <div class="sidebar-secondary-item">
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="../../_sources/guide/networks/steiner-trees.ipynb.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div></div>
 
 </div></div>
               
@@ -1013,7 +1073,7 @@ Gap                : 0.00 %
 
   <p class="copyright">
     
-      © Copyright 2023, Saez-Rodriguez group.
+      © Copyright 2023-2025, Saez-Rodriguez lab. (EMBL-EBI, Heidelberg University).
       <br/>
     
   </p>

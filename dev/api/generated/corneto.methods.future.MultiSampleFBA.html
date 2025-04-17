@@ -1,0 +1,857 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>corneto.methods.future.MultiSampleFBA &#8212; CORNETO  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=5ec6e6de" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/generated/corneto.methods.future.MultiSampleFBA';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://saezlab.github.io/corneto/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.0.0.dev5';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="canonical" href="https://saezlab.github.io/corneto/api/generated/corneto.methods.future.MultiSampleFBA.html" />
+    <link rel="icon" href="../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="prev" title="corneto.methods.future.CarnivalILP" href="corneto.methods.future.CarnivalILP.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="../../_static/logo.png" class="logo__image only-light" alt="CORNETO  documentation - Home"/>
+    <img src="../../_static/logo.png" class="logo__image only-dark pst-js-only" alt="CORNETO  documentation - Home"/>
+  
+  
+</a></div>
+    
+      <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install.html">
+    Install
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../guide/index.html">
+    Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    Reference
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-external" href="https://github.com/saezlab/corneto">
+    GitHub
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install.html">
+    Install
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../guide/index.html">
+    Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/saezlab/corneto">
+    GitHub
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Packages:</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../corneto.backend.html">Optimization backend (<code class="xref py py-mod docutils literal notranslate"><span class="pre">corneto.backend</span></code>)</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../corneto.data.html">Handling data (<code class="xref py py-mod docutils literal notranslate"><span class="pre">corneto.data</span></code>)</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="corneto.data.Data.html">corneto.data.Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="corneto.data.Sample.html">corneto.data.Sample</a></li>
+<li class="toctree-l2"><a class="reference internal" href="corneto.data.util.html">corneto.data.util</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../corneto.io.html">Input and Output (<code class="xref py py-mod docutils literal notranslate"><span class="pre">corneto.io</span></code>)</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="corneto.io.load_graph_from_sif.html">corneto.io.load_graph_from_sif</a></li>
+<li class="toctree-l2"><a class="reference internal" href="corneto.io.load_graph_from_sif_tuples.html">corneto.io.load_graph_from_sif_tuples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="corneto.io.parse_cobra_model.html">corneto.io.parse_cobra_model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="corneto.io.cobra_model_to_graph.html">corneto.io.cobra_model_to_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="corneto.io.import_cobra_model.html">corneto.io.import_cobra_model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="corneto.io.import_miom_model.html">corneto.io.import_miom_model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="corneto.io.load_graph_from_sif.html">corneto.io.load_graph_from_sif</a></li>
+<li class="toctree-l2"><a class="reference internal" href="corneto.io.load_graph_from_sif_tuples.html">corneto.io.load_graph_from_sif_tuples</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../corneto.graph.html">Graph module (<code class="xref py py-mod docutils literal notranslate"><span class="pre">corneto.graph</span></code>)</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="corneto.graph.BaseGraph.html">corneto.graph.BaseGraph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="corneto.graph.Graph.html">corneto.graph.Graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="corneto.graph.EdgeType.html">corneto.graph.EdgeType</a></li>
+<li class="toctree-l2"><a class="reference internal" href="corneto.graph.duplication_divergence_network.html">corneto.graph.duplication_divergence_network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="corneto.graph.preferential_attachment_network.html">corneto.graph.preferential_attachment_network</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../corneto.methods.html">Network inference (<code class="xref py py-mod docutils literal notranslate"><span class="pre">corneto.methods.future</span></code>)</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="corneto.methods.future.CarnivalFlow.html">corneto.methods.future.CarnivalFlow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="corneto.methods.future.CarnivalILP.html">corneto.methods.future.CarnivalILP</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">corneto.methods.future.MultiSampleFBA</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Reference</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../corneto.methods.html" class="nav-link">Network inference (<code class="xref py py-mod docutils literal notranslate"><span class="pre">corneto.methods.future</span></code>)</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">corneto.methods.future.MultiSampleFBA</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="corneto-methods-future-multisamplefba">
+<h1>corneto.methods.future.MultiSampleFBA<a class="headerlink" href="#corneto-methods-future-multisamplefba" title="Link to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="corneto.methods.future.MultiSampleFBA">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">corneto.methods.future.</span></span><span class="sig-name descname"><span class="pre">MultiSampleFBA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lambda_reg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta_reg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flux_indicator_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'edge_has_flux'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disable_structured_sparsity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.future.MultiSampleFBA" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FlowMethod</span></code></p>
+<p>Flux Balance Analysis (FBA) method for multiple samples.</p>
+<p>This class implements Flux Balance Analysis for metabolic networks across multiple samples.
+It allows for regularization to minimize the number of active reactions (sparsity) and
+optimization based on reaction objectives.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The graph is expected to be a genome scale metabolic network.
+It can also be imported in SBML format (XML) using the
+<a class="reference internal" href="corneto.io.import_cobra_model.html#corneto.io.import_cobra_model" title="corneto.io.import_cobra_model"><code class="xref py py-func docutils literal notranslate"><span class="pre">corneto.io.import_cobra_model</span></code></a> function (requires cobrapy).</p>
+</div>
+<p>Flux Balance Analysis is a mathematical approach for analyzing metabolism in living cells,
+where metabolic fluxes in a metabolic network are calculated by optimizing an objective function
+(typically biomass production) subject to network stoichiometry constraints.</p>
+<p>The MultiSampleFBA class extends traditional FBA by enabling analysis across multiple samples or
+conditions simultaneously, which allows for comparative metabolic studies.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>flux_indicator_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>)</p></li>
+<li><p><strong>disable_structured_sparsity</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>)</p></li>
+<li><p><strong>backend</strong> (<a class="reference internal" href="../corneto.backend.html#corneto.backend.Backend" title="corneto.backend._base.Backend"><em>Backend</em></a><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="corneto.methods.future.MultiSampleFBA.lambda_reg">
+<span class="sig-name descname"><span class="pre">lambda_reg</span></span><a class="headerlink" href="#corneto.methods.future.MultiSampleFBA.lambda_reg" title="Link to this definition">#</a></dt>
+<dd><p>Regularization parameter to minimize the number of
+active reactions across samples (only when samples &gt; 1).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="corneto.methods.future.MultiSampleFBA.beta_reg">
+<span class="sig-name descname"><span class="pre">beta_reg</span></span><a class="headerlink" href="#corneto.methods.future.MultiSampleFBA.beta_reg" title="Link to this definition">#</a></dt>
+<dd><p>Additional regularization parameter for controlling sparsity
+individually for each sample.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="corneto.methods.future.MultiSampleFBA.flux_indicator_name">
+<span class="sig-name descname"><span class="pre">flux_indicator_name</span></span><a class="headerlink" href="#corneto.methods.future.MultiSampleFBA.flux_indicator_name" title="Link to this definition">#</a></dt>
+<dd><p>Name of the variable used to indicate active fluxes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="corneto.methods.future.MultiSampleFBA.disable_structured_sparsity">
+<span class="sig-name descname"><span class="pre">disable_structured_sparsity</span></span><a class="headerlink" href="#corneto.methods.future.MultiSampleFBA.disable_structured_sparsity" title="Link to this definition">#</a></dt>
+<dd><p>Whether to disable structured sparsity optimization.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="corneto.methods.future.MultiSampleFBA.backend">
+<span class="sig-name descname"><span class="pre">backend</span></span><a class="headerlink" href="#corneto.methods.future.MultiSampleFBA.backend" title="Link to this definition">#</a></dt>
+<dd><p>The optimization backend to use.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../corneto.backend.html#corneto.backend.Backend" title="corneto.backend.Backend">Backend</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Examples</p>
+<p>Basic usage with a single sample:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">import_miom_model</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">Data</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods.future.fba</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiSampleFBA</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Load a metabolic model</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">import_miom_model</span><span class="p">(</span><span class="s2">&quot;path/to/metabolic_model.miom&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create data with objective function (typically biomass)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Data</span><span class="o">.</span><span class="n">from_dict</span><span class="p">({</span>
+<span class="gp">... </span>    <span class="s2">&quot;sample1&quot;</span><span class="p">:</span> <span class="p">{</span>
+<span class="gp">... </span>        <span class="s2">&quot;EX_biomass_e&quot;</span><span class="p">:</span> <span class="p">{</span>
+<span class="gp">... </span>            <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;objective&quot;</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="p">},</span>
+<span class="gp">... </span>    <span class="p">}</span>
+<span class="gp">... </span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Initialize FBA and solve</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fba</span> <span class="o">=</span> <span class="n">MultiSampleFBA</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">P</span> <span class="o">=</span> <span class="n">fba</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Access the flux values</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">biomass_rid</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">get_edges_by_attr</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;EX_biomass_e&quot;</span><span class="p">)))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">biomass_flux</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="p">[</span><span class="n">biomass_rid</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Biomass flux: </span><span class="si">{</span><span class="n">biomass_flux</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Multi-sample analysis with gene knockouts:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create data with two samples - control and knockout</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Data</span><span class="o">.</span><span class="n">from_cdict</span><span class="p">({</span>
+<span class="gp">... </span>    <span class="s2">&quot;control&quot;</span><span class="p">:</span> <span class="p">{</span>
+<span class="gp">... </span>        <span class="s2">&quot;EX_biomass_e&quot;</span><span class="p">:</span> <span class="p">{</span>
+<span class="gp">... </span>            <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;objective&quot;</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="p">},</span>
+<span class="gp">... </span>    <span class="p">},</span>
+<span class="gp">... </span>    <span class="s2">&quot;knockout&quot;</span><span class="p">:</span> <span class="p">{</span>
+<span class="gp">... </span>        <span class="s2">&quot;EX_biomass_e&quot;</span><span class="p">:</span> <span class="p">{</span>
+<span class="gp">... </span>            <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;objective&quot;</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="p">},</span>
+<span class="gp">... </span>        <span class="s2">&quot;MDHm&quot;</span><span class="p">:</span> <span class="p">{</span>  <span class="c1"># Malate dehydrogenase knockout</span>
+<span class="gp">... </span>            <span class="s2">&quot;lower_bound&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="s2">&quot;upper_bound&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="p">},</span>
+<span class="gp">... </span>    <span class="p">}</span>
+<span class="gp">... </span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Initialize FBA and solve</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fba</span> <span class="o">=</span> <span class="n">MultiSampleFBA</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">P</span> <span class="o">=</span> <span class="n">fba</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Compare biomass production between conditions</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rid</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">get_edges_by_attr</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;EX_biomass_e&quot;</span><span class="p">)))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">control_flux</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="p">[</span><span class="n">rid</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">knockout_flux</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="p">[</span><span class="n">rid</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Control biomass: </span><span class="si">{</span><span class="n">control_flux</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Knockout biomass: </span><span class="si">{</span><span class="n">knockout_flux</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Growth reduction: </span><span class="si">{</span><span class="p">(</span><span class="n">control_flux</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">knockout_flux</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">control_flux</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">100</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Sparse FBA to minimize the number of active reactions:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create data with biomass lower bound constraint</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Data</span><span class="o">.</span><span class="n">from_dict</span><span class="p">({</span>
+<span class="gp">... </span>    <span class="s2">&quot;sample1&quot;</span><span class="p">:</span> <span class="p">{</span>
+<span class="gp">... </span>        <span class="s2">&quot;EX_biomass_e&quot;</span><span class="p">:</span> <span class="p">{</span>
+<span class="gp">... </span>            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;objective&quot;</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="s2">&quot;lower_bound&quot;</span><span class="p">:</span> <span class="mf">100.80</span><span class="p">,</span>  <span class="c1"># Enforce minimum biomass production</span>
+<span class="gp">... </span>        <span class="p">},</span>
+<span class="gp">... </span>    <span class="p">}</span>
+<span class="gp">... </span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Initialize FBA with regularization for sparsity</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fba</span> <span class="o">=</span> <span class="n">MultiSampleFBA</span><span class="p">(</span><span class="n">beta_reg</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">P</span> <span class="o">=</span> <span class="n">fba</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Count number of active reactions</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n_active_reactions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">edge_has_flux</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of active reactions: </span><span class="si">{</span><span class="n">n_active_reactions</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.methods.future.MultiSampleFBA.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lambda_reg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta_reg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flux_indicator_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'edge_has_flux'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disable_structured_sparsity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.future.MultiSampleFBA.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initialize a MultiSampleFBA instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lambda_reg</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>, </em><em>optional</em>) – Regularization parameter for the primary sparsity term.
+Higher values encourage fewer active reactions. Defaults to 0.0.</p></li>
+<li><p><strong>beta_reg</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>, </em><em>optional</em>) – Secondary regularization parameter for sparsity.
+Used when both types of regularization are needed. Defaults to 0.0.</p></li>
+<li><p><strong>flux_indicator_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – Name for the flux indicator variables.
+These variables track whether a reaction is active or not. Defaults to “edge_has_flux”.</p></li>
+<li><p><strong>disable_structured_sparsity</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – If True, structured sparsity optimization
+is disabled. Structured sparsity can improve solution quality but increases
+computation time. Defaults to False.</p></li>
+<li><p><strong>backend</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="../corneto.backend.html#corneto.backend.Backend" title="corneto.backend.Backend"><em>Backend</em></a><em>]</em><em>, </em><em>optional</em>) – The optimization backend to use.
+If None, the default backend is used. Defaults to None.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#corneto.methods.future.MultiSampleFBA.__init__" title="corneto.methods.future.MultiSampleFBA.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([lambda_reg, beta_reg, ...])</p></td>
+<td><p>Initialize a MultiSampleFBA instance.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">build</span></code>(graph, data)</p></td>
+<td><p>Build the complete optimization problem.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#corneto.methods.future.MultiSampleFBA.create_flow_based_problem" title="corneto.methods.future.MultiSampleFBA.create_flow_based_problem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_flow_based_problem</span></code></a>(flow_problem, ...)</p></td>
+<td><p>Create the flow-based optimization problem.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_problem</span></code>(graph, data)</p></td>
+<td><p>Create the optimization problem using a flow-based formulation.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#corneto.methods.future.MultiSampleFBA.get_citations" title="corneto.methods.future.MultiSampleFBA.get_citations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_citations</span></code></a>()</p></td>
+<td><p>Returns citation keys for this method.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#corneto.methods.future.MultiSampleFBA.get_flow_bounds" title="corneto.methods.future.MultiSampleFBA.get_flow_bounds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_flow_bounds</span></code></a>(graph, data)</p></td>
+<td><p>Get the flow bounds for the optimization problem.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#corneto.methods.future.MultiSampleFBA.preprocess" title="corneto.methods.future.MultiSampleFBA.preprocess"><code class="xref py py-obj docutils literal notranslate"><span class="pre">preprocess</span></code></a>(graph, data)</p></td>
+<td><p>Preprocess the graph and data before solving.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_bibtex</span></code>()</p></td>
+<td><p>Display raw BibTeX entries in a formatted block for easy copying.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_citations</span></code>()</p></td>
+<td><p>Display formatted citations in a Jupyter notebook.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="rubric">Attributes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#corneto.methods.future.MultiSampleFBA.backend" title="corneto.methods.future.MultiSampleFBA.backend"><code class="xref py py-obj docutils literal notranslate"><span class="pre">backend</span></code></a></p></td>
+<td><p>Return the optimization backend being used.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.methods.future.MultiSampleFBA.preprocess">
+<span class="sig-name descname"><span class="pre">preprocess</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.future.MultiSampleFBA.preprocess" title="Link to this definition">#</a></dt>
+<dd><p>Preprocess the graph and data before solving.</p>
+<p>This method can be extended to implement flux-consistent preprocessing techniques
+such as removing blocked reactions or dead-end metabolites.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>graph</strong> (<a class="reference internal" href="corneto.graph.BaseGraph.html#corneto.graph.BaseGraph" title="corneto.graph.BaseGraph"><em>BaseGraph</em></a>) – The metabolic network graph to be analyzed.</p></li>
+<li><p><strong>data</strong> (<a class="reference internal" href="corneto.data.Data.html#corneto.data.Data" title="corneto.data.Data"><em>Data</em></a>) – The experimental data containing sample information.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The preprocessed graph and data.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple[<a class="reference internal" href="corneto.graph.BaseGraph.html#corneto.graph.BaseGraph" title="corneto.graph.BaseGraph">BaseGraph</a>, <a class="reference internal" href="corneto.data.Data.html#corneto.data.Data" title="corneto.data.Data">Data</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.methods.future.MultiSampleFBA.get_flow_bounds">
+<span class="sig-name descname"><span class="pre">get_flow_bounds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.future.MultiSampleFBA.get_flow_bounds" title="Link to this definition">#</a></dt>
+<dd><p>Get the flow bounds for the optimization problem.</p>
+<p>This method extracts the default lower and upper bounds for each reaction
+in the metabolic network and sets up the problem dimensions based on the
+number of samples.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>graph</strong> (<a class="reference internal" href="corneto.graph.BaseGraph.html#corneto.graph.BaseGraph" title="corneto.graph.BaseGraph"><em>BaseGraph</em></a>) – The metabolic network graph.</p></li>
+<li><p><strong>data</strong> (<a class="reference internal" href="corneto.data.Data.html#corneto.data.Data" title="corneto.data.Data"><em>Data</em></a>) – The experimental data containing sample information.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Dictionary containing flow bounds information including</dt><dd><p>lower bounds, upper bounds, number of flows (samples), and whether
+bounds are shared across samples.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dict[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a>, Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.methods.future.MultiSampleFBA.create_flow_based_problem">
+<span class="sig-name descname"><span class="pre">create_flow_based_problem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flow_problem</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.future.MultiSampleFBA.create_flow_based_problem" title="Link to this definition">#</a></dt>
+<dd><p>Create the flow-based optimization problem.</p>
+<p>This method sets up the constraints and objectives for the FBA optimization
+problem by:
+1. Creating indicator variables for flux activity
+2. Setting reaction-specific bounds for each sample
+3. Adding objective functions for each sample
+4. Adding regularization terms if requested</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>flow_problem</strong> – The optimization problem object.</p></li>
+<li><p><strong>graph</strong> (<a class="reference internal" href="corneto.graph.BaseGraph.html#corneto.graph.BaseGraph" title="corneto.graph.BaseGraph"><em>BaseGraph</em></a>) – The metabolic network graph.</p></li>
+<li><p><strong>data</strong> (<a class="reference internal" href="corneto.data.Data.html#corneto.data.Data" title="corneto.data.Data"><em>Data</em></a>) – The experimental data containing sample information.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The configured optimization problem ready to be solved.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.methods.future.MultiSampleFBA.get_citations">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_citations</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.future.MultiSampleFBA.get_citations" title="Link to this definition">#</a></dt>
+<dd><p>Returns citation keys for this method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A list of citation keys that can be used to lookup BibTeX entries.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="corneto.methods.future.CarnivalILP.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">corneto.methods.future.CarnivalILP</p>
+      </div>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.future.MultiSampleFBA"><code class="docutils literal notranslate"><span class="pre">MultiSampleFBA</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.future.MultiSampleFBA.lambda_reg"><code class="docutils literal notranslate"><span class="pre">MultiSampleFBA.lambda_reg</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.future.MultiSampleFBA.beta_reg"><code class="docutils literal notranslate"><span class="pre">MultiSampleFBA.beta_reg</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.future.MultiSampleFBA.flux_indicator_name"><code class="docutils literal notranslate"><span class="pre">MultiSampleFBA.flux_indicator_name</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.future.MultiSampleFBA.disable_structured_sparsity"><code class="docutils literal notranslate"><span class="pre">MultiSampleFBA.disable_structured_sparsity</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.future.MultiSampleFBA.backend"><code class="docutils literal notranslate"><span class="pre">MultiSampleFBA.backend</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.future.MultiSampleFBA.__init__"><code class="docutils literal notranslate"><span class="pre">MultiSampleFBA.__init__</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.future.MultiSampleFBA.preprocess"><code class="docutils literal notranslate"><span class="pre">MultiSampleFBA.preprocess</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.future.MultiSampleFBA.get_flow_bounds"><code class="docutils literal notranslate"><span class="pre">MultiSampleFBA.get_flow_bounds</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.future.MultiSampleFBA.create_flow_based_problem"><code class="docutils literal notranslate"><span class="pre">MultiSampleFBA.create_flow_based_problem</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.future.MultiSampleFBA.get_citations"><code class="docutils literal notranslate"><span class="pre">MultiSampleFBA.get_citations</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2023-2025, Saez-Rodriguez lab. (EMBL-EBI, Heidelberg University).
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

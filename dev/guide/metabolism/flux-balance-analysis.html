@@ -32,16 +32,8 @@
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster.custom.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster.bundle.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster-sideTip-shadow.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster-sideTip-punk.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster-sideTip-noir.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster-sideTip-light.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster-sideTip-borderless.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/micromodal.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=e238a3f6" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=5ec6e6de" />
   
   <!-- So that users can add custom icons -->
   <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
@@ -49,28 +41,23 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/jquery.js?v=5d32c60e"></script>
-    <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
     <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../../_static/js/hoverxref.js"></script>
-    <script src="../../_static/js/tooltipster.bundle.min.js"></script>
-    <script src="../../_static/js/micromodal.min.js"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
-    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'guide/metabolism/flux-balance-analysis';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://saezlab.github.io/corneto/dev/_static/switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.0.0.dev3';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://saezlab.github.io/corneto/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.0.0.dev5';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
+    <link rel="canonical" href="https://saezlab.github.io/corneto/guide/metabolism/flux-balance-analysis.html" />
+    <link rel="icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Sparse FBA" href="sparse-fba.html" />
+    <link rel="next" title="Multi-condition sparse FBA" href="multicondition-sfba.html" />
     <link rel="prev" title="Metabolism" href="index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -174,9 +161,16 @@
 <nav>
   <ul class="bd-navbar-elements navbar-nav">
     
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install.html">
+    Install
+  </a>
+</li>
+
+
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="../index.html">
-    User guide
+    Guide
   </a>
 </li>
 
@@ -190,17 +184,27 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../api/index.html">
-    API Reference
+    Reference
   </a>
 </li>
 
-
-<li class="nav-item ">
-  <a class="nav-link nav-external" href="https://github.com/saezlab/corneto">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-external" href="https://github.com/saezlab/corneto">
     GitHub
   </a>
 </li>
 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
       
@@ -274,9 +278,16 @@
 <nav>
   <ul class="bd-navbar-elements navbar-nav">
     
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install.html">
+    Install
+  </a>
+</li>
+
+
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="../index.html">
-    User guide
+    Guide
   </a>
 </li>
 
@@ -290,7 +301,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../api/index.html">
-    API Reference
+    Reference
   </a>
 </li>
 
@@ -331,21 +342,23 @@
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../intro/index.html">Getting started</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../intro/prior-knowledge.html">Prior Knowledge and Graphs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/data.html">Working with data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/plotting.html">Plotting</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../intro/constrained-optimization.html">Constrained Optimization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../intro/multi-commodity-network-flows.html">Multi-commodity Network Flows</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../intro/acyclic-flows.html">Acyclic Flows</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../networks/index.html">Network methods</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../networks/shortest-paths.html">Shortest paths</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../networks/multi-sample-shortest-paths.html">Multi-sample shortest paths</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../networks/steiner-trees.html">Steiner Trees (STs)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../networks/pcst.html">Prize-Collecting Steiner Trees (PCSTs)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../networks/multi-commodity-network-flows.html">Multi-commodity Network Flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../networks/acyclic-flows.html">Acyclic Flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../networks/steiner-trees.html">Steiner trees</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../networks/pcst.html">Prize-Collecting Steiner Trees (PCST)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../networks/multi-pcst-grb.html">Multi-sample PCST</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Metabolism</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Flux Balance Analysis (FBA)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="sparse-fba.html">Sparse FBA</a></li>
 <li class="toctree-l2"><a class="reference internal" href="multicondition-sfba.html">Multi-condition sparse FBA</a></li>
 <li class="toctree-l2"><a class="reference internal" href="imat.html">Context-specific models (iMAT)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="multicondition-imat.html">Multi-condition iMAT</a></li>
@@ -353,13 +366,10 @@
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../signaling/index.html">Signaling</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../signaling/carnival.html">CARNIVAL</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../signaling/multicondition-carnival.html">Multi-condition CARNIVAL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../signaling/multisample-carnival.html">Multi-sample CARNIVAL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../signaling/cellnopt_ILP.html">Acyclic boolean models of cell signaling (experimental)</a></li>
 
 
-</ul>
-</details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../interactomics/index.html">Interactomics</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../interoperability/index.html">Interoperability</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -413,7 +423,7 @@
       </a>
     </li>
     
-    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">User guide</a></li>
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Guide</a></li>
     
     
     <li class="breadcrumb-item"><a href="index.html" class="nav-link">Metabolism</a></li>
@@ -445,7 +455,7 @@
 <p>In the realm of metabolic network analysis, this concept translates to steady-state metabolic fluxes. A flux is a rate at which a substance moves through a system, and in metabolic systems, flux represents the rate of turnover of a metabolite through a specific pathway or reaction. When considering the steady-state, each reaction’s flux in the metabolic network is balanced, meaning that, for every internal metabolite, the sum of fluxes leading to its production is equal to the sum of fluxes leading to its consumption. This balance ensures that, over time, there’s no accumulation or depletion of any metabolite in the system.</p>
 <p>For quantifying these fluxes, the typical units used are millimoles per gram dry weight per hour (mmol/gDW/h). The “mmol” part represents the quantity of the metabolite, the “gDW” (gram dry weight) normalizes this value to the biomass of the organism, and the “/h” provides a temporal dimension, indicating how fast the metabolic turnover occurs. This unit allows researchers and practitioners to make meaningful comparisons across different metabolic systems and conditions. For example, a flux value of 5 mmol/gDW/h for a particular reaction indicates that 5 millimoles of the relevant metabolite are produced or consumed per gram of the organism’s dry weight every hour.</p>
 <center style="margin:25px">
-    <img src="https://www.biorxiv.org/content/biorxiv/early/2016/05/15/053520/F1.large.jpg" alt="Flux Balance Analysis" style="width: 100%; max-width:500px; margin-bottom:10px;">
+    <img src="../../_static/fba-example.jpg" alt="Flux Balance Analysis" style="width: 100%; max-width:500px; margin-bottom:10px;">
     <br>
     <font size="-1">
         <b>Figure 1:</b> Vivek-Ananth, R. P., and Areejit Samal. "Advances in the integration of transcriptional regulatory information into genome-scale metabolic models." Biosystems 147 (2016): 1-10.
@@ -458,8 +468,8 @@
 <ul class="simple">
 <li><p><strong>Genome-scale metabolic network</strong>: This is the prior knowledge, usually known as genome-scale metabolic models (GEMs). These models represent the metabolic network through a stoichiometric matrix, where each row represents a metabolite and each column represents a reaction. The entries in the matrix are the stoichiometric coefficients of the metabolites in the reactions. These models also contain annotations such as Gene-Protein-Rules (GPRs) and default reaction bounds.</p></li>
 <li><p><strong>Constraints</strong>: For each reaction, there are limits or “constraints” on the flux based on factors like enzyme capacities. Basically, it’s setting the maximum and minimum fluxes for the reactions.</p></li>
-<li><p><strong>Objective Function</strong>: You then define an objective to optimize, like maximizing the production of a specific metabolite or maximizing growth rate.</p></li>
-<li><p><strong>Computational Solution</strong>: Using linear programming techniques, you can find the flux distribution that meets the constraints and optimizes the objective function.</p></li>
+<li><p><strong>Objective function</strong>: You then define an objective to optimize, like maximizing the production of a specific metabolite or maximizing growth rate.</p></li>
+<li><p><strong>LP Solver</strong>: Using linear programming techniques, you can find the flux distribution that meets the constraints and optimizes the objective function.</p></li>
 </ul>
 <p>CORNETO naturally supports FBA-based problems by transforming a genome scale metabolic network into a prior knowledge graph, and then modelling the FBA problem as a network flow problem. This is the main building block for creating more complex problems, such as multicondition Sparse FBA or multicondition iMAT for context-specific reconstruction.</p>
 </section>
@@ -497,7 +507,7 @@
                 <td><strong>Name</strong></td><td>Biomass Objective Function with GAM</td>
             </tr><tr>
                 <td><strong>Memory address</strong></td>
-                <td>0x7f8a2478bb10</td>
+                <td>0x7f696cc2d590</td>
             </tr><tr>
                 <td><strong>Stoichiometry</strong></td>
                 <td>
@@ -522,14 +532,18 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Solution 0.874 at 0x7f8a2474ef90&gt;
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Solution 0.874 at 0x7f696cc5fc50&gt;
 </pre></div>
 </div>
 </div>
 </div>
+</section>
+<section id="using-corneto">
+<h2>Using CORNETO<a class="headerlink" href="#using-corneto" title="Link to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">corneto</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cn</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="n">cn</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
 </pre></div>
@@ -544,7 +558,7 @@
             </td>
             <td>
             <table>
-                <tr><td>Installed version:</td><td style='text-align:left'>v1.0.0.dev3 (latest stable: v1.0.0-alpha)</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.6.0, PICOS v2.5.1</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CVXOPT, GLPK, GLPK_MI, HIGHS, SCIP, SCIPY</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.3</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href=https://github.com/saezlab/corneto>https://github.com/saezlab/corneto</a></td></tr>
+                <tr><td>Installed version:</td><td style='text-align:left'>v1.0.0.dev5 (latest stable: v1.0.0-alpha)</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.6.5, PICOS v2.6.1</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CVXOPT, GLPK, GLPK_MI, HIGHS, SCIP, SCIPY</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.3</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href=https://github.com/saezlab/corneto>https://github.com/saezlab/corneto</a></td></tr>
             </table>
             </td>
         </tr>
@@ -552,7 +566,8 @@
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">G</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Graph</span><span class="o">.</span><span class="n">from_cobra_model</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">cobra_model_to_graph</span>
+<span class="n">G</span> <span class="o">=</span> <span class="n">cobra_model_to_graph</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 <span class="n">G</span><span class="o">.</span><span class="n">shape</span>
 </pre></div>
 </div>
@@ -610,23 +625,263 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/02dd0b0e86928f1008b9b43c668818153b45f3e0335322bb6004794185e89737.svg" src="../../_images/02dd0b0e86928f1008b9b43c668818153b45f3e0335322bb6004794185e89737.svg" />
+<img alt="../../_images/0247cd4ddcb0da3df26c30988085040612f3ee3cf39abdf039660e87f69fac99.svg" src="../../_images/0247cd4ddcb0da3df26c30988085040612f3ee3cf39abdf039660e87f69fac99.svg" />
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods.metabolism.fba</span><span class="w"> </span><span class="kn">import</span> <span class="n">fba_problem</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods.future</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiSampleFBA</span> <span class="k">as</span> <span class="n">FBA</span>
 
-<span class="n">P</span> <span class="o">=</span> <span class="n">fba_problem</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
-<span class="n">biomass</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="p">[</span><span class="n">rid</span><span class="p">]</span>
-<span class="n">P</span><span class="o">.</span><span class="n">add_objectives</span><span class="p">(</span><span class="n">biomass</span><span class="p">,</span> <span class="n">weights</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">biomass</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+<span class="n">d</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Data</span><span class="o">.</span><span class="n">from_cdict</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;fba_example&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;Biomass_Ecoli_core&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;objective&quot;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+
+<span class="n">m</span> <span class="o">=</span> <span class="n">FBA</span><span class="p">()</span>
+<span class="n">P</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+<span class="n">P</span><span class="o">.</span><span class="n">expr</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.8739215069684303
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_flow&#39;: _flow: Variable((95,), _flow),
+ &#39;edge_has_flux&#39;: edge_has_flux: Variable((95,), edge_has_flux, boolean=True),
+ &#39;flow&#39;: _flow: Variable((95,), _flow)}
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;scipy&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">opt_flux</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="p">[</span><span class="n">rid</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
+<span class="n">opt_flux</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>np.float64(0.873921506968431)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mf">1e-6</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>np.int64(48)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">G</span><span class="o">.</span><span class="n">get_attr_from_edges</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">),</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;fluxes&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>fluxes</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>ACALD</th>
+      <td>-0.000000</td>
+    </tr>
+    <tr>
+      <th>ACALDt</th>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>ACKr</th>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>ACONTa</th>
+      <td>6.007250</td>
+    </tr>
+    <tr>
+      <th>ACONTb</th>
+      <td>6.007250</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>TALA</th>
+      <td>1.496984</td>
+    </tr>
+    <tr>
+      <th>THD2</th>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>TKT1</th>
+      <td>1.496984</td>
+    </tr>
+    <tr>
+      <th>TKT2</th>
+      <td>1.181498</td>
+    </tr>
+    <tr>
+      <th>TPI</th>
+      <td>7.477382</td>
+    </tr>
+  </tbody>
+</table>
+<p>95 rows × 1 columns</p>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">G</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">custom_edge_attr</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">flow_style</span><span class="p">(</span><span class="n">P</span><span class="p">),</span> <span class="n">layout</span><span class="o">=</span><span class="s2">&quot;fdp&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/54c1c8264a64550a4d400f97070b8ad6198b3ab5e4a2f39155159cebe377f427.svg" src="../../_images/54c1c8264a64550a4d400f97070b8ad6198b3ab5e4a2f39155159cebe377f427.svg" />
+</div>
+</div>
+</section>
+<section id="sparse-fba">
+<h2>Sparse FBA<a class="headerlink" href="#sparse-fba" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">m</span> <span class="o">=</span> <span class="n">FBA</span><span class="p">(</span><span class="n">lambda_reg</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="n">P</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+<span class="c1"># We add a constraint to force at least 90% of optimal flux</span>
+<span class="n">P</span> <span class="o">+=</span> <span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="p">[</span><span class="n">rid</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">opt_flux</span><span class="o">*</span><span class="mf">0.90</span>
+<span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;highs&quot;</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">1</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>===============================================================================
+                                     CVXPY                                     
+                                     v1.6.5                                    
+===============================================================================
+(CVXPY) Apr 17 03:25:19 PM: Your problem has 190 variables, 453 constraints, and 1 parameters.
+(CVXPY) Apr 17 03:25:19 PM: It is compliant with the following grammars: DCP, DQCP
+(CVXPY) Apr 17 03:25:19 PM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
+(CVXPY) Apr 17 03:25:19 PM: Your problem is compiled with the CPP canonicalization backend.
+-------------------------------------------------------------------------------
+                                  Compilation                                  
+-------------------------------------------------------------------------------
+(CVXPY) Apr 17 03:25:19 PM: Compiling problem (target solver=HIGHS).
+(CVXPY) Apr 17 03:25:19 PM: Reduction chain: Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; HIGHS
+(CVXPY) Apr 17 03:25:19 PM: Applying reduction Dcp2Cone
+(CVXPY) Apr 17 03:25:19 PM: Applying reduction CvxAttr2Constr
+(CVXPY) Apr 17 03:25:19 PM: Applying reduction ConeMatrixStuffing
+(CVXPY) Apr 17 03:25:19 PM: Applying reduction HIGHS
+(CVXPY) Apr 17 03:25:19 PM: Finished problem compilation (took 1.042e-02 seconds).
+(CVXPY) Apr 17 03:25:19 PM: (Subsequent compilations of this problem, using the same arguments, should take less time.)
+-------------------------------------------------------------------------------
+                                Numerical solver                               
+-------------------------------------------------------------------------------
+(CVXPY) Apr 17 03:25:19 PM: Invoking solver HIGHS  to obtain a solution.
+Running HiGHS 1.10.0 (git hash: fd86653): Copyright (c) 2025 HiGHS under MIT licence terms
+MIP  has 453 rows; 190 cols; 883 nonzeros; 95 integer variables (95 binary)
+Coefficient ranges:
+  Matrix [7e-02, 1e+03]
+  Cost   [1e-01, 1e+00]
+  Bound  [1e+00, 1e+00]
+  RHS    [8e-01, 1e+03]
+Presolving model
+153 rows, 144 cols, 493 nonzeros  0s
+123 rows, 123 cols, 415 nonzeros  0s
+120 rows, 119 cols, 408 nonzeros  0s
+
+Solving MIP model with:
+   120 rows
+   119 cols (78 binary, 0 integer, 0 implied int., 41 continuous)
+   408 nonzeros
+
+Src: B =&gt; Branching; C =&gt; Central rounding; F =&gt; Feasibility pump; H =&gt; Heuristic; L =&gt; Sub-MIP;
+     P =&gt; Empty MIP; R =&gt; Randomized rounding; S =&gt; Solve LP; T =&gt; Evaluate node; U =&gt; Unbounded;
+     z =&gt; Trivial zero; l =&gt; Trivial lower; u =&gt; Trivial upper; p =&gt; Trivial point; X =&gt; User solution
+
+        Nodes      |    B&amp;B Tree     |            Objective Bounds              |  Dynamic Constraints |       Work      
+Src  Proc. InQueue |  Leaves   Expl. | BestBound       BestSol              Gap |   Cuts   InLp Confl. | LpIters     Time
+
+         0       0         0   0.00%   -64.93809816    inf                  inf        0      0      0         0     0.0s
+ S       0       0         0   0.00%   -64.93809816    3.685702492     1861.89%        0      0      0         0     0.0s
+         0       0         0   0.00%   0.5684850774    3.685702492       84.58%        0      0      0        55     0.0s
+
+7.7% inactive integer columns, restarting
+Model after restart has 109 rows, 113 cols (72 bin., 0 int., 0 impl., 41 cont.), and 382 nonzeros
+
+         0       0         0   0.00%   2.159371619     3.685702492       41.41%       35      0      0      2185     0.3s
+         0       0         0   0.00%   2.159371619     3.685702492       41.41%       35     34      0      2241     0.3s
+
+Symmetry detection completed in 0.0s
+Found 17 full orbitope(s) acting on 40 columns
+        97       0        49 100.00%   3.685702492     3.685702492        0.00%     1849     32    649      7352     0.9s
+
+Solving report
+  Status            Optimal
+  Primal bound      3.68570249247
+  Dual bound        3.68570249247
+  Gap               0% (tolerance: 0.01%)
+  P-D integral      0.302663181423
+  Solution status   feasible
+                    3.68570249247 (objective)
+                    0 (bound viol.)
+                    0 (int. viol.)
+                    0 (row viol.)
+  Timing            0.86 (total)
+                    0.00 (presolve)
+                    0.00 (solve)
+                    0.00 (postsolve)
+  Max sub-MIP depth 3
+  Nodes             97
+  Repair LPs        0 (0 feasible; 0 iterations)
+  LP iterations     7352 (total)
+                    2147 (strong br.)
+                    868 (separation)
+                    3383 (heuristics)
+-------------------------------------------------------------------------------
+                                    Summary                                    
+-------------------------------------------------------------------------------
+(CVXPY) Apr 17 03:25:20 PM: Problem status: optimal
+(CVXPY) Apr 17 03:25:20 PM: Optimal value: 3.686e+00
+(CVXPY) Apr 17 03:25:20 PM: Compilation took 1.042e-02 seconds
+(CVXPY) Apr 17 03:25:20 PM: Solver (including time spent in interface) took 8.644e-01 seconds
 </pre></div>
 </div>
 </div>
@@ -638,7 +893,44 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/3dac5ad591c788fddaa076d32a5eef4d806bf99f052b416fff7ef02ad87216d0.svg" src="../../_images/3dac5ad591c788fddaa076d32a5eef4d806bf99f052b416fff7ef02ad87216d0.svg" />
+<img alt="../../_images/7f0b79189ffdd107f0a46659765fd522859a34c3455c259eb7752db4757ef7ee.svg" src="../../_images/7f0b79189ffdd107f0a46659765fd522859a34c3455c259eb7752db4757ef7ee.svg" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">sum</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">edge_has_flux</span><span class="o">.</span><span class="n">value</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>np.int64(45)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">P</span><span class="o">.</span><span class="n">objectives</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[objective_Biomass_Ecoli_core: Expression(AFFINE, UNKNOWN, ()),
+ regularization_edge_has_flux: Expression(AFFINE, NONNEGATIVE, ())]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">P</span><span class="o">.</span><span class="n">objectives</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>np.float64(45.0)
+</pre></div>
+</div>
 </div>
 </div>
 </section>
@@ -664,11 +956,11 @@
       </div>
     </a>
     <a class="right-next"
-       href="sparse-fba.html"
+       href="multicondition-sfba.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Sparse FBA</p>
+        <p class="prev-next-title">Multi-condition sparse FBA</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -694,17 +986,10 @@
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-fba">What is FBA?</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fba-with-corneto">FBA with CORNETO</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-cobrapy">Using COBRApy</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-corneto">Using CORNETO</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sparse-fba">Sparse FBA</a></li>
 </ul>
   </nav></div>
-
-  <div class="sidebar-secondary-item">
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="../../_sources/guide/metabolism/flux-balance-analysis.ipynb.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div></div>
 
 </div></div>
               
@@ -731,7 +1016,7 @@
 
   <p class="copyright">
     
-      © Copyright 2023, Saez-Rodriguez group.
+      © Copyright 2023-2025, Saez-Rodriguez lab. (EMBL-EBI, Heidelberg University).
       <br/>
     
   </p>

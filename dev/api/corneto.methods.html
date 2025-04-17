@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>corneto.methods package &#8212; CORNETO  documentation</title>
+    <title>Network inference (corneto.methods.future) &#8212; CORNETO  documentation</title>
   
   
   
@@ -32,16 +32,8 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster.custom.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster.bundle.min.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster-sideTip-shadow.min.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster-sideTip-punk.min.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster-sideTip-noir.min.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster-sideTip-light.min.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster-sideTip-borderless.min.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/micromodal.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=e238a3f6" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=5ec6e6de" />
   
   <!-- So that users can add custom icons -->
   <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
@@ -49,29 +41,24 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/jquery.js?v=5d32c60e"></script>
-    <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
     <script src="../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../_static/js/hoverxref.js"></script>
-    <script src="../_static/js/tooltipster.bundle.min.js"></script>
-    <script src="../_static/js/micromodal.min.js"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
-    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'api/corneto.methods';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://saezlab.github.io/corneto/dev/_static/switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.0.0.dev3';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://saezlab.github.io/corneto/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.0.0.dev5';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
+    <link rel="canonical" href="https://saezlab.github.io/corneto/api/corneto.methods.html" />
+    <link rel="icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="corneto.methods.metabolism package" href="corneto.methods.metabolism.html" />
-    <link rel="prev" title="corneto.backend package" href="corneto.backend.html" />
+    <link rel="next" title="corneto.methods.future.CarnivalFlow" href="generated/corneto.methods.future.CarnivalFlow.html" />
+    <link rel="prev" title="corneto.graph.preferential_attachment_network" href="generated/corneto.graph.preferential_attachment_network.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -175,8 +162,15 @@
   <ul class="bd-navbar-elements navbar-nav">
     
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../install.html">
+    Install
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../guide/index.html">
-    User guide
+    Guide
   </a>
 </li>
 
@@ -188,19 +182,29 @@
 </li>
 
 
-<li class="nav-item ">
+<li class="nav-item current active">
   <a class="nav-link nav-internal" href="index.html">
-    API Reference
+    Reference
   </a>
 </li>
 
-
-<li class="nav-item ">
-  <a class="nav-link nav-external" href="https://github.com/saezlab/corneto">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-external" href="https://github.com/saezlab/corneto">
     GitHub
   </a>
 </li>
 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
       
@@ -275,8 +279,15 @@
   <ul class="bd-navbar-elements navbar-nav">
     
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../install.html">
+    Install
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../guide/index.html">
-    User guide
+    Guide
   </a>
 </li>
 
@@ -288,9 +299,9 @@
 </li>
 
 
-<li class="nav-item ">
+<li class="nav-item current active">
   <a class="nav-link nav-internal" href="index.html">
-    API Reference
+    Reference
   </a>
 </li>
 
@@ -328,13 +339,40 @@
 <nav class="bd-docs-nav bd-links"
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
-  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="corneto.backend.html">corneto.backend package</a></li>
-<li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">corneto.methods package</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="corneto.methods.metabolism.html">corneto.methods.metabolism package</a></li>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Packages:</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="corneto.backend.html">Optimization backend (<code class="xref py py-mod docutils literal notranslate"><span class="pre">corneto.backend</span></code>)</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="corneto.data.html">Handling data (<code class="xref py py-mod docutils literal notranslate"><span class="pre">corneto.data</span></code>)</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="generated/corneto.data.Data.html">corneto.data.Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/corneto.data.Sample.html">corneto.data.Sample</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/corneto.data.util.html">corneto.data.util</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="corneto.utils.html">corneto.utils package</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="corneto.io.html">Input and Output (<code class="xref py py-mod docutils literal notranslate"><span class="pre">corneto.io</span></code>)</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="generated/corneto.io.load_graph_from_sif.html">corneto.io.load_graph_from_sif</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/corneto.io.load_graph_from_sif_tuples.html">corneto.io.load_graph_from_sif_tuples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/corneto.io.parse_cobra_model.html">corneto.io.parse_cobra_model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/corneto.io.cobra_model_to_graph.html">corneto.io.cobra_model_to_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/corneto.io.import_cobra_model.html">corneto.io.import_cobra_model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/corneto.io.import_miom_model.html">corneto.io.import_miom_model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/corneto.io.load_graph_from_sif.html">corneto.io.load_graph_from_sif</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/corneto.io.load_graph_from_sif_tuples.html">corneto.io.load_graph_from_sif_tuples</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="corneto.graph.html">Graph module (<code class="xref py py-mod docutils literal notranslate"><span class="pre">corneto.graph</span></code>)</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="generated/corneto.graph.BaseGraph.html">corneto.graph.BaseGraph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/corneto.graph.Graph.html">corneto.graph.Graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/corneto.graph.EdgeType.html">corneto.graph.EdgeType</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/corneto.graph.duplication_divergence_network.html">corneto.graph.duplication_divergence_network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/corneto.graph.preferential_attachment_network.html">corneto.graph.preferential_attachment_network</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">Network inference (<code class="xref py py-mod docutils literal notranslate"><span class="pre">corneto.methods.future</span></code>)</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="generated/corneto.methods.future.CarnivalFlow.html">corneto.methods.future.CarnivalFlow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/corneto.methods.future.CarnivalILP.html">corneto.methods.future.CarnivalILP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/corneto.methods.future.MultiSampleFBA.html">corneto.methods.future.MultiSampleFBA</a></li>
+</ul>
+</details></li>
 </ul>
 </div>
 </nav></div>
@@ -376,12 +414,9 @@
       </a>
     </li>
     
-    <li class="breadcrumb-item"><a href="index.html" class="nav-link">API Reference</a></li>
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Reference</a></li>
     
-    
-    <li class="breadcrumb-item"><a href="corneto.html" class="nav-link">corneto package</a></li>
-    
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">corneto.methods package</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Network inference (<code class="xref py py-mod docutils literal notranslate"><span class="pre">corneto.methods.future</span></code>)</span></li>
   </ul>
 </nav>
 </div>
@@ -398,434 +433,36 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="corneto-methods-package">
-<h1>corneto.methods package<a class="headerlink" href="#corneto-methods-package" title="Link to this heading">#</a></h1>
-<section id="subpackages">
-<h2>Subpackages<a class="headerlink" href="#subpackages" title="Link to this heading">#</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="corneto.methods.metabolism.html">corneto.methods.metabolism package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="corneto.methods.metabolism.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="corneto.methods.metabolism.html#module-corneto.methods.metabolism.fba">corneto.methods.metabolism.fba module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="corneto.methods.metabolism.html#corneto.methods.metabolism.fba.FBAProblem"><code class="docutils literal notranslate"><span class="pre">FBAProblem</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="corneto.methods.metabolism.html#corneto.methods.metabolism.fba.FBAProblem.get_fluxes"><code class="docutils literal notranslate"><span class="pre">FBAProblem.get_fluxes()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="corneto.methods.metabolism.html#corneto.methods.metabolism.fba.FBAProblem.get_fluxes_dict"><code class="docutils literal notranslate"><span class="pre">FBAProblem.get_fluxes_dict()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="corneto.methods.metabolism.html#corneto.methods.metabolism.fba.fba_problem"><code class="docutils literal notranslate"><span class="pre">fba_problem()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="corneto.methods.metabolism.html#corneto.methods.metabolism.fba.multicondition_imat"><code class="docutils literal notranslate"><span class="pre">multicondition_imat()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="corneto.methods.metabolism.html#module-corneto.methods.metabolism">Module contents</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="corneto.methods.metabolism.html#corneto.methods.metabolism.evaluate_gpr_rules"><code class="docutils literal notranslate"><span class="pre">evaluate_gpr_rules()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="corneto.methods.metabolism.html#corneto.methods.metabolism.get_unique_genes"><code class="docutils literal notranslate"><span class="pre">get_unique_genes()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="corneto.methods.metabolism.html#corneto.methods.metabolism.get_genes_from_gpr"><code class="docutils literal notranslate"><span class="pre">get_genes_from_gpr()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="corneto.methods.metabolism.html#corneto.methods.metabolism.evaluate_gpr_expression"><code class="docutils literal notranslate"><span class="pre">evaluate_gpr_expression()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
+  <section id="module-corneto.methods.future">
+<span id="network-inference-corneto-methods-future"></span><h1>Network inference (<a class="reference internal" href="#module-corneto.methods.future" title="corneto.methods.future"><code class="xref py py-mod docutils literal notranslate"><span class="pre">corneto.methods.future</span></code></a>)<a class="headerlink" href="#module-corneto.methods.future" title="Link to this heading">#</a></h1>
+<p>Network inference methods</p>
+<p>Collection of customizable network inference methods implemented in CORNETO.</p>
+<section id="signaling">
+<h2>Signaling<a class="headerlink" href="#signaling" title="Link to this heading">#</a></h2>
+<p>Network methods to infer signaling networks from omics data.</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/corneto.methods.future.CarnivalFlow.html#corneto.methods.future.CarnivalFlow" title="corneto.methods.future.CarnivalFlow"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CarnivalFlow</span></code></a>([lambda_reg, ...])</p></td>
+<td><p>Flow-base, multi-sample CARNIVAL method for intracellular signaling.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/corneto.methods.future.CarnivalILP.html#corneto.methods.future.CarnivalILP" title="corneto.methods.future.CarnivalILP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CarnivalILP</span></code></a>([beta_weight, max_dist, ...])</p></td>
+<td><p>Improved version of the original CARNIVAL ILP method implementation.</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 </section>
-<section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">#</a></h2>
-</section>
-<section id="module-corneto.methods.carnival">
-<span id="corneto-methods-carnival-module"></span><h2>corneto.methods.carnival module<a class="headerlink" href="#module-corneto.methods.carnival" title="Link to this heading">#</a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="corneto.methods.carnival.read_dataset">
-<span class="sig-prename descclassname"><span class="pre">corneto.methods.carnival.</span></span><span class="sig-name descname"><span class="pre">read_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">zip_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.carnival.read_dataset" title="Link to this definition">#</a></dt>
-<dd><p>Extracts and processes a graph and its vertex attributes from a zipped dataset.</p>
-<p>The function reads two CSV files from a specified zipfile: ‘pkn.csv’ and ‘data.csv’.
-The ‘pkn.csv’ contains graph edges with three columns: ‘source’, ‘interaction’,
-and ‘target’. The ‘interaction’ column uses integers to denote the type of
-interaction (1 for activation, -1 for inhibition). The ‘data.csv’ file contains
-vertex attributes with three columns: ‘vertex’, ‘value’, and ‘type’, where ‘value’
-can be a continuous measure such as from a t-statistic in differential expression,
-and ‘type’ categorizes vertices as either inputs (‘P’ for perturbation) or outputs
-(‘M’ for measurement).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>zip_path</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The file path to the zip file containing the dataset.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>A tuple containing:</dt><dd><ul class="simple">
-<li><p>Graph: A graph object initialized with edges from ‘pkn.csv’. Each edge is
-defined by a source, a target, and an interaction type.</p></li>
-<li><p>dict: A dictionary mapping each protein (vertex) to a tuple of (‘type’,
-‘value’), where ‘type’ is either ‘P’ or ‘M’ and ‘value’ represents the
-continuous state of the protein.</p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)">tuple</a></p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/exceptions.html#FileNotFoundError" title="(in Python v3.13)"><strong>FileNotFoundError</strong></a> – If the zip file cannot be found at the provided path.</p></li>
-<li><p><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/exceptions.html#KeyError" title="(in Python v3.13)"><strong>KeyError</strong></a> – If expected columns are missing in the CSV files, indicating incorrect
-    or incomplete data.</p></li>
-</ul>
-</dd>
-</dl>
-<p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">graph</span><span class="p">,</span> <span class="n">vertex_attrs</span> <span class="o">=</span> <span class="n">read_dataset</span><span class="p">(</span><span class="s1">&#39;path/to/dataset.zip&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>  <span class="c1"># Shape of the imported graph ([vertices, edges])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">vertex_attrs</span><span class="p">)</span> <span class="c1"># Displays protein attributes</span>
-</pre></div>
+<section id="metabolism">
+<h2>Metabolism<a class="headerlink" href="#metabolism" title="Link to this heading">#</a></h2>
+<p>Network methods for flux balance analysis in metabolic networks.</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/corneto.methods.future.MultiSampleFBA.html#corneto.methods.future.MultiSampleFBA" title="corneto.methods.future.MultiSampleFBA"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MultiSampleFBA</span></code></a>([lambda_reg, beta_reg, ...])</p></td>
+<td><p>Flux Balance Analysis (FBA) method for multiple samples.</p></td>
+</tr>
+</tbody>
+</table>
 </div>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="corneto.methods.carnival.preprocess_graph">
-<span class="sig-prename descclassname"><span class="pre">corneto.methods.carnival.</span></span><span class="sig-name descname"><span class="pre">preprocess_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">priorKnowledgeNetwork</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">perturbations</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measurements</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.carnival.preprocess_graph" title="Link to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>priorKnowledgeNetwork</strong> (<em>BaseGraph</em>)</p></li>
-<li><p><strong>perturbations</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.13)"><em>Dict</em></a>)</p></li>
-<li><p><strong>measurements</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.13)"><em>Dict</em></a>)</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="corneto.methods.carnival.runVanillaCarnival">
-<span class="sig-prename descclassname"><span class="pre">corneto.methods.carnival.</span></span><span class="sig-name descname"><span class="pre">runVanillaCarnival</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">perturbations</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measurements</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">priorKnowledgeNetwork</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">betaWeight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend_options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solve</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.carnival.runVanillaCarnival" title="Link to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>perturbations</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.13)"><em>Dict</em></a>)</p></li>
-<li><p><strong>measurements</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.13)"><em>Dict</em></a>)</p></li>
-<li><p><strong>priorKnowledgeNetwork</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><em>List</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.13)"><em>Tuple</em></a><em>] </em><em>| </em><a class="hxr-hoverxref hxr-tooltip reference internal" href="corneto.html#corneto.Graph" title="corneto._graph.Graph"><em>Graph</em></a>)</p></li>
-<li><p><strong>betaWeight</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>)</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="corneto.methods.carnival.runInverseCarnival">
-<span class="sig-prename descclassname"><span class="pre">corneto.methods.carnival.</span></span><span class="sig-name descname"><span class="pre">runInverseCarnival</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">measurements</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">priorKnowledgeNetwork</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">betaWeight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solve</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.carnival.runInverseCarnival" title="Link to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>measurements</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.13)"><em>Dict</em></a>)</p></li>
-<li><p><strong>priorKnowledgeNetwork</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><em>List</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.13)"><em>Tuple</em></a><em>] </em><em>| </em><a class="hxr-hoverxref hxr-tooltip reference internal" href="corneto.html#corneto.Graph" title="corneto._graph.Graph"><em>Graph</em></a>)</p></li>
-<li><p><strong>betaWeight</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>)</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="corneto.methods.carnival.heuristic_carnival">
-<span class="sig-prename descclassname"><span class="pre">corneto.methods.carnival.</span></span><span class="sig-name descname"><span class="pre">heuristic_carnival</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">priorKnowledgeNetwork</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">perturbations</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measurements</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">restricted_search</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prune</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_edges</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.carnival.heuristic_carnival" title="Link to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>priorKnowledgeNetwork</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><em>List</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.13)"><em>Tuple</em></a><em>] </em><em>| </em><a class="hxr-hoverxref hxr-tooltip reference internal" href="corneto.html#corneto.Graph" title="corneto._graph.Graph"><em>Graph</em></a>)</p></li>
-<li><p><strong>perturbations</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.13)"><em>Dict</em></a>)</p></li>
-<li><p><strong>measurements</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.13)"><em>Dict</em></a>)</p></li>
-<li><p><strong>restricted_search</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>)</p></li>
-<li><p><strong>prune</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>)</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="corneto.methods.carnival.get_result">
-<span class="sig-prename descclassname"><span class="pre">corneto.methods.carnival.</span></span><span class="sig-name descname"><span class="pre">get_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">P</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">condition</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'c0'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_dummies</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.carnival.get_result" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="corneto.methods.carnival.get_selected_edges">
-<span class="sig-prename descclassname"><span class="pre">corneto.methods.carnival.</span></span><span class="sig-name descname"><span class="pre">get_selected_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">P</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">condition</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'c0'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_dummies</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.carnival.get_selected_edges" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="corneto.methods.carnival.reachability_graph">
-<span class="sig-prename descclassname"><span class="pre">corneto.methods.carnival.</span></span><span class="sig-name descname"><span class="pre">reachability_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subset_edges</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">early_stop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expand_outputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_printed_outputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.carnival.reachability_graph" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="corneto.methods.carnival.bfs_search">
-<span class="sig-prename descclassname"><span class="pre">corneto.methods.carnival.</span></span><span class="sig-name descname"><span class="pre">bfs_search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">final_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">queue_max_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subset_edges</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_edges</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.carnival.bfs_search" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="corneto.methods.carnival.create_flow_carnival_v4">
-<span class="sig-prename descclassname"><span class="pre">corneto.methods.carnival.</span></span><span class="sig-name descname"><span class="pre">create_flow_carnival_v4</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exp_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambd=0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclusive_vertex_values=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upper_bound_flow=1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">penalty_on='signal'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slack_reg=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">set_perturbation_values=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fix_input_values=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend=&lt;corneto.backend._cvxpy_backend.CvxpyBackend</span> <span class="pre">object&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.carnival.create_flow_carnival_v4" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="corneto.methods.carnival.create_flow_carnival_v3">
-<span class="sig-prename descclassname"><span class="pre">corneto.methods.carnival.</span></span><span class="sig-name descname"><span class="pre">create_flow_carnival_v3</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exp_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambd=0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclusive_vertex_values=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upper_bound_flow=1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend=&lt;corneto.backend._cvxpy_backend.CvxpyBackend</span> <span class="pre">object&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.carnival.create_flow_carnival_v3" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="corneto.methods.carnival.create_flow_carnival_v2">
-<span class="sig-prename descclassname"><span class="pre">corneto.methods.carnival.</span></span><span class="sig-name descname"><span class="pre">create_flow_carnival_v2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exp_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.carnival.create_flow_carnival_v2" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="corneto.methods.carnival.create_flow_carnival">
-<span class="sig-prename descclassname"><span class="pre">corneto.methods.carnival.</span></span><span class="sig-name descname"><span class="pre">create_flow_carnival</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exp_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.carnival.create_flow_carnival" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="corneto.methods.carnival.runCARNIVAL_AcyclicFlow">
-<span class="sig-prename descclassname"><span class="pre">corneto.methods.carnival.</span></span><span class="sig-name descname"><span class="pre">runCARNIVAL_AcyclicFlow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exp_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">betaWeight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbosity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.carnival.runCARNIVAL_AcyclicFlow" title="Link to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>betaWeight</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="corneto.methods.carnival.runCARNIVAL_Flow_Acyclic">
-<span class="sig-prename descclassname"><span class="pre">corneto.methods.carnival.</span></span><span class="sig-name descname"><span class="pre">runCARNIVAL_Flow_Acyclic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exp_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">betaWeight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbosity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.carnival.runCARNIVAL_Flow_Acyclic" title="Link to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>betaWeight</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="corneto.methods.carnival.runCARNIVAL_Flow_Acyclic_Signal">
-<span class="sig-prename descclassname"><span class="pre">corneto.methods.carnival.</span></span><span class="sig-name descname"><span class="pre">runCARNIVAL_Flow_Acyclic_Signal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exp_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">betaWeight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbosity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.carnival.runCARNIVAL_Flow_Acyclic_Signal" title="Link to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>betaWeight</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="corneto.methods.carnival.milp_carnival">
-<span class="sig-prename descclassname"><span class="pre">corneto.methods.carnival.</span></span><span class="sig-name descname"><span class="pre">milp_carnival</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">perturbations</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measurements</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta_weight=0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_dist=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">penalize='edges'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_perturbation_weights=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interaction_graph_attribute='interaction'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disable_acyclicity=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend=&lt;corneto.backend._cvxpy_backend.CvxpyBackend</span> <span class="pre">object&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.carnival.milp_carnival" title="Link to this definition">#</a></dt>
-<dd><p>Improved port of the original Carnival R method.</p>
-<p>This implementation uses the CORNETO backend capabilities to create a MILP problem.
-However, it does not use the flow formulation and multi-sample capabilities of the
-novel method implemented in CORNETO. This method is kept for compatibility with the
-original Carnival R method and for comparison purposes.</p>
-<p>NOTE: Since the method is decoupled from specific solvers, the default pool of
-solutions generated using CPLEX is not available.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>G</strong> – The graph object representing the network.</p></li>
-<li><p><strong>perturbations</strong> – A dictionary of perturbations applied to specific vertices in the graph.</p></li>
-<li><p><strong>measurements</strong> – A dictionary of measured values for specific vertices in the graph.</p></li>
-<li><p><strong>beta_weight</strong> (<span class="sphinx_autodoc_typehints-type"><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span> (default: <code class="docutils literal notranslate"><span class="pre">0.2</span></code>)) – The weight for the regularization term in the objective function.</p></li>
-<li><p><strong>max_dist</strong> (default: <code class="docutils literal notranslate"><span class="pre">None</span></code>) – The maximum distance allowed for vertex positions in the graph.</p></li>
-<li><p><strong>penalize</strong> (default: <code class="docutils literal notranslate"><span class="pre">'edges'</span></code>) – The type of regularization to apply (‘nodes’, ‘edges’, or ‘both’).</p></li>
-<li><p><strong>use_perturbation_weights</strong> (default: <code class="docutils literal notranslate"><span class="pre">False</span></code>) – Whether to use perturbation weights in the objective function.</p></li>
-<li><p><strong>interaction_graph_attribute</strong> (default: <code class="docutils literal notranslate"><span class="pre">'interaction'</span></code>) – The attribute name for the interaction type in the graph.</p></li>
-<li><p><strong>disable_acyclicity</strong> (default: <code class="docutils literal notranslate"><span class="pre">False</span></code>) – Whether to disable the acyclicity constraint in the optimization.</p></li>
-<li><p><strong>backend</strong> (default: <code class="docutils literal notranslate"><span class="pre">&lt;corneto.backend._cvxpy_backend.CvxpyBackend</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x7fb1b4d3ced0&gt;</span></code>) – The backend engine to use for the optimization.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The optimization problem object.</p>
-</dd>
-</dl>
-</dd></dl>
-
-</section>
-<section id="module-corneto.methods.shortest_path">
-<span id="corneto-methods-shortest-path-module"></span><h2>corneto.methods.shortest_path module<a class="headerlink" href="#module-corneto.methods.shortest_path" title="Link to this heading">#</a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="corneto.methods.shortest_path.create_multisample_shortest_path">
-<span class="sig-prename descclassname"><span class="pre">corneto.methods.shortest_path.</span></span><span class="sig-name descname"><span class="pre">create_multisample_shortest_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_target_nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_weights=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solver=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend=&lt;corneto.backend._cvxpy_backend.CvxpyBackend</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lam=0.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.shortest_path.create_multisample_shortest_path" title="Link to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>G</strong> (<em>BaseGraph</em>)</p></li>
-<li><p><strong>source_target_nodes</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><em>List</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><em>tuple</em></a><em>]</em>)</p></li>
-<li><p><strong>solver</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
-<li><p><strong>backend</strong> (<a class="hxr-hoverxref hxr-tooltip reference internal" href="corneto.backend.html#corneto.backend.Backend" title="corneto.backend._base.Backend"><em>Backend</em></a>)</p></li>
-<li><p><strong>lam</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>)</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="corneto.methods.shortest_path.shortest_path">
-<span class="sig-prename descclassname"><span class="pre">corneto.methods.shortest_path.</span></span><span class="sig-name descname"><span class="pre">shortest_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_weights=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">integral_path=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">create_flow_graph=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend=&lt;corneto.backend._cvxpy_backend.CvxpyBackend</span> <span class="pre">object&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.shortest_path.shortest_path" title="Link to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>G</strong> (<em>BaseGraph</em>)</p></li>
-<li><p><strong>s</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><em>Any</em></a>)</p></li>
-<li><p><strong>t</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><em>Any</em></a>)</p></li>
-<li><p><strong>integral_path</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>)</p></li>
-<li><p><strong>create_flow_graph</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>)</p></li>
-<li><p><strong>backend</strong> (<a class="hxr-hoverxref hxr-tooltip reference internal" href="corneto.backend.html#corneto.backend.Backend" title="corneto.backend._base.Backend"><em>Backend</em></a>)</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="corneto.methods.shortest_path.solve_shortest_path">
-<span class="sig-prename descclassname"><span class="pre">corneto.methods.shortest_path.</span></span><span class="sig-name descname"><span class="pre">solve_shortest_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_weights=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solver=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend=&lt;corneto.backend._cvxpy_backend.CvxpyBackend</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">integer_tolerance=1e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solver_kwargs=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.shortest_path.solve_shortest_path" title="Link to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>G</strong> (<em>BaseGraph</em>)</p></li>
-<li><p><strong>s</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><em>Any</em></a>)</p></li>
-<li><p><strong>t</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><em>Any</em></a>)</p></li>
-<li><p><strong>solver</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
-<li><p><strong>backend</strong> (<a class="hxr-hoverxref hxr-tooltip reference internal" href="corneto.backend.html#corneto.backend.Backend" title="corneto.backend._base.Backend"><em>Backend</em></a>)</p></li>
-<li><p><strong>integer_tolerance</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>)</p></li>
-<li><p><strong>solver_kwargs</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a><em> | </em><em>None</em>)</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-</section>
-<section id="module-corneto.methods.signaling">
-<span id="corneto-methods-signaling-module"></span><h2>corneto.methods.signaling module<a class="headerlink" href="#module-corneto.methods.signaling" title="Link to this heading">#</a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="corneto.methods.signaling.create_flow_graph">
-<span class="sig-prename descclassname"><span class="pre">corneto.methods.signaling.</span></span><span class="sig-name descname"><span class="pre">create_flow_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conditions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pert_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'P'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meas_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'M'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">longitudinal_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.signaling.create_flow_graph" title="Link to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseGraph</span></code></span></p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>g</strong> (<em>BaseGraph</em>)</p></li>
-<li><p><strong>conditions</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.13)"><em>Dict</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.13)"><em>Dict</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.13)"><em>Tuple</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>]</em><em>]</em><em>]</em>)</p></li>
-<li><p><strong>pert_id</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>)</p></li>
-<li><p><strong>meas_id</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>)</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="corneto.methods.signaling.signflow_constraints">
-<span class="sig-prename descclassname"><span class="pre">corneto.methods.signaling.</span></span><span class="sig-name descname"><span class="pre">signflow_constraints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend=&lt;corneto.backend._cvxpy_backend.CvxpyBackend</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_implies_flow=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow_implies_signal=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dag=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_flow_indicators=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps=0.001</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.signaling.signflow_constraints" title="Link to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProblemDef</span></code></span></p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>g</strong> (<em>BaseGraph</em>)</p></li>
-<li><p><strong>backend</strong> (<a class="hxr-hoverxref hxr-tooltip reference internal" href="corneto.backend.html#corneto.backend.Backend" title="corneto.backend._base.Backend"><em>Backend</em></a>)</p></li>
-<li><p><strong>signal_implies_flow</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>)</p></li>
-<li><p><strong>flow_implies_signal</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>)</p></li>
-<li><p><strong>dag</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>)</p></li>
-<li><p><strong>use_flow_indicators</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>)</p></li>
-<li><p><strong>eps</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>)</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="corneto.methods.signaling.default_sign_loss">
-<span class="sig-prename descclassname"><span class="pre">corneto.methods.signaling.</span></span><span class="sig-name descname"><span class="pre">default_sign_loss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conditions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">problem</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l0_edges</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l0_vertices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l1_flow</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ub_loss</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lb_loss</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.signaling.default_sign_loss" title="Link to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProblemDef</span></code></span></p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>conditions</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.13)"><em>Dict</em></a>)</p></li>
-<li><p><strong>problem</strong> (<em>ProblemDef</em>)</p></li>
-<li><p><strong>l0_edges</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>)</p></li>
-<li><p><strong>l0_vertices</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>)</p></li>
-<li><p><strong>l1_flow</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>)</p></li>
-<li><p><strong>ub_loss</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em> | </em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><em>List</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>] </em><em>| </em><em>None</em>)</p></li>
-<li><p><strong>lb_loss</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em> | </em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><em>List</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>] </em><em>| </em><em>None</em>)</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="corneto.methods.signaling.signflow">
-<span class="sig-prename descclassname"><span class="pre">corneto.methods.signaling.</span></span><span class="sig-name descname"><span class="pre">signflow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conditions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_implies_flow=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow_implies_signal=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dag=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l0_penalty_edges=0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l1_penalty_flow=0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l0_penalty_vertices=0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ub_loss=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lb_loss=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_flow_indicators=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps=0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend=&lt;corneto.backend._cvxpy_backend.CvxpyBackend</span> <span class="pre">object&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.signaling.signflow" title="Link to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>g</strong> (<em>BaseGraph</em>)</p></li>
-<li><p><strong>conditions</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.13)"><em>Dict</em></a>)</p></li>
-<li><p><strong>signal_implies_flow</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>)</p></li>
-<li><p><strong>flow_implies_signal</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>)</p></li>
-<li><p><strong>dag</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>)</p></li>
-<li><p><strong>l0_penalty_edges</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>)</p></li>
-<li><p><strong>l1_penalty_flow</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>)</p></li>
-<li><p><strong>l0_penalty_vertices</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>)</p></li>
-<li><p><strong>ub_loss</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em> | </em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><em>List</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>] </em><em>| </em><em>None</em>)</p></li>
-<li><p><strong>lb_loss</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em> | </em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><em>List</em></a><em>[</em><a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>] </em><em>| </em><em>None</em>)</p></li>
-<li><p><strong>use_flow_indicators</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>)</p></li>
-<li><p><strong>eps</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>)</p></li>
-<li><p><strong>backend</strong> (<a class="hxr-hoverxref hxr-tooltip reference internal" href="corneto.backend.html#corneto.backend.Backend" title="corneto.backend._base.Backend"><em>Backend</em></a>)</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="corneto.methods.signaling.expand_graph_for_flows">
-<span class="sig-prename descclassname"><span class="pre">corneto.methods.signaling.</span></span><span class="sig-name descname"><span class="pre">expand_graph_for_flows</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exp_list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.signaling.expand_graph_for_flows" title="Link to this definition">#</a></dt>
-<dd><p>Add edges to the perturbed and measured nodes in graph G to make flow possible.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>G</strong> (<em>BaseGraph</em>)</p>
-</dd>
-</dl>
-</dd></dl>
-
-</section>
-<section id="module-corneto.methods.steiner">
-<span id="corneto-methods-steiner-module"></span><h2>corneto.methods.steiner module<a class="headerlink" href="#module-corneto.methods.steiner" title="Link to this heading">#</a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="corneto.methods.steiner.exact_steiner_tree">
-<span class="sig-prename descclassname"><span class="pre">corneto.methods.steiner.</span></span><span class="sig-name descname"><span class="pre">exact_steiner_tree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">terminals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_weights=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance=0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict_acyclic=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow_name='_flow'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_flow_edge_type=EdgeType.DIRECTED</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_flow_edge_type=EdgeType.DIRECTED</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend=&lt;corneto.backend._cvxpy_backend.CvxpyBackend</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow_injected=10</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.steiner.exact_steiner_tree" title="Link to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>G</strong> (<em>BaseGraph</em>)</p></li>
-<li><p><strong>backend</strong> (<a class="hxr-hoverxref hxr-tooltip reference internal" href="corneto.backend.html#corneto.backend.Backend" title="corneto.backend._base.Backend"><em>Backend</em></a>)</p></li>
-<li><p><strong>flow_injected</strong> (<a class="hxr-hoverxref hxr-tooltip reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>)</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="corneto.methods.steiner.create_exact_multi_steiner_tree">
-<span class="sig-prename descclassname"><span class="pre">corneto.methods.steiner.</span></span><span class="sig-name descname"><span class="pre">create_exact_multi_steiner_tree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">terminal_per_condition</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_weights_per_condition=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root_vertices=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance=0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict_acyclic=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lam=0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow_name='flow'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend=&lt;corneto.backend._cvxpy_backend.CvxpyBackend</span> <span class="pre">object&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.steiner.create_exact_multi_steiner_tree" title="Link to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>G</strong> (<em>BaseGraph</em>)</p></li>
-<li><p><strong>backend</strong> (<a class="hxr-hoverxref hxr-tooltip reference internal" href="corneto.backend.html#corneto.backend.Backend" title="corneto.backend._base.Backend"><em>Backend</em></a>)</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-</section>
-<section id="module-corneto.methods">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-corneto.methods" title="Link to this heading">#</a></h2>
 </section>
 </section>
 
@@ -840,20 +477,20 @@ solutions generated using CPLEX is not available.</p>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="corneto.backend.html"
+       href="generated/corneto.graph.preferential_attachment_network.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">corneto.backend package</p>
+        <p class="prev-next-title">corneto.graph.preferential_attachment_network</p>
       </div>
     </a>
     <a class="right-next"
-       href="corneto.methods.metabolism.html"
+       href="generated/corneto.methods.future.CarnivalFlow.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">corneto.methods.metabolism package</p>
+        <p class="prev-next-title">corneto.methods.future.CarnivalFlow</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -876,59 +513,10 @@ solutions generated using CPLEX is not available.</p>
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#subpackages">Subpackages</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#submodules">Submodules</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-corneto.methods.carnival">corneto.methods.carnival module</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.carnival.read_dataset"><code class="docutils literal notranslate"><span class="pre">read_dataset()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.carnival.preprocess_graph"><code class="docutils literal notranslate"><span class="pre">preprocess_graph()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.carnival.runVanillaCarnival"><code class="docutils literal notranslate"><span class="pre">runVanillaCarnival()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.carnival.runInverseCarnival"><code class="docutils literal notranslate"><span class="pre">runInverseCarnival()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.carnival.heuristic_carnival"><code class="docutils literal notranslate"><span class="pre">heuristic_carnival()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.carnival.get_result"><code class="docutils literal notranslate"><span class="pre">get_result()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.carnival.get_selected_edges"><code class="docutils literal notranslate"><span class="pre">get_selected_edges()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.carnival.reachability_graph"><code class="docutils literal notranslate"><span class="pre">reachability_graph()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.carnival.bfs_search"><code class="docutils literal notranslate"><span class="pre">bfs_search()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.carnival.create_flow_carnival_v4"><code class="docutils literal notranslate"><span class="pre">create_flow_carnival_v4()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.carnival.create_flow_carnival_v3"><code class="docutils literal notranslate"><span class="pre">create_flow_carnival_v3()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.carnival.create_flow_carnival_v2"><code class="docutils literal notranslate"><span class="pre">create_flow_carnival_v2()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.carnival.create_flow_carnival"><code class="docutils literal notranslate"><span class="pre">create_flow_carnival()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.carnival.runCARNIVAL_AcyclicFlow"><code class="docutils literal notranslate"><span class="pre">runCARNIVAL_AcyclicFlow()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.carnival.runCARNIVAL_Flow_Acyclic"><code class="docutils literal notranslate"><span class="pre">runCARNIVAL_Flow_Acyclic()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.carnival.runCARNIVAL_Flow_Acyclic_Signal"><code class="docutils literal notranslate"><span class="pre">runCARNIVAL_Flow_Acyclic_Signal()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.carnival.milp_carnival"><code class="docutils literal notranslate"><span class="pre">milp_carnival()</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-corneto.methods.shortest_path">corneto.methods.shortest_path module</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.shortest_path.create_multisample_shortest_path"><code class="docutils literal notranslate"><span class="pre">create_multisample_shortest_path()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.shortest_path.shortest_path"><code class="docutils literal notranslate"><span class="pre">shortest_path()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.shortest_path.solve_shortest_path"><code class="docutils literal notranslate"><span class="pre">solve_shortest_path()</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-corneto.methods.signaling">corneto.methods.signaling module</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.signaling.create_flow_graph"><code class="docutils literal notranslate"><span class="pre">create_flow_graph()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.signaling.signflow_constraints"><code class="docutils literal notranslate"><span class="pre">signflow_constraints()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.signaling.default_sign_loss"><code class="docutils literal notranslate"><span class="pre">default_sign_loss()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.signaling.signflow"><code class="docutils literal notranslate"><span class="pre">signflow()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.signaling.expand_graph_for_flows"><code class="docutils literal notranslate"><span class="pre">expand_graph_for_flows()</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-corneto.methods.steiner">corneto.methods.steiner module</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.steiner.exact_steiner_tree"><code class="docutils literal notranslate"><span class="pre">exact_steiner_tree()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.steiner.create_exact_multi_steiner_tree"><code class="docutils literal notranslate"><span class="pre">create_exact_multi_steiner_tree()</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-corneto.methods">Module contents</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#signaling">Signaling</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#metabolism">Metabolism</a></li>
 </ul>
   </nav></div>
-
-  <div class="sidebar-secondary-item">
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="../_sources/api/corneto.methods.rst.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div></div>
 
 </div></div>
               
@@ -955,7 +543,7 @@ solutions generated using CPLEX is not available.</p>
 
   <p class="copyright">
     
-      © Copyright 2023, Saez-Rodriguez group.
+      © Copyright 2023-2025, Saez-Rodriguez lab. (EMBL-EBI, Heidelberg University).
       <br/>
     
   </p>

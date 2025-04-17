@@ -1,7 +1,7 @@
 # LIANA+: An all-in-one cell-cell communication framework
 
 <center>
-<img src="/_static/lianaplus-abstract.png" alt="LIANA+" style="width: 600px; margin: 20px;"/>
+<img src="../../_static/lianaplus-abstract.png" alt="LIANA+" style="width: 600px; margin: 20px;"/>
 </center>
 
 [**LIANA+**](https://github.com/saezlab/liana-py) is a scalable framework for decoding coordinated inter- and intracellular signaling events from single- and multi-condition datasets in both single-cell and spatially-resolved data. It integrates and extends established methodologies and a rich knowledge base, and enables novel analyses using diverse molecular mediators, including those measured in multi-omics data.
