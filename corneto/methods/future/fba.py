@@ -279,5 +279,5 @@ class MultiSampleFBA(FlowMethod):
         return flow_problem
 
     @staticmethod
-    def get_citations():
+    def references():
         return ["savinell1992network", "rodriguez2024unified"]

@@ -22,6 +22,8 @@ class Method(ABC):
         backend: Optimization backend to use. Defaults to DEFAULT_BACKEND.
     """
 
+    __show_info_on_import__ = False
+
     def __init__(
         self,
         lambda_reg: float = 0.0,
@@ -42,6 +44,93 @@ class Method(ABC):
         self.processed_data = None
         self.processed_graph = None
         self.disable_structured_sparsity = disable_structured_sparsity
+
+    def __repr__(self) -> str:
+        """Returns a string representation of the method.
+
+        Includes the method name, description, parameters, and formatted citations (if any).
+
+        Returns:
+            A formatted string representation of the method.
+        """
+        import inspect
+
+        from corneto.utils._citations import format_references_plaintext
+
+        name = self.name()
+        description = self.description()
+        citation_keys = self.references()
+
+        repr_str = f"{name or self.__class__.__name__}"
+
+        if description:
+            repr_str += f": {description})"
+
+        # Add parameters information
+        repr_str += "\n\nParameters:"
+        # Get all instance attributes that don't start with _ (except _backend)
+        params = {}
+        for attr_name, attr_value in self.__dict__.items():
+            if attr_name == "_backend":
+                params["backend"] = attr_value.__class__.__name__
+            elif not attr_name.startswith("_") or attr_name in [
+                "_reg_varname",
+                "_reg_varname_suffix",
+            ]:
+                # For problem, processed_data, etc. that could be None initially, skip them
+                if (
+                    attr_name in ["problem", "processed_data", "processed_graph"]
+                    and attr_value is None
+                ):
+                    continue
+                # Skip complex objects that aren't useful for a summary
+                if (
+                    isinstance(attr_value, (list, dict, tuple))
+                    and len(str(attr_value)) > 100
+                ):
+                    continue
+                # Format the parameter name (remove leading underscore if present)
+                param_name = attr_name[1:] if attr_name.startswith("_") else attr_name
+                params[param_name] = attr_value
+
+        # Get signature to determine default values
+        signature = None
+        try:
+            signature = inspect.signature(self.__class__.__init__)
+        except (ValueError, TypeError):
+            pass
+
+        if params:
+            for name, value in sorted(params.items()):
+                # Check if this is a default value
+                is_default = False
+                if signature and name in signature.parameters:
+                    param = signature.parameters[name]
+                    if param.default is not param.empty:
+                        if param.default == value:
+                            is_default = True
+
+                # Format the parameter value
+                if isinstance(value, (int, float, bool, str)) or value is None:
+                    value_str = str(value)
+                elif hasattr(value, "__class__"):
+                    value_str = f"<{value.__class__.__name__}>"
+                else:
+                    value_str = str(value)
+
+                # Add default indicator if applicable
+                if is_default:
+                    repr_str += f"\n  {name} = {value_str} (default)"
+                else:
+                    repr_str += f"\n  {name} = {value_str}"
+        else:
+            repr_str += "\n  No parameters"
+
+        if citation_keys:
+            repr_str += "\n\nReferences:"
+            repr_str += format_references_plaintext(citation_keys)
+
+        return repr_str
 
     @abstractmethod
     def preprocess(self, graph: BaseGraph, data: Data) -> Tuple[BaseGraph, Data]:
@@ -131,7 +220,24 @@ class Method(ABC):
         return self.problem
 
     @staticmethod
-    def get_citations() -> list:
+    def name() -> str:
+        """Returns the name of the method.
+
+        Returns:
+            The name of the optimization method.
+        """
+        return ""
+
+    def description(self) -> str:
+        """Returns a description of the method.
+
+        Returns:
+            A string describing the optimization method.
+        """
+        return ""
+
+    @staticmethod
+    def references() -> list:
         """Returns citation keys for this method.
 
         Returns:
@@ -140,16 +246,23 @@ class Method(ABC):
         return []
 
     @classmethod
-    def show_citations(cls):
+    def show_references(cls):
         """Display formatted citations in a Jupyter notebook."""
-        from corneto.utils._citations import show_citations
-        show_citations(cls.get_citations())
+        from corneto.utils._citations import show_references
+
+        show_references(cls.references())
 
     @classmethod
     def show_bibtex(cls):
         """Display raw BibTeX entries in a formatted block for easy copying."""
         from corneto.utils._citations import show_bibtex
-        show_bibtex(cls.get_citations())
+
+        show_bibtex(cls.references())
+
+    @classmethod
+    def about(cls):
+        """Display information about the method in a Jupyter notebook."""
+        cls.show_references()
 
     @property
     def backend(self):

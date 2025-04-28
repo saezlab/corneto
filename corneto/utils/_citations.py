@@ -240,7 +240,7 @@ def format_authors(author_str: str) -> str:
     return ", ".join(formatted)
 
 
-def render_citations_html(citations: List[Dict[str, str]]) -> str:
+def render_references_html(citations: List[Dict[str, str]]) -> str:
     """Render citations as HTML.
 
     Args:
@@ -278,7 +278,54 @@ def render_citations_html(citations: List[Dict[str, str]]) -> str:
     return f"<ul>{''.join(html_entries)}</ul>"
 
 
-def show_citations(keys: List[str]) -> None:
+def format_references_plaintext(keys: List[str]) -> str:
+    """Format citations as plain text for __repr__ methods and other non-HTML contexts.
+
+    Args:
+        keys: List of citation keys to format.
+
+    Returns:
+        A formatted string with one citation per line, or a message if no citations are found.
+    """
+    if not keys:
+        return ""
+
+    result = ""
+    bibtex = get_bibtex_from_keys(keys)
+
+    if bibtex:
+        citations = parse_bibtex(bibtex)
+        for c in citations:
+            author = format_authors(c.get("author", "Unknown Author"))
+            title = unescape_latex(c.get("title", "Untitled"))
+            year = c.get("year", "n.d.")
+            extra = []
+
+            if "journal" in c:
+                extra.append(f"{unescape_latex(c['journal'])}")
+            elif "booktitle" in c:
+                extra.append(f"{unescape_latex(c['booktitle'])}")
+            elif "publisher" in c:
+                extra.append(f"{unescape_latex(c['publisher'])}")
+
+            if "volume" in c:
+                extra.append(f"Vol. {c['volume']}")
+            if "number" in c:
+                extra.append(f"No. {c['number']}")
+            if "pages" in c:
+                extra.append(f"pp. {c['pages']}")
+
+            citation_str = f"\n - {author}. {title}. {', '.join(extra)} ({year})."
+            result += citation_str
+    else:
+        # Handle the case where citations are not found in the BibTeX database
+        for key in keys:
+            result += f"\n - {key} (Citation not found in BibTeX database)"
+
+    return result
+
+
+def show_references(keys: List[str]) -> None:
     """Display formatted citations in a Jupyter notebook.
 
     Args:
@@ -290,59 +337,12 @@ def show_citations(keys: List[str]) -> None:
         return
 
     citations = parse_bibtex(bibtex)
-    html = render_citations_html(citations)
+    html = render_references_html(citations)
     display(HTML(html))
 
-
-from typing import List
-from IPython.display import HTML, display
 
 def show_bibtex(keys: List[str]) -> None:
     """Display raw BibTeX entries in a nicely formatted and styled HTML block."""
     bibtex = get_bibtex_from_keys(keys)
     if not bibtex:
         display(HTML("<p>No BibTeX entries available.</p>"))
-        return
-
-    # Clean and split into lines
-    lines = bibtex.strip().splitlines()
-
-    # Remove common leading whitespace from all lines except empty ones
-    min_indent = None
-    for line in lines:
-        stripped = line.lstrip()
-        if stripped:
-            indent = len(line) - len(stripped)
-            if min_indent is None or indent < min_indent:
-                min_indent = indent
-
-    if min_indent is None:
-        min_indent = 0
-
-    normalized_lines = [line[min_indent:] if len(line) >= min_indent else line for line in lines]
-    cleaned_bibtex = "\n".join(normalized_lines)
-
-    # Escape HTML characters
-    escaped_bibtex = (
-        cleaned_bibtex.replace("&", "&amp;")
-                      .replace("<", "&lt;")
-                      .replace(">", "&gt;")
-    )
-
-    # Display with clean formatting
-    html = f"""
-    <div style='
-        background-color: #f7f7f9;
-        border: 1px solid #e1e1e8;
-        border-radius: 8px;
-        padding: 1em 1.5em;
-        font-family: Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;
-        font-size: 0.9em;
-        line-height: 1.6;
-        color: #333;
-        overflow-x: auto;
-        white-space: pre;
-    '>{escaped_bibtex}</div>
-    """
-    display(HTML(html))
-

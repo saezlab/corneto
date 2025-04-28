@@ -11,9 +11,13 @@ from typing import (
     Optional,
     Set,
     Tuple,
+    Union,
 )
 
-from corneto._types import Edge
+import numpy as np
+
+from corneto._io import import_cobra_model
+from corneto._types import CobraModel, Edge
 
 from ._base import Attr, Attributes, BaseGraph, EdgeType
 
@@ -686,3 +690,139 @@ class Graph(BaseGraph):
 
         # Create graph from JSON string
         return cls.from_json(json_str)
+    
+    # DEPRECATED
+
+    @staticmethod
+    def from_vertex_incidence(
+        A: np.ndarray,
+        vertex_ids: Union[List[str], np.ndarray],
+        edge_ids: Union[List[str], np.ndarray],
+    ):
+        """Create graph from vertex incidence matrix and labels.
+
+        Args:
+            A: Vertex incidence matrix. Rows are vertices, columns are edges.
+               Non-zero entries indicate edge-vertex connections.
+            vertex_ids: Labels for vertices corresponding to matrix rows
+            edge_ids: Labels for edges corresponding to matrix columns
+
+        Returns:
+            Graph instance constructed from incidence matrix
+
+        Raises:
+            ValueError: If dimensions of inputs don't match
+        """
+        g = Graph()
+        if len(vertex_ids) != A.shape[0]:
+            raise ValueError(
+                """The number of rows in A matrix is different from 
+                the number of vertex ids"""
+            )
+        if len(edge_ids) != A.shape[1]:
+            raise ValueError(
+                """The number of columns in A matrix is different from
+                the number of edge ids"""
+            )
+        for v in vertex_ids:
+            g.add_vertex(v)
+        for j, v in enumerate(edge_ids):
+            values = A[:, j]
+            idx = np.flatnonzero(values)
+            coeffs = values[idx]
+            v_names = [vertex_ids[i] for i in idx]
+            s = {n: val for n, val in zip(v_names, coeffs) if val < 0}
+            t = {n: val for n, val in zip(v_names, coeffs) if val > 0}
+            g.add_edge(s, t, id=v)
+        return g
+
+    @staticmethod
+    def from_sif(
+        sif_file: str,
+        delimiter: str = "\t",
+        has_header: bool = False,
+        discard_self_loops: Optional[bool] = True,
+        column_order: List[int] = [0, 1, 2],
+    ):
+        """Create graph from Simple Interaction Format (SIF) file.
+
+        Args:
+            sif_file: Path to SIF file
+            delimiter: Column delimiter in file
+            has_header: Whether file has a header row
+            discard_self_loops: Whether to ignore self-loops
+            column_order: Order of source, interaction, target columns
+
+        Returns:
+            New Graph loaded from SIF file
+        """
+        from corneto._io import _read_sif_iter
+
+        it = _read_sif_iter(
+            sif_file,
+            delimiter=delimiter,
+            has_header=has_header,
+            discard_self_loops=discard_self_loops,
+            column_order=column_order,
+        )
+        return Graph.from_sif_tuples(it)
+
+    @staticmethod
+    def from_sif_tuples(tuples: Iterable[Tuple]):
+        """Create graph from iterable of SIF tuples.
+
+        Args:
+            tuples: Iterable of (source, interaction, target) tuples
+
+        Returns:
+            New Graph created from SIF data
+        """
+        g = Graph()
+        for s, v, t in tuples:
+            g.add_edge(s, t, interaction=v)
+        return g
+
+    @staticmethod
+    def from_cobra_model(model: CobraModel):
+        """Create graph from COBRA metabolic model.
+
+        Args:
+            model: COBRApy model instance
+
+        Returns:
+            New Graph representing the metabolic network
+        """
+        S, R, M = import_cobra_model(model)
+        G = Graph.from_vertex_incidence(S, M["id"], R["id"])
+        # Add metadata to the graph, such as default lb/ub for reactions
+        for i in range(G.num_edges):
+            attr = G.get_attr_edge(i)
+            attr["default_lb"] = R["lb"][i]
+            attr["default_ub"] = R["ub"][i]
+            attr["GPR"] = R["gpr"][i]
+        return G
+
+    @staticmethod
+    def from_miom_model(model):
+        """Create graph from MIOM metabolic model.
+
+        Args:
+            model: MIOM model instance or path to compressed model file
+
+        Returns:
+            New Graph representing the metabolic network
+        """
+        if isinstance(model, str):
+            from corneto._io import _load_compressed_gem
+
+            S, R, M = _load_compressed_gem(model)
+        else:
+            S = model.S, M = model.M, R = model.R
+        G = Graph.from_vertex_incidence(S, M["id"], R["id"])
+        # Add metadata to the graph, such as default lb/ub for reactions
+        for i in range(G.num_edges):
+            attr = G.get_attr_edge(i)
+            attr["default_lb"] = R["lb"][i]
+            attr["default_ub"] = R["ub"][i]
+            attr["GPR"] = R["gpr"][i]
+        return G

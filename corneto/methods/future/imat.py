@@ -318,5 +318,5 @@ class MultiSampleIMAT(MultiSampleFBA):
         return flow_problem
 
     @staticmethod
-    def get_citations():
+    def references():
         return ["shlomi2008network", "rodriguez2024unified"]

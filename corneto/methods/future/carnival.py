@@ -416,13 +416,25 @@ class CarnivalFlow(FlowMethod):
         return problem
 
     @staticmethod
-    def get_citations():
+    def references():
         """Returns citation keys for this method.
 
         Returns:
             A list of citation keys that can be used to lookup BibTeX entries.
         """
         return ["rodriguez2024unified", "liu2019expression"]
+    
+    @staticmethod
+    def description():
+        """Returns a description of the method.
+
+        Returns:
+            A string describing the method.
+        """
+        return (
+            "Method extending the original CARNIVAL for intracellular network inference "
+            "that uses integer linear programming to model signal propagation."
+        )
 
 
 class CarnivalILP(Method):
@@ -676,7 +688,7 @@ class CarnivalILP(Method):
         return P
 
     @staticmethod
-    def get_citations():
+    def references():
         """Returns citation keys for this method.
 
         Returns:
