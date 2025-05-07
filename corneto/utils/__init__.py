@@ -8,9 +8,9 @@ from corneto.utils._citations import (
     format_authors,
     get_bibtex_from_keys,
     parse_bibtex,
-    render_citations_html,
+    render_references_html,
     show_bibtex,
-    show_citations,
+    show_references,
 )
 from corneto.utils._solvers import check_gurobi
 
