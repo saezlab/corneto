@@ -558,7 +558,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[np.int64(2010), 274, 4256, 8, np.int64(3791)]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[np.int64(2100), 172, 11, 19, 4700, 377, 2221, np.int64(3996)]
 </pre></div>
 </div>
 </div>
@@ -570,32 +570,28 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>10.287650603480705
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>18.50955016855608
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Gc</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Graph</span><span class="o">.</span><span class="n">from_networkx</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.contrib.networkx</span><span class="w"> </span><span class="kn">import</span> <span class="n">networkx_to_corneto_graph</span>
+<span class="n">Gc</span> <span class="o">=</span> <span class="n">networkx_to_corneto_graph</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sol</span><span class="p">,</span> <span class="n">Ps</span><span class="p">,</span> <span class="n">Gcs</span> <span class="o">=</span> <span class="n">solve_shortest_path</span><span class="p">(</span><span class="n">Gc</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">solver</span><span class="o">=</span><span class="s2">&quot;highs&quot;</span><span class="p">)</span>
+<span class="n">Ps</span><span class="o">.</span><span class="n">objectives</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">AttributeError</span><span class="g g-Whitespace">                            </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">8</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
-<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">Gc</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Graph</span><span class="o">.</span><span class="n">from_networkx</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
-
-<span class="ne">AttributeError</span>: type object &#39;Graph&#39; has no attribute &#39;from_networkx&#39;
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sol</span><span class="p">,</span> <span class="n">Ps</span><span class="p">,</span> <span class="n">Gcs</span> <span class="o">=</span> <span class="n">solve_shortest_path</span><span class="p">(</span><span class="n">Gc</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">solver</span><span class="o">=</span><span class="s2">&quot;SCIPY&quot;</span><span class="p">)</span>
-<span class="n">Ps</span><span class="o">.</span><span class="n">objectives</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>np.float64(18.509550168556075)
 </pre></div>
 </div>
 </div>
@@ -605,6 +601,9 @@
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Gcs</span><span class="o">.</span><span class="n">edge_subgraph</span><span class="p">(</span><span class="n">sol</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">orphan_edges</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/b565a84738f2f88972552ea0025fc06c630aea4daefd6f492ac9b848b52a41d6.svg" src="../../_images/b565a84738f2f88972552ea0025fc06c630aea4daefd6f492ac9b848b52a41d6.svg" />
 </div>
 </div>
 </section>

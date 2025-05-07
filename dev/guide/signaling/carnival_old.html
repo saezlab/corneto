@@ -445,24 +445,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">AttributeError</span><span class="g g-Whitespace">                            </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
-<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">G</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Graph</span><span class="o">.</span><span class="n">from_sif_tuples</span><span class="p">(</span>
-<span class="g g-Whitespace">      </span><span class="mi">2</span>     <span class="p">[</span>
-<span class="g g-Whitespace">      </span><span class="mi">3</span>         <span class="p">(</span><span class="s2">&quot;I1&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;N1&quot;</span><span class="p">),</span>  <span class="c1"># I1 activates N1</span>
-<span class="g g-Whitespace">      </span><span class="mi">4</span>         <span class="p">(</span><span class="s2">&quot;N1&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;M1&quot;</span><span class="p">),</span>  <span class="c1"># N1 activates M1</span>
-<span class="g g-Whitespace">      </span><span class="mi">5</span>         <span class="p">(</span><span class="s2">&quot;N1&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;M2&quot;</span><span class="p">),</span>  <span class="c1"># N1 activaes M2</span>
-<span class="g g-Whitespace">      </span><span class="mi">6</span>         <span class="p">(</span><span class="s2">&quot;I2&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;N2&quot;</span><span class="p">),</span>  <span class="c1"># I2 inhibits N2</span>
-<span class="g g-Whitespace">      </span><span class="mi">7</span>         <span class="p">(</span><span class="s2">&quot;N2&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;M2&quot;</span><span class="p">),</span>  <span class="c1"># N2 inhibits M2</span>
-<span class="g g-Whitespace">      </span><span class="mi">8</span>         <span class="p">(</span><span class="s2">&quot;N2&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;M1&quot;</span><span class="p">),</span>  <span class="c1"># N2 inhibits M1</span>
-<span class="g g-Whitespace">      </span><span class="mi">9</span>     <span class="p">]</span>
-<span class="g g-Whitespace">     </span><span class="mi">10</span> <span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">11</span> <span class="n">G</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
-
-<span class="ne">AttributeError</span>: type object &#39;Graph&#39; has no attribute &#39;from_sif_tuples&#39;
-</pre></div>
-</div>
+<img alt="../../_images/e6d37c058dd449b9cb6aaec4baa24da1d6e78a0f7fb739e893b0756e0c4591d3.svg" src="../../_images/e6d37c058dd449b9cb6aaec4baa24da1d6e78a0f7fb739e893b0756e0c4591d3.svg" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -482,6 +465,26 @@
 <span class="c1"># We run the `standard` carnival problem. This interface is similar</span>
 <span class="c1"># to the old R function https://saezlab.github.io/CARNIVAL/reference/runVanillaCarnival.html</span>
 <span class="n">P</span><span class="p">,</span> <span class="n">Gf</span> <span class="o">=</span> <span class="n">runVanillaCarnival</span><span class="p">(</span><span class="n">perturbations</span><span class="p">,</span> <span class="n">measurements</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">betaWeight</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ValueError</span><span class="g g-Whitespace">                                </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">line</span> <span class="mi">15</span>
+<span class="g g-Whitespace">     </span><span class="mi">11</span> <span class="n">perturbations</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;I1&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;I2&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+<span class="g g-Whitespace">     </span><span class="mi">13</span> <span class="c1"># We run the `standard` carnival problem. This interface is similar</span>
+<span class="g g-Whitespace">     </span><span class="mi">14</span> <span class="c1"># to the old R function https://saezlab.github.io/CARNIVAL/reference/runVanillaCarnival.html</span>
+<span class="ne">---&gt; </span><span class="mi">15</span> <span class="n">P</span><span class="p">,</span> <span class="n">Gf</span> <span class="o">=</span> <span class="n">runVanillaCarnival</span><span class="p">(</span><span class="n">perturbations</span><span class="p">,</span> <span class="n">measurements</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">betaWeight</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+
+<span class="nn">File ~/work/corneto/corneto/corneto/methods/carnival.py:119,</span> in <span class="ni">runVanillaCarnival</span><span class="nt">(perturbations, measurements, priorKnowledgeNetwork, betaWeight, solver, backend_options, solve, verbose, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">117</span>     <span class="n">G</span> <span class="o">=</span> <span class="n">priorKnowledgeNetwork</span>
+<span class="g g-Whitespace">    </span><span class="mi">118</span> <span class="k">else</span><span class="p">:</span>
+<span class="ne">--&gt; </span><span class="mi">119</span>     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Provide a list of sif tuples or a graph&quot;</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">120</span> <span class="c1"># Prune the graph</span>
+<span class="g g-Whitespace">    </span><span class="mi">121</span> <span class="n">V</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">vertices</span><span class="p">)</span>
+
+<span class="ne">ValueError</span>: Provide a list of sif tuples or a graph
 </pre></div>
 </div>
 </div>

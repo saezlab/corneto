@@ -18,34 +18,38 @@ Traceback (most recent call last):
     raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
 nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
 ------------------
-G = cn.Graph.from_sif_tuples(
-    [
-        ("I1", 1, "N1"),  # I1 activates N1
-        ("N1", 1, "M1"),  # N1 activates M1
-        ("N1", 1, "M2"),  # N1 activaes M2
-        ("I2", -1, "N2"),  # I2 inhibits N2
-        ("N2", -1, "M2"),  # N2 inhibits M2
-        ("N2", -1, "M1"),  # N2 inhibits M1
-    ]
-)
-G.plot()
+from corneto.methods import runVanillaCarnival
+
+# These are the measurements (e.g. TF activity from Decoupler).
+# Positive values correspond to up-regulation and negative values
+# with down-regulation. The bigger the absolute value is,
+# the bigger the importance is
+measurements = {"M1": 1, "M2": 1}
+
+# Perturbations are the upstream nodes were the signal originates on,
+# for example, ligands or receptors.
+perturbations = {"I1": 1, "I2": 1}
+
+# We run the `standard` carnival problem. This interface is similar
+# to the old R function https://saezlab.github.io/CARNIVAL/reference/runVanillaCarnival.html
+P, Gf = runVanillaCarnival(perturbations, measurements, G, betaWeight=0.1)
 ------------------
 
 
 [0;31m---------------------------------------------------------------------------[0m
-[0;31mAttributeError[0m                            Traceback (most recent call last)
-Cell [0;32mIn[2], line 1[0m
-[0;32m----> 1[0m G [38;5;241m=[39m [43mcn[49m[38;5;241;43m.[39;49m[43mGraph[49m[38;5;241;43m.[39;49m[43mfrom_sif_tuples[49m(
-[1;32m      2[0m     [
-[1;32m      3[0m         ([38;5;124m"[39m[38;5;124mI1[39m[38;5;124m"[39m, [38;5;241m1[39m, [38;5;124m"[39m[38;5;124mN1[39m[38;5;124m"[39m),  [38;5;66;03m# I1 activates N1[39;00m
-[1;32m      4[0m         ([38;5;124m"[39m[38;5;124mN1[39m[38;5;124m"[39m, [38;5;241m1[39m, [38;5;124m"[39m[38;5;124mM1[39m[38;5;124m"[39m),  [38;5;66;03m# N1 activates M1[39;00m
-[1;32m      5[0m         ([38;5;124m"[39m[38;5;124mN1[39m[38;5;124m"[39m, [38;5;241m1[39m, [38;5;124m"[39m[38;5;124mM2[39m[38;5;124m"[39m),  [38;5;66;03m# N1 activaes M2[39;00m
-[1;32m      6[0m         ([38;5;124m"[39m[38;5;124mI2[39m[38;5;124m"[39m, [38;5;241m-[39m[38;5;241m1[39m, [38;5;124m"[39m[38;5;124mN2[39m[38;5;124m"[39m),  [38;5;66;03m# I2 inhibits N2[39;00m
-[1;32m      7[0m         ([38;5;124m"[39m[38;5;124mN2[39m[38;5;124m"[39m, [38;5;241m-[39m[38;5;241m1[39m, [38;5;124m"[39m[38;5;124mM2[39m[38;5;124m"[39m),  [38;5;66;03m# N2 inhibits M2[39;00m
-[1;32m      8[0m         ([38;5;124m"[39m[38;5;124mN2[39m[38;5;124m"[39m, [38;5;241m-[39m[38;5;241m1[39m, [38;5;124m"[39m[38;5;124mM1[39m[38;5;124m"[39m),  [38;5;66;03m# N2 inhibits M1[39;00m
-[1;32m      9[0m     ]
-[1;32m     10[0m )
-[1;32m     11[0m G[38;5;241m.[39mplot()
+[0;31mValueError[0m                                Traceback (most recent call last)
+Cell [0;32mIn[3], line 15[0m
+[1;32m     11[0m perturbations [38;5;241m=[39m {[38;5;124m"[39m[38;5;124mI1[39m[38;5;124m"[39m: [38;5;241m1[39m, [38;5;124m"[39m[38;5;124mI2[39m[38;5;124m"[39m: [38;5;241m1[39m}
+[1;32m     13[0m [38;5;66;03m# We run the `standard` carnival problem. This interface is similar[39;00m
+[1;32m     14[0m [38;5;66;03m# to the old R function https://saezlab.github.io/CARNIVAL/reference/runVanillaCarnival.html[39;00m
+[0;32m---> 15[0m P, Gf [38;5;241m=[39m [43mrunVanillaCarnival[49m[43m([49m[43mperturbations[49m[43m,[49m[43m [49m[43mmeasurements[49m[43m,[49m[43m [49m[43mG[49m[43m,[49m[43m [49m[43mbetaWeight[49m[38;5;241;43m=[39;49m[38;5;241;43m0.1[39;49m[43m)[49m
 
-[0;31mAttributeError[0m: type object 'Graph' has no attribute 'from_sif_tuples'
+File [0;32m~/work/corneto/corneto/corneto/methods/carnival.py:119[0m, in [0;36mrunVanillaCarnival[0;34m(perturbations, measurements, priorKnowledgeNetwork, betaWeight, solver, backend_options, solve, verbose, **kwargs)[0m
+[1;32m    117[0m     G [38;5;241m=[39m priorKnowledgeNetwork
+[1;32m    118[0m [38;5;28;01melse[39;00m:
+[0;32m--> 119[0m     [38;5;28;01mraise[39;00m [38;5;167;01mValueError[39;00m([38;5;124m"[39m[38;5;124mProvide a list of sif tuples or a graph[39m[38;5;124m"[39m)
+[1;32m    120[0m [38;5;66;03m# Prune the graph[39;00m
+[1;32m    121[0m V [38;5;241m=[39m [38;5;28mset[39m(G[38;5;241m.[39mvertices)
+
+[0;31mValueError[0m: Provide a list of sif tuples or a graph
 

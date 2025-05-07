@@ -501,24 +501,7 @@ The prior knowledge network of ‘G1’ contains three nodes, EGF, TNFa and Ras.
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">AttributeError</span><span class="g g-Whitespace">                            </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">line</span> <span class="mi">2</span>
-<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="c1"># Definition of the prior knowledge network</span>
-<span class="ne">----&gt; </span><span class="mi">2</span> <span class="n">G1</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Graph</span><span class="o">.</span><span class="n">from_sif_tuples</span><span class="p">(</span>
-<span class="g g-Whitespace">      </span><span class="mi">3</span>     <span class="p">[</span>
-<span class="g g-Whitespace">      </span><span class="mi">4</span>         <span class="p">(</span><span class="s2">&quot;EGF&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;AND1&quot;</span><span class="p">),</span>
-<span class="g g-Whitespace">      </span><span class="mi">5</span>         <span class="p">(</span><span class="s2">&quot;TNFa&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;AND1&quot;</span><span class="p">),</span>
-<span class="g g-Whitespace">      </span><span class="mi">6</span>         <span class="p">(</span><span class="s2">&quot;AND1&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Ras&quot;</span><span class="p">),</span>
-<span class="g g-Whitespace">      </span><span class="mi">7</span>         <span class="p">(</span><span class="s2">&quot;EGF&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Ras&quot;</span><span class="p">),</span>
-<span class="g g-Whitespace">      </span><span class="mi">8</span>         <span class="p">(</span><span class="s2">&quot;TNFa&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Ras&quot;</span><span class="p">),</span>
-<span class="g g-Whitespace">      </span><span class="mi">9</span>     <span class="p">]</span>
-<span class="g g-Whitespace">     </span><span class="mi">10</span> <span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">11</span> <span class="n">G1</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
-
-<span class="ne">AttributeError</span>: type object &#39;Graph&#39; has no attribute &#39;from_sif_tuples&#39;
-</pre></div>
-</div>
+<img alt="../../_images/4e46465ca2e4f77c764f290c442ebba66ba6d1e724855d58478655f7aa98c482.svg" src="../../_images/4e46465ca2e4f77c764f290c442ebba66ba6d1e724855d58478655f7aa98c482.svg" />
 </div>
 </div>
 <p>Now, we organize some in-silico experimental data into a format that can be used by the CNO toolbox.</p>
@@ -547,7 +530,7 @@ We expect that the optimization finds the correct subgraph of the above network,
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/f9498de4643b371116312611c25d713eecfd58e59deed3e3bfced52b5f35fc9c.svg" src="../../_images/f9498de4643b371116312611c25d713eecfd58e59deed3e3bfced52b5f35fc9c.svg" />
+<img alt="../../_images/b79eb8beaa21c67ef98dc11e8713b8280d5e7def532eaad4e12009a795ed48ed.svg" src="../../_images/b79eb8beaa21c67ef98dc11e8713b8280d5e7def532eaad4e12009a795ed48ed.svg" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -557,19 +540,12 @@ We expect that the optimization finds the correct subgraph of the above network,
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/dbc5901933081fd524d974cc6d08b324698e1181562a02ba1cb8dd3cea6e2fea.png" src="../../_images/dbc5901933081fd524d974cc6d08b324698e1181562a02ba1cb8dd3cea6e2fea.png" />
+<img alt="../../_images/7c17dd0ede6e67af6964bbfb74d8b3a6dca697539a68a22503824b5a43b52f38.png" src="../../_images/7c17dd0ede6e67af6964bbfb74d8b3a6dca697539a68a22503824b5a43b52f38.png" />
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">P</span> <span class="o">=</span> <span class="n">cno</span><span class="o">.</span><span class="n">cellnoptILP</span><span class="p">(</span><span class="n">G1_prep</span><span class="p">,</span> <span class="n">exp_list_G1_and</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Set parameter Username
-Set parameter LicenseID to value 2593994
-Academic license - for non-commercial use only - expires 2025-12-02
 </pre></div>
 </div>
 </div>
@@ -581,7 +557,7 @@ Academic license - for non-commercial use only - expires 2025-12-02
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/ff3fa4edba318657dec582bb9602d73668424f1134905e43bbdf3579f802b46a.png" src="../../_images/ff3fa4edba318657dec582bb9602d73668424f1134905e43bbdf3579f802b46a.png" />
+<img alt="../../_images/92cbc9371c17de8f420550dfb68d81b99de64fcee04e05fd5071ab6227d19418.png" src="../../_images/92cbc9371c17de8f420550dfb68d81b99de64fcee04e05fd5071ab6227d19418.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -593,7 +569,7 @@ Academic license - for non-commercial use only - expires 2025-12-02
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/8562c3e5af9793045d1a3981a70f0175b6afca36ac2ce844f5a039c38ed1d72b.svg" src="../../_images/8562c3e5af9793045d1a3981a70f0175b6afca36ac2ce844f5a039c38ed1d72b.svg" />
+<img alt="../../_images/c61d3607bda18fa3e977dc4136911ddbee35e8fcef97a32cc8634abb595da2cd.svg" src="../../_images/c61d3607bda18fa3e977dc4136911ddbee35e8fcef97a32cc8634abb595da2cd.svg" />
 </div>
 </div>
 <p>Tasks:</p>
@@ -638,7 +614,7 @@ Note the difference in the definition of the prior knowledge network.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/00e9cdbfc3fbd5007740929985688543ef04e51b8da22ac922fa5c9ccdb04092.svg" src="../../_images/00e9cdbfc3fbd5007740929985688543ef04e51b8da22ac922fa5c9ccdb04092.svg" />
+<img alt="../../_images/015ceeaeea34d4052d32e66820424fe5446084f93d597ca8cc81e22fb11a9e41.svg" src="../../_images/015ceeaeea34d4052d32e66820424fe5446084f93d597ca8cc81e22fb11a9e41.svg" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -655,7 +631,7 @@ Note the difference in the definition of the prior knowledge network.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/bae4905d16a4a66e176ab11df9782db7b18a9b3b3bfc2f5cb16de14ab9d8c20a.png" src="../../_images/bae4905d16a4a66e176ab11df9782db7b18a9b3b3bfc2f5cb16de14ab9d8c20a.png" />
+<img alt="../../_images/4d3f0a47eb5c19a45fe9a045e8c09da14c408a69f3e72dd4e5152103db6e22f0.png" src="../../_images/4d3f0a47eb5c19a45fe9a045e8c09da14c408a69f3e72dd4e5152103db6e22f0.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -667,7 +643,7 @@ Note the difference in the definition of the prior knowledge network.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/3777ac2931af02b25d59b222151989d23439fdbb88482fde5d1829aca534fc16.svg" src="../../_images/3777ac2931af02b25d59b222151989d23439fdbb88482fde5d1829aca534fc16.svg" />
+<img alt="../../_images/4ce7860609960047e739d838509ef98935a8904cd8f2aa979eaab392052342cf.svg" src="../../_images/4ce7860609960047e739d838509ef98935a8904cd8f2aa979eaab392052342cf.svg" />
 </div>
 </div>
 </section>
@@ -706,7 +682,7 @@ Note the difference in the definition of the prior knowledge network.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/00e9cdbfc3fbd5007740929985688543ef04e51b8da22ac922fa5c9ccdb04092.svg" src="../../_images/00e9cdbfc3fbd5007740929985688543ef04e51b8da22ac922fa5c9ccdb04092.svg" />
+<img alt="../../_images/015ceeaeea34d4052d32e66820424fe5446084f93d597ca8cc81e22fb11a9e41.svg" src="../../_images/015ceeaeea34d4052d32e66820424fe5446084f93d597ca8cc81e22fb11a9e41.svg" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -719,7 +695,7 @@ Note the difference in the definition of the prior knowledge network.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/e603bb8922198b8e00e12daa648f2a7b9c602ff6c39fe538c5d02af496c2e26d.svg" src="../../_images/e603bb8922198b8e00e12daa648f2a7b9c602ff6c39fe538c5d02af496c2e26d.svg" />
+<img alt="../../_images/2ed3796501afc91e03c6e1583309ce55fc40f84d6e4b51e9ee525c1413413a7b.svg" src="../../_images/2ed3796501afc91e03c6e1583309ce55fc40f84d6e4b51e9ee525c1413413a7b.svg" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -729,7 +705,7 @@ Note the difference in the definition of the prior knowledge network.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/e6542606c746e40abb46e6d99b472c2e69b8d6d89f2638cb1fde3b3ecd843246.png" src="../../_images/e6542606c746e40abb46e6d99b472c2e69b8d6d89f2638cb1fde3b3ecd843246.png" />
+<img alt="../../_images/08101cb00aafaff15ac29a9ddded8b543a0ff7c69165f19012c2254a536a89bc.png" src="../../_images/08101cb00aafaff15ac29a9ddded8b543a0ff7c69165f19012c2254a536a89bc.png" />
 </div>
 </div>
 </section>
@@ -909,7 +885,7 @@ Note the difference in the definition of the prior knowledge network.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/f2f9adaa66ad0dde5de2b8a43926584e95bac87adcc4acd04c28f792409aaf82.svg" src="../../_images/f2f9adaa66ad0dde5de2b8a43926584e95bac87adcc4acd04c28f792409aaf82.svg" />
+<img alt="../../_images/a7b2152f0be063ecdd4d073baa74125df189602839b0ffcfd773741e4eb18dcf.svg" src="../../_images/a7b2152f0be063ecdd4d073baa74125df189602839b0ffcfd773741e4eb18dcf.svg" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -919,7 +895,7 @@ Note the difference in the definition of the prior knowledge network.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/b914eaacb923b44522e21e1f4ee10c5671195a2b5b80d4f12b6f79e36d5f893a.png" src="../../_images/b914eaacb923b44522e21e1f4ee10c5671195a2b5b80d4f12b6f79e36d5f893a.png" />
+<img alt="../../_images/d22703cec4c53fe7395c4780e6e87641ba281ddee4e0665271bd19477a5c875e.png" src="../../_images/d22703cec4c53fe7395c4780e6e87641ba281ddee4e0665271bd19477a5c875e.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -930,12 +906,38 @@ Note the difference in the definition of the prior knowledge network.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/c78182330fcead6946febfd4fcfa826c5431728fcb898b0b7b4d8781cbe58f9d.svg" src="../../_images/c78182330fcead6946febfd4fcfa826c5431728fcb898b0b7b4d8781cbe58f9d.svg" />
+<img alt="../../_images/e9c7c66b024222289f2ea5b4b3f2625092d19545e9786da701e6f71937f251f9.svg" src="../../_images/e9c7c66b024222289f2ea5b4b3f2625092d19545e9786da701e6f71937f251f9.svg" />
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">P_G3</span> <span class="o">=</span> <span class="n">cno</span><span class="o">.</span><span class="n">cellnoptILP</span><span class="p">(</span><span class="n">G3_prep</span><span class="p">,</span> <span class="n">exp_list_toy_full</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">IndexError</span><span class="g g-Whitespace">                                </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">21</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">P_G3</span> <span class="o">=</span> <span class="n">cno</span><span class="o">.</span><span class="n">cellnoptILP</span><span class="p">(</span><span class="n">G3_prep</span><span class="p">,</span> <span class="n">exp_list_toy_full</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="nn">File ~/work/corneto/corneto/corneto/methods/signal/cellnopt_ilp.py:288,</span> in <span class="ni">cellnoptILP</span><span class="nt">(G, exp_list, solver, alpha_flow, verbose, backend)</span>
+<span class="g g-Whitespace">    </span><span class="mi">284</span>     <span class="n">P</span> <span class="o">+=</span> <span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">285</span>         <span class="n">V</span><span class="p">[</span><span class="n">is_regular_node</span><span class="p">,</span> <span class="n">iexp</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="n">At</span> <span class="o">@</span> <span class="n">Eact</span><span class="p">)[</span><span class="n">is_regular_node</span><span class="p">,</span> <span class="n">iexp</span><span class="p">]</span>
+<span class="g g-Whitespace">    </span><span class="mi">286</span>     <span class="p">)</span>  <span class="c1"># but it has an upper constraint, so it takes 0 when all input are 0</span>
+<span class="g g-Whitespace">    </span><span class="mi">287</span>     <span class="k">if</span> <span class="n">V_is_inhibited</span><span class="p">[:,</span> <span class="n">iexp</span><span class="p">]</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+<span class="ne">--&gt; </span><span class="mi">288</span>         <span class="n">P</span> <span class="o">+=</span> <span class="n">V</span><span class="p">[</span><span class="n">inh_idx</span><span class="p">[:,</span> <span class="n">iexp</span><span class="p">],</span> <span class="n">iexp</span><span class="p">]</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">289</span>             <span class="nb">sum</span><span class="p">(</span><span class="n">V_is_inhibited</span><span class="p">[:,</span> <span class="n">iexp</span><span class="p">])</span>
+<span class="g g-Whitespace">    </span><span class="mi">290</span>         <span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">292</span> <span class="c1"># AND relation expressed as follows:</span>
+<span class="g g-Whitespace">    </span><span class="mi">293</span> <span class="c1"># - we only define these constraints for the AND gates</span>
+<span class="g g-Whitespace">    </span><span class="mi">294</span> <span class="c1"># - we count the sum of flows (selected edges) and sum of activated edges</span>
+<span class="g g-Whitespace">    </span><span class="mi">295</span> <span class="c1"># - if sum of flow equal to the sum of incoming edge activation, i.e. all edge are activated, then the vertex is activated:</span>
+<span class="g g-Whitespace">    </span><span class="mi">296</span> <span class="c1"># - to ensure that the AND gate is not active when there is no flow (an no active edge), we add the second constraint:</span>
+<span class="g g-Whitespace">    </span><span class="mi">297</span> <span class="k">if</span> <span class="n">V_is_and</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+<span class="g g-Whitespace">    </span><span class="mi">298</span>     <span class="c1">#and_idx = np.flatnonzero(V_is_and)</span>
+
+<span class="ne">IndexError</span>: too many indices for array: array is 1-dimensional, but 2 were indexed
 </pre></div>
 </div>
 </div>

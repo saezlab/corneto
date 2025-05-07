@@ -509,14 +509,32 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#corneto.graph.Graph.filter_graph" title="corneto.graph.Graph.filter_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_graph</span></code></a>([filter_vertex, filter_edge])</p></td>
 <td><p>Create filtered graph based on vertex and edge predicates.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#corneto.graph.Graph.from_dict" title="corneto.graph.Graph.from_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_dict</span></code></a>(data)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#corneto.graph.Graph.from_cobra_model" title="corneto.graph.Graph.from_cobra_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_cobra_model</span></code></a>(model)</p></td>
+<td><p>Create graph from COBRA metabolic model.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#corneto.graph.Graph.from_dict" title="corneto.graph.Graph.from_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_dict</span></code></a>(data)</p></td>
 <td><p>Create a graph from a dictionary representation.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#corneto.graph.Graph.from_json" title="corneto.graph.Graph.from_json"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_json</span></code></a>(json_str)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#corneto.graph.Graph.from_json" title="corneto.graph.Graph.from_json"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_json</span></code></a>(json_str)</p></td>
 <td><p>Create a graph from a JSON string.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#corneto.graph.Graph.from_tuples" title="corneto.graph.Graph.from_tuples"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_tuples</span></code></a>(tuples)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#corneto.graph.Graph.from_miom_model" title="corneto.graph.Graph.from_miom_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_miom_model</span></code></a>(model)</p></td>
+<td><p>Create graph from MIOM metabolic model.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#corneto.graph.Graph.from_networkx" title="corneto.graph.Graph.from_networkx"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_networkx</span></code></a>(G)</p></td>
+<td><p>Create graph from NetworkX graph.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#corneto.graph.Graph.from_sif" title="corneto.graph.Graph.from_sif"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_sif</span></code></a>(sif_file[, delimiter, has_header, ...])</p></td>
+<td><p>Create graph from Simple Interaction Format (SIF) file.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#corneto.graph.Graph.from_sif_tuples" title="corneto.graph.Graph.from_sif_tuples"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_sif_tuples</span></code></a>(tuples)</p></td>
+<td><p>Create graph from iterable of SIF tuples.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#corneto.graph.Graph.from_tuples" title="corneto.graph.Graph.from_tuples"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_tuples</span></code></a>(tuples)</p></td>
 <td><p>Alias for corneto.io.load_graph_from_sif_tuples for backwards compatibility.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#corneto.graph.Graph.from_vertex_incidence" title="corneto.graph.Graph.from_vertex_incidence"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_vertex_incidence</span></code></a>(A, vertex_ids, edge_ids)</p></td>
+<td><p>Create graph from vertex incidence matrix and labels.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_attr_edge</span></code>(index)</p></td>
 <td><p>Get attributes of an edge.</p></td>
@@ -832,6 +850,20 @@
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="corneto.graph.Graph.from_networkx">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_networkx</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">G</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.graph.Graph.from_networkx" title="Link to this definition">#</a></dt>
+<dd><p>Create graph from NetworkX graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>G</strong> (<em>NxGraph</em><em> | </em><em>NxDiGraph</em>) – NetworkX graph instance</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Graph instance with equivalent structure</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="corneto.graph.Graph.save_json">
 <span class="sig-name descname"><span class="pre">save_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compression</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.graph.Graph.save_json" title="Link to this definition">#</a></dt>
 <dd><p>Save graph to a JSON file.</p>
@@ -871,6 +903,90 @@
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#corneto.graph.Graph" title="corneto.graph._graph.Graph"><em>Graph</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.graph.Graph.from_vertex_incidence">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_vertex_incidence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vertex_ids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_ids</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.graph.Graph.from_vertex_incidence" title="Link to this definition">#</a></dt>
+<dd><p>Create graph from vertex incidence matrix and labels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><em>ndarray</em></a>) – Vertex incidence matrix. Rows are vertices, columns are edges.
+Non-zero entries indicate edge-vertex connections.</p></li>
+<li><p><strong>vertex_ids</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><em>List</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>] </em><em>| </em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><em>ndarray</em></a>) – Labels for vertices corresponding to matrix rows</p></li>
+<li><p><strong>edge_ids</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><em>List</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>] </em><em>| </em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><em>ndarray</em></a>) – Labels for edges corresponding to matrix columns</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Graph instance constructed from incidence matrix</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If dimensions of inputs don’t match</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.graph.Graph.from_sif">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_sif</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sif_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'\t'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">has_header</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">discard_self_loops</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0,</span> <span class="pre">1,</span> <span class="pre">2]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.graph.Graph.from_sif" title="Link to this definition">#</a></dt>
+<dd><p>Create graph from Simple Interaction Format (SIF) file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sif_file</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Path to SIF file</p></li>
+<li><p><strong>delimiter</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Column delimiter in file</p></li>
+<li><p><strong>has_header</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – Whether file has a header row</p></li>
+<li><p><strong>discard_self_loops</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em> | </em><em>None</em>) – Whether to ignore self-loops</p></li>
+<li><p><strong>column_order</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><em>List</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>]</em>) – Order of source, interaction, target columns</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>New Graph loaded from SIF file</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.graph.Graph.from_sif_tuples">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_sif_tuples</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tuples</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.graph.Graph.from_sif_tuples" title="Link to this definition">#</a></dt>
+<dd><p>Create graph from iterable of SIF tuples.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tuples</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.13)"><em>Iterable</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.13)"><em>Tuple</em></a><em>]</em>) – Iterable of (source, interaction, target) tuples</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>New Graph created from SIF data</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.graph.Graph.from_cobra_model">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_cobra_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.graph.Graph.from_cobra_model" title="Link to this definition">#</a></dt>
+<dd><p>Create graph from COBRA metabolic model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>model</strong> (<em>CobraModel</em>) – COBRApy model instance</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>New Graph representing the metabolic network</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.graph.Graph.from_miom_model">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_miom_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.graph.Graph.from_miom_model" title="Link to this definition">#</a></dt>
+<dd><p>Create graph from MIOM metabolic model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>model</strong> – MIOM model instance or path to compressed model file</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>New Graph representing the metabolic network</p>
 </dd>
 </dl>
 </dd></dl>
@@ -939,8 +1055,14 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.graph.Graph.to_json"><code class="docutils literal notranslate"><span class="pre">Graph.to_json</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.graph.Graph.from_dict"><code class="docutils literal notranslate"><span class="pre">Graph.from_dict</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.graph.Graph.from_json"><code class="docutils literal notranslate"><span class="pre">Graph.from_json</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.graph.Graph.from_networkx"><code class="docutils literal notranslate"><span class="pre">Graph.from_networkx</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.graph.Graph.save_json"><code class="docutils literal notranslate"><span class="pre">Graph.save_json</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.graph.Graph.load_json"><code class="docutils literal notranslate"><span class="pre">Graph.load_json</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.graph.Graph.from_vertex_incidence"><code class="docutils literal notranslate"><span class="pre">Graph.from_vertex_incidence</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.graph.Graph.from_sif"><code class="docutils literal notranslate"><span class="pre">Graph.from_sif</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.graph.Graph.from_sif_tuples"><code class="docutils literal notranslate"><span class="pre">Graph.from_sif_tuples</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.graph.Graph.from_cobra_model"><code class="docutils literal notranslate"><span class="pre">Graph.from_cobra_model</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.graph.Graph.from_miom_model"><code class="docutils literal notranslate"><span class="pre">Graph.from_miom_model</span></code></a></li>
 </ul>
 </li>
 </ul>
