@@ -85,24 +85,10 @@ jobs:
             echo "Found custom-index.html, using it…"
             cp docs/custom-index.html temp_root/index.html
           else
-            echo "No custom-index.html, emitting default redirect…"
-            cat > temp_root/index.html << 'EOF'
-            <!DOCTYPE html>
-            <html>
-              <head>
-                <meta charset="utf-8">
-                <title>Redirecting to main documentation</title>
-                <meta http-equiv="refresh" content="0; URL=./main/">
-                <link rel="canonical" href="./main/">
-              </head>
-              <body>
-                <p>Redirecting to <a href="./main/">main documentation</a>…</p>
-              </body>
-            </html>
-            EOF
+            echo "No custom-index.html, copying default-index.html…"
+            cp docs/default-index.html temp_root/index.html
           fi
 
-      
       - name: Deploy content to root
         uses: peaceiris/actions-gh-pages@v4
         with:
