@@ -2,8 +2,43 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Project Landing Page</title>
+    <title>CORNETO: Unified network inference from omics data</title>
+    <meta name="description" content="CORNETO is an open-source Python framework for unified knowledge-driven network inference from omics data, enabling multi-sample analysis across metabolic, signaling, and protein interaction networks." />
+    <meta name="keywords" content="CORNETO, network inference, omics data, FBA, iMAT, CARNIVAL, Python, multi-sample, bioinformatics" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://saezlab.github.io/corneto/" />
+    <link rel="icon" href="/favicon.ico" />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="CORNETO: Unified network inference from omics data" />
+    <meta property="og:description" content="Open-source Python library for multi-sample network inference using prior knowledge and omics data." />
+    <meta property="og:image" content="https://saezlab.github.io/corneto/_static/logo/corneto-logo-512px.png" />
+    <meta property="og:url" content="https://saezlab.github.io/corneto/" />
+    <meta property="og:type" content="website" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@saezlab" />
+    <meta name="twitter:title" content="CORNETO: Unified network inference from omics data" />
+    <meta name="twitter:description" content="Open-source Python library for multi-sample network inference using prior knowledge and omics data." />
+    <meta name="twitter:image" content="https://saezlab.github.io/corneto/_static/logo/corneto-logo-512px.png" />
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "http://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "CORNETO",
+      "url": "https://saezlab.github.io/corneto/",
+      "logo": "https://saezlab.github.io/corneto/_static/logo/corneto-logo-512px.png",
+      "applicationCategory": "Bioinformatics",
+      "operatingSystem": "All",
+      "softwareVersion": "v1.0.0"
+    }
+    </script>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
     <style>
@@ -18,24 +53,23 @@
     </style>
   </head>
   <body class="bg-gray-50 flex flex-col items-center justify-center min-h-screen space-y-6">
+
+    <noscript>
+      <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4" role="alert">
+        <p>Please enable JavaScript to view the interactive elements of this site. <a href="https://saezlab.github.io/corneto/dev/install.html" class="underline">Learn more</a>.</p>
+      </div>
+    </noscript>
+
     <div id="particles-js"></div>
 
-    <div class="relative z-10 flex flex-col items-center space-y-4">
-      <!-- Title + Subtitle -->
-      <div class="text-center space-y-2">
-        <img
-          src="https://github.com/saezlab/corneto/raw/main/docs/_static/logo/corneto-logo-512px.png"
-          alt="Corneto Logo"
-          class="w-24 h-auto mx-auto"
-        />
-        <h1 class="text-5xl font-extrabold text-gray-800">CORNETO</h1>
-        <h2 class="text-2xl text-gray-600">
-          Unified knowledge-driven network inference from omics data
-        </h2>
-      </div>
+    <header class="relative z-10 text-center space-y-4">
+      <img src="https://github.com/saezlab/corneto/raw/main/docs/_static/logo/corneto-logo-512px.png" alt="Corneto Logo" class="w-24 h-auto mx-auto" />
+      <h1 class="text-5xl font-extrabold text-gray-800">CORNETO</h1>
+      <p class="text-2xl text-gray-600">Unified knowledge-driven network inference from omics data</p>
+    </header>
 
-      <!-- Navigation Links -->
-      <nav class="flex items-center text-lg text-blue-500">
+    <main class="relative z-10 flex flex-col items-center space-y-6">
+      <nav class="flex items-center text-lg text-blue-500 space-x-3" aria-label="Primary">
         <a href="https://saezlab.github.io/corneto/dev/install.html" class="flex items-center space-x-1 hover:underline">
           <!-- Download Icon -->
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -43,7 +77,6 @@
           </svg>
           <span>Install</span>
         </a>
-        <span class="mx-3 text-gray-400">|</span>
         <a href="https://saezlab.github.io/corneto/dev/guide/index.html" class="flex items-center space-x-1 hover:underline">
           <!-- Book Icon -->
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -52,7 +85,6 @@
           </svg>
           <span>Documentation</span>
         </a>
-        <span class="mx-3 text-gray-400">|</span>
         <a href="https://github.com/saezlab/corneto" class="flex items-center space-x-1 hover:underline">
           <!-- GitHub Icon -->
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
@@ -62,24 +94,15 @@
         </a>
       </nav>
 
-      <!-- GitHub Star Button -->
-      <p class="text-xl text-gray-600">
+      <div class="text-xl text-gray-600 text-center">
         Click below to give us a ⭐ on GitHub!
-      </p>
-      <div class="mt-2">
-        <a
-          class="github-button"
-          href="https://github.com/saezlab/corneto"
-          data-icon="octicon-star"
-          data-size="large"
-          data-show-count="true"
-          aria-label="Star saezlab/corneto on GitHub"
-        >Star</a>
       </div>
-    </div>
+      <div>
+        <a class="github-button" href="https://github.com/saezlab/corneto" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star saezlab/corneto on GitHub">Star</a>
+      </div>
+    </main>
 
     <script async defer src="https://buttons.github.io/buttons.js"></script>
-
     <script>
       particlesJS("particles-js", {
         particles: {
@@ -99,5 +122,9 @@
         retina_detect: true
       });
     </script>
+
+    <footer class="relative z-10 text-center text-gray-500 text-sm mt-8">
+      &copy; 2025 Saez-Rodriguez Group | <a href="https://github.com/saezlab/corneto/blob/main/LICENSE" class="underline">GPLv3 License</a> 
+    </footer>
   </body>
 </html>
