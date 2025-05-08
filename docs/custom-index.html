@@ -64,6 +64,10 @@
             rel="stylesheet"
             href="https://cdn.jsdelivr.net/npm/water.css@2/out/light.css"
         />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+            rel="stylesheet"
+        />
 
         <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
         <style>
@@ -86,6 +90,9 @@
                 justify-content: center;
                 text-align: center;
                 font-size: 1.15rem;
+                font-family: "Inter", system-ui, sans-serif;
+                line-height: 1.6;
+                color: #333;
             }
 
             header,
@@ -163,6 +170,46 @@
                 text-decoration: underline;
             }
 
+            .hero-card {
+                background: #fff;
+                padding: 1rem;
+                max-width: 600px;
+                margin: 2rem auto;
+                border-radius: 1rem;
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+                text-align: center;
+                position: relative;
+                z-index: 1;
+            }
+
+            .hero-card h3 {
+                margin-bottom: 0rem;
+                margin-top: 0.5rem;
+                font-size: 1.5rem;
+            }
+
+            .hero-card p {
+                margin-bottom: 1.5rem;
+                color: #555;
+            }
+
+            .cta-button {
+                display: inline-block;
+                padding: 0.50rem 1.0rem;
+                font-size: 1.125rem;
+                background: linear-gradient(135deg, #ff7e5f, #feb47b);
+                color: white;
+                text-decoration: none;
+                border-radius: 0.5rem;
+                transition:
+                    transform 0.2s,
+                    box-shadow 0.2s;
+            }
+
+            .cta-button:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            }
         </style>
     </head>
     <body>
@@ -257,20 +304,21 @@
                 </a>
             </nav>
 
-            <div class="github-star-prompt">
-                If you like this project, please give us a ⭐ on GitHub!
-            </div>
-            <div>
+            <section class="hero-card">
+                <h3>Enjoying this project?</h3>
+                <p>
+                    Support us with a ⭐ on GitHub and help grow the community!
+                </p>
                 <a
-                    class="github-button"
+                    id="star-btn"
+                    class="cta-button"
                     href="https://github.com/saezlab/corneto"
-                    data-icon="octicon-star"
-                    data-size="large"
-                    data-show-count="true"
-                    aria-label="Star saezlab/corneto on GitHub"
-                    >Star</a
+                    target="_blank"
+                    rel="noopener"
                 >
-            </div>
+                    ★ Star (…)
+                </a>
+            </section>
         </main>
 
         <script async defer src="https://buttons.github.io/buttons.js"></script>
@@ -318,5 +366,30 @@
                 >GPLv3 License</a
             >
         </footer>
+
+        <script>
+            async function updateStarCount() {
+                try {
+                    // fetch repo data from GitHub REST API
+                    const res = await fetch(
+                        "https://api.github.com/repos/saezlab/corneto",
+                    );
+                    if (!res.ok)
+                        throw new Error(
+                            "GitHub API rate‐limit or repo not found",
+                        );
+                    const { stargazers_count } = await res.json();
+
+                    // update button text
+                    const btn = document.getElementById("star-btn");
+                    btn.textContent = `★ Star | ${stargazers_count.toLocaleString()}`;
+                } catch (err) {
+                    console.warn("Could not fetch star count:", err);
+                }
+            }
+
+            // run on page load
+            document.addEventListener("DOMContentLoaded", updateStarCount);
+        </script>
     </body>
 </html>
