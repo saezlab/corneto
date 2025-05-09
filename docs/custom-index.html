@@ -15,7 +15,7 @@
         />
         <meta name="robots" content="index, follow" />
         <link rel="canonical" href="https://saezlab.github.io/corneto/" />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="dev/_static/favicon.ico" />
 
         <meta
             property="og:title"
@@ -65,7 +65,7 @@
             href="https://cdn.jsdelivr.net/npm/water.css@2/out/light.css"
         />
         <link
-            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap"
             rel="stylesheet"
         />
 
@@ -87,12 +87,15 @@
                 flex-direction: column;
                 align-items: center;
                 min-height: 100vh;
-                justify-content: center;
+                /* Remove justify-content: center to prevent vertical jumping */
+                padding-top: 5vh; /* Add padding instead of centering */
                 text-align: center;
                 font-size: 1.15rem;
                 font-family: "Inter", system-ui, sans-serif;
                 line-height: 1.6;
                 color: #333;
+                /* Add this to prevent layout shifts */
+                overflow-y: scroll;
             }
 
             header,
@@ -168,6 +171,11 @@
             footer a:hover {
                 color: inherit;
                 text-decoration: underline;
+            }
+
+            header > h1 {
+                font-weight: 800;
+                margin: 0;
             }
 
             .hero-card {
