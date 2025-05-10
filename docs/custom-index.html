@@ -221,12 +221,12 @@
                         />
 
                         <text
-                            x="12"
-                            y="14"
+                            x="11"
+                            y="10"
                             text-anchor="middle"
                             dominant-baseline="middle"
                             font-family="'DM Serif Text', serif"
-                            font-size="14"
+                            font-size="13"
                             stroke-width="0"
                             fill="currentColor"
                         >
@@ -333,12 +333,17 @@
         </script>
 
         <footer>
-            &copy; 2025
+            &copy; <span id="year-range"></span>
             <a href="https://saezlab.org/">Saez-Rodriguez Group</a> |
-            <a href="https://github.com/saezlab/corneto/blob/main/LICENSE"
-                >GPLv3 License</a
-            >
+            <a href="https://github.com/saezlab/corneto/blob/main/LICENSE">GPLv3 License</a>
         </footer>
+
+        <script>
+            const startYear = 2023;
+            const currentYear = new Date().getFullYear();
+            document.getElementById('year-range').textContent =
+                currentYear === startYear ? startYear : `${startYear} - ${currentYear}`;
+        </script>
 
         <script>
             async function updateStarCount() {
