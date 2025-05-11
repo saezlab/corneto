@@ -168,6 +168,9 @@ html_theme_options = {
         "version_match": corneto.__version__,
     },
     "navbar_start": ["navbar-logo", "version-switcher"],
+    "analytics": {
+        "google_analytics_id": "G-Z263GN2PKK",
+    }
 }
 
 # Additional HTML context for templates.
