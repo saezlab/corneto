@@ -15,18 +15,21 @@
         <meta name="robots" content="index, follow" />
         <link rel="canonical" href="https://saezlab.github.io/corneto/" />
         <link rel="icon" href="dev/_static/favicon.ico" />
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Text:ital@0;1&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Josefin+Sans:wght@100..700&display=swap" rel="stylesheet">
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=DM+Serif+Text:ital@0;1&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Josefin+Sans:wght@100..700&display=swap"
+            rel="stylesheet"
+        />
         <!--<link href="https://fonts.googleapis.com/css2?family=Poiret+One&display=swap" rel="stylesheet">-->
 
         <link
             rel="stylesheet"
             href="https://cdn.jsdelivr.net/npm/water.css@2/out/light.css"
         />
-        
 
-        <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
+        <!--<script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>-->
         <style>
             /* Particles.js background style */
             #particles-js {
@@ -90,7 +93,7 @@
                 justify-content: center;
                 gap: 1rem;
                 margin-bottom: 1.5rem;
-                font-size: 1.0em;
+                font-size: 1em;
             }
 
             nav a {
@@ -137,7 +140,7 @@
             header > h1 {
                 font-weight: 800;
                 margin: 0;
-                color:#855775
+                color: #855775;
             }
 
             .hero-card {
@@ -201,8 +204,6 @@
                 font-weight: 500;
                 font-style: normal;
             }
-
-
         </style>
     </head>
     <body>
@@ -314,52 +315,82 @@
         <script async defer src="https://buttons.github.io/buttons.js"></script>
 
         <script>
-            particlesJS("particles-js", {
-                particles: {
-                    number: {
-                        value: 80,
-                        density: { enable: true, value_area: 800 },
+            document.addEventListener("DOMContentLoaded", () => {
+                tsParticles.load("particles-js", {
+                    particles: {
+                        number: {
+                            value: 80,
+                            density: { enable: true, area: 800 },
+                        },
+                        color: { value: "#888888" },
+                        shape: {
+                            type: "circle",
+                            options: { sides: 6 },
+                        },
+                        opacity: {
+                            value: 0.5,
+                            random: true,
+                        },
+                        size: {
+                            value: 3,
+                            random: true,
+                        },
+                        links: {
+                            enable: true,
+                            distance: 120,
+                            color: "#888888",
+                            opacity: 0.4,
+                            width: 1,
+                        },
+                        move: {
+                            enable: true,
+                            speed: 0.5,
+                            outModes: { default: "out" },
+                        },
                     },
-                    color: { value: "#888888" },
-                    shape: { type: "circle", polygon: { nb_sides: 6 } },
-                    opacity: { value: 0.5, random: true },
-                    size: { value: 3, random: true },
-                    line_linked: {
-                        enable: true,
-                        distance: 120,
-                        color: "#888888",
-                        opacity: 0.4,
-                        width: 1,
+                    interactivity: {
+                        detectsOn: "canvas",
+                        events: {
+                            onHover: {
+                                enable: true,
+                                mode: "grab",
+                            },
+                            onClick: {
+                                enable: true,
+                                mode: "push",
+                            },
+                            resize: true,
+                        },
+                        modes: {
+                            grab: {
+                                distance: 150,
+                                links: { opacity: 0.6 },
+                            },
+                            push: {
+                                quantity: 4,
+                            },
+                        },
                     },
-                    move: { enable: true, speed: 2, out_mode: "out" },
-                },
-                interactivity: {
-                    detect_on: "canvas",
-                    events: {
-                        onhover: { enable: true, mode: "grab" },
-                        onclick: { enable: true, mode: "push" },
-                        resize: true,
-                    },
-                    modes: {
-                        grab: { distance: 150, line_linked: { opacity: 0.6 } },
-                        push: { particles_nb: 4 },
-                    },
-                },
-                retina_detect: true,
+                    detectRetina: true,
+                });
             });
         </script>
 
         <footer class="min">
             &copy; <span id="year-range"></span>
             <a href="https://saezlab.org/">Saez-Rodriguez Group</a> |
-            <a href="https://github.com/saezlab/corneto/blob/main/LICENSE">GPLv3 License</a>
+            <a href="https://github.com/saezlab/corneto/blob/main/LICENSE"
+                >GPLv3 License</a
+            >
         </footer>
 
         <script>
             const startYear = 2023;
             const currentYear = new Date().getFullYear();
-            document.getElementById('year-range').textContent =
-                currentYear === startYear ? startYear : `${startYear} - ${currentYear}`;
+            document.getElementById("year-range").textContent =
+                currentYear === startYear
+                    ? startYear
+                    : `${startYear} - ${currentYear}`;
         </script>
 
         <script>
