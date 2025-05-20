@@ -1,12 +1,431 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <title>Redirecting to main documentation</title>
-    <meta http-equiv="refresh" content="0; URL=./main/">
-    <link rel="canonical" href="./main/">
-  </head>
-  <body>
-    <p>Redirecting to <a href="./main/">main documentation</a>...</p>
-  </body>
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>CORNETO: Unified network inference from omics data</title>
+        <meta
+            name="description"
+            content="CORNETO is an open-source Python framework for unified knowledge-driven network inference from omics data, enabling multi-sample analysis across metabolic, signaling, and protein interaction networks."
+        />
+        <meta
+            name="keywords"
+            content="CORNETO, network inference, omics data, FBA, iMAT, CARNIVAL, Python, multi-sample, bioinformatics"
+        />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://saezlab.github.io/corneto/" />
+        <link rel="icon" href="dev/_static/favicon.ico" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=DM+Serif+Text:ital@0;1&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Josefin+Sans:wght@100..700&display=swap"
+            rel="stylesheet"
+        />
+        <!--<link href="https://fonts.googleapis.com/css2?family=Poiret+One&display=swap" rel="stylesheet">-->
+
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/water.css@2/out/light.css"
+        />
+
+        <script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
+        <!--<script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>-->
+        <style>
+            /* Particles.js background style */
+            #particles-js {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                z-index: -1;
+            }
+
+            /* Custom styles to complement Water.css */
+            body {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                /* min-height: 100vh; */
+                /* Remove justify-content: center to prevent vertical jumping */
+                padding-top: 5vh; /* Add padding instead of centering */
+                text-align: center;
+                font-size: 1.15rem;
+                font-family: "Inter", system-ui, sans-serif;
+                line-height: 1.6;
+                color: #333;
+                /* Add this to prevent layout shifts */
+                overflow-y: scroll;
+            }
+
+            header,
+            main,
+            footer {
+                width: 100%;
+                margin-bottom: 0.5rem;
+            }
+
+            header {
+                text-align: center;
+                margin-bottom: 0rem;
+            }
+
+            header img {
+                width: 96px;
+                height: auto;
+                display: block;
+                margin-left: auto;
+                margin-right: auto;
+                margin-bottom: 1rem;
+            }
+
+            /* Style for the subtitle paragraph in the header */
+            header > p {
+                font-size: 1.2em;
+                line-height: 2rem;
+                color: #505050;
+                margin-top: 0.5rem;
+            }
+
+            nav {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 1rem;
+                margin-bottom: 1.5rem;
+                font-size: 1em;
+            }
+
+            nav a {
+                display: inline-flex;
+                align-items: center;
+                text-decoration: none;
+            }
+
+            nav a:hover {
+                text-decoration: underline;
+            }
+
+            nav svg {
+                width: 1.1em;
+                height: 1.1em;
+                margin-right: 0.4em;
+                vertical-align: middle;
+            }
+
+            .github-star-prompt {
+                margin-top: 1.5rem;
+                margin-bottom: 0.5rem;
+            }
+
+            footer {
+                text-align: center;
+                font-size: 0.8rem;
+            }
+
+            footer a {
+                color: inherit;
+                text-decoration: underline;
+            }
+
+            footer a:hover {
+                color: inherit;
+                text-decoration: underline;
+            }
+
+            footer.min {
+                margin-top: 20px;
+            }
+
+            header > h1 {
+                font-weight: 800;
+                margin: 0;
+                color: #855775;
+            }
+
+            .hero-card {
+                background: #ffffffcf;
+                padding: 1rem;
+                max-width: 600px;
+                margin: 0.5rem auto;
+                border-radius: 1rem;
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+                text-align: center;
+                position: relative;
+                z-index: 1;
+            }
+
+            .hero-card h3 {
+                margin-bottom: 0rem;
+                margin-top: 0.5rem;
+                font-size: 1.5rem;
+            }
+
+            .hero-card p {
+                margin-bottom: 1.5rem;
+                color: #555;
+            }
+
+            .cta-button {
+                display: inline-block;
+                padding: 0.5rem 1rem;
+                font-size: 1.125rem;
+                background: linear-gradient(135deg, #ff7e5f, #feb47b);
+                color: white;
+                text-decoration: none;
+                border-radius: 0.5rem;
+                transition:
+                    transform 0.2s,
+                    box-shadow 0.2s;
+            }
+
+            .cta-button:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            }
+
+            /* Google Fonts */
+
+            .dm-serif-text-regular {
+                font-family: "DM Serif Text", serif;
+                font-weight: 400;
+                font-style: normal;
+            }
+
+            .poiret-one-regular {
+                font-family: "Poiret One", sans-serif;
+                font-weight: 400;
+                font-style: normal;
+            }
+
+            .josefin-sans-bold {
+                font-family: "Josefin Sans", sans-serif;
+                font-optical-sizing: auto;
+                font-weight: 500;
+                font-style: normal;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="particles-js"></div>
+
+        <header>
+            <img
+                src="data:image/png;base64,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"
+                alt="Corneto Logo"
+            />
+            <h1 class="josefin-sans-bold">CORNETO</h1>
+            <p>Unified knowledge-driven network inference from omics data</p>
+        </header>
+
+        <main>
+            <nav aria-label="Primary">
+                <a
+                    href="https://doi.org/10.1101/2024.10.26.620390"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M7 21h10a2 2 0 002-2V7l-5-5H7a2 2 0 00-2 2v15a2 2 0 002 2z"
+                        />
+
+                        <text
+                            x="11"
+                            y="10"
+                            text-anchor="middle"
+                            dominant-baseline="middle"
+                            font-family="'DM Serif Text', serif"
+                            font-size="13"
+                            stroke-width="0"
+                            fill="currentColor"
+                        >
+                            n
+                        </text>
+                    </svg>
+
+                    <span>Preprint</span>
+                </a>
+
+                <a
+                    href="https://saezlab.github.io/corneto/dev/guide/index.html"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        stroke-width="2"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M12 20l9-5-9-5-9 5 9 5z"
+                        />
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M12 12l9-5-9-5-9 5 9 5z"
+                        />
+                    </svg>
+                    <span>Documentation</span>
+                </a>
+
+                <a href="https://github.com/saezlab/corneto">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            fill-rule="evenodd"
+                            d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.009-.868-.014-1.703-2.782.605-3.369-1.342-3.369-1.342-.454-1.157-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.833.091-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.687-.103-.253-.446-1.27.098-2.647 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844a9.56 9.56 0 012.5.336c1.91-1.296 2.75-1.026 2.75-1.026.546 1.377.202 2.394.1 2.647.64.699 1.028 1.594 1.028 2.687 0 3.848-2.338 4.695-4.566 4.943.36.31.682.92.682 1.852 0 1.337-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0022 12.017C22 6.484 17.523 2 12 2z"
+                            clip-rule="evenodd"
+                        />
+                    </svg>
+                    <span>Code</span>
+                </a>
+            </nav>
+
+            <section class="hero-card">
+                <!--<h3>Enjoying this project?</h3>-->
+                <p>
+                    Support us with a ⭐ on GitHub and help grow the community!
+                </p>
+                <a
+                    id="star-btn"
+                    class="cta-button"
+                    href="https://github.com/saezlab/corneto"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    ★ Star (…)
+                </a>
+            </section>
+        </main>
+
+        <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                tsParticles.load("particles-js", {
+                    particles: {
+                        number: {
+                            value: 80,
+                            density: { enable: true, area: 800 },
+                        },
+                        color: { value: "#888888" },
+                        shape: {
+                            type: "circle",
+                            options: { sides: 6 },
+                        },
+                        opacity: {
+                            value: 0.5,
+                            random: true,
+                        },
+                        size: {
+                            value: 3,
+                            random: true,
+                        },
+                        links: {
+                            enable: true,
+                            distance: 120,
+                            color: "#888888",
+                            opacity: 0.4,
+                            width: 1,
+                        },
+                        move: {
+                            enable: true,
+                            speed: 0.5,
+                            outModes: { default: "out" },
+                        },
+                    },
+                    interactivity: {
+                        detectsOn: "canvas",
+                        events: {
+                            onHover: {
+                                enable: true,
+                                mode: "grab",
+                            },
+                            onClick: {
+                                enable: true,
+                                mode: "push",
+                            },
+                            resize: true,
+                        },
+                        modes: {
+                            grab: {
+                                distance: 150,
+                                links: { opacity: 0.6 },
+                            },
+                            push: {
+                                quantity: 4,
+                            },
+                        },
+                    },
+                    detectRetina: true,
+                });
+            });
+        </script>
+
+        <footer class="min">
+            &copy; <span id="year-range"></span>
+            <a href="https://saezlab.org/">Saez-Rodriguez Group</a> |
+            <a href="https://github.com/saezlab/corneto/blob/main/LICENSE"
+                >GPLv3 License</a
+            >
+        </footer>
+
+        <script>
+            const startYear = 2023;
+            const currentYear = new Date().getFullYear();
+            document.getElementById("year-range").textContent =
+                currentYear === startYear
+                    ? startYear
+                    : `${startYear} - ${currentYear}`;
+        </script>
+
+        <script>
+            async function updateStarCount() {
+                try {
+                    // fetch repo data from GitHub REST API
+                    const res = await fetch(
+                        "https://api.github.com/repos/saezlab/corneto",
+                    );
+                    if (!res.ok)
+                        throw new Error(
+                            "GitHub API rate‐limit or repo not found",
+                        );
+                    const { stargazers_count } = await res.json();
+
+                    // update button text
+                    const btn = document.getElementById("star-btn");
+                    btn.textContent = `★ Star | ${stargazers_count.toLocaleString()}`;
+                } catch (err) {
+                    console.warn("Could not fetch star count:", err);
+                }
+            }
+
+            // run on page load
+            document.addEventListener("DOMContentLoaded", updateStarCount);
+        </script>
+
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z263GN2PKK"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-Z263GN2PKK');
+        </script>
+    </body>
 </html>
