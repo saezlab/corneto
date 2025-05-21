@@ -59,11 +59,26 @@ def get_version_from_branch(branch):
     return branch
 
 
+def get_base_url():
+    # 1) try the real published URL
+    url = os.environ.get("PAGE_URL")
+    if url:
+        print(f"Using PAGE_URL: {url}")
+        return url.rstrip("/")
+    # 2) fallback to github.io
+    repo = os.environ.get("GITHUB_REPOSITORY", "username/corneto")
+    user, project = repo.split("/", 1)
+    print(f"Using {user}.github.io/{project} as fallback for the switcher URL.")
+    return f"https://{user}.github.io/{project}"
+
+
 def main():
     # Derive GitHub username from the environment variable.
-    repo = os.environ.get("GITHUB_REPOSITORY", "username/corneto")
-    username = repo.split("/")[0]
-    base_url = f"https://{username}.github.io/corneto"
+    #repo = os.environ.get("GITHUB_REPOSITORY", "username/corneto")
+    #username = repo.split("/")[0]
+    #base_url = f"https://{username}.github.io/corneto"
+    base_url = get_base_url()
+    root_path = os.environ.get("SITE_ROOT", "").rstrip("/")
 
     switcher = []
 

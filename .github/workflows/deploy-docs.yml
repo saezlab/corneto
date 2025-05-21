@@ -69,6 +69,14 @@ jobs:
           esac
           echo "doc_version=${version}" >> $GITHUB_OUTPUT
 
+      - name: Fetch gh-pages CNAME
+        run: |
+          git fetch origin gh-pages:gh-pages
+          if git show gh-pages:CNAME &>/dev/null; then
+            domain=$(git show gh-pages:CNAME | tr -d '\r\n')
+            echo "PAGE_URL=https://${domain}" >> $GITHUB_ENV
+          fi
+
       - name: Generate switcher.json
         run: |
           set -e
