@@ -4,7 +4,7 @@ import warnings
 
 from corneto import _plotting as pl
 from corneto._constants import *
-from corneto._data import Data, Feature, Sample
+from corneto._data import Data, Feature, GraphData, Sample
 from corneto._util import info, suppress_output
 from corneto.backend import DEFAULT_BACKEND, DEFAULT_SOLVER, available_backends
 
@@ -17,6 +17,7 @@ from corneto.backend._base import Indicator, NonZeroIndicator
 #from corneto._graph import Attr, Attributes, EdgeType, Graph
 from corneto.graph import Attr, Attributes, EdgeType, Graph
 from corneto.io import load_graph_from_sif
+
 # from corneto._core import GReNet as Graph
 from corneto.methods import (
     create_flow_graph,
@@ -26,8 +27,10 @@ from corneto.methods import (
 )
 from corneto.utils import Attr, Attributes
 
-logger = logging.getLogger(__name__)
-logger.addHandler(logging.NullHandler())
+from corneto._logging import disable_logging, enable_logging, set_verbosity
+
+#logger = logging.getLogger(__name__)
+#logger.addHandler(logging.NullHandler())
 
 
 def get_version():
@@ -73,7 +76,8 @@ __all__ = [
     "EdgeType",
     "Feature",
     "Graph",
-    "K",
+    "GraphData",
+    "K", # deprecated
     "Sample",
     "available_backends",
     "info",
