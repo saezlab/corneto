@@ -69,13 +69,17 @@ jobs:
           esac
           echo "doc_version=${version}" >> $GITHUB_OUTPUT
 
-      - name: Fetch gh-pages CNAME
+      - name: Get GitHub Pages URL via GH CLI
+        id: pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git fetch origin gh-pages:gh-pages
-          if git show gh-pages:CNAME &>/dev/null; then
-            domain=$(git show gh-pages:CNAME | tr -d '\r\n')
-            echo "PAGE_URL=https://${domain}" >> $GITHUB_ENV
-          fi
+          page_url=$(gh api \
+            -H "Accept: application/vnd.github.v3+json" \
+            /repos/${{ github.repository }}/pages \
+            --jq .html_url \
+          )
+          echo "PAGE_URL=${page_url:-}" >> $GITHUB_ENV
 
       - name: Generate switcher.json
         run: |
