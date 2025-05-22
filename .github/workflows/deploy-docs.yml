@@ -41,6 +41,7 @@ jobs:
         run: |
           set -e
           pip install poetry
+          poetry self add "poetry-dynamic-versioning[plugin]"
           poetry install --with dev,docs
 
       - name: Build Docs

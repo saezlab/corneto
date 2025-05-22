@@ -25,7 +25,8 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install Dependencies
       run: |
-        pip install tox poetry
+        pip install poetry
+        poetry self add "poetry-dynamic-versioning[plugin]"
         poetry install
     - name: Test with pytest
       run: |
