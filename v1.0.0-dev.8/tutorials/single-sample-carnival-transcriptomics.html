@@ -1,0 +1,2721 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Single sample intracellular signalling network inference &#8212; CORNETO  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=5ec6e6de" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-Z263GN2PKK"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-Z263GN2PKK');
+            </script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/single-sample-carnival-transcriptomics';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = '/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.0.0.dev8';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="canonical" href="https://saezlab.github.io/corneto/tutorials/single-sample-carnival-transcriptomics.html" />
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Implementing an alternative network sampler" href="network-sampler.html" />
+    <link rel="prev" title="Context-specific metabolic networks from omics" href="context-specific-metabolic-omics.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="../_static/logo.png" class="logo__image only-light" alt="CORNETO  documentation - Home"/>
+    <img src="../_static/logo.png" class="logo__image only-dark pst-js-only" alt="CORNETO  documentation - Home"/>
+  
+  
+</a></div>
+    
+      <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../install.html">
+    Install
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../guide/index.html">
+    Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    Reference
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-external" href="https://github.com/saezlab/corneto">
+    GitHub
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../install.html">
+    Install
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../guide/index.html">
+    Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/saezlab/corneto">
+    GitHub
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="context-specific-metabolic-omics.html">Context-specific metabolic networks from omics</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Single sample intracellular signalling network inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="network-sampler.html">Implementing an alternative network sampler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="network-sampler-example.html">Exploring alternative solutions with <span class="math notranslate nohighlight">\(\epsilon\)</span>-perturbation sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="kpnn-with-sc.html">Knowledge-primed Neural Networks (KPNNs) for single cell data</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Tutorials</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Single sample intracellular signalling network inference</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="single-sample-intracellular-signalling-network-inference">
+<h1>Single sample intracellular signalling network inference<a class="headerlink" href="#single-sample-intracellular-signalling-network-inference" title="Link to this heading">#</a></h1>
+<p>In this notebook we showcase how to use the advanced CARNIVAL implementation available in CORNETO. This implementation extends the capabilities of the original CARNIVAL method by enabling advanced modelling and injection of knowledge for hypothesis generation. We will use a dataset consisting of 6 samples of hepatic stellate cells (HSC) where three of them were activated by the cytokine Transforming growth factor (TGF-β).</p>
+<p>In the first part, we will show how to estimate Transcription Factor activities from gene expression data, following the <a class="reference external" href="https://decoupler-py.readthedocs.io/en/latest/notebooks/bulk.html">Decoupler tutorial</a> for functional analysis. Then, we will use the CARNIVAL method available in CORNETO to infer a network from TFs to receptors, assuming that we don’t really know which treatment was used.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># --- Saezlab tools ---</span>
+<span class="c1"># https://decoupler-py.readthedocs.io/</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">gzip</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">urllib.request</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">decoupler</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dc</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="c1"># https://omnipathdb.org/</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">omnipath</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">op</span>
+
+<span class="c1"># Additional packages</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="c1"># --- Additional libs ---</span>
+<span class="c1"># Pydeseq for differential expression analysis</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydeseq2.dds</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultInference</span><span class="p">,</span> <span class="n">DeseqDataSet</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydeseq2.ds</span><span class="w"> </span><span class="kn">import</span> <span class="n">DeseqStats</span>
+
+<span class="c1"># https://saezlab.github.io/</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">corneto</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cn</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">max_time</span> <span class="o">=</span> <span class="mi">300</span>
+<span class="n">seed</span> <span class="o">=</span> <span class="mi">0</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We need to download the dataset, available at GEO GSE151251</span>
+<span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE151251&amp;format=file&amp;file=GSE151251</span><span class="si">%5F</span><span class="s2">HSCs</span><span class="si">%5F</span><span class="s2">Ctrl</span><span class="si">%2E</span><span class="s2">vs</span><span class="si">%2E</span><span class="s2">HSCs</span><span class="si">%5F</span><span class="s2">TGFb</span><span class="si">%2E</span><span class="s2">counts</span><span class="si">%2E</span><span class="s2">tsv</span><span class="si">%2E</span><span class="s2">gz&quot;</span>
+
+<span class="n">adata</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tmpdirname</span><span class="p">:</span>
+    <span class="c1"># Path for the gzipped file in the temp folder</span>
+    <span class="n">gz_file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tmpdirname</span><span class="p">,</span> <span class="s2">&quot;counts.txt.gz&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Download the file</span>
+    <span class="k">with</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">url</span><span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">gz_file_path</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">out_file</span><span class="p">:</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">copyfileobj</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">out_file</span><span class="p">)</span>
+
+    <span class="c1"># Decompress the file</span>
+    <span class="n">decompressed_file_path</span> <span class="o">=</span> <span class="n">gz_file_path</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span>  <span class="c1"># Removing &#39;.gz&#39; extension</span>
+    <span class="k">with</span> <span class="n">gzip</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">gz_file_path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f_in</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">decompressed_file_path</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f_out</span><span class="p">:</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">copyfileobj</span><span class="p">(</span><span class="n">f_in</span><span class="p">,</span> <span class="n">f_out</span><span class="p">)</span>
+
+    <span class="n">adata</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">decompressed_file_path</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="mi">5</span><span class="p">:]</span><span class="o">.</span><span class="n">T</span>
+
+<span class="n">adata</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>GeneName</th>
+      <th>DDX11L1</th>
+      <th>WASH7P</th>
+      <th>MIR6859-1</th>
+      <th>MIR1302-11</th>
+      <th>MIR1302-9</th>
+      <th>FAM138A</th>
+      <th>OR4G4P</th>
+      <th>OR4G11P</th>
+      <th>OR4F5</th>
+      <th>RP11-34P13.7</th>
+      <th>...</th>
+      <th>MT-ND4</th>
+      <th>MT-TH</th>
+      <th>MT-TS2</th>
+      <th>MT-TL2</th>
+      <th>MT-ND5</th>
+      <th>MT-ND6</th>
+      <th>MT-TE</th>
+      <th>MT-CYB</th>
+      <th>MT-TT</th>
+      <th>MT-TP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>25_HSCs-Ctrl1</th>
+      <td>0</td>
+      <td>9</td>
+      <td>10</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>33</td>
+      <td>...</td>
+      <td>93192</td>
+      <td>342</td>
+      <td>476</td>
+      <td>493</td>
+      <td>54466</td>
+      <td>17184</td>
+      <td>1302</td>
+      <td>54099</td>
+      <td>258</td>
+      <td>475</td>
+    </tr>
+    <tr>
+      <th>26_HSCs-Ctrl2</th>
+      <td>0</td>
+      <td>12</td>
+      <td>14</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>66</td>
+      <td>...</td>
+      <td>114914</td>
+      <td>355</td>
+      <td>388</td>
+      <td>436</td>
+      <td>64698</td>
+      <td>21106</td>
+      <td>1492</td>
+      <td>62679</td>
+      <td>253</td>
+      <td>396</td>
+    </tr>
+    <tr>
+      <th>27_HSCs-Ctrl3</th>
+      <td>0</td>
+      <td>14</td>
+      <td>10</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>52</td>
+      <td>...</td>
+      <td>155365</td>
+      <td>377</td>
+      <td>438</td>
+      <td>480</td>
+      <td>85650</td>
+      <td>31860</td>
+      <td>2033</td>
+      <td>89559</td>
+      <td>282</td>
+      <td>448</td>
+    </tr>
+    <tr>
+      <th>31_HSCs-TGFb1</th>
+      <td>0</td>
+      <td>11</td>
+      <td>16</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>54</td>
+      <td>...</td>
+      <td>110866</td>
+      <td>373</td>
+      <td>441</td>
+      <td>481</td>
+      <td>60325</td>
+      <td>19496</td>
+      <td>1447</td>
+      <td>66283</td>
+      <td>172</td>
+      <td>341</td>
+    </tr>
+    <tr>
+      <th>32_HSCs-TGFb2</th>
+      <td>0</td>
+      <td>5</td>
+      <td>8</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>44</td>
+      <td>...</td>
+      <td>45488</td>
+      <td>239</td>
+      <td>331</td>
+      <td>343</td>
+      <td>27442</td>
+      <td>9054</td>
+      <td>624</td>
+      <td>27535</td>
+      <td>96</td>
+      <td>216</td>
+    </tr>
+    <tr>
+      <th>33_HSCs-TGFb3</th>
+      <td>0</td>
+      <td>12</td>
+      <td>5</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>32</td>
+      <td>...</td>
+      <td>70704</td>
+      <td>344</td>
+      <td>453</td>
+      <td>497</td>
+      <td>45443</td>
+      <td>13796</td>
+      <td>1077</td>
+      <td>43415</td>
+      <td>192</td>
+      <td>243</td>
+    </tr>
+  </tbody>
+</table>
+<p>6 rows × 64253 columns</p>
+</div></div></div>
+</div>
+<section id="data-preprocessing">
+<h2>Data preprocessing<a class="headerlink" href="#data-preprocessing" title="Link to this heading">#</a></h2>
+<p>We will use AnnData and PyDeseq2 to pre-process the data and compute differential expression between control and tretament</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">anndata</span><span class="w"> </span><span class="kn">import</span> <span class="n">AnnData</span>
+
+<span class="n">adata</span> <span class="o">=</span> <span class="n">AnnData</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+<span class="n">adata</span><span class="o">.</span><span class="n">var_names_make_unique</span><span class="p">()</span>
+<span class="n">adata</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>AnnData object with n_obs × n_vars = 6 × 64253
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Process treatment information</span>
+<span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s2">&quot;condition&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;control&quot;</span> <span class="k">if</span> <span class="s2">&quot;-Ctrl&quot;</span> <span class="ow">in</span> <span class="n">sample_id</span> <span class="k">else</span> <span class="s2">&quot;treatment&quot;</span> <span class="k">for</span> <span class="n">sample_id</span> <span class="ow">in</span> <span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="o">.</span><span class="n">index</span>
+<span class="p">]</span>
+
+<span class="c1"># Process sample information</span>
+<span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s2">&quot;sample_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">sample_id</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">sample_id</span> <span class="ow">in</span> <span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
+
+<span class="c1"># Visualize metadata</span>
+<span class="n">adata</span><span class="o">.</span><span class="n">obs</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>condition</th>
+      <th>sample_id</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>25_HSCs-Ctrl1</th>
+      <td>control</td>
+      <td>25</td>
+    </tr>
+    <tr>
+      <th>26_HSCs-Ctrl2</th>
+      <td>control</td>
+      <td>26</td>
+    </tr>
+    <tr>
+      <th>27_HSCs-Ctrl3</th>
+      <td>control</td>
+      <td>27</td>
+    </tr>
+    <tr>
+      <th>31_HSCs-TGFb1</th>
+      <td>treatment</td>
+      <td>31</td>
+    </tr>
+    <tr>
+      <th>32_HSCs-TGFb2</th>
+      <td>treatment</td>
+      <td>32</td>
+    </tr>
+    <tr>
+      <th>33_HSCs-TGFb3</th>
+      <td>treatment</td>
+      <td>33</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Obtain genes that pass the thresholds</span>
+<span class="n">genes</span> <span class="o">=</span> <span class="n">dc</span><span class="o">.</span><span class="n">filter_by_expr</span><span class="p">(</span>
+    <span class="n">adata</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="s2">&quot;condition&quot;</span><span class="p">,</span> <span class="n">min_count</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">min_total_count</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">large_n</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">min_prop</span><span class="o">=</span><span class="mi">1</span>
+<span class="p">)</span>
+
+<span class="c1"># Filter by these genes</span>
+<span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">[:,</span> <span class="n">genes</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">adata</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>AnnData object with n_obs × n_vars = 6 × 19713
+    obs: &#39;condition&#39;, &#39;sample_id&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Estimation of differential expression</span>
+
+<span class="n">inference</span> <span class="o">=</span> <span class="n">DefaultInference</span><span class="p">()</span>
+<span class="n">dds</span> <span class="o">=</span> <span class="n">DeseqDataSet</span><span class="p">(</span>
+    <span class="n">adata</span><span class="o">=</span><span class="n">adata</span><span class="p">,</span>
+    <span class="n">design_factors</span><span class="o">=</span><span class="s2">&quot;condition&quot;</span><span class="p">,</span>
+    <span class="n">refit_cooks</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">inference</span><span class="o">=</span><span class="n">inference</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compute LFCs</span>
+<span class="n">dds</span><span class="o">.</span><span class="n">deseq2</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Using None as control genes, passed at DeseqDataSet initialization
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">stat_res</span> <span class="o">=</span> <span class="n">DeseqStats</span><span class="p">(</span>
+    <span class="n">dds</span><span class="p">,</span> <span class="n">contrast</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;condition&quot;</span><span class="p">,</span> <span class="s2">&quot;treatment&quot;</span><span class="p">,</span> <span class="s2">&quot;control&quot;</span><span class="p">],</span> <span class="n">inference</span><span class="o">=</span><span class="n">inference</span>
+<span class="p">)</span>
+
+<span class="n">stat_res</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Log2 fold change &amp; Wald test p-value: condition treatment vs control
+                  baseMean  log2FoldChange     lfcSE      stat    pvalue  \
+GeneName                                                                   
+WASH7P           10.349784       -0.011139  0.651659 -0.017093  0.986362   
+MIR6859-1        10.114621        0.000646  0.657316  0.000982  0.999216   
+RP11-34P13.7     45.731312        0.078207  0.324393  0.241087  0.809487   
+RP11-34P13.8     29.498379       -0.065184  0.393560 -0.165626  0.868451   
+CICP27          106.032659        0.150600  0.222955  0.675471  0.499377   
+...                    ...             ...       ...       ...       ...   
+MT-ND6        17914.984474       -0.435304  0.278796 -1.561372  0.118436   
+MT-TE          1281.293477       -0.332495  0.288073 -1.154204  0.248416   
+MT-CYB        54955.449372       -0.313285  0.286900 -1.091966  0.274848   
+MT-TT           204.692221       -0.485883  0.220564 -2.202915  0.027601   
+MT-TP           345.049755       -0.460674  0.161681 -2.849280  0.004382   
+
+                  padj  
+GeneName                
+WASH7P        0.991392  
+MIR6859-1     0.999509  
+RP11-34P13.7  0.877264  
+RP11-34P13.8  0.917051  
+CICP27        0.637262  
+...                ...  
+MT-ND6        0.210925  
+MT-TE         0.380027  
+MT-CYB        0.411208  
+MT-TT         0.061573  
+MT-TP         0.012206  
+
+[19713 rows x 6 columns]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">results_df</span> <span class="o">=</span> <span class="n">stat_res</span><span class="o">.</span><span class="n">results_df</span>
+<span class="n">results_df</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>baseMean</th>
+      <th>log2FoldChange</th>
+      <th>lfcSE</th>
+      <th>stat</th>
+      <th>pvalue</th>
+      <th>padj</th>
+    </tr>
+    <tr>
+      <th>GeneName</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>WASH7P</th>
+      <td>10.349784</td>
+      <td>-0.011139</td>
+      <td>0.651659</td>
+      <td>-0.017093</td>
+      <td>0.986362</td>
+      <td>0.991392</td>
+    </tr>
+    <tr>
+      <th>MIR6859-1</th>
+      <td>10.114621</td>
+      <td>0.000646</td>
+      <td>0.657316</td>
+      <td>0.000982</td>
+      <td>0.999216</td>
+      <td>0.999509</td>
+    </tr>
+    <tr>
+      <th>RP11-34P13.7</th>
+      <td>45.731312</td>
+      <td>0.078207</td>
+      <td>0.324393</td>
+      <td>0.241087</td>
+      <td>0.809487</td>
+      <td>0.877264</td>
+    </tr>
+    <tr>
+      <th>RP11-34P13.8</th>
+      <td>29.498379</td>
+      <td>-0.065184</td>
+      <td>0.393560</td>
+      <td>-0.165626</td>
+      <td>0.868451</td>
+      <td>0.917051</td>
+    </tr>
+    <tr>
+      <th>CICP27</th>
+      <td>106.032659</td>
+      <td>0.150600</td>
+      <td>0.222955</td>
+      <td>0.675471</td>
+      <td>0.499377</td>
+      <td>0.637262</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>MT-ND6</th>
+      <td>17914.984474</td>
+      <td>-0.435304</td>
+      <td>0.278796</td>
+      <td>-1.561372</td>
+      <td>0.118436</td>
+      <td>0.210925</td>
+    </tr>
+    <tr>
+      <th>MT-TE</th>
+      <td>1281.293477</td>
+      <td>-0.332495</td>
+      <td>0.288073</td>
+      <td>-1.154204</td>
+      <td>0.248416</td>
+      <td>0.380027</td>
+    </tr>
+    <tr>
+      <th>MT-CYB</th>
+      <td>54955.449372</td>
+      <td>-0.313285</td>
+      <td>0.286900</td>
+      <td>-1.091966</td>
+      <td>0.274848</td>
+      <td>0.411208</td>
+    </tr>
+    <tr>
+      <th>MT-TT</th>
+      <td>204.692221</td>
+      <td>-0.485883</td>
+      <td>0.220564</td>
+      <td>-2.202915</td>
+      <td>0.027601</td>
+      <td>0.061573</td>
+    </tr>
+    <tr>
+      <th>MT-TP</th>
+      <td>345.049755</td>
+      <td>-0.460674</td>
+      <td>0.161681</td>
+      <td>-2.849280</td>
+      <td>0.004382</td>
+      <td>0.012206</td>
+    </tr>
+  </tbody>
+</table>
+<p>19713 rows × 6 columns</p>
+</div></div></div>
+</div>
+</section>
+<section id="prior-knowledge-with-decoupler-and-omnipath">
+<h2>Prior knowledge with Decoupler and Omnipath<a class="headerlink" href="#prior-knowledge-with-decoupler-and-omnipath" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Retrieve CollecTRI gene regulatory network (through Omnipath)</span>
+<span class="n">collectri</span> <span class="o">=</span> <span class="n">dc</span><span class="o">.</span><span class="n">get_collectri</span><span class="p">(</span><span class="n">organism</span><span class="o">=</span><span class="s2">&quot;human&quot;</span><span class="p">,</span> <span class="n">split_complexes</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">collectri</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>source</th>
+      <th>target</th>
+      <th>weight</th>
+      <th>PMID</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>MYC</td>
+      <td>TERT</td>
+      <td>1</td>
+      <td>10022128;10491298;10606235;10637317;10723141;1...</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>SPI1</td>
+      <td>BGLAP</td>
+      <td>1</td>
+      <td>10022617</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>SMAD3</td>
+      <td>JUN</td>
+      <td>1</td>
+      <td>10022869;12374795</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>SMAD4</td>
+      <td>JUN</td>
+      <td>1</td>
+      <td>10022869;12374795</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>STAT5A</td>
+      <td>IL2</td>
+      <td>1</td>
+      <td>10022878;11435608;17182565;17911616;22854263;2...</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>43173</th>
+      <td>NFKB</td>
+      <td>hsa-miR-143-3p</td>
+      <td>1</td>
+      <td>19472311</td>
+    </tr>
+    <tr>
+      <th>43174</th>
+      <td>AP1</td>
+      <td>hsa-miR-206</td>
+      <td>1</td>
+      <td>19721712</td>
+    </tr>
+    <tr>
+      <th>43175</th>
+      <td>NFKB</td>
+      <td>hsa-miR-21-5p</td>
+      <td>1</td>
+      <td>20813833;22387281</td>
+    </tr>
+    <tr>
+      <th>43176</th>
+      <td>NFKB</td>
+      <td>hsa-miR-224-5p</td>
+      <td>1</td>
+      <td>23474441;23988648</td>
+    </tr>
+    <tr>
+      <th>43177</th>
+      <td>AP1</td>
+      <td>hsa-miR-144</td>
+      <td>1</td>
+      <td>23546882</td>
+    </tr>
+  </tbody>
+</table>
+<p>43178 rows × 4 columns</p>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mat</span> <span class="o">=</span> <span class="n">results_df</span><span class="p">[[</span><span class="s2">&quot;stat&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;stat&quot;</span><span class="p">:</span> <span class="s2">&quot;treatment.vs.control&quot;</span><span class="p">})</span>
+<span class="n">mat</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>GeneName</th>
+      <th>WASH7P</th>
+      <th>MIR6859-1</th>
+      <th>RP11-34P13.7</th>
+      <th>RP11-34P13.8</th>
+      <th>CICP27</th>
+      <th>FO538757.2</th>
+      <th>AP006222.2</th>
+      <th>RP4-669L17.10</th>
+      <th>MTND1P23</th>
+      <th>MTND2P28</th>
+      <th>...</th>
+      <th>MT-ND4</th>
+      <th>MT-TH</th>
+      <th>MT-TS2</th>
+      <th>MT-TL2</th>
+      <th>MT-ND5</th>
+      <th>MT-ND6</th>
+      <th>MT-TE</th>
+      <th>MT-CYB</th>
+      <th>MT-TT</th>
+      <th>MT-TP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>treatment.vs.control</th>
+      <td>-0.017093</td>
+      <td>0.000982</td>
+      <td>0.241087</td>
+      <td>-0.165626</td>
+      <td>0.675471</td>
+      <td>-1.646005</td>
+      <td>2.042031</td>
+      <td>-0.376975</td>
+      <td>-1.994364</td>
+      <td>-0.498507</td>
+      <td>...</td>
+      <td>-1.435973</td>
+      <td>0.75501</td>
+      <td>1.139089</td>
+      <td>1.167108</td>
+      <td>-1.242582</td>
+      <td>-1.561372</td>
+      <td>-1.154204</td>
+      <td>-1.091966</td>
+      <td>-2.202915</td>
+      <td>-2.84928</td>
+    </tr>
+  </tbody>
+</table>
+<p>1 rows × 19713 columns</p>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tf_acts</span><span class="p">,</span> <span class="n">tf_pvals</span> <span class="o">=</span> <span class="n">dc</span><span class="o">.</span><span class="n">run_ulm</span><span class="p">(</span><span class="n">mat</span><span class="o">=</span><span class="n">mat</span><span class="p">,</span> <span class="n">net</span><span class="o">=</span><span class="n">collectri</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">tf_acts</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Running ulm on mat with 1 samples and 19713 targets for 655 sources.
+</pre></div>
+</div>
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>ABL1</th>
+      <th>AHR</th>
+      <th>AIRE</th>
+      <th>AP1</th>
+      <th>APEX1</th>
+      <th>AR</th>
+      <th>ARID1A</th>
+      <th>ARID3A</th>
+      <th>ARID3B</th>
+      <th>ARID4A</th>
+      <th>...</th>
+      <th>ZNF362</th>
+      <th>ZNF382</th>
+      <th>ZNF384</th>
+      <th>ZNF395</th>
+      <th>ZNF436</th>
+      <th>ZNF699</th>
+      <th>ZNF76</th>
+      <th>ZNF804A</th>
+      <th>ZNF91</th>
+      <th>ZXDC</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>treatment.vs.control</th>
+      <td>-2.179559</td>
+      <td>-1.561975</td>
+      <td>-1.822945</td>
+      <td>-1.981524</td>
+      <td>-2.67045</td>
+      <td>0.21549</td>
+      <td>-3.931481</td>
+      <td>0.870412</td>
+      <td>1.648694</td>
+      <td>-0.611922</td>
+      <td>...</td>
+      <td>-0.062613</td>
+      <td>2.121308</td>
+      <td>1.886897</td>
+      <td>-1.14056</td>
+      <td>-1.571203</td>
+      <td>-1.276569</td>
+      <td>-0.116815</td>
+      <td>3.373271</td>
+      <td>0.86042</td>
+      <td>-2.742784</td>
+    </tr>
+  </tbody>
+</table>
+<p>1 rows × 655 columns</p>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dc</span><span class="o">.</span><span class="n">plot_barplot</span><span class="p">(</span>
+    <span class="n">acts</span><span class="o">=</span><span class="n">tf_acts</span><span class="p">,</span> <span class="n">contrast</span><span class="o">=</span><span class="s2">&quot;treatment.vs.control&quot;</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">vertical</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/648143e649b52a6961b477c13423ac9189e73f988882b00774a85370ef910300.png" src="../_images/648143e649b52a6961b477c13423ac9189e73f988882b00774a85370ef910300.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We obtain ligand-receptor interactions from Omnipath, and we keep only the receptors</span>
+<span class="c1"># This is our list of a prior potential receptors from which we will infer the network</span>
+<span class="n">unique_receptors</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
+    <span class="n">op</span><span class="o">.</span><span class="n">interactions</span><span class="o">.</span><span class="n">LigRecExtra</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">genesymbols</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span>
+        <span class="s2">&quot;target_genesymbol&quot;</span>
+    <span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+<span class="p">)</span>
+<span class="nb">len</span><span class="p">(</span><span class="n">unique_receptors</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1201
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_de_receptors</span> <span class="o">=</span> <span class="n">results_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">results_df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">unique_receptors</span><span class="p">)]</span>
+<span class="n">df_de_receptors</span> <span class="o">=</span> <span class="n">df_de_receptors</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s2">&quot;stat&quot;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">df_de_receptors</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s2">&quot;log2FoldChange&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;stat&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Axes: xlabel=&#39;log2FoldChange&#39;, ylabel=&#39;stat&#39;&gt;
+</pre></div>
+</div>
+<img alt="../_images/37770b4040d2bdd8a7f8798e5782b7369dc342db14c162c06ef2fc5aa03862da.png" src="../_images/37770b4040d2bdd8a7f8798e5782b7369dc342db14c162c06ef2fc5aa03862da.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We will take the top 20 receptors that increased the expression after treatment</span>
+<span class="n">df_top_receptors</span> <span class="o">=</span> <span class="n">df_de_receptors</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
+<span class="n">df_top_receptors</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>baseMean</th>
+      <th>log2FoldChange</th>
+      <th>lfcSE</th>
+      <th>stat</th>
+      <th>pvalue</th>
+      <th>padj</th>
+    </tr>
+    <tr>
+      <th>GeneName</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>CDH6</th>
+      <td>28262.296983</td>
+      <td>3.019806</td>
+      <td>0.077448</td>
+      <td>38.991476</td>
+      <td>0.000000e+00</td>
+      <td>0.000000e+00</td>
+    </tr>
+    <tr>
+      <th>CRLF1</th>
+      <td>7919.672343</td>
+      <td>3.341645</td>
+      <td>0.088026</td>
+      <td>37.962070</td>
+      <td>0.000000e+00</td>
+      <td>0.000000e+00</td>
+    </tr>
+    <tr>
+      <th>FZD8</th>
+      <td>2719.781498</td>
+      <td>3.843017</td>
+      <td>0.102718</td>
+      <td>37.413242</td>
+      <td>2.380145e-306</td>
+      <td>2.469463e-303</td>
+    </tr>
+    <tr>
+      <th>CDH2</th>
+      <td>7111.507547</td>
+      <td>2.809462</td>
+      <td>0.081958</td>
+      <td>34.279439</td>
+      <td>1.589168e-257</td>
+      <td>9.213903e-255</td>
+    </tr>
+    <tr>
+      <th>DYSF</th>
+      <td>441.449511</td>
+      <td>4.593250</td>
+      <td>0.182196</td>
+      <td>25.210487</td>
+      <td>3.073961e-140</td>
+      <td>5.362566e-138</td>
+    </tr>
+    <tr>
+      <th>INHBA</th>
+      <td>24329.359641</td>
+      <td>2.598613</td>
+      <td>0.104350</td>
+      <td>24.902821</td>
+      <td>6.934669e-137</td>
+      <td>1.139193e-134</td>
+    </tr>
+    <tr>
+      <th>CELSR1</th>
+      <td>492.324435</td>
+      <td>3.517315</td>
+      <td>0.154487</td>
+      <td>22.767746</td>
+      <td>9.574546e-115</td>
+      <td>1.258287e-112</td>
+    </tr>
+    <tr>
+      <th>PDGFC</th>
+      <td>5481.167075</td>
+      <td>1.894858</td>
+      <td>0.083837</td>
+      <td>22.601620</td>
+      <td>4.177614e-113</td>
+      <td>5.453862e-111</td>
+    </tr>
+    <tr>
+      <th>VDR</th>
+      <td>1450.304353</td>
+      <td>2.555008</td>
+      <td>0.116797</td>
+      <td>21.875720</td>
+      <td>4.424761e-106</td>
+      <td>5.286382e-104</td>
+    </tr>
+    <tr>
+      <th>HHIP</th>
+      <td>379.064034</td>
+      <td>6.005841</td>
+      <td>0.287363</td>
+      <td>20.899827</td>
+      <td>5.373904e-97</td>
+      <td>5.323406e-95</td>
+    </tr>
+    <tr>
+      <th>IGF1</th>
+      <td>361.189076</td>
+      <td>6.462657</td>
+      <td>0.311785</td>
+      <td>20.727921</td>
+      <td>1.939904e-95</td>
+      <td>1.874575e-93</td>
+    </tr>
+    <tr>
+      <th>NPTN</th>
+      <td>12640.971164</td>
+      <td>1.418676</td>
+      <td>0.079385</td>
+      <td>17.870802</td>
+      <td>1.991103e-71</td>
+      <td>1.226582e-69</td>
+    </tr>
+    <tr>
+      <th>EFNB2</th>
+      <td>3320.076805</td>
+      <td>1.560331</td>
+      <td>0.087871</td>
+      <td>17.757127</td>
+      <td>1.518082e-70</td>
+      <td>9.096034e-69</td>
+    </tr>
+    <tr>
+      <th>ITGB3</th>
+      <td>6530.314159</td>
+      <td>1.364766</td>
+      <td>0.078800</td>
+      <td>17.319326</td>
+      <td>3.362752e-67</td>
+      <td>1.851674e-65</td>
+    </tr>
+    <tr>
+      <th>TGFB1</th>
+      <td>8948.243694</td>
+      <td>1.335271</td>
+      <td>0.077647</td>
+      <td>17.196617</td>
+      <td>2.814963e-66</td>
+      <td>1.524488e-64</td>
+    </tr>
+    <tr>
+      <th>IL21R</th>
+      <td>259.221468</td>
+      <td>3.227903</td>
+      <td>0.192069</td>
+      <td>16.805944</td>
+      <td>2.207685e-63</td>
+      <td>1.130392e-61</td>
+    </tr>
+    <tr>
+      <th>ITGA1</th>
+      <td>26223.832504</td>
+      <td>1.310351</td>
+      <td>0.079861</td>
+      <td>16.407981</td>
+      <td>1.676899e-60</td>
+      <td>8.023475e-59</td>
+    </tr>
+    <tr>
+      <th>FAP</th>
+      <td>7231.157483</td>
+      <td>1.750901</td>
+      <td>0.115214</td>
+      <td>15.196911</td>
+      <td>3.706936e-52</td>
+      <td>1.488286e-50</td>
+    </tr>
+    <tr>
+      <th>EGF</th>
+      <td>144.262044</td>
+      <td>3.733297</td>
+      <td>0.251588</td>
+      <td>14.838931</td>
+      <td>8.205292e-50</td>
+      <td>3.063465e-48</td>
+    </tr>
+    <tr>
+      <th>ITGA11</th>
+      <td>12471.033668</td>
+      <td>3.673199</td>
+      <td>0.250314</td>
+      <td>14.674378</td>
+      <td>9.407359e-49</td>
+      <td>3.377910e-47</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="inferring-intracellular-signalling-network-with-carnival-and-corneto">
+<h2>Inferring intracellular signalling network with CARNIVAL and CORNETO<a class="headerlink" href="#inferring-intracellular-signalling-network-with-carnival-and-corneto" title="Link to this heading">#</a></h2>
+<p>CORNETO is a unified framework for knowledge-driven network inference. It includes a very flexible implementation of CARNIVAL that expands its original capabilities. We will see how to use it under different assumptions to extract a network from a prior knowledge network and a set of potential receptors + our estimated TFs</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cn</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"></div><div class="output text_html">
+        <table style='background-color:rgba(0, 0, 0, 0);'>
+        <tr>
+            <td style="min-width:85px">
+                <img src="data:image/jpeg;base64,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" style="width: 100%; max-width:100px;" />
+            </td>
+            <td>
+            <table>
+                <tr><td>Installed version:</td><td style='text-align:left'>v1.0.0.dev5 (latest stable: v1.0.0-alpha)</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.6.4, PICOS v2.6.0</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CLARABEL, CVXOPT, GLOP, GLPK, GLPK_MI, GUROBI, HIGHS, OSQP, PDLP, PROXQP, SCIP, SCIPY, SCS</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.3</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/Users/pablorodriguezmier/Documents/work/repos/pablormier/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href=https://github.com/saezlab/corneto>https://github.com/saezlab/corneto</a></td></tr>
+            </table>
+            </td>
+        </tr>
+        </table></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods.future</span><span class="w"> </span><span class="kn">import</span> <span class="n">CarnivalFlow</span>
+
+<span class="n">CarnivalFlow</span><span class="o">.</span><span class="n">show_citations</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><ul><li><strong>Pablo Rodriguez-Mier, Martin Garrido-Rodriguez, Attila Gabor, Julio Saez-Rodriguez</strong>. <em>Unified knowledge-driven network inference from omics data</em>. <em>bioRxiv</em>, pp. 10 (2024).</li><li><strong>Anika Liu, Panuwat Trairatphisan, Enio Gjerga, Athanasios Didangelos, Jonathan Barratt, Julio Saez-Rodriguez</strong>. <em>From expression footprints to causal pathways: contextualizing large signaling networks with CARNIVAL</em>. <em>NPJ systems biology and applications</em>, Vol. 5, No. 1, pp. 40 (2019).</li></ul></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We get only interactions from SIGNOR http://signor.uniroma2.it/</span>
+<span class="n">pkn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">interactions</span><span class="o">.</span><span class="n">OmniPath</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">databases</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;SIGNOR&quot;</span><span class="p">],</span> <span class="n">genesymbols</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">pkn</span> <span class="o">=</span> <span class="n">pkn</span><span class="p">[</span><span class="n">pkn</span><span class="o">.</span><span class="n">consensus_direction</span> <span class="o">==</span> <span class="kc">True</span><span class="p">]</span>
+<span class="n">pkn</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>source</th>
+      <th>target</th>
+      <th>source_genesymbol</th>
+      <th>target_genesymbol</th>
+      <th>is_directed</th>
+      <th>is_stimulation</th>
+      <th>is_inhibition</th>
+      <th>consensus_direction</th>
+      <th>consensus_stimulation</th>
+      <th>consensus_inhibition</th>
+      <th>curation_effort</th>
+      <th>references</th>
+      <th>sources</th>
+      <th>n_sources</th>
+      <th>n_primary_sources</th>
+      <th>n_references</th>
+      <th>references_stripped</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Q13976</td>
+      <td>Q13507</td>
+      <td>PRKG1</td>
+      <td>TRPC3</td>
+      <td>True</td>
+      <td>False</td>
+      <td>True</td>
+      <td>True</td>
+      <td>False</td>
+      <td>True</td>
+      <td>9</td>
+      <td>HPRD:14983059;KEA:14983059;ProtMapper:14983059...</td>
+      <td>HPRD;HPRD_KEA;HPRD_MIMP;KEA;MIMP;PhosphoPoint;...</td>
+      <td>15</td>
+      <td>8</td>
+      <td>2</td>
+      <td>14983059;16331690</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Q13976</td>
+      <td>Q9HCX4</td>
+      <td>PRKG1</td>
+      <td>TRPC7</td>
+      <td>True</td>
+      <td>True</td>
+      <td>False</td>
+      <td>True</td>
+      <td>True</td>
+      <td>False</td>
+      <td>3</td>
+      <td>SIGNOR:21402151;TRIP:21402151;iPTMnet:21402151</td>
+      <td>SIGNOR;TRIP;iPTMnet</td>
+      <td>3</td>
+      <td>3</td>
+      <td>1</td>
+      <td>21402151</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Q13438</td>
+      <td>Q9HBA0</td>
+      <td>OS9</td>
+      <td>TRPV4</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>3</td>
+      <td>HPRD:17932042;SIGNOR:17932042;TRIP:17932042</td>
+      <td>HPRD;SIGNOR;TRIP</td>
+      <td>3</td>
+      <td>3</td>
+      <td>1</td>
+      <td>17932042</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>P18031</td>
+      <td>Q9H1D0</td>
+      <td>PTPN1</td>
+      <td>TRPV6</td>
+      <td>True</td>
+      <td>False</td>
+      <td>True</td>
+      <td>True</td>
+      <td>False</td>
+      <td>True</td>
+      <td>11</td>
+      <td>DEPOD:15894168;DEPOD:17197020;HPRD:15894168;In...</td>
+      <td>DEPOD;HPRD;IntAct;Lit-BM-17;SIGNOR;SPIKE_LC;TRIP</td>
+      <td>7</td>
+      <td>6</td>
+      <td>2</td>
+      <td>15894168;17197020</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>P63244</td>
+      <td>Q9BX84</td>
+      <td>RACK1</td>
+      <td>TRPM6</td>
+      <td>True</td>
+      <td>False</td>
+      <td>True</td>
+      <td>True</td>
+      <td>False</td>
+      <td>True</td>
+      <td>2</td>
+      <td>SIGNOR:18258429;TRIP:18258429</td>
+      <td>SIGNOR;TRIP</td>
+      <td>2</td>
+      <td>2</td>
+      <td>1</td>
+      <td>18258429</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pkn</span><span class="p">[</span><span class="s2">&quot;interaction&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pkn</span><span class="p">[</span><span class="s2">&quot;is_stimulation&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="o">-</span> <span class="n">pkn</span><span class="p">[</span><span class="s2">&quot;is_inhibition&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
+    <span class="nb">int</span>
+<span class="p">)</span>
+<span class="n">sel_pkn</span> <span class="o">=</span> <span class="n">pkn</span><span class="p">[[</span><span class="s2">&quot;source_genesymbol&quot;</span><span class="p">,</span> <span class="s2">&quot;interaction&quot;</span><span class="p">,</span> <span class="s2">&quot;target_genesymbol&quot;</span><span class="p">]]</span>
+<span class="n">sel_pkn</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>source_genesymbol</th>
+      <th>interaction</th>
+      <th>target_genesymbol</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>PRKG1</td>
+      <td>-1</td>
+      <td>TRPC3</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>PRKG1</td>
+      <td>1</td>
+      <td>TRPC7</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>OS9</td>
+      <td>0</td>
+      <td>TRPV4</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>PTPN1</td>
+      <td>-1</td>
+      <td>TRPV6</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>RACK1</td>
+      <td>-1</td>
+      <td>TRPM6</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>61542</th>
+      <td>APC_PUF60_SIAH1_SKP1_TBL1X</td>
+      <td>-1</td>
+      <td>CTNNB1</td>
+    </tr>
+    <tr>
+      <th>61543</th>
+      <td>MAP2K6</td>
+      <td>1</td>
+      <td>MAPK10</td>
+    </tr>
+    <tr>
+      <th>61544</th>
+      <td>PRKAA1</td>
+      <td>1</td>
+      <td>TP53</td>
+    </tr>
+    <tr>
+      <th>61545</th>
+      <td>CNOT1_CNOT10_CNOT11_CNOT2_CNOT3_CNOT4_CNOT6_CN...</td>
+      <td>-1</td>
+      <td>NANOS2</td>
+    </tr>
+    <tr>
+      <th>61546</th>
+      <td>WNT16</td>
+      <td>1</td>
+      <td>FZD3</td>
+    </tr>
+  </tbody>
+</table>
+<p>60921 rows × 3 columns</p>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We create the CORNETO graph by importing the edges and interaction</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">corneto.graph</span><span class="w"> </span><span class="kn">import</span> <span class="n">Graph</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">corneto.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_graph_from_sif_tuples</span>
+<span class="n">G</span> <span class="o">=</span> <span class="n">load_graph_from_sif_tuples</span><span class="p">(</span>
+    <span class="p">[(</span><span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">sel_pkn</span><span class="o">.</span><span class="n">iterrows</span><span class="p">()</span> <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">]</span>
+<span class="p">)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(5442, 60034)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># As measurements, we take the estimated TFs, we will filter out TFs with p-val &gt; 0.001</span>
+<span class="n">significant_tfs</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">tf_acts</span><span class="p">[</span><span class="n">tf_pvals</span> <span class="o">&lt;=</span> <span class="mf">0.001</span><span class="p">]</span>
+    <span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
+    <span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s2">&quot;treatment.vs.control&quot;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="p">)</span>
+<span class="n">significant_tfs</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>treatment.vs.control</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>SRF</th>
+      <td>7.402565</td>
+    </tr>
+    <tr>
+      <th>MYOCD</th>
+      <td>7.366407</td>
+    </tr>
+    <tr>
+      <th>SMAD3</th>
+      <td>7.205507</td>
+    </tr>
+    <tr>
+      <th>TCF21</th>
+      <td>6.178324</td>
+    </tr>
+    <tr>
+      <th>ZEB2</th>
+      <td>5.804123</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>SPI1</th>
+      <td>-5.442575</td>
+    </tr>
+    <tr>
+      <th>NR4A3</th>
+      <td>-5.745412</td>
+    </tr>
+    <tr>
+      <th>NR1H4</th>
+      <td>-5.917429</td>
+    </tr>
+    <tr>
+      <th>SKIL</th>
+      <td>-7.463470</td>
+    </tr>
+    <tr>
+      <th>IRF1</th>
+      <td>-9.437411</td>
+    </tr>
+  </tbody>
+</table>
+<p>85 rows × 1 columns</p>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We keep only the ones in the PKN graph</span>
+<span class="n">measurements</span> <span class="o">=</span> <span class="n">significant_tfs</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">significant_tfs</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">V</span><span class="p">)]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()[</span>
+    <span class="s2">&quot;treatment.vs.control&quot;</span>
+<span class="p">]</span>
+<span class="n">measurements</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;SRF&#39;: 7.402564525604248,
+ &#39;MYOCD&#39;: 7.36640739440918,
+ &#39;SMAD3&#39;: 7.205506801605225,
+ &#39;ZEB2&#39;: 5.8041229248046875,
+ &#39;SMAD2&#39;: 5.7937397956848145,
+ &#39;JUNB&#39;: 5.62872314453125,
+ &#39;HMGA2&#39;: 4.934858322143555,
+ &#39;POU3F1&#39;: 4.918986797332764,
+ &#39;RORA&#39;: 4.76252555847168,
+ &#39;SMAD4&#39;: 4.730061054229736,
+ &#39;MEF2A&#39;: 4.285721302032471,
+ &#39;FGF2&#39;: 4.222509860992432,
+ &#39;FOSL1&#39;: 3.9362800121307373,
+ &#39;SOX4&#39;: 3.92212176322937,
+ &#39;NCOA1&#39;: 3.8224685192108154,
+ &#39;ASXL1&#39;: 3.7563669681549072,
+ &#39;SFPQ&#39;: 3.7415316104888916,
+ &#39;FOSB&#39;: 3.7254574298858643,
+ &#39;SP7&#39;: 3.695308208465576,
+ &#39;CREB3&#39;: 3.6301043033599854,
+ &#39;NFATC3&#39;: 3.5302765369415283,
+ &#39;MEIS2&#39;: 3.4903156757354736,
+ &#39;ZNF804A&#39;: 3.3732707500457764,
+ &#39;TAL1&#39;: 3.353253126144409,
+ &#39;DLX5&#39;: 3.33522367477417,
+ &#39;DLX2&#39;: -3.2915139198303223,
+ &#39;CDX2&#39;: -3.296456813812256,
+ &#39;CEBPG&#39;: -3.307525396347046,
+ &#39;MAFA&#39;: -3.3084702491760254,
+ &#39;NFIB&#39;: -3.3599045276641846,
+ &#39;NFKB1&#39;: -3.4378252029418945,
+ &#39;RXRB&#39;: -3.4568121433258057,
+ &#39;STAT5A&#39;: -3.5282504558563232,
+ &#39;MSX2&#39;: -3.5356292724609375,
+ &#39;PLAGL1&#39;: -3.6181154251098633,
+ &#39;TP53&#39;: -3.6528894901275635,
+ &#39;GFI1&#39;: -3.6557135581970215,
+ &#39;NKX2-1&#39;: -3.6595804691314697,
+ &#39;MECP2&#39;: -3.7389347553253174,
+ &#39;CEBPA&#39;: -3.775284767150879,
+ &#39;CEBPB&#39;: -3.8758962154388428,
+ &#39;SMAD6&#39;: -3.8772501945495605,
+ &#39;WWTR1&#39;: -3.9811408519744873,
+ &#39;SMAD5&#39;: -4.017445087432861,
+ &#39;CIITA&#39;: -4.1478800773620605,
+ &#39;NFKBIB&#39;: -4.171163558959961,
+ &#39;PITX3&#39;: -4.213423728942871,
+ &#39;REL&#39;: -4.263958930969238,
+ &#39;IRF3&#39;: -4.2882513999938965,
+ &#39;PITX1&#39;: -4.355759620666504,
+ &#39;KLF8&#39;: -4.4818549156188965,
+ &#39;DNMT3A&#39;: -4.6564249992370605,
+ &#39;RELB&#39;: -4.845225811004639,
+ &#39;NFE2L2&#39;: -4.9314775466918945,
+ &#39;MECOM&#39;: -4.961089611053467,
+ &#39;STAT1&#39;: -5.2104878425598145,
+ &#39;HOXC6&#39;: -5.278722763061523,
+ &#39;IRF2&#39;: -5.287947177886963,
+ &#39;KLF11&#39;: -5.2895355224609375,
+ &#39;SPI1&#39;: -5.442574501037598,
+ &#39;NR4A3&#39;: -5.745412349700928,
+ &#39;NR1H4&#39;: -5.917429447174072,
+ &#39;SKIL&#39;: -7.463469505310059,
+ &#39;IRF1&#39;: -9.437411308288574}
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We will infer the direction, so for the inputs, we use a value of 0 (=unknown direction)</span>
+<span class="n">inputs</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">df_top_receptors</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">V</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">}</span>
+<span class="n">inputs</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;CDH6&#39;: 0,
+ &#39;CRLF1&#39;: 0,
+ &#39;FZD8&#39;: 0,
+ &#39;CDH2&#39;: 0,
+ &#39;INHBA&#39;: 0,
+ &#39;VDR&#39;: 0,
+ &#39;IGF1&#39;: 0,
+ &#39;EFNB2&#39;: 0,
+ &#39;ITGB3&#39;: 0,
+ &#39;TGFB1&#39;: 0,
+ &#39;IL21R&#39;: 0,
+ &#39;EGF&#39;: 0,
+ &#39;ITGA11&#39;: 0}
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create the dataset in standard format</span>
+<span class="n">carnival_data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">inp</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">inputs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">carnival_data</span><span class="p">[</span><span class="n">inp</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">v</span><span class="p">,</span> <span class="n">role</span><span class="o">=</span><span class="s2">&quot;input&quot;</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="s2">&quot;vertex&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">out</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">measurements</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">carnival_data</span><span class="p">[</span><span class="n">out</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">v</span><span class="p">,</span> <span class="n">role</span><span class="o">=</span><span class="s2">&quot;output&quot;</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="s2">&quot;vertex&quot;</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Data</span><span class="o">.</span><span class="n">from_cdict</span><span class="p">({</span><span class="s2">&quot;sample1&quot;</span><span class="p">:</span> <span class="n">carnival_data</span><span class="p">})</span>
+<span class="n">data</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Data(n_samples=1, n_feats=[77])
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">carnival</span> <span class="o">=</span> <span class="n">CarnivalFlow</span><span class="p">(</span><span class="n">lambda_reg</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">P</span> <span class="o">=</span> <span class="n">carnival</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+<span class="n">P</span><span class="o">.</span><span class="n">expr</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Unreachable vertices for sample: 0
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;edge_activates&#39;: edge_activates: Variable((3374, 1), edge_activates, boolean=True),
+ &#39;const0x1ed29ddbdc597523&#39;: const0x1ed29ddbdc597523: Constant(CONSTANT, NONNEGATIVE, (970, 3374)),
+ &#39;_flow&#39;: _flow: Variable((3374,), _flow),
+ &#39;edge_inhibits&#39;: edge_inhibits: Variable((3374, 1), edge_inhibits, boolean=True),
+ &#39;const0x70b316d8f961cc5&#39;: const0x70b316d8f961cc5: Constant(CONSTANT, NONNEGATIVE, (970, 3374)),
+ &#39;_dag_layer&#39;: _dag_layer: Variable((970, 1), _dag_layer),
+ &#39;flow&#39;: _flow: Variable((3374,), _flow),
+ &#39;vertex_value&#39;: Expression(AFFINE, UNKNOWN, (970, 1)),
+ &#39;vertex_activated&#39;: Expression(AFFINE, NONNEGATIVE, (970, 1)),
+ &#39;vertex_inhibited&#39;: Expression(AFFINE, NONNEGATIVE, (970, 1)),
+ &#39;edge_value&#39;: Expression(AFFINE, UNKNOWN, (3374, 1)),
+ &#39;edge_has_signal&#39;: Expression(AFFINE, NONNEGATIVE, (3374, 1))}
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;highs&quot;</span><span class="p">,</span> <span class="n">max_seconds</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">1</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>===============================================================================
+                                     CVXPY                                     
+                                     v1.6.4                                    
+===============================================================================
+(CVXPY) Apr 16 11:41:50 AM: Your problem has 11092 variables, 31652 constraints, and 1 parameters.
+(CVXPY) Apr 16 11:41:50 AM: It is compliant with the following grammars: DCP, DQCP
+(CVXPY) Apr 16 11:41:50 AM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
+(CVXPY) Apr 16 11:41:50 AM: Your problem is compiled with the CPP canonicalization backend.
+-------------------------------------------------------------------------------
+                                  Compilation                                  
+-------------------------------------------------------------------------------
+(CVXPY) Apr 16 11:41:50 AM: Compiling problem (target solver=HIGHS).
+(CVXPY) Apr 16 11:41:50 AM: Reduction chain: Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; HIGHS
+(CVXPY) Apr 16 11:41:50 AM: Applying reduction Dcp2Cone
+(CVXPY) Apr 16 11:41:50 AM: Applying reduction CvxAttr2Constr
+(CVXPY) Apr 16 11:41:50 AM: Applying reduction ConeMatrixStuffing
+(CVXPY) Apr 16 11:41:50 AM: Applying reduction HIGHS
+(CVXPY) Apr 16 11:41:50 AM: Finished problem compilation (took 5.614e-02 seconds).
+(CVXPY) Apr 16 11:41:50 AM: (Subsequent compilations of this problem, using the same arguments, should take less time.)
+-------------------------------------------------------------------------------
+                                Numerical solver                               
+-------------------------------------------------------------------------------
+(CVXPY) Apr 16 11:41:50 AM: Invoking solver HIGHS  to obtain a solution.
+Running HiGHS 1.10.0 (git hash: fd86653): Copyright (c) 2025 HiGHS under MIT licence terms
+MIP  has 31652 rows; 11092 cols; 111482 nonzeros; 6748 integer variables (6748 binary)
+Coefficient ranges:
+  Matrix [1e+00, 1e+03]
+  Cost   [5e-01, 8e+00]
+  Bound  [1e+00, 1e+00]
+  RHS    [1e+00, 1e+03]
+Presolving model
+18338 rows, 10622 cols, 93928 nonzeros  0s
+13396 rows, 9435 cols, 71834 nonzeros  0s
+13024 rows, 9360 cols, 71388 nonzeros  0s
+
+Solving MIP model with:
+   13024 rows
+   9360 cols (5850 binary, 0 integer, 0 implied int., 3510 continuous)
+   71388 nonzeros
+
+Src: B =&gt; Branching; C =&gt; Central rounding; F =&gt; Feasibility pump; H =&gt; Heuristic; L =&gt; Sub-MIP;
+     P =&gt; Empty MIP; R =&gt; Randomized rounding; S =&gt; Solve LP; T =&gt; Evaluate node; U =&gt; Unbounded;
+     z =&gt; Trivial zero; l =&gt; Trivial lower; u =&gt; Trivial upper; p =&gt; Trivial point; X =&gt; User solution
+
+        Nodes      |    B&amp;B Tree     |            Objective Bounds              |  Dynamic Constraints |       Work      
+Src  Proc. InQueue |  Leaves   Expl. | BestBound       BestSol              Gap |   Cuts   InLp Confl. | LpIters     Time
+
+         0       0         0   0.00%   -298.7062635    inf                  inf        0      0      0         0     0.3s
+         0       0         0   0.00%   -172.2083844    inf                  inf        0      0      5      1707     0.4s
+ C       0       0         0   0.00%   -167.0036403    0                  Large      501     37     10      2237     1.2s
+ L       0       0         0   0.00%   -166.1703069    -165.1703069       0.61%     1959    117     10      8802     3.9s
+
+9.2% inactive integer columns, restarting
+Model after restart has 12184 rows, 8682 cols (5196 bin., 0 int., 0 impl., 3486 cont.), and 63464 nonzeros
+
+         0       0         0   0.00%   -166.1703069    -165.1703069       0.61%       44      0      0      9812     4.0s
+         0       0         0   0.00%   -166.1703069    -165.1703069       0.61%       44     28      4     11329     4.1s
+
+Symmetry detection completed in 0.0s
+Found 29 generator(s)
+
+         8       0         4 100.00%   -165.1703069    -165.1703069       0.00%      902     56     16     21107     7.1s
+
+Solving report
+  Status            Optimal
+  Primal bound      -165.170306921
+  Dual bound        -165.170306921
+  Gap               0% (tolerance: 0.01%)
+  P-D integral      0.0195956875377
+  Solution status   feasible
+                    -165.170306921 (objective)
+                    0 (bound viol.)
+                    0 (int. viol.)
+                    0 (row viol.)
+  Timing            7.10 (total)
+                    0.00 (presolve)
+                    0.00 (solve)
+                    0.00 (postsolve)
+  Max sub-MIP depth 8
+  Nodes             8
+  Repair LPs        0 (0 feasible; 0 iterations)
+  LP iterations     21107 (total)
+                    428 (strong br.)
+                    1865 (separation)
+                    15487 (heuristics)
+-------------------------------------------------------------------------------
+                                    Summary                                    
+-------------------------------------------------------------------------------
+(CVXPY) Apr 16 11:41:57 AM: Problem status: optimal
+(CVXPY) Apr 16 11:41:57 AM: Optimal value: 5.302e+01
+(CVXPY) Apr 16 11:41:57 AM: Compilation took 5.614e-02 seconds
+(CVXPY) Apr 16 11:41:57 AM: Solver (including time spent in interface) took 7.115e+00 seconds
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">P</span><span class="o">.</span><span class="n">objectives</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>7.0169713497161865
+92.0
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We extract the selected edges</span>
+<span class="n">sol_edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">edge_value</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">)</span>
+<span class="n">carnival</span><span class="o">.</span><span class="n">processed_graph</span><span class="o">.</span><span class="n">plot_values</span><span class="p">(</span>
+    <span class="n">vertex_values</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">vertex_value</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+    <span class="n">edge_values</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">edge_value</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+    <span class="n">edge_indexes</span> <span class="o">=</span> <span class="n">sol_edges</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/e1f7317e98cd18d0998869dcfe3e76268906efdfbb05ee92845b464a8d8582b4.svg" src="../_images/e1f7317e98cd18d0998869dcfe3e76268906efdfbb05ee92845b464a8d8582b4.svg" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Extracting the solution graph</span>
+<span class="n">G_sol</span> <span class="o">=</span> <span class="n">carnival</span><span class="o">.</span><span class="n">processed_graph</span><span class="o">.</span><span class="n">edge_subgraph</span><span class="p">(</span><span class="n">sol_edges</span><span class="p">)</span>
+<span class="n">G_sol</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(92, 92)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">vertex_value</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">carnival</span><span class="o">.</span><span class="n">processed_graph</span><span class="o">.</span><span class="n">V</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;node_activity&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>node_activity</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>PRKCA</th>
+      <td>-1.0</td>
+    </tr>
+    <tr>
+      <th>ARHGEF1</th>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>CXCL1</th>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>CAMKK1</th>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>PEX5</th>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>BAG3</th>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>SKP2</th>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>HIPK2</th>
+      <td>-1.0</td>
+    </tr>
+    <tr>
+      <th>SMAD4</th>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>CSDE1</th>
+      <td>0.0</td>
+    </tr>
+  </tbody>
+</table>
+<p>970 rows × 1 columns</p>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">edge_value</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">carnival</span><span class="o">.</span><span class="n">processed_graph</span><span class="o">.</span><span class="n">E</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;edge_activity&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th></th>
+      <th>edge_activity</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>(SMAD3)</th>
+      <th>(MYOD1)</th>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>(GRK2)</th>
+      <th>(BDKRB2)</th>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>(MAPK14)</th>
+      <th>(MAPKAPK2)</th>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>(DEPTOR_EEF1A1_MLST8_MTOR_PRR5_RICTOR)</th>
+      <th>(FBXW8)</th>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>(SLK)</th>
+      <th>(MAP3K5)</th>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <th>...</th>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th rowspan="5" valign="top">()</th>
+      <th>(IL21R)</th>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>(FZD8)</th>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>(TGFB1)</th>
+      <td>-1.0</td>
+    </tr>
+    <tr>
+      <th>(CDH6)</th>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>(INHBA)</th>
+      <td>0.0</td>
+    </tr>
+  </tbody>
+</table>
+<p>3374 rows × 1 columns</p>
+</div></div></div>
+</div>
+</section>
+<section id="changing-modelling-assumptions">
+<h2>Changing modelling assumptions<a class="headerlink" href="#changing-modelling-assumptions" title="Link to this heading">#</a></h2>
+<p>Thanks to CORNETO’s modeling capabilities, we can manipulate the problems to add more knowledge, new objectives or different constraints. Now, we are going to penalize the use of inhibitory interactions from the PKN</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">edge_interactions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">carnival</span><span class="o">.</span><span class="n">processed_graph</span><span class="o">.</span><span class="n">get_attr_from_edges</span><span class="p">(</span><span class="s2">&quot;interaction&quot;</span><span class="p">))</span>
+<span class="n">penalties</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">edge_interactions</span><span class="p">)</span>
+<span class="n">penalties</span><span class="p">[</span><span class="n">edge_interactions</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">penalties</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(3374,)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We use the edge_has_signal variable (1 if selected to propagate signal, 0 otherwise),</span>
+<span class="c1"># and we multiply with  the penalties</span>
+<span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">edge_has_signal</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">penalties</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(1,)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">P</span><span class="o">.</span><span class="n">add_objectives</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">edge_has_signal</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">penalties</span><span class="p">)</span>
+<span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;highs&quot;</span><span class="p">,</span> <span class="n">max_seconds</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">1</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>===============================================================================
+                                     CVXPY                                     
+                                     v1.6.4                                    
+===============================================================================
+(CVXPY) Apr 16 11:41:57 AM: Your problem has 11092 variables, 31652 constraints, and 1 parameters.
+(CVXPY) Apr 16 11:41:57 AM: It is compliant with the following grammars: DCP, DQCP
+(CVXPY) Apr 16 11:41:57 AM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
+(CVXPY) Apr 16 11:41:57 AM: Your problem is compiled with the CPP canonicalization backend.
+-------------------------------------------------------------------------------
+                                  Compilation                                  
+-------------------------------------------------------------------------------
+(CVXPY) Apr 16 11:41:57 AM: Compiling problem (target solver=HIGHS).
+(CVXPY) Apr 16 11:41:57 AM: Reduction chain: Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; HIGHS
+(CVXPY) Apr 16 11:41:57 AM: Applying reduction Dcp2Cone
+(CVXPY) Apr 16 11:41:57 AM: Applying reduction CvxAttr2Constr
+(CVXPY) Apr 16 11:41:57 AM: Applying reduction ConeMatrixStuffing
+(CVXPY) Apr 16 11:41:57 AM: Applying reduction HIGHS
+(CVXPY) Apr 16 11:41:57 AM: Finished problem compilation (took 6.065e-02 seconds).
+(CVXPY) Apr 16 11:41:57 AM: (Subsequent compilations of this problem, using the same arguments, should take less time.)
+-------------------------------------------------------------------------------
+                                Numerical solver                               
+-------------------------------------------------------------------------------
+(CVXPY) Apr 16 11:41:57 AM: Invoking solver HIGHS  to obtain a solution.
+Running HiGHS 1.10.0 (git hash: fd86653): Copyright (c) 2025 HiGHS under MIT licence terms
+MIP  has 31652 rows; 11092 cols; 111482 nonzeros; 6748 integer variables (6748 binary)
+Coefficient ranges:
+  Matrix [1e+00, 1e+03]
+  Cost   [5e-01, 2e+01]
+  Bound  [1e+00, 1e+00]
+  RHS    [1e+00, 1e+03]
+Presolving model
+18338 rows, 10622 cols, 93928 nonzeros  0s
+13176 rows, 9346 cols, 70802 nonzeros  0s
+12790 rows, 9263 cols, 70335 nonzeros  0s
+
+Solving MIP model with:
+   12790 rows
+   9263 cols (5764 binary, 0 integer, 0 implied int., 3499 continuous)
+   70335 nonzeros
+
+Src: B =&gt; Branching; C =&gt; Central rounding; F =&gt; Feasibility pump; H =&gt; Heuristic; L =&gt; Sub-MIP;
+     P =&gt; Empty MIP; R =&gt; Randomized rounding; S =&gt; Solve LP; T =&gt; Evaluate node; U =&gt; Unbounded;
+     z =&gt; Trivial zero; l =&gt; Trivial lower; u =&gt; Trivial upper; p =&gt; Trivial point; X =&gt; User solution
+
+        Nodes      |    B&amp;B Tree     |            Objective Bounds              |  Dynamic Constraints |       Work      
+Src  Proc. InQueue |  Leaves   Expl. | BestBound       BestSol              Gap |   Cuts   InLp Confl. | LpIters     Time
+
+         0       0         0   0.00%   -205.9936554    inf                  inf        0      0      0         0     0.3s
+         0       0         0   0.00%   -121.8853879    inf                  inf        0      0      0      1641     0.4s
+ C       0       0         0   0.00%   -113.9104206    1                  Large      508     25      0      2000     1.6s
+ L       0       0         0   0.00%   -112.2153925    -109.1006672       2.85%     1454     80      0     11709     5.5s
+
+46.4% inactive integer columns, restarting
+Model after restart has 6110 rows, 5509 cols (2418 bin., 0 int., 0 impl., 3091 cont.), and 28900 nonzeros
+
+         0       0         0   0.00%   -112.2119847    -109.1006672       2.85%       42      0      0     13907     5.7s
+         0       0         0   0.00%   -112.2119847    -109.1006672       2.85%       42     30     18     15117     5.7s
+
+Symmetry detection completed in 0.0s
+Found 16 generator(s)
+
+        20       0         6  50.10%   -112.1425009    -109.1006672       2.79%     2753     44    123     77529    12.2s
+       179      16        79  62.84%   -110.1849936    -109.1006672       0.99%     2833     71   1336    115436    17.3s
+       458      38       200  76.99%   -110.18492      -109.1006672       0.99%     4099     66   2511    154779    22.5s
+       954      93       415  84.75%   -110.1848812    -109.1006672       0.99%     5488     90   3997    187699    27.5s
+      1704     197       718  87.72%   -110.1006672    -109.1006672       0.92%     5637    141   5879    214807    32.5s
+ T    2029      10       860  98.53%   -109.9131672    -109.6006672       0.29%     7544    103   7167    236564    36.7s
+      2056       0       877 100.00%   -109.6006672    -109.6006672       0.00%     8193     94   7242    240627    37.3s
+
+Solving report
+  Status            Optimal
+  Primal bound      -109.600667238
+  Dual bound        -109.600667238
+  Gap               0% (tolerance: 0.01%)
+  P-D integral      445.855556496
+  Solution status   feasible
+                    -109.600667238 (objective)
+                    0 (bound viol.)
+                    2.03537315471e-14 (int. viol.)
+                    0 (row viol.)
+  Timing            37.26 (total)
+                    0.00 (presolve)
+                    0.00 (solve)
+                    0.00 (postsolve)
+  Max sub-MIP depth 7
+  Nodes             2056
+  Repair LPs        0 (0 feasible; 0 iterations)
+  LP iterations     240627 (total)
+                    129542 (strong br.)
+                    11730 (separation)
+                    17795 (heuristics)
+-------------------------------------------------------------------------------
+                                    Summary                                    
+-------------------------------------------------------------------------------
+(CVXPY) Apr 16 11:42:35 AM: Problem status: optimal
+(CVXPY) Apr 16 11:42:35 AM: Optimal value: 1.086e+02
+(CVXPY) Apr 16 11:42:35 AM: Compilation took 6.065e-02 seconds
+(CVXPY) Apr 16 11:42:35 AM: Solver (including time spent in interface) took 3.728e+01 seconds
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">P</span><span class="o">.</span><span class="n">objectives</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>73.08661103248596
+71.0
+[0.]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We extract the selected edges</span>
+<span class="n">sol_edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">edge_value</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">)</span>
+<span class="n">carnival</span><span class="o">.</span><span class="n">processed_graph</span><span class="o">.</span><span class="n">plot_values</span><span class="p">(</span>
+    <span class="n">vertex_values</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">vertex_value</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+    <span class="n">edge_values</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">edge_value</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+    <span class="n">edge_indexes</span> <span class="o">=</span> <span class="n">sol_edges</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/c36adcb32bea610dbe36514142b2832fc454b6861aaf50071f03309b3acbe09f.svg" src="../_images/c36adcb32bea610dbe36514142b2832fc454b6861aaf50071f03309b3acbe09f.svg" />
+</div>
+</div>
+</section>
+<section id="saving-the-processed-dataset">
+<h2>Saving the processed dataset<a class="headerlink" href="#saving-the-processed-dataset" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto._data</span><span class="w"> </span><span class="kn">import</span> <span class="n">GraphData</span>
+<span class="n">GraphData</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;carnival_transcriptomics_dataset&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="context-specific-metabolic-omics.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Context-specific metabolic networks from omics</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="network-sampler.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Implementing an alternative network sampler</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-preprocessing">Data preprocessing</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prior-knowledge-with-decoupler-and-omnipath">Prior knowledge with Decoupler and Omnipath</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inferring-intracellular-signalling-network-with-carnival-and-corneto">Inferring intracellular signalling network with CARNIVAL and CORNETO</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#changing-modelling-assumptions">Changing modelling assumptions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#saving-the-processed-dataset">Saving the processed dataset</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2023-2025, Saez-Rodriguez lab. (EMBL-EBI, Heidelberg University).
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
