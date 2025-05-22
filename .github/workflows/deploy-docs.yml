@@ -48,6 +48,12 @@ jobs:
           poetry self add "poetry-dynamic-versioning[plugin]"
           poetry install --with dev,docs
 
+      - name: Verify Version
+        run: |
+          poetry version
+          echo "CORNETO version"
+          poetry run python -c "import corneto; print(f'Imported __version__: {corneto.__version__}')"
+
       - name: Build Docs
         run: |
           set -e
