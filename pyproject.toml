@@ -1,8 +1,37 @@
-[tool.poetry]
+[project]
 name = "corneto"
-version = "1.0.0.dev7"
 description = "CORNETO: A Unified Framework for Omics-Driven Network Inference"
-authors = ["Pablo Rodriguez-Mier <pablo.rodriguez-mier@uni-heidelberg.de>"]
+authors = [
+    { name = "Pablo Rodriguez-Mier", email = "pablo.rodriguez-mier@uni-heidelberg.de" },
+]
+license = { text = "GPL-3.0-or-later" }
+readme = "README.md"
+requires-python = ">=3.10"
+# Add 'dependencies' to the dynamic list
+dynamic = ["version", "classifiers", "dependencies"]
+
+[project.urls]
+homepage = "https://github.com/saezlab/corneto/"
+repository = "https://github.com/saezlab/corneto/"
+
+[project.optional-dependencies]
+# Add version specifiers for clarity and consistency
+os = [
+    "cvxpy-base>=1.6.5",
+    "scipy>=1.15.2",
+    "highspy>=1.9.0",
+    "pyscipopt>=5.4.1" # Using specifier from dev group / tool.poetry.dependencies
+]
+vanilla = [
+    "cvxpy-base>=1.6.5",
+    "scipy>=1.15.2"
+]
+
+[tool.poetry]
+packages = [
+    { include = "corneto" },
+]
+exclude = ["**/tests", "**/docs"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
@@ -13,22 +42,22 @@ classifiers = [
     "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     "Programming Language :: Python :: 3"
 ]
-license = "GPLv3"
-readme = "README.md"
-repository = "https://github.com/saezlab/corneto/"
-homepage = "https://github.com/saezlab/corneto/"
-packages = [
-    { include = "corneto" },
-]
-exclude = ["**/tests", "**/docs"]
+version = "0.0.0"
 
 [tool.poetry.dependencies]
 python = ">=3.10"
 numpy = ">=1.25"
 cvxpy-base = {version = ">=1.6.5", optional = true}
 scipy = {version = ">=1.15.2", optional = true}
+# Add dependencies that are part of extras, marked as optional
+highspy = {version = ">=1.9.0", optional = true}
+pyscipopt = {version = "^5.4.1", optional = true}
+
 
 [tool.poetry.group.dev.dependencies]
+# scipy, pyscipopt, cvxpy-base, highspy are also main optional or direct dependencies now,
+# but can remain here for dev environment setup if versions differ or for explicitness.
+# Poetry will resolve them.
 scipy = "^1.15.2"
 pyscipopt = "^5.4.1"
 graphviz = "^0.20.1"
@@ -50,6 +79,8 @@ scikit-learn = "^1.6.0"
 pandas = "^2.2.3"
 swiglpk = "^5.0.12"
 pcst-fast = "^1.0.10"
+tox = "^4.26.0"
+jax = "^0.6.1"
 
 [tool.poetry.group.docs]
 optional = true
@@ -70,36 +101,40 @@ sphinx-hoverxref = ">=1.3.0"
 [tool.poetry.group."dev,docs".dependencies]
 pydot = "^3.0.4"
 
-[tool.poetry.extras]
-os = ["cvxpy-base", "scipy", "highspy", "pyscipopt"]
+[tool.poetry-dynamic-versioning]
+enable           = true
+vcs              = "git"
+pattern          = "default"
+style            = "pep440"
+tagged-metadata  = false
 
 [tool.ruff]
 fix = true
 
 [tool.ruff.lint]
-ignore-init-module-imports = true  # Allow __init__.py to include import statements without usage
+ignore-init-module-imports = true
 
 select = [
-  "E",   # Select error codes (e.g., syntax errors)
-  "F",   # Select Flake8-specific error codes (formatting and logical errors)
-  "W",   # Select warning codes (stylistic warnings)
-  "I",   # Select import-related issues (import order, unused imports, etc.)
-  "D",   # Select docstring-related errors (documentation style)
-  "RUF", # Select Ruff-specific rules
+    "E",
+    "F",
+    "W",
+    "I",
+    "D",
+    "RUF",
 ]
 
 ignore = [
-  "D105", # Ignore missing docstring in magic methods (e.g., __str__, __repr__)
-  "D107", # Ignore missing docstring in the __init__ method
-  "D301", # Ignore module-level docstring formatting issues (specifics depend on your style guide)
-  "D205", # Ignore rule that enforces a one-line docstring summary to be on the same line as the opening quotes
-  "D214", # Ignore rule regarding the indentation of sections in multi-line docstrings
-  "D415", # Ignore rule that requires the first line of a docstring to end with a period
+    "D105",
+    "D107",
+    "D301",
+    "D205",
+    "D214",
+    "D415",
 ]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning>=1.0.0,<2.0.0"]
+build-backend = "poetry_dynamic_versioning.backend"

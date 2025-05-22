@@ -16,6 +16,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          fetch-tags: true # for dynamic versioning
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -38,9 +39,13 @@ jobs:
           key: ${{ runner.os }}-pip-${{ hashFiles('**/poetry.lock') }}
 
       - name: Install Dependencies
+        env:
+          # enable version injection
+          POETRY_DYNAMIC_VERSIONING_COMMANDS: install,build
         run: |
           set -e
           pip install poetry
+          poetry self add "poetry-dynamic-versioning[plugin]"
           poetry install --with dev,docs
 
       - name: Build Docs

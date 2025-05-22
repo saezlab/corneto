@@ -19,13 +19,20 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        fetch-tags: true # for dynamic versioning
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install Dependencies
+      env:
+        # enable version injection
+        POETRY_DYNAMIC_VERSIONING_COMMANDS: install,build
       run: |
         pip install poetry
+        poetry self add "poetry-dynamic-versioning[plugin]"
         poetry install
     - name: Test with pytest
       run: |
