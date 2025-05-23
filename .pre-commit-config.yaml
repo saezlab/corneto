@@ -1,5 +1,10 @@
 fail_fast: false
 
+# ensure your commit-msg hook is installed
+default_install_hook_types:
+  - pre-commit
+  - commit-msg
+
 default_language_version:
   python: python3
 
@@ -10,11 +15,12 @@ default_stages:
 minimum_pre_commit_version: '2.7.1'
 
 repos:
+  # your existing hooks
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.4.2  # Check https://github.com/astral-sh/ruff-pre-commit/releases for latest
+    rev: v0.4.2
     hooks:
       - id: ruff
-        args: [--fix, --format]  # add --preview if you want experimental formatting
+        args: [--fix, --format]
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
@@ -25,3 +31,11 @@ repos:
       - id: check-merge-conflict
       - id: detect-private-key
       - id: check-yaml
+
+  # add this block for Conventional Commits
+  - repo: https://github.com/compilerla/conventional-pre-commit
+    rev: v4.2.0
+    hooks:
+      - id: conventional-pre-commit
+        stages: [commit-msg]
+        args: []
