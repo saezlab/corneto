@@ -1,6 +1,5 @@
 fail_fast: false
 
-# ensure your commit-msg hook is installed
 default_install_hook_types:
   - pre-commit
   - commit-msg
@@ -15,7 +14,6 @@ default_stages:
 minimum_pre_commit_version: '2.7.1'
 
 repos:
-  # your existing hooks
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.4.2
     hooks:
@@ -32,7 +30,6 @@ repos:
       - id: detect-private-key
       - id: check-yaml
 
-  # add this block for Conventional Commits
   - repo: https://github.com/compilerla/conventional-pre-commit
     rev: v4.2.0
     hooks:
