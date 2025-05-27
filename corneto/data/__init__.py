@@ -12,12 +12,12 @@ Classes
 Key Features
 -----------
 - Rich metadata support for data features
-- Flexible data import/export methods 
+- Flexible data import/export methods
 - Conversion between different data formats
 - Filtering and subsetting capabilities
 - Data manipulation and transformation utilities
 
-Examples
+Examples:
 --------
 Basic usage with Data and Sample classes:
 
@@ -29,7 +29,7 @@ Basic usage with Data and Sample classes:
     >>> dataset.add_sample("patient1", {"age": 45, "treatment": {"value": "drugA", "dose": "high"}})
     >>> print(dataset)
     Dataset(num_samples=1)
-    
+
     >>> # Convert to dictionary format
     >>> data_dict = dataset.to_dict()
     >>> print(data_dict["patient1"]["treatment"])
@@ -49,4 +49,5 @@ The package also provides utility functions for generating random data:
 """
 
 from ._base import Data, Sample
+
 __all__ = ["Data", "Sample"]

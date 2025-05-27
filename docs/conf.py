@@ -5,11 +5,10 @@ using Sphinx. For more details, see:
 https://www.sphinx-doc.org/en/master/usage/configuration.html
 """
 
-import sys
 import os
+import sys
 from datetime import datetime
 from pathlib import Path
-import inspect
 
 # -- Path setup --------------------------------------------------------------
 # Add the project root directory to sys.path to enable autodoc to locate modules.
@@ -17,7 +16,6 @@ sys.path.insert(0, str(Path(".").resolve()))
 
 # Import the project module to retrieve version information.
 import corneto
-
 
 # Derive GitHub username (set in GitHub Actions; use a default for local builds)
 repo = os.environ.get("GITHUB_REPOSITORY", "username/corneto")
@@ -39,7 +37,7 @@ extensions = [
     "sphinx.ext.autodoc",  # Automatic documentation from docstrings.
     "sphinx.ext.mathjax",  # Math rendering.
     "sphinx.ext.napoleon",  # Support for Google and NumPy style docstrings.
-    #"sphinx_autodoc_typehints",  # Better integration of type hints.
+    # "sphinx_autodoc_typehints",  # Better integration of type hints.
     "sphinx.ext.extlinks",  # Shortcut for external links.
     "sphinx.ext.autosummary",  # Generate summary tables.
     "sphinx.ext.intersphinx",  # Link to other projects' documentation.
@@ -77,8 +75,8 @@ nb_execution_mode = "cache"
 nb_execution_timeout = 300
 nb_merge_streams = True
 execution_excludepatterns = [
-    "**/*grb*.ipynb",           # grb indicates that uses Gurobi
-    "**/kpnn-with-sc.ipynb",    # very slow, requires jax, keras
+    "**/*grb*.ipynb",  # grb indicates that uses Gurobi
+    "**/kpnn-with-sc.ipynb",  # very slow, requires jax, keras
 ]
 execution_allow_errors = False
 
@@ -87,8 +85,10 @@ typehints_defaults = "braces"
 
 # Configuration for Mermaid diagrams.
 mermaid_params = [
-    "-t", "default",
-    "-b", "transparent",
+    "-t",
+    "default",
+    "-b",
+    "transparent",
 ]
 
 # Paths that contain templates, relative to this directory.
@@ -109,10 +109,10 @@ autodoc_member_order = "bysource"
 autodoc_typehints = "description"
 
 autodoc_default_options = {
-    'members': True,
-    'imported-members': True,
-    'undoc-members': True,
-    'show-inheritance': True,
+    "members": True,
+    "imported-members": True,
+    "undoc-members": True,
+    "show-inheritance": True,
 }
 
 # Napoleon settings (for parsing Google/NumPy style docstrings).
@@ -129,9 +129,9 @@ bibtex_reference_style = "author_year"
 todo_include_todos = False
 
 # -- Options for HTML output --
-#html_baseurl = 'https://saezlab.github.io/corneto'
+# html_baseurl = 'https://saezlab.github.io/corneto'
 html_baseurl = f"https://{username}.github.io/corneto"
-html_favicon = '_static/favicon.ico'
+html_favicon = "_static/favicon.ico"
 html_show_sourcelink = False
 add_function_parentheses = False
 html_theme = "pydata_sphinx_theme"
@@ -142,10 +142,7 @@ html_css_files = [
 ]
 html_show_sphinx = False
 # Specify sidebars only for index and install pages
-html_sidebars = {
-    "index": [],
-    "install": []
-}
+html_sidebars = {"index": [], "install": []}
 # do not show source links
 html_show_sourcelink = False
 
@@ -154,7 +151,7 @@ autosectionlabel_prefix_document = True
 
 
 # Make sure switcher.json (located in docs/) is copied to the build root
-html_extra_path = ['switcher.json']
+html_extra_path = ["switcher.json"]
 
 # Theme-specific options.
 html_theme_options = {
@@ -164,14 +161,14 @@ html_theme_options = {
     "navbar_align": "left",
     "switcher": {
         # The switcher.json file is now available at the root.
-        #"json_url": f"{html_baseurl}/switcher.json",
+        # "json_url": f"{html_baseurl}/switcher.json",
         "json_url": "/switcher.json",
         "version_match": corneto.__version__,
     },
     "navbar_start": ["navbar-logo", "version-switcher"],
     "analytics": {
         "google_analytics_id": "G-Z263GN2PKK",
-    }
+    },
 }
 
 # Additional HTML context for templates.

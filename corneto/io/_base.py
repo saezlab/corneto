@@ -1,6 +1,9 @@
-import numpy as np
 from typing import List, Union
+
+import numpy as np
+
 from corneto.graph import Graph
+
 
 def graph_from_vertex_incidence(
     A: np.ndarray,
@@ -24,7 +27,7 @@ def graph_from_vertex_incidence(
     g = Graph()
     if len(vertex_ids) != A.shape[0]:
         raise ValueError(
-            """The number of rows in A matrix is different from 
+            """The number of rows in A matrix is different from
             the number of vertex ids"""
         )
     if len(edge_ids) != A.shape[1]:

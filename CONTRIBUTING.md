@@ -8,8 +8,8 @@ We value community input and look forward to opening up for contributions once w
 
 We use [Poetry](https://python-poetry.org) for dependency management. Please follow the instructions to install `poetry` on your system: https://python-poetry.org/docs/#installing-with-pipx. We recommend to install poetry using `pipx`. Once installed, clone the repository and install it with poetry. This will create a virtual environment ready for development:
 
-```
-git clone https://github.com/saezlab/corneto.git
+```bash
+git clone git+https://github.com/saezlab/corneto.git@dev
 cd corneto
 poetry install
 ```
@@ -26,24 +26,23 @@ We use `ruff`, a fast, modern linter for Python, as part of our pre-commit hooks
 
 Follow these steps to set up pre-commit on your local development environment using Poetry:
 
-1. **Install the Git Hook Scripts**: 
+1. **Install the Git Hook Scripts**:
     Run the following command in your repository to install the pre-commit hooks via Poetry:
     ```bash
     poetry run pre-commit install
     ```
 
-2. **Run Pre-commit**:
-    After setup, pre-commit will run automatically on git commit. However, you can manually run it on all files in the project to see if there are any issues:
+2. **Update Pre-commit Hooks**:
+    To keep your pre-commit hooks up to date, you can use:
     ```bash
-    poetry run pre-commit run --all-files
+    poetry run pre-commit autoupdate
     ```
 
-
 ### How It Works
+
 When you commit changes, the pre-commit hook triggers ruff to check the staged files for style errors or other issues based on the defined rules. If ruff finds errors that it cannot automatically fix, the commit will be blocked until these errors are resolved. This helps maintain code quality and consistency across contributions.
 
 By incorporating ruff with pre-commit into our workflow, we streamline code reviews and maintain a high standard for code quality. Please ensure you have this setup in your local development environment to aid in smooth contributions to the project.
-
 
 ## Code Documentation Standards
 
@@ -92,17 +91,25 @@ def calculate_division(numerator: float, denominator: float) -> float:
 
 ## Testing
 
-We use `pytest` for running our automated tests. To run tests, use Poetry to execute the tests by running:
+We use `pytest` for running our automated tests. You can run tests in several ways:
 
+### Using Poetry directly:
 ```bash
 poetry run pytest
 ```
+
+### Using Tox (recommended):
+```bash
+tox -e py
+```
+
+The tox approach is recommended as it creates an isolated environment and ensures consistent testing across different setups.
 
 This command will run all test files in your project that follow the `test_*.py` naming convention, as recognized by `pytest`.
 
 ### Writing Tests
 
-When writing tests, ensure each test function is clear and focused on a specific functionality. Here’s an example of a simple test:
+When writing tests, ensure each test function is clear and focused on a specific functionality. Here's an example of a simple test:
 
 ```python
 # tests/test_calculation.py
@@ -114,13 +121,47 @@ def test_calculate_division():
         calculate_division(5, 0)
 ```
 
-### Best Practices for Testing
+## Code Quality and Testing with Tox
 
-- **Isolation**: Each test should be independent of others; changes in one test should not affect any other.
-- **Coverage**: Aim for as much code coverage as possible to ensure that all code paths and scenarios are tested.
-- **Documentation**: Document what each test covers and any specific scenarios it is testing.
-- **Simplicity**: Keep tests simple and easy to understand. Complex tests can become a source of bugs themselves.
+We use [tox](https://tox.wiki/) to standardize testing, linting, and documentation building across different environments. Tox provides isolated virtual environments for running different tasks.
 
+### Available Tox Environments
+
+- **Testing**: Run unit tests (automatically detects your Python version)
+  ```bash
+  tox -e py  # Uses your current Python version
+  # Or specify a version if you have multiple:
+  tox -e py310  # Python 3.10
+  tox -e py311  # Python 3.11
+  tox -e py312  # Python 3.12
+  ```
+
+- **Linting**: Check code style and quality with ruff
+  ```bash
+  tox -e lint
+  ```
+
+- **Formatting**: Auto-fix code formatting issues
+  ```bash
+  tox -e format
+  ```
+
+- **Type Checking**: Run static type analysis with mypy
+  ```bash
+  tox -e typing
+  ```
+
+- **Documentation**: Build HTML documentation
+  ```bash
+  tox -e docs
+  ```
+
+### Running All Quality Checks
+
+To run all quality checks (linting, formatting, typing, and tests) at once:
+```bash
+tox -e lint,format,typing,py
+```
 
 ## Generating the documentation
 
@@ -128,25 +169,61 @@ This project uses Sphinx along with the PyData Sphinx theme to generate HTML doc
 
 ### Documentation for the current version
 
-To generate the HTML documentation for the current version of the project:
+To generate the HTML documentation for the current version of the project using tox:
 
 ```bash
-poetry run sphinx-build docs docs/_build/html
+tox -e docs
 ```
 
 This command will build the documentation in the `docs/_build/html` directory, which you can open in a browser to view.
 
-### Documentation for all versions
+### Additional Documentation Options
 
-To generate the HTML documentation for all available versions of the project, use the following command:
+We provide several tox environments for different documentation needs:
 
-```bash
-poetry run sphinx-multiversion docs docs/_build/html
-```
+- **Clean build**: Remove previous builds and rebuild documentation
+  ```bash
+  tox -e docs-clean
+  ```
 
-This will build documentation across multiple versions, allowing you to view historical and current documentation in the same structure. The output will also be located in `docs/_build/html`.
+- **Force notebook execution**: Build docs with forced notebook execution
+  ```bash
+  tox -e docs-force
+  ```
+
+- **Strict mode**: Build docs treating warnings as errors
+  ```bash
+  tox -e docs-werror
+  ```
+
+- **Link checking**: Verify all external links in documentation
+  ```bash
+  tox -e docs-linkcheck
+  ```
+
+- **Serve locally**: Build and serve documentation at http://localhost:8000
+  ```bash
+  tox -e docs-serve
+  ```
 
 ### Additional notes
 
-- **`sphinx-multiversion`**: This command uses `sphinx-multiversion` to generate documentation for multiple versions of the project. Ensure you have `sphinx-multiversion` configured in `pyproject.toml` or the appropriate dependency file.
+- **Tox environments**: All documentation and testing tasks are standardized through tox environments defined in `tox.ini`.
 - **`myst-nb`**: We use `myst-nb` to handle the conversion of Jupyter notebooks (`.ipynb` files) into HTML. If your contribution involves notebooks, make sure they render correctly in the generated documentation.
+  tox -e docs-werror
+  ```
+
+- **Link checking**: Verify all external links in documentation
+  ```bash
+  tox -e docs-linkcheck
+  ```
+
+- **Serve locally**: Build and serve documentation at http://localhost:8000
+  ```bash
+  tox -e docs-serve
+  ```
+
+### Additional notes
+
+- **Tox environments**: All documentation and testing tasks are standardized through tox environments defined in `tox.ini`.
+- **`myst-nb`**: We use `myst-nb` to handle the conversion of Jupyter notebooks (`.ipynb` files) into HTML. If your contribution involves notebooks, make sure they render correctly in the generated documentation. Please see [contributing with tutorials](https://github.com/saezlab/corneto/blob/dev/docs/tutorials/README.md) for more information on how to contribute tutorials.

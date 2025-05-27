@@ -5,7 +5,7 @@ gene expression data into metabolic network analysis by maximizing the agreement
 flux distributions and gene expression measurements across samples.
 """
 
-from typing import Optional, Tuple, Union
+from typing import Optional, Tuple
 
 import numpy as np
 

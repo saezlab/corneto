@@ -423,7 +423,7 @@ class CarnivalFlow(FlowMethod):
             A list of citation keys that can be used to lookup BibTeX entries.
         """
         return ["rodriguez2024unified", "liu2019expression"]
-    
+
     @staticmethod
     def description():
         """Returns a description of the method.

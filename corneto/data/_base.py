@@ -161,7 +161,7 @@ class Data(UserDict[Any, Sample]):
                 sample.add_feature(feat_name, feat_data)
             dataset.data[sample_id] = sample
         return dataset
-        
+
     def filter(self, predicate: Callable[[str, str, Any], bool]) -> "Data":
         """Filter features across all samples based on a predicate function.
 
@@ -190,7 +190,9 @@ class Data(UserDict[Any, Sample]):
             for feat_name, feat_value in sample.features.items():
                 if predicate(sample_id, feat_name, feat_value):
                     filtered_features[feat_name] = feat_value
-            if filtered_features:  # Only add samples that have at least one feature after filtering
+            if (
+                filtered_features
+            ):  # Only add samples that have at least one feature after filtering
                 new_sample = Sample()
                 for feat_name, feat_value in filtered_features.items():
                     new_sample.features[feat_name] = feat_value

@@ -32,11 +32,12 @@ T = TypeVar("T")
 
 class EdgeType(str, Enum):
     """Edge type enumeration.
-    
+
     Attributes:
         DIRECTED: Represents a directed edge
         UNDIRECTED: Represents an undirected edge
     """
+
     DIRECTED = "directed"
     UNDIRECTED = "undirected"
 
@@ -82,7 +83,7 @@ def _tpl(elements: Union[Any, Iterable[Any]]) -> Tuple[Any, ...]:
 
     Args:
         elements: Element or iterable of elements
-    
+
     Returns:
         Tuple containing the elements
     """
@@ -575,6 +576,7 @@ class BaseGraph(abc.ABC):
         Returns:
             Iterable of successor vertices
         """
+
         def succ():
             for i, (s, t) in self._edges_by_dir(vertex, direction="out"):
                 attr = self.get_attr_edge(i)
@@ -611,6 +613,7 @@ class BaseGraph(abc.ABC):
         Returns:
             Iterable of predecessor vertices
         """
+
         def succ():
             for i, (s, t) in self._edges_by_dir(vertex, direction="in"):
                 attr = self.get_attr_edge(i)
@@ -867,7 +870,6 @@ class BaseGraph(abc.ABC):
 
     import numpy as np
 
-
     def vertex_incidence_matrix(self, values: bool = False, sparse: bool = False):
         """Get vertex incidence matrix.
 
@@ -879,18 +881,20 @@ class BaseGraph(abc.ABC):
             Vertex incidence matrix as a numpy array or a sparse matrix.
         """
         data, (row_ind, col_ind) = self.get_vertex_incidence_matrix_as_lists(values)
-        
+
         if sparse:
             from scipy.sparse import csr_matrix
+
             # Create a sparse CSR matrix
-            A = csr_matrix((data, (row_ind, col_ind)), shape=(self.num_vertices, self.num_edges))
+            A = csr_matrix(
+                (data, (row_ind, col_ind)), shape=(self.num_vertices, self.num_edges)
+            )
         else:
             # Create a dense matrix
             A = np.zeros((self.num_vertices, self.num_edges))
             A[row_ind, col_ind] = data
 
         return A
-
 
     def bfs(
         self, starting_vertices: Any, reverse: bool = False, undirected: bool = False
@@ -998,7 +1002,7 @@ class BaseGraph(abc.ABC):
 
         Args:
             vertex_values: Optional values to display on vertices
-            edge_values: Optional values to display on edges  
+            edge_values: Optional values to display on edges
             vertex_props: Optional dict of vertex drawing properties
             edge_props: Optional dict of edge drawing properties
 
@@ -1068,7 +1072,7 @@ class BaseGraph(abc.ABC):
         g = Graph()
         if len(vertex_ids) != A.shape[0]:
             raise ValueError(
-                """The number of rows in A matrix is different from 
+                """The number of rows in A matrix is different from
                 the number of vertex ids"""
             )
         if len(edge_ids) != A.shape[1]:
@@ -1125,7 +1129,7 @@ class BaseGraph(abc.ABC):
 
         Supports various compression formats:
         - .gz (gzip)
-        - .bz2 (bzip2)  
+        - .bz2 (bzip2)
         - .xz (LZMA)
         - .zip (zip archive, reads first file)
 
@@ -1162,7 +1166,7 @@ class BaseGraph(abc.ABC):
 
     def toposort(self):
         """Perform topological sort on the graph using Kahn's algorithm.
-        
+
         Returns:
             List of vertices in topological order
 
@@ -1191,8 +1195,9 @@ class BaseGraph(abc.ABC):
         if len(result) == self.num_vertices:
             return result
         else:
-            raise ValueError("Graph contains a cycle, so topological sort is not possible.")
-
+            raise ValueError(
+                "Graph contains a cycle, so topological sort is not possible."
+            )
 
     def reachability_analysis(
         self,
@@ -1306,7 +1311,7 @@ class Graph(BaseGraph):
     (edges connecting multiple vertices). Edges and vertices can have attributes.
 
     Examples:
-        >>> graph = corneto.Graph() 
+        >>> graph = corneto.Graph()
         >>> graph.add_edge(1, 2)
         >>> graph.plot()
     """
@@ -1352,7 +1357,7 @@ class Graph(BaseGraph):
 
         Args:
             source: Source vertices
-            target: Target vertices 
+            target: Target vertices
             type: Edge type
             edge_source_attr: Optional attributes for source vertices
             edge_target_attr: Optional attributes for target vertices

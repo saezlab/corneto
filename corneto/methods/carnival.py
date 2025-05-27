@@ -1,4 +1,5 @@
 import time
+import warnings
 from typing import Dict, List, Tuple, Union
 
 import numpy as np
@@ -11,7 +12,7 @@ from corneto.methods.signal._util import (
     get_interactions,
 )
 from corneto.methods.signaling import create_flow_graph, signflow
-import warnings
+
 
 def _info(s, show=True):
     if show:
@@ -574,12 +575,18 @@ def create_flow_carnival_v4(
         [G.V.index(v) for exp in exp_list for v in exp_list[exp]["input"]]
     )
     perturbation_values = np.array(
-        [int(np.sign(val)) for exp in exp_list for val in exp_list[exp]["input"].values()]
+        [
+            int(np.sign(val))
+            for exp in exp_list
+            for val in exp_list[exp]["input"].values()
+        ]
     )
 
     # Set the perturbations to the given values
     if set_perturbation_values:
-        warnings.warn("Using set_perturbation_values, please disable since behavior differs from original carnival")
+        warnings.warn(
+            "Using set_perturbation_values, please disable since behavior differs from original carnival"
+        )
         nonzero_mask = perturbation_values != 0
         nonzero_vertex_indexes = vertex_indexes[nonzero_mask]
         nonzero_perturbation_values = perturbation_values[nonzero_mask]
@@ -587,7 +594,7 @@ def create_flow_carnival_v4(
         P += V[nonzero_vertex_indexes, :] == nonzero_perturbation_values[:, None]
 
     all_vertices = G.V
-    all_inputs = [k for k in all_vertices if len(list(G.predecessors(k)))==0]
+    all_inputs = [k for k in all_vertices if len(list(G.predecessors(k))) == 0]
 
     for i, exp in enumerate(exp_list):
         # Any input not indicated in the condition must be blocked
@@ -605,7 +612,9 @@ def create_flow_carnival_v4(
                             if input_value == -1 or input_value == 1:
                                 P += V[all_vertices.index(v_input), i] == input_value
                             else:
-                                raise ValueError(f"Invalid value for input vertex {v_input}: {input_value} (only -1, 0 or 1)")
+                                raise ValueError(
+                                    f"Invalid value for input vertex {v_input}: {input_value} (only -1, 0 or 1)"
+                                )
 
         m_nodes = list(exp_list[exp]["output"].keys())
         m_values = np.array(list(exp_list[exp]["output"].values()))

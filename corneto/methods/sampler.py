@@ -1,7 +1,8 @@
 import logging
+import re
 from collections.abc import Sequence
 from typing import Dict, List, Union
-import re
+
 import numpy as np
 
 logger = logging.getLogger(__name__)

@@ -19,9 +19,9 @@ def unescape_latex(text: str) -> str:
       - {\aa}   -> å
       - {\"a}   -> ä
       - {\'e}   -> é
-      - {\`o}  -> ò
-      - {\^u}  -> û
-      - {\~n}  -> ñ
+      - {\\`o}  -> ò
+      - {\\^u}  -> û
+      - {\\~n}  -> ñ
 
     Args:
         text: A string possibly containing LaTeX escapes.

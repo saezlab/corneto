@@ -1,13 +1,6 @@
 import os
 
-import numpy as np
 import pytest
-
-from corneto._data import Data
-from corneto.backend import Backend, CvxpyBackend, PicosBackend
-from corneto.graph import Graph
-from corneto.methods.future.pcst import PrizeCollectingSteinerTree as PCST
-
 
 
 @pytest.fixture

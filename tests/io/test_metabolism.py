@@ -8,7 +8,6 @@ from pathlib import Path
 
 import pytest
 
-from corneto import Graph
 from corneto.io import import_cobra_model
 
 

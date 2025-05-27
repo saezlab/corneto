@@ -1,4 +1,4 @@
-from typing import Any, Dict, Literal, Optional, Tuple, Union, List
+from typing import Any, Dict, List, Literal, Optional, Tuple, Union
 
 import numpy as np
 
@@ -118,17 +118,25 @@ class SteinerTreeFlow(FlowMethod):
         selected_roots: List[Any] = []
         if self._root_vertex_list is not None:
             if len(self._root_vertex_list) != num_samples:
-                raise ValueError("Length of root_vertex list must equal number of samples")
+                raise ValueError(
+                    "Length of root_vertex list must equal number of samples"
+                )
             for i in range(num_samples):
                 rv = self._root_vertex_list[i]
                 if rv is None:
                     # Use selection strategy if not provided.
                     if self.root_selection_strategy == "first":
-                        chosen = next(iter(terminals)) if terminals else next(iter(all_vertices))
+                        chosen = (
+                            next(iter(terminals))
+                            if terminals
+                            else next(iter(all_vertices))
+                        )
                     elif self.root_selection_strategy == "best":
                         chosen = None  # Will be determined by optimization.
                     else:
-                        raise ValueError(f"Unknown root selection strategy: {self.root_selection_strategy}")
+                        raise ValueError(
+                            f"Unknown root selection strategy: {self.root_selection_strategy}"
+                        )
                 else:
                     chosen = rv
                 selected_roots.append(chosen)
@@ -137,11 +145,15 @@ class SteinerTreeFlow(FlowMethod):
             if self._root_vertex is None:
                 # Use selection strategy for all samples.
                 if self.root_selection_strategy == "first":
-                    chosen = next(iter(terminals)) if terminals else next(iter(all_vertices))
+                    chosen = (
+                        next(iter(terminals)) if terminals else next(iter(all_vertices))
+                    )
                 elif self.root_selection_strategy == "best":
                     chosen = None
                 else:
-                    raise ValueError(f"Unknown root selection strategy: {self.root_selection_strategy}")
+                    raise ValueError(
+                        f"Unknown root selection strategy: {self.root_selection_strategy}"
+                    )
                 selected_roots = [chosen] * num_samples
             else:
                 selected_roots = [self._root_vertex] * num_samples
@@ -188,9 +200,7 @@ class SteinerTreeFlow(FlowMethod):
             lb = [
                 np.array(
                     [
-                        0
-                        if prop.has_attr(Attr.EDGE_TYPE, EdgeType.DIRECTED)
-                        else -mf
+                        0 if prop.has_attr(Attr.EDGE_TYPE, EdgeType.DIRECTED) else -mf
                         for prop in graph.get_attr_edges()
                     ]
                 )
@@ -257,7 +267,9 @@ class SteinerTreeFlow(FlowMethod):
         for i, sample_data in enumerate(data.samples.values()):
             # Determine the sample-specific max_flow
             sample_max_flow = (
-                self._max_flow_list[i] if self._max_flow_list is not None else self._max_flow
+                self._max_flow_list[i]
+                if self._max_flow_list is not None
+                else self._max_flow
             )
             # Determine the sample-specific root vertex
             sample_selected_root = self._selected_roots[i]
@@ -292,13 +304,17 @@ class SteinerTreeFlow(FlowMethod):
             self._terminal_edgeflow_idx.append(sample_flow_edges)
 
             # Block flow for edges not related to this sample
-            other_flow_edges = list(set(self.flow_edges.values()) - set(sample_flow_edges))
+            other_flow_edges = list(
+                set(self.flow_edges.values()) - set(sample_flow_edges)
+            )
             if other_flow_edges:
                 flow_problem += F[other_flow_edges] == 0
 
             if sample_selected_root is not None:
                 # For samples with a designated root, force injected flow.
-                flow_problem += F[self.flow_edges[sample_selected_root]] == sample_max_flow
+                flow_problem += (
+                    F[self.flow_edges[sample_selected_root]] == sample_max_flow
+                )
                 if terminals_edgeflow_idx:
                     flow_problem += F[terminals_edgeflow_idx] >= 1
             else:
@@ -315,10 +331,14 @@ class SteinerTreeFlow(FlowMethod):
                     terminal_pos = self.flow_name + f"_terminal_pos_{i}"
                     terminal_neg = self.flow_name + f"_terminal_neg_{i}"
                     flow_problem += flow_problem.expr[terminal_neg].sum() == 1
-                    t_idx = [vertices_edgeflow_idx.index(idx) for idx in terminals_edgeflow_idx]
+                    t_idx = [
+                        vertices_edgeflow_idx.index(idx)
+                        for idx in terminals_edgeflow_idx
+                    ]
                     if t_idx:
                         flow_problem += (
-                            flow_problem.expr[terminal_pos][t_idx].sum() == len(t_idx) - 1
+                            flow_problem.expr[terminal_pos][t_idx].sum()
+                            == len(t_idx) - 1
                         )
 
             # Add edge cost to the objective.
