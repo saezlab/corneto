@@ -290,6 +290,7 @@ class MultiSampleIMAT(MultiSampleFBA):
             # If we have multiple samples, extract the column for this sample
             if n_samples > 1 and len(active.shape) > 1:
                 sample_active = active[:, i]
+                unblocked_sample = unblocked[:, i]
             else:
                 sample_active = active
 
@@ -308,7 +309,7 @@ class MultiSampleIMAT(MultiSampleFBA):
                 if self.use_bigm_constraints:
                     # 1 if the reactions is unblocked (can have positive/negative flux)
                     flow_problem.add_objectives(
-                        np.abs(neg_weights) @ unblocked[neg_indices]
+                        np.abs(neg_weights) @ unblocked_sample[neg_indices]
                     )
                 else:
                     flow_problem.add_objectives(
