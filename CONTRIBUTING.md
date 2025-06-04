@@ -11,38 +11,71 @@ We use [Poetry](https://python-poetry.org) for dependency management. Please fol
 ```bash
 git clone git+https://github.com/saezlab/corneto.git@dev
 cd corneto
-poetry install
+poetry install --with dev
 ```
 
 ## Pre-commit Hooks
 
 We use pre-commit hooks to ensure that contributions meet our coding standards and to prevent common coding issues. Pre-commit is a framework that manages and maintains multi-language pre-commit hooks.
 
-### Using Ruff with Pre-commit
+### Tools Used in Our Pre-commit Setup
 
-We use `ruff`, a fast, modern linter for Python, as part of our pre-commit hooks. `ruff` helps in checking the style and quality of the Python code before it is committed to the repository.
+Our pre-commit configuration includes several tools:
+
+- **Pre-commit Update**: Automatically keeps our pre-commit hooks up to date
+- **Ruff**: A fast, modern linter and formatter for Python code
+- **Conventional Commits**: Enforces conventional commit message format
+- **Standard hooks**: File checks like trailing whitespace, large files, etc.
+- **Poetry hooks**: Validates pyproject.toml and maintains lock file consistency
 
 ### Setting Up Pre-commit
 
-Follow these steps to set up pre-commit on your local development environment using Poetry:
+Follow these steps to set up pre-commit on your local development environment:
 
-1. **Install the Git Hook Scripts**:
-    Run the following command in your repository to install the pre-commit hooks via Poetry:
-    ```bash
-    poetry run pre-commit install
-    ```
+1. **Install Development Dependencies**:
+   First, ensure you have installed the development dependencies which include pre-commit:
+   ```bash
+   poetry install --with dev
+   ```
 
-2. **Update Pre-commit Hooks**:
-    To keep your pre-commit hooks up to date, you can use:
-    ```bash
-    poetry run pre-commit autoupdate
-    ```
+2. **Install the Git Hook Scripts**:
+   Install both the pre-commit and commit-msg hooks:
+   ```bash
+   poetry run pre-commit install --hook-type pre-commit --hook-type commit-msg
+   ```
+
+**Note**: We use an automated pre-commit-update hook that keeps our pre-commit hooks up to date automatically, so you don't need to run `pre-commit autoupdate` manually.
+
+### Conventional Commits
+
+We enforce conventional commit messages using the conventional-pre-commit hook. Your commit messages should follow this format:
+
+```
+<type>[optional scope]: <description>
+
+[optional body]
+
+[optional footer(s)]
+```
+
+Examples of valid commit messages:
+- `feat: add new graph analysis method`
+- `fix: resolve memory leak in solver backend`
+- `docs: update installation instructions`
+- `test: add unit tests for network import`
+
+Common types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`
 
 ### How It Works
 
-When you commit changes, the pre-commit hook triggers ruff to check the staged files for style errors or other issues based on the defined rules. If ruff finds errors that it cannot automatically fix, the commit will be blocked until these errors are resolved. This helps maintain code quality and consistency across contributions.
+When you commit changes, the pre-commit hooks will:
 
-By incorporating ruff with pre-commit into our workflow, we streamline code reviews and maintain a high standard for code quality. Please ensure you have this setup in your local development environment to aid in smooth contributions to the project.
+1. **Check your code** with ruff for style errors and automatically fix what it can
+2. **Validate your commit message** format using conventional commits
+3. **Run additional checks** like trailing whitespace removal and large file detection
+4. **Verify Poetry configuration** and lock file consistency
+
+If any hook finds errors that cannot be automatically fixed, the commit will be blocked until these errors are resolved. This helps maintain code quality and consistency across contributions.
 
 ## Code Documentation Standards
 
