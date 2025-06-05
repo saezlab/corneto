@@ -293,6 +293,7 @@ class MultiSampleIMAT(MultiSampleFBA):
                 unblocked_sample = unblocked[:, i]
             else:
                 sample_active = active
+                unblocked_sample = unblocked
 
             # Add objectives for highly expressed reactions
             if np.any(idx_pos):
