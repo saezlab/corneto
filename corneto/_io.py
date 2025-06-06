@@ -53,9 +53,7 @@ def _read_sif_iter(
             if has_header and i == 0:
                 continue
             if len(line) <= 2:
-                raise ValueError(
-                    f"Invalid SIF line: {line}: expected at least 3 columns"
-                )
+                raise ValueError(f"Invalid SIF line: {line}: expected at least 3 columns")
             s, d, t = [line[idx] for idx in column_order]
             if discard_self_loops and s == t:
                 continue
@@ -165,9 +163,7 @@ def import_cobra_model(model: CobraModel) -> Tuple[np.ndarray, np.ndarray, np.nd
         list_subsystem_rxn = []
         # For .mat models, the subsystem can be loaded as a
         # string repr of a numpy array
-        if isinstance(subsys, str) and (
-            subsys.startswith("array(") or subsys.startswith("[array(")
-        ):
+        if isinstance(subsys, str) and (subsys.startswith("array(") or subsys.startswith("[array(")):
             try:
                 subsys = eval(subsys.strip())
             except Exception:

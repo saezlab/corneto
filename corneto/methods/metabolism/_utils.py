@@ -52,9 +52,7 @@ def _eval_gpr(node, context, func_and, func_or, expression=None):
         return context[node.id]
     else:
         # raise ValueError(f"Unsupported AST node: {type(node).__name__}")
-        LOGGER.warning(
-            f"Unsupported AST node: {type(node).__name__}, expression = {expression}"
-        )
+        LOGGER.warning(f"Unsupported AST node: {type(node).__name__}, expression = {expression}")
         return None
 
 

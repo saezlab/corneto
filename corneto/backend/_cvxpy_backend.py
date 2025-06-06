@@ -23,9 +23,7 @@ class CvxpyExpression(CExpression):
     def __init__(self, expr: Any, symbols: Optional[Set["CSymbol"]] = None) -> None:
         super().__init__(expr, symbols)
 
-    def _create_proxy_expr(
-        self, expr: Any, symbols: Optional[Set["CSymbol"]] = None
-    ) -> "CvxpyExpression":
+    def _create_proxy_expr(self, expr: Any, symbols: Optional[Set["CSymbol"]] = None) -> "CvxpyExpression":
         return CvxpyExpression(expr, symbols)
 
     def _elementwise_mul(self, other: Any) -> Any:
@@ -40,7 +38,7 @@ class CvxpyExpression(CExpression):
     def _max(self, axis: Optional[int] = None) -> Any:
         return cp.max(self._expr, axis=axis)
 
-    #def _abs(self) -> Any:
+    # def _abs(self) -> Any:
     #    return cp.abs(self._expr)
 
     def _hstack(self, other: Any) -> Any:
@@ -75,9 +73,7 @@ class CvxpySymbol(CSymbol, CvxpyExpression):
         vartype: VarType = VarType.CONTINUOUS,
         variable: bool = True,
     ) -> None:
-        super().__init__(
-            expr, name, shape=shape, lb=lb, ub=ub, vartype=vartype, variable=variable
-        )
+        super().__init__(expr, name, shape=shape, lb=lb, ub=ub, vartype=vartype, variable=variable)
 
 
 class CvxpyBackend(Backend):
@@ -167,9 +163,7 @@ class CvxpyBackend(Backend):
             s = solver.upper()
         solvers = cp.installed_solvers()
         if s is not None and s not in solvers:
-            raise ValueError(
-                f"Solver {s} is not installed/supported, supported solvers are: {solvers}"
-            )
+            raise ValueError(f"Solver {s} is not installed/supported, supported solvers are: {solvers}")
         # TODO: Implement parameter mapping for solvers and backends
         if max_seconds is not None:
             if s == "GUROBI":

@@ -139,9 +139,7 @@ def parse_cobra_model(model: CobraModel) -> Tuple[np.ndarray, np.ndarray, np.nda
         list_subsystem_rxn = []
         # For .mat models, the subsystem can be loaded as a
         # string repr of a numpy array
-        if isinstance(subsys, str) and (
-            subsys.startswith("array(") or subsys.startswith("[array(")
-        ):
+        if isinstance(subsys, str) and (subsys.startswith("array(") or subsys.startswith("[array(")):
             try:
                 subsys = eval(subsys.strip())
             except Exception:

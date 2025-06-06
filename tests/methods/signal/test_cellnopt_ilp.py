@@ -33,6 +33,7 @@ def get_test_graph_1():
 
     return G1
 
+
 @pytest.mark.skip(reason="Error with PICOS solvers")
 def test_cellnoptILP_AND(backend):
     G1 = get_test_graph_1()
@@ -45,9 +46,7 @@ def test_cellnoptILP_AND(backend):
         "exp3": {"input": {"EGF": 1, "TNFa": 1}, "output": {"Ras": 1}},
     }
 
-    P = cellnoptILP(
-        G1, exp_list_G1_and, verbose=True, alpha_flow=0.001, backend=backend
-    )
+    P = cellnoptILP(G1, exp_list_G1_and, verbose=True, alpha_flow=0.001, backend=backend)
     expected_edge_values = np.array(
         [
             [0.0, 1.0, 0.0, 1.0],
@@ -73,11 +72,10 @@ def test_cellnoptILP_AND(backend):
     obj = sum([o.value for o in P.objectives])
     assert np.isclose(sum([o.value for o in P.objectives]), 0.006)
     assert np.isclose(P.expr.edge_activates.value, expected_edge_values).all()
-    assert np.isclose(
-        np.sum(P.expr.vertex_value.value, axis=0), expected_vertex_values.sum(axis=0)
-    ).all()
+    assert np.isclose(np.sum(P.expr.vertex_value.value, axis=0), expected_vertex_values.sum(axis=0)).all()
 
-#@pytest.mark.skip(reason="not compatible with picos")
+
+# @pytest.mark.skip(reason="not compatible with picos")
 def test_cellnoptILP_OR(backend):
     G1 = get_test_graph_1()
 
@@ -115,6 +113,4 @@ def test_cellnoptILP_OR(backend):
 
     assert np.isclose(sum([o.value for o in P.objectives]), 0.005)
     assert np.isclose(P.expr.edge_activates.value, expected_edge_values).all()
-    assert np.isclose(
-        np.sum(P.expr.vertex_value.value, axis=0), expected_vertex_values.sum(axis=0)
-    ).all()
+    assert np.isclose(np.sum(P.expr.vertex_value.value, axis=0), expected_vertex_values.sum(axis=0)).all()

@@ -15,9 +15,7 @@ def large_dataset():
     """Load a large test graph from the pickle file."""
     current_dir = os.path.dirname(os.path.abspath(__file__))
     file_path = os.path.join(current_dir, "data", "large_graph_carnival.pkl.xz")
-    with open(
-        os.path.join(current_dir, "data", "large_graph_carnival_single_input.pkl"), "rb"
-    ) as f:
+    with open(os.path.join(current_dir, "data", "large_graph_carnival_single_input.pkl"), "rb") as f:
         input_data = pickle.load(f)
     return Graph.load(file_path), input_data
 
@@ -78,12 +76,10 @@ def test_carnivalflow_two_samples_inverse(backend, graph_two_samples):
     gsol1 = carnival.processed_graph.edge_subgraph(np.flatnonzero(sol1))
     gsol2 = carnival.processed_graph.edge_subgraph(np.flatnonzero(sol2))
     vertex_values_s1 = {
-        carnival.processed_graph.V[i]: P.expr.vertex_value.value[i, 0]
-        for i in range(P.expr.vertex_value.shape[0])
+        carnival.processed_graph.V[i]: P.expr.vertex_value.value[i, 0] for i in range(P.expr.vertex_value.shape[0])
     }
     vertex_values_s2 = {
-        carnival.processed_graph.V[i]: P.expr.vertex_value.value[i, 1]
-        for i in range(P.expr.vertex_value.shape[0])
+        carnival.processed_graph.V[i]: P.expr.vertex_value.value[i, 1] for i in range(P.expr.vertex_value.shape[0])
     }
     assert P.objectives[0].value == 0.0
     assert P.objectives[1].value == 0.0
@@ -97,9 +93,7 @@ def test_carnivalflow_two_samples_inverse(backend, graph_two_samples):
         vertex_values_s2["r1"],
         vertex_values_s2["r2"],
     ]
-    assert np.allclose(sol, [1, 0, 0, -1], atol=1e-4) or np.allclose(
-        sol, [-1, 0, 0, -1], atol=1e-4
-    )
+    assert np.allclose(sol, [1, 0, 0, -1], atol=1e-4) or np.allclose(sol, [-1, 0, 0, -1], atol=1e-4)
 
 
 def test_carnivalflow_two_samples(backend, graph_two_samples):
@@ -121,15 +115,11 @@ def test_carnivalflow_two_samples(backend, graph_two_samples):
     assert set(gsol2.V) == set(["c", "r2", "a", "tf1", "b"])
 
 
-def test_generalized_multisample_with_carnivalflow_two_samples(
-    backend, graph_two_samples
-):
+def test_generalized_multisample_with_carnivalflow_two_samples(backend, graph_two_samples):
     G, samples = graph_two_samples
     data = Data.from_cdict(samples)
     carnival = CarnivalFlow(lambda_reg=0, backend=backend)
-    method = GeneralizedMultiSampleMethod(
-        carnival, edge_selection_varname="edge_has_signal", lambda_reg=1e-3
-    )
+    method = GeneralizedMultiSampleMethod(carnival, edge_selection_varname="edge_has_signal", lambda_reg=1e-3)
     P = method.build(G, data)
     P.solve()
     sol1 = np.array(P.expr.edge_value_0.value).flatten()

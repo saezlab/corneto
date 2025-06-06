@@ -105,19 +105,11 @@ class BaseGraph(abc.ABC):
 
     def successors_of_vertex(self, v) -> Set:
         # TODO: check if directed or not
-        E = (
-            t if len(t) > 0 else ()
-            for (s, t) in self.get_edges_from_vertex(v)
-            if v in s
-        )
+        E = (t if len(t) > 0 else () for (s, t) in self.get_edges_from_vertex(v) if v in s)
         return set(chain.from_iterable(E))
 
     def predecessors_of_vertex(self, v) -> Set:
-        E = (
-            s if len(t) > 0 else ()
-            for (s, t) in self.get_edges_from_vertex(v)
-            if v in t
-        )
+        E = (s if len(t) > 0 else () for (s, t) in self.get_edges_from_vertex(v) if v in t)
         return set(chain.from_iterable(E))
 
     def successors(self, vertices) -> Set:
@@ -134,9 +126,7 @@ class BaseGraph(abc.ABC):
             succ |= self.predecessors_of_vertex(v)
         return succ
 
-    def add_edge(
-        self, s, t, id: Optional[str] = None, directed: bool = True, **kwargs
-    ) -> int:
+    def add_edge(self, s, t, id: Optional[str] = None, directed: bool = True, **kwargs) -> int:
         return self._add_edge(
             BaseGraph._as_dict(s),
             BaseGraph._as_dict(t),
@@ -145,9 +135,7 @@ class BaseGraph(abc.ABC):
             **kwargs,
         )
 
-    def add_edges(
-        self, edges: List[Tuple], directed: bool = True, **kwargs
-    ) -> List[int]:
+    def add_edges(self, edges: List[Tuple], directed: bool = True, **kwargs) -> List[int]:
         idx = []
         for s, t in edges:
             idx.append(self.add_edge(s, t, directed=directed, **kwargs))
@@ -207,9 +195,7 @@ class BaseGraph(abc.ABC):
         return sinks
 
     def bfs(self, starting_vertices: Any, rev: bool = False) -> Dict[Any, int]:
-        if isinstance(starting_vertices, Iterable) and not isinstance(
-            starting_vertices, str
-        ):
+        if isinstance(starting_vertices, Iterable) and not isinstance(starting_vertices, str):
             starting_vertices = frozenset(starting_vertices)
         else:
             starting_vertices = frozenset({starting_vertices})
@@ -271,25 +257,17 @@ class BaseGraph(abc.ABC):
             # TODO: very ad-hoc, improve
             c = [k for k in problem.keys() if k.startswith("reaction_sends_activation")]
             if len(c) > 1 and condition is None:
-                raise ValueError(
-                    "Detected multiple conditions defined in problem, but a condition was not provided"
-                )
+                raise ValueError("Detected multiple conditions defined in problem, but a condition was not provided")
             if len(c) == 1 and condition is None:
                 condition = c[0].split("activation_")[1]
-            vertex_values = (
-                problem[f"species_activated_{condition}"]
-                - problem[f"species_inhibited_{condition}"]
-            )
+            vertex_values = problem[f"species_activated_{condition}"] - problem[f"species_inhibited_{condition}"]
             edge_values = (
-                problem[f"reaction_sends_activation_{condition}"]
-                - problem[f"reaction_sends_inhibition_{condition}"]
+                problem[f"reaction_sends_activation_{condition}"] - problem[f"reaction_sends_inhibition_{condition}"]
             )
             # Add custom values per edge/vertex
             for v, value in zip(vertices, vertex_values):
                 if value < 0:
-                    custom_vertex[v] = dict(
-                        color="blue", penwidth="2", fillcolor="azure2", style="filled"
-                    )
+                    custom_vertex[v] = dict(color="blue", penwidth="2", fillcolor="azure2", style="filled")
                 elif value > 0:
                     custom_vertex[v] = dict(
                         color="red",
@@ -306,9 +284,7 @@ class BaseGraph(abc.ABC):
 
         if node_attr is None:
             node_attr = dict(fixedsize="true")
-        g = graphviz.Digraph(
-            graph_attr=graph_attr, node_attr=node_attr, edge_attr=edge_attr
-        )
+        g = graphviz.Digraph(graph_attr=graph_attr, node_attr=node_attr, edge_attr=edge_attr)
         for e, p in zip(edges, self.edge_properties):
             s, t = e
             s = list(s)
@@ -331,9 +307,7 @@ class BaseGraph(abc.ABC):
                 g.node(t, shape="circle", **props)
             edge_type = p.get("interaction", 0)
             props = custom_edge.get(e, dict())
-            if ("directed" in p and p["directed"] == False) or (
-                "undirected" in p and p["undirected"] == True
-            ):
+            if ("directed" in p and p["directed"] == False) or ("undirected" in p and p["undirected"] == True):
                 props["dir"] = "none"
             if edge_type >= 0:
                 g.edge(s, t, arrowhead="normal", **props)
@@ -426,9 +400,7 @@ class Graph(BaseGraph):
         # Preserve original order
         g._edges = [self._edges[i] for i in selected]
         g._edge_properties = [deepcopy(self._edge_properties[i]) for i in selected]
-        g._edge_vertex_properties = [
-            deepcopy(self._edge_vertex_properties[i]) for i in selected
-        ]
+        g._edge_vertex_properties = [deepcopy(self._edge_vertex_properties[i]) for i in selected]
         g._vertex_index = OrderedDict()
         for v in self.vertices:
             if v in vertices:
@@ -480,18 +452,12 @@ class Graph(BaseGraph):
         return deepcopy(self)
 
     @staticmethod
-    def from_vertex_incidence(
-        A: np.ndarray, vertex_ids: List[str], edge_ids: List[str]
-    ):
+    def from_vertex_incidence(A: np.ndarray, vertex_ids: List[str], edge_ids: List[str]):
         g = Graph()
         if len(vertex_ids) != A.shape[0]:
-            raise ValueError(
-                "The number of rows in A matrix is different from the number of vertex ids"
-            )
+            raise ValueError("The number of rows in A matrix is different from the number of vertex ids")
         if len(edge_ids) != A.shape[1]:
-            raise ValueError(
-                "The number of columns in A matrix is different from the number of edge ids"
-            )
+            raise ValueError("The number of columns in A matrix is different from the number of edge ids")
         for v in vertex_ids:
             g.add_vertex(v)
         for j, v in enumerate(edge_ids):

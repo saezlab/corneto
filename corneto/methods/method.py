@@ -62,9 +62,7 @@ class FlowMethod(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def create_flow_based_problem(
-        self, flow_var, graph: BaseGraph, data: List[GraphData]
-    ):
+    def create_flow_based_problem(self, flow_var, graph: BaseGraph, data: List[GraphData]):
         pass
 
     def build(self, data: List[GraphData]):
@@ -119,9 +117,7 @@ class Carnival(FlowMethod):
         if len(inputs) == 0:
             raise ValueError("No inputs provided. Add `inputs` attribute to GraphData.")
         if len(outputs) == 0:
-            raise ValueError(
-                "No outputs provided. Add `outputs` attribute to GraphData."
-            )
+            raise ValueError("No outputs provided. Add `outputs` attribute to GraphData.")
 
         # Graph shape before pruning
         initial_shape = self.graph.shape
@@ -153,14 +149,8 @@ class Carnival(FlowMethod):
         out_data = []
 
         for sample_data in data:
-            out_vertex_data = {
-                k: v
-                for k, v in sample_data.vertex_data.items()
-                if k in pruned_pkn_vertices
-            }
-            out_edge_data = {
-                k: v for k, v in sample_data.edge_data.items() if k in pruned_graph.E
-            }
+            out_vertex_data = {k: v for k, v in sample_data.vertex_data.items() if k in pruned_pkn_vertices}
+            out_edge_data = {k: v for k, v in sample_data.edge_data.items() if k in pruned_graph.E}
             out_data.append(GraphData(out_vertex_data, out_edge_data))
 
         # Collect statistics
@@ -194,9 +184,7 @@ class Carnival(FlowMethod):
 
         return g
 
-    def create_flow_based_problem(
-        self, flow_var, graph: BaseGraph, data: List[GraphData]
-    ):
+    def create_flow_based_problem(self, flow_var, graph: BaseGraph, data: List[GraphData]):
         # Get incidence matrices and interactions for the graph
         P = self.backend.Problem()
         At, Ah = get_incidence_matrices_of_edges(self.graph)
@@ -234,9 +222,7 @@ class Carnival(FlowMethod):
         P.register("edge_has_signal", Eact + Einh)
 
         # Add acyclic constraints to ensure signal does not propagate in cycles
-        P = self.backend.Acyclic(
-            self.graph, P, indicator_positive_var_name="edge_has_signal"
-        )
+        P = self.backend.Acyclic(self.graph, P, indicator_positive_var_name="edge_has_signal")
 
         # Identify edges with outgoing connections (heads)
         edges_with_head = np.flatnonzero(np.sum(np.abs(Ah), axis=0) > 0)
@@ -248,26 +234,15 @@ class Carnival(FlowMethod):
         P += Eact + Einh <= F
 
         # Sparsify the interaction matrix for computational efficiency
-        Int = sparsify(
-            np.reshape(interaction, (interaction.shape[0], 1))
-            @ np.ones((1, len(self.data)))
-        )
+        Int = sparsify(np.reshape(interaction, (interaction.shape[0], 1)) @ np.ones((1, len(self.data))))
 
         # Add constraints on activations and inhibitions based on upstream signals
-        sum_upstream_act = (Ah.T @ Va)[edges_with_head, :].multiply(
-            Int[edges_with_head, :] > 0
-        )
-        sum_upstream_inh = (Ah.T @ Vi)[edges_with_head, :].multiply(
-            Int[edges_with_head, :] < 0
-        )
+        sum_upstream_act = (Ah.T @ Va)[edges_with_head, :].multiply(Int[edges_with_head, :] > 0)
+        sum_upstream_inh = (Ah.T @ Vi)[edges_with_head, :].multiply(Int[edges_with_head, :] < 0)
         P += Eact[edges_with_head, :] <= sum_upstream_act + sum_upstream_inh
 
-        sum_upstream_act = (Ah.T @ Va)[edges_with_head, :].multiply(
-            Int[edges_with_head, :] < 0
-        )
-        sum_upstream_inh = (Ah.T @ Vi)[edges_with_head, :].multiply(
-            Int[edges_with_head, :] > 0
-        )
+        sum_upstream_act = (Ah.T @ Va)[edges_with_head, :].multiply(Int[edges_with_head, :] < 0)
+        sum_upstream_inh = (Ah.T @ Vi)[edges_with_head, :].multiply(Int[edges_with_head, :] > 0)
         P += Einh[edges_with_head, :] <= sum_upstream_act + sum_upstream_inh
 
         all_inputs = set()
@@ -288,10 +263,7 @@ class Carnival(FlowMethod):
             if len(data) > 1:
                 other_inputs = all_inputs - set(input_vertices)
                 other_input_edges = [
-                    idx
-                    for v in other_inputs
-                    for (idx, _) in graph.in_edges(v)
-                    if len(graph.get_edge(idx)[0]) == 0
+                    idx for v in other_inputs for (idx, _) in graph.in_edges(v) if len(graph.get_edge(idx)[0]) == 0
                 ]
                 if len(other_input_edges) > 0:
                     P += Eact[other_input_edges, i] == 0

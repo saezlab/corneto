@@ -34,17 +34,13 @@ def suppress_output(
     with contextlib.ExitStack() as stack:
         # Handle stdout redirection/suppression
         if suppress_stdout or stdout_redirect_file:
-            stdout_target = open(
-                stdout_redirect_file if stdout_redirect_file else os.devnull, "w"
-            )
+            stdout_target = open(stdout_redirect_file if stdout_redirect_file else os.devnull, "w")
             stack.enter_context(stdout_target)
             stack.enter_context(contextlib.redirect_stdout(stdout_target))
 
         # Handle stderr redirection/suppression
         if suppress_stderr or stderr_redirect_file:
-            stderr_target = open(
-                stderr_redirect_file if stderr_redirect_file else os.devnull, "w"
-            )
+            stderr_target = open(stderr_redirect_file if stderr_redirect_file else os.devnull, "w")
             stack.enter_context(stderr_target)
             stack.enter_context(contextlib.redirect_stderr(stderr_target))
 
@@ -69,10 +65,7 @@ def canonicalize(obj):
     """
     if isinstance(obj, dict):
         # Convert dictionary keys to strings and sort the keys
-        return {
-            str(key): canonicalize(obj[key])
-            for key in sorted(obj.keys(), key=lambda x: str(x))
-        }
+        return {str(key): canonicalize(obj[key]) for key in sorted(obj.keys(), key=lambda x: str(x))}
     elif isinstance(obj, (list, tuple)):
         # Recursively canonicalize each element in the list or tuple
         return [canonicalize(item) for item in obj]
@@ -99,18 +92,14 @@ def obj_canonicalized_hash(obj) -> str:
     # Serialize the canonical object to a JSON string.
     # 'sort_keys=True' ensures consistent key order,
     # and separators remove unnecessary whitespace.
-    obj_serialized = json.dumps(
-        canonical_obj, sort_keys=True, separators=(",", ":")
-    ).encode("utf-8")
+    obj_serialized = json.dumps(canonical_obj, sort_keys=True, separators=(",", ":")).encode("utf-8")
     # Compute the SHA256 hash of the serialized bytes
     hash_obj = hashlib.sha256()
     hash_obj.update(obj_serialized)
     return hash_obj.hexdigest()
 
 
-def unique_iter(
-    iterable: Iterable[T], key: Optional[Callable[[T], Any]] = None
-) -> Iterable[T]:
+def unique_iter(iterable: Iterable[T], key: Optional[Callable[[T], Any]] = None) -> Iterable[T]:
     # Based on https://iteration-utilities.readthedocs.io/en/latest/generated/unique_everseen.html
     seen: Set[Any] = set()
     seen_add = seen.add
@@ -126,9 +115,7 @@ def unique_iter(
                 yield element
 
 
-def uiter(
-    iterable: Iterable[T], key: Optional[Callable[[T], Any]] = None
-) -> Iterable[T]:
+def uiter(iterable: Iterable[T], key: Optional[Callable[[T], Any]] = None) -> Iterable[T]:
     seen: Set[Any] = set()
     seen_add = seen.add  # micro-optimization
 
@@ -194,10 +181,10 @@ def _get_info() -> Dict[str, Dict]:
 
     info: Dict[str, Dict] = OrderedDict()
 
-    #latest = get_latest_version()
-    #if latest == __version__:
+    # latest = get_latest_version()
+    # if latest == __version__:
     #    cv = f"v{__version__} (up to date)"
-    #else:
+    # else:
     #    if latest:
     #        cv = f"v{__version__} (latest stable: v{latest})"
     #    else:
@@ -209,9 +196,7 @@ def _get_info() -> Dict[str, Dict]:
     }
     info["backends"] = {
         "title": "Available backends",
-        "message": ", ".join(
-            [str(e) + f" v{e.version()}" for e in available_backends()]
-        ),
+        "message": ", ".join([str(e) + f" v{e.version()}" for e in available_backends()]),
         "value": available_backends(),
     }
     info["default_backend"] = {
@@ -227,9 +212,7 @@ def _get_info() -> Dict[str, Dict]:
     if DEFAULT_BACKEND:
         info["default_backend"]["message"] = str(DEFAULT_BACKEND)
         info["default_backend"]["value"] = DEFAULT_BACKEND
-        info["available_solvers"]["message"] = ", ".join(
-            [s for s in DEFAULT_BACKEND.available_solvers()]
-        )
+        info["available_solvers"]["message"] = ", ".join([s for s in DEFAULT_BACKEND.available_solvers()])
         info["available_solvers"]["value"] = DEFAULT_BACKEND.available_solvers()
     info["graphviz_version"] = {
         "title": "Graphviz version",
@@ -291,9 +274,7 @@ def info():
             message = v["message"]
             if "_url" in k:
                 message = f"<a href={message}>{message}</a>"
-            html_info += (
-                f"<tr><td>{title}:</td><td style='text-align:left'>{message}</td></tr>"
-            )
+            html_info += f"<tr><td>{title}:</td><td style='text-align:left'>{message}</td></tr>"
         display(HTML(html.replace("*", html_info)))
 
     else:
@@ -307,10 +288,10 @@ def _info():
     from corneto import __version__
     from corneto.backend import DEFAULT_BACKEND, available_backends
 
-    #latest = get_latest_version()
-    #if latest == __version__:
+    # latest = get_latest_version()
+    # if latest == __version__:
     #    print(f"CORNETO v{__version__} (up to date)")
-    #else:
+    # else:
     #    if latest:
     #        print(f"CORNETO v{__version__} (latest: v{latest})")
     #    else:

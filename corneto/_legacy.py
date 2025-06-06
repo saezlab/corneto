@@ -79,9 +79,7 @@ class BaseGraph(abc.ABC):
         for n in nodes:
             self.remove_node(n)
 
-    def add_edge_properties(
-        self, name: str, properties: Dict[str, Any], update: bool = True
-    ):
+    def add_edge_properties(self, name: str, properties: Dict[str, Any], update: bool = True):
         props = self._get_edge_properties(name)
         if props is None:
             props = properties.copy()
@@ -90,9 +88,7 @@ class BaseGraph(abc.ABC):
                 props.update(properties)
         self._set_edge_properties(name, props)
 
-    def add_node_properties(
-        self, name: str, properties: Dict[str, Any], update: bool = True
-    ):
+    def add_node_properties(self, name: str, properties: Dict[str, Any], update: bool = True):
         props = self._get_node_properties(name)
         if props is None:
             props = properties.copy()
@@ -275,9 +271,7 @@ class Properties:
             reaction = self._renet.get_reaction_id(reaction)
         return self._reaction_values.get(reaction, default)
 
-    def reaction_values(
-        self, reactions: Optional[Iterable[int]] = None, default: float = 0
-    ) -> List[float]:
+    def reaction_values(self, reactions: Optional[Iterable[int]] = None, default: float = 0) -> List[float]:
         if reactions is None:
             reactions = range(len(self._renet.reactions))
         return [self.reaction_value(r, default) for r in reactions]
@@ -292,21 +286,15 @@ class Properties:
             raise ValueError(f"Invalid species: {species}")
         return self._species_values.get(spid, default)
 
-    def species_values(
-        self, species: Optional[Iterable[int]] = None, default: float = 0
-    ) -> List[float]:
+    def species_values(self, species: Optional[Iterable[int]] = None, default: float = 0) -> List[float]:
         if species is None:
             species = range(len(self._renet.species))
         return [self.species_value(s, default) for s in species]
 
     def copy(self):
-        return Properties(
-            self._renet, self._species_values.copy(), self._reaction_values.copy()
-        )
+        return Properties(self._renet, self._species_values.copy(), self._reaction_values.copy())
 
-    def select(
-        self, species: Iterable[StrOrInt], reactions: Iterable[StrOrInt]
-    ) -> "Properties":
+    def select(self, species: Iterable[StrOrInt], reactions: Iterable[StrOrInt]) -> "Properties":
         return Properties(
             self._renet,
             {i: self.species_value(s) for i, s in enumerate(species)},  # type: ignore
@@ -315,9 +303,7 @@ class Properties:
 
 
 class ReNet(abc.ABC):
-    def __init__(
-        self, species: List[str], reactions: List[str], indexed: bool = True
-    ) -> None:
+    def __init__(self, species: List[str], reactions: List[str], indexed: bool = True) -> None:
         super().__init__()
         self._species = species
         self._reactions = reactions
@@ -456,9 +442,7 @@ class ReNet(abc.ABC):
     ) -> "ReNet":
         if reactant_ids is None and product_ids is None:
             if neighborhood > 0:
-                raise ValueError(
-                    "At least one of reactant_ids or product_ids must be specified"
-                )
+                raise ValueError("At least one of reactant_ids or product_ids must be specified")
             return self
         rids: Set[int] = set()
         pids: Set[int] = set()
@@ -471,9 +455,7 @@ class ReNet(abc.ABC):
         else:
             pids = set(product_ids)
         for _ in range(neighborhood + 1):
-            reaction_ids = self.get_reactions(
-                reactant_ids=rids, product_ids=pids, union=union
-            )
+            reaction_ids = self.get_reactions(reactant_ids=rids, product_ids=pids, union=union)
             rids |= self.get_reactants(rids)
             pids |= self.get_products(pids)
         return self.select_reactions(reaction_ids)
@@ -582,9 +564,7 @@ class ReNet(abc.ABC):
     def species_names(self, species_ids: Iterable[int]) -> List[str]:
         return [self.species[i] for i in species_ids]
 
-    def get_ids(
-        self, names: Union[StrOrInt, List[StrOrInt]], id_type: IdType = IdType.REACTION
-    ) -> List[int]:
+    def get_ids(self, names: Union[StrOrInt, List[StrOrInt]], id_type: IdType = IdType.REACTION) -> List[int]:
         if isinstance(names, int) or isinstance(names, str):
             names = [names]
         if id_type == IdType.REACTION:
@@ -613,9 +593,7 @@ class ReNet(abc.ABC):
         else:
             raise ValueError("id_type must be either REACTION or SPECIES")
 
-    def bfs(
-        self, ids: List[StrOrInt], id_type: IdType = IdType.SPECIES, rev: bool = False
-    ) -> Dict[int, int]:
+    def bfs(self, ids: List[StrOrInt], id_type: IdType = IdType.SPECIES, rev: bool = False) -> Dict[int, int]:
         nids = self.get_ids(ids, id_type)
         layer = 0
         visited = {s: layer for s in nids}
@@ -640,9 +618,7 @@ class ReNet(abc.ABC):
         forward = set(self.bfs(source, id_type=id_type).keys())
         backward = set(self.bfs(target, id_type=id_type, rev=True).keys())
         reachable = list(forward.intersection(backward))
-        reactions = self.get_reactions(
-            reactant_ids=reachable, product_ids=reachable, union=False
-        )
+        reactions = self.get_reactions(reactant_ids=reachable, product_ids=reachable, union=False)
         return self.select_reactions(reactions)
 
     @staticmethod
@@ -732,9 +708,7 @@ class ReNet(abc.ABC):
 
 
 class DenseReNet(ReNet):
-    def __init__(
-        self, stoichiometry: np.ndarray, species: List[str], reactions: List[str]
-    ) -> None:
+    def __init__(self, stoichiometry: np.ndarray, species: List[str], reactions: List[str]) -> None:
         super().__init__(species, reactions)
         self._stoichiometry = stoichiometry
 
@@ -765,9 +739,7 @@ class DenseReNet(ReNet):
         return rn
 
     def copy(self):
-        renet = DenseReNet(
-            self._stoichiometry.copy(), self._species.copy(), self._reactions.copy()
-        )
+        renet = DenseReNet(self._stoichiometry.copy(), self._species.copy(), self._reactions.copy())
         renet.properties = self.properties.copy()
         renet.properties._renet = renet
         return renet
@@ -775,9 +747,7 @@ class DenseReNet(ReNet):
     def _add_species(self, names: List[str]) -> None:
         v = self._stoichiometry.shape[1] if len(self._stoichiometry.shape) >= 2 else 1
         rows = np.zeros((len(names), v))
-        self._stoichiometry = (
-            np.vstack((self._stoichiometry, rows)) if self._stoichiometry.size else rows
-        )
+        self._stoichiometry = np.vstack((self._stoichiometry, rows)) if self._stoichiometry.size else rows
 
     def _add_reaction(self, name: str, coeffs: Dict[str, int]):
         new_species = list(set(coeffs.keys()) - set(self.species))
@@ -798,9 +768,7 @@ class DenseReNet(ReNet):
 
 
 class GReNet(ReNet):
-    def __init__(
-        self, stoichiometry: np.ndarray, species: List[str], reactions: List[str]
-    ) -> None:
+    def __init__(self, stoichiometry: np.ndarray, species: List[str], reactions: List[str]) -> None:
         if len(stoichiometry.shape) > 1:
             self._graph = Graph()
             for s in species:
@@ -956,25 +924,17 @@ def legacy_graphviz(
         # TODO: very ad-hoc, improve
         c = [k for k in problem.keys() if k.startswith("reaction_sends_activation")]
         if len(c) > 1 and condition is None:
-            raise ValueError(
-                "Detected multiple conditions defined in problem, but a condition was not provided"
-            )
+            raise ValueError("Detected multiple conditions defined in problem, but a condition was not provided")
         if len(c) == 1 and condition is None:
             condition = c[0].split("activation_")[1]
-        vertex_values = (
-            problem[f"species_activated_{condition}"]
-            - problem[f"species_inhibited_{condition}"]
-        )
+        vertex_values = problem[f"species_activated_{condition}"] - problem[f"species_inhibited_{condition}"]
         edge_values = (
-            problem[f"reaction_sends_activation_{condition}"]
-            - problem[f"reaction_sends_inhibition_{condition}"]
+            problem[f"reaction_sends_activation_{condition}"] - problem[f"reaction_sends_inhibition_{condition}"]
         )
         # Add custom values per edge/vertex
         for v, value in zip(vertices, vertex_values):
             if value < 0:
-                custom_vertex[v] = dict(
-                    color="blue", penwidth="2", fillcolor="azure2", style="filled"
-                )
+                custom_vertex[v] = dict(color="blue", penwidth="2", fillcolor="azure2", style="filled")
             elif value > 0:
                 custom_vertex[v] = dict(
                     color="red",
@@ -991,9 +951,7 @@ def legacy_graphviz(
 
     if node_attr is None:
         node_attr = dict(fixedsize="true")
-    g = graphviz.Digraph(
-        graph_attr=graph_attr, node_attr=node_attr, edge_attr=edge_attr
-    )
+    g = graphviz.Digraph(graph_attr=graph_attr, node_attr=node_attr, edge_attr=edge_attr)
     for e, p in zip(edges, self.edge_properties):
         s, t = e
         s = list(s)
@@ -1016,9 +974,7 @@ def legacy_graphviz(
             g.node(t, shape="circle", **props)
         edge_type = p.get("interaction", 0)
         props = custom_edge.get(e, dict())
-        if ("directed" in p and p["directed"] == False) or (
-            "undirected" in p and p["undirected"] == True
-        ):
+        if ("directed" in p and p["directed"] == False) or ("undirected" in p and p["undirected"] == True):
             props["dir"] = "none"
         if edge_type >= 0:
             g.edge(s, t, arrowhead="normal", **props)

@@ -34,9 +34,7 @@ class Graph(BaseGraph):
         >>> graph.plot()
     """
 
-    def __init__(
-        self, default_edge_type: EdgeType = EdgeType.DIRECTED, **kwargs
-    ) -> None:
+    def __init__(self, default_edge_type: EdgeType = EdgeType.DIRECTED, **kwargs) -> None:
         """Initialize Graph.
 
         Args:
@@ -214,9 +212,7 @@ class Graph(BaseGraph):
         """
         return len(self._edges)
 
-    def extract_subgraph(
-        self, vertices: Optional[Iterable] = None, edges: Optional[Iterable[int]] = None
-    ):
+    def extract_subgraph(self, vertices: Optional[Iterable] = None, edges: Optional[Iterable[int]] = None):
         """Extract subgraph induced by vertices and/or edges.
 
         Args:
@@ -275,9 +271,7 @@ class Graph(BaseGraph):
             g.add_edge(s, t, **attr)
         return g
 
-    def _extract_subgraph_keep_order(
-        self, vertices: Optional[Iterable] = None, edges: Optional[Iterable[int]] = None
-    ):
+    def _extract_subgraph_keep_order(self, vertices: Optional[Iterable] = None, edges: Optional[Iterable[int]] = None):
         """Extract subgraph while preserving vertex and edge order.
 
         Internal method that maintains insertion order of vertices and edges.
@@ -499,14 +493,8 @@ class Graph(BaseGraph):
             source_list = list(source)
             target_list = list(target)
             # Convert vertices in source and target to strings if they're not basic types
-            source_list = [
-                str(v) if not isinstance(v, (str, int, float, bool)) else v
-                for v in source_list
-            ]
-            target_list = [
-                str(v) if not isinstance(v, (str, int, float, bool)) else v
-                for v in target_list
-            ]
+            source_list = [str(v) if not isinstance(v, (str, int, float, bool)) else v for v in source_list]
+            target_list = [str(v) if not isinstance(v, (str, int, float, bool)) else v for v in target_list]
 
             edge_attr = self._get_edge_attributes(i)
             edge_dict = {
@@ -549,9 +537,7 @@ class Graph(BaseGraph):
         # Create a new graph with any global attributes
         graph_attrs = data.get("attributes", {})
         default_edge_type = (
-            graph_attrs.pop("edge_type", EdgeType.DIRECTED)
-            if "edge_type" in graph_attrs
-            else EdgeType.DIRECTED
+            graph_attrs.pop("edge_type", EdgeType.DIRECTED) if "edge_type" in graph_attrs else EdgeType.DIRECTED
         )
         g = cls(default_edge_type=default_edge_type, **graph_attrs)
 
@@ -584,16 +570,8 @@ class Graph(BaseGraph):
             )
 
             # Handle source and target vertex attributes
-            source_attr = (
-                attrs.pop(Attr.SOURCE_ATTR.value, {})
-                if Attr.SOURCE_ATTR.value in attrs
-                else {}
-            )
-            target_attr = (
-                attrs.pop(Attr.TARGET_ATTR.value, {})
-                if Attr.TARGET_ATTR.value in attrs
-                else {}
-            )
+            source_attr = attrs.pop(Attr.SOURCE_ATTR.value, {}) if Attr.SOURCE_ATTR.value in attrs else {}
+            target_attr = attrs.pop(Attr.TARGET_ATTR.value, {}) if Attr.TARGET_ATTR.value in attrs else {}
 
             # Add the edge
             g.add_edge(
@@ -661,9 +639,7 @@ class Graph(BaseGraph):
             raise ValueError("Filepath must not be empty.")
 
         # Get compression type and update filepath if needed
-        compression, filepath = super()._get_compression_and_filepath(
-            filepath, compression
-        )
+        compression, filepath = super()._get_compression_and_filepath(filepath, compression)
 
         # Ensure .json extension unless compression is specified
         base, ext = os.path.splitext(filepath)
@@ -698,9 +674,7 @@ class Graph(BaseGraph):
         instance = cls()
 
         # Get compression type and update filepath if needed
-        compression, filepath = instance._get_compression_and_filepath(
-            filepath, compression
-        )
+        compression, filepath = instance._get_compression_and_filepath(filepath, compression)
 
         # Get appropriate file opener based on compression type
         opener = instance._get_file_opener(compression, mode="rt")
@@ -737,7 +711,7 @@ class Graph(BaseGraph):
         g = Graph()
         if len(vertex_ids) != A.shape[0]:
             raise ValueError(
-                """The number of rows in A matrix is different from 
+                """The number of rows in A matrix is different from
                 the number of vertex ids"""
             )
         if len(edge_ids) != A.shape[1]:

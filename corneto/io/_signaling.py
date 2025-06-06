@@ -28,6 +28,7 @@ def _read_sif(
             reactions |= set([(s, int(d), t)])
     return list(reactions)
 
+
 @staticmethod
 def load_graph_from_sif(
     sif_file: str,

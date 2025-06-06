@@ -100,9 +100,7 @@ class SteinerTreeFlow(FlowMethod):
                 # optimization.
                 out_type = EdgeType.UNDIRECTED
             else:
-                raise ValueError(
-                    f"Unknown root selection strategy: {self.root_selection_strategy}"
-                )
+                raise ValueError(f"Unknown root selection strategy: {self.root_selection_strategy}")
         for v in terminal_vertices:
             if v != self.root_vertex:
                 idx = flow_graph.add_edge(v, (), type=out_type)
@@ -124,9 +122,7 @@ class SteinerTreeFlow(FlowMethod):
         # Create lower bounds based on edge types
         lb = np.array(
             [
-                0
-                if prop.has_attr(Attr.EDGE_TYPE, EdgeType.DIRECTED)
-                else -self.max_flow
+                0 if prop.has_attr(Attr.EDGE_TYPE, EdgeType.DIRECTED) else -self.max_flow
                 for prop in graph.get_attr_edges()
             ]
         )
@@ -138,9 +134,7 @@ class SteinerTreeFlow(FlowMethod):
             "shared_bounds": False,
         }
 
-    def create_flow_based_problem(
-        self, flow_problem: ProblemDef, graph: BaseGraph, data: Data
-    ):
+    def create_flow_based_problem(self, flow_problem: ProblemDef, graph: BaseGraph, data: Data):
         """Create the flow-based Steiner tree optimization problem.
 
         Sets up the constraints and objectives for the Steiner tree problem.
@@ -158,9 +152,7 @@ class SteinerTreeFlow(FlowMethod):
         edge_ids = list(set(range(graph.num_edges)) - set(flow_edge_ids))
         if self.strict_acyclic:
             # We need to create indicator variables for the flow
-            flow_problem += self.backend.NonZeroIndicator(
-                flow_problem.expr._flow, tolerance=self.epsilon
-            )
+            flow_problem += self.backend.NonZeroIndicator(flow_problem.expr._flow, tolerance=self.epsilon)
             flow_problem += self.backend.Acyclic(
                 graph,
                 flow_problem,
@@ -170,9 +162,7 @@ class SteinerTreeFlow(FlowMethod):
             with_flow = flow_problem.expr._flow_ipos + flow_problem.expr._flow_ineg
         else:
             # We create indicator variables for the edges except the in/out flow edges
-            flow_problem += self.backend.Indicator(
-                flow_problem.expr._flow, indexes=edge_ids
-            )
+            flow_problem += self.backend.Indicator(flow_problem.expr._flow, indexes=edge_ids)
             with_flow = flow_problem.expr._flow_i
 
         flow_problem.register("with_flow", with_flow)
@@ -182,13 +172,9 @@ class SteinerTreeFlow(FlowMethod):
             F = F if len(F.shape) == 1 else F[:, i]
             terminal_edgeflow_idx = []
             prized_edgeflow_idx = []
-            terminals = sample_data.query.select(
-                lambda f: f.mapping == "vertex" and not f.value
-            ).pluck()
+            terminals = sample_data.query.select(lambda f: f.mapping == "vertex" and not f.value).pluck()
             prized_terminals = dict(
-                sample_data.query.select(
-                    lambda f: f.mapping == "vertex" and f.value
-                ).pluck(lambda f: (f.id, f.value))
+                sample_data.query.select(lambda f: f.mapping == "vertex" and f.value).pluck(lambda f: (f.id, f.value))
             )
             # all_terminals = set(terminals).union(prized_terminals.keys())
             for terminal in terminals:
@@ -205,9 +191,7 @@ class SteinerTreeFlow(FlowMethod):
                 sample_flow_edges.add(self.flow_edges[self.root_vertex])
             sample_flow_edges = list(sample_flow_edges)
 
-            other_flow_edges = list(
-                set(self.flow_edges.values()) - set(sample_flow_edges)
-            )
+            other_flow_edges = list(set(self.flow_edges.values()) - set(sample_flow_edges))
             if len(other_flow_edges) > 0:
                 flow_problem += F[other_flow_edges] == 0
 
@@ -228,9 +212,7 @@ class SteinerTreeFlow(FlowMethod):
                         suffix_neg="_terminal_neg",
                     )
                     # We need to force the selection of terminals
-                    flow_problem += (
-                        flow_problem.expr._flow_terminal_pos.sum() == len(terminals) - 1
-                    )
+                    flow_problem += flow_problem.expr._flow_terminal_pos.sum() == len(terminals) - 1
                     flow_problem += flow_problem.expr._flow_terminal_neg.sum() == 1
 
         for i, sample_data in enumerate(data.samples.values()):
@@ -238,9 +220,7 @@ class SteinerTreeFlow(FlowMethod):
             selected = with_flow if len(with_flow.shape) == 1 else with_flow[:, i]
             F = flow_problem.expr.flow
             F = F if len(F.shape) == 1 else F[:, i]
-            edge_data = sample_data.query.select(
-                lambda f: f.mapping == "edge"
-            ).to_list()
+            edge_data = sample_data.query.select(lambda f: f.mapping == "edge").to_list()
             # Note: ids of edges correspond to the original graph, not the preprocessed graph
             for edata in edge_data:
                 edge_costs[edata.id] = edata.value
@@ -249,13 +229,9 @@ class SteinerTreeFlow(FlowMethod):
             # 1. Add non-zero binary vars for the in/out flow edges of prized vertices
             # 2. Collect prizes only if the in/out flow of prized edges are non-zero
             if len(prized_terminals) > 0:
-                prized_idx = [
-                    self.flow_edges[prized] for prized in prized_terminals.keys()
-                ]
+                prized_idx = [self.flow_edges[prized] for prized in prized_terminals.keys()]
                 # Vector with the prizes (same order as the flow edges)
-                prizes = np.array(
-                    [prized_terminals[prized] for prized in prized_terminals.keys()]
-                )
+                prizes = np.array([prized_terminals[prized] for prized in prized_terminals.keys()])
                 flow_problem += self.backend.NonZeroIndicator(
                     F,
                     indexes=prized_idx,
@@ -267,16 +243,10 @@ class SteinerTreeFlow(FlowMethod):
                     # Avoid "forest" effect, only 1 of the bidirectional edges can
                     # inject flow (since all flow edges are pointing out, the flow that goes
                     # in has a negative sign)
-                    flow_problem += (
-                        flow_problem.expr._flow_prized_pos.sum()
-                        == len(prized_terminals) - 1
-                    )
+                    flow_problem += flow_problem.expr._flow_prized_pos.sum() == len(prized_terminals) - 1
                     flow_problem += flow_problem.expr._flow_prized_neg.sum() == 1
                 # Binary vector with the selected prized vertices
-                selected_prized = (
-                    flow_problem.expr._flow_prized_pos
-                    + flow_problem.expr._flow_prized_neg
-                )
+                selected_prized = flow_problem.expr._flow_prized_pos + flow_problem.expr._flow_prized_neg
                 flow_problem.add_objectives(
                     prizes @ selected_prized,
                     weights=-1,  # maximize the prizes

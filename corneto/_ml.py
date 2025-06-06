@@ -26,9 +26,7 @@ def _load_keras():
         raise e
 
 
-def kfold_nonzero_splits(
-    data, n_splits: int = 5, shuffle: bool = True, random_state: int = 42
-):
+def kfold_nonzero_splits(data, n_splits: int = 5, shuffle: bool = True, random_state: int = 42):
     from sklearn.model_selection import KFold
 
     """
@@ -85,9 +83,7 @@ def kfold_nonzero_splits(
             val_copy[r, c] = np.nan
 
         if is_pandas:
-            train_copy = pd.DataFrame(
-                train_copy, index=data.index, columns=data.columns
-            )
+            train_copy = pd.DataFrame(train_copy, index=data.index, columns=data.columns)
             val_copy = pd.DataFrame(val_copy, index=data.index, columns=data.columns)
 
         yield train_copy, val_copy
@@ -138,13 +134,11 @@ def index_selector():
             self.axis = axis
 
         def call(self, inputs):
-            """Apply index selection along the specified axis.
-            """
+            """Apply index selection along the specified axis."""
             return keras.ops.take(inputs, self.indexes, axis=self.axis)
 
         def compute_output_shape(self, input_shape):
-            """Compute the output shape after index selection.
-            """
+            """Compute the output shape after index selection."""
             # Convert negative axis to positive
             axis = self.axis if self.axis >= 0 else len(input_shape) + self.axis
             new_shape = list(input_shape)
@@ -152,8 +146,7 @@ def index_selector():
             return tuple(new_shape)
 
         def get_config(self):
-            """Serialize the configuration of the layer for saving/loading models.
-            """
+            """Serialize the configuration of the layer for saving/loading models."""
             config = super(IndexSelector, self).get_config()
             config.update({"indexes": self.indexes, "axis": self.axis})
             return config
@@ -183,9 +176,7 @@ def build_dagnn(
     keras = _load_keras()
     input_layer = keras.Input(shape=(len(input_nodes),), name="inputs")
     if batch_norm_input:
-        input_layer = keras.layers.BatchNormalization(
-            center=batch_norm_center, scale=batch_norm_scale
-        )(input_layer)
+        input_layer = keras.layers.BatchNormalization(center=batch_norm_center, scale=batch_norm_scale)(input_layer)
     if unit_norm_input:
         input_layer = keras.layers.UnitNormalization()(input_layer)
     vertices = G.toposort()
@@ -235,11 +226,7 @@ def build_dagnn(
             neuron_inputs = neuron_inputs[0]
 
         # Create the neuron for the current vertex
-        default_act = (
-            default_hidden_activation
-            if v not in output_nodes
-            else default_output_activation
-        )
+        default_act = default_hidden_activation if v not in output_nodes else default_output_activation
         act = G.get_attr_vertex(v).get(activation_attribute, default_act)
         neuron = keras.layers.Dense(
             1,
@@ -251,16 +238,12 @@ def build_dagnn(
         x = neuron(neuron_inputs)
         neurons[v] = x
         if verbose:
-            print(
-                f"Creating {v} ({act}), {len(in_v_inputs)} data input(s), {len(in_v_neurons)} neuron input(s)"
-            )
+            print(f"Creating {v} ({act}), {len(in_v_inputs)} data input(s), {len(in_v_neurons)} neuron input(s)")
     # Create the model
     if len(output_nodes) == 1:
         output_layer = neurons[output_nodes[0]]
     else:
-        output_layer = keras.layers.Concatenate(name="output_layer")(
-            [neurons[v] for v in output_nodes]
-        )
+        output_layer = keras.layers.Concatenate(name="output_layer")([neurons[v] for v in output_nodes])
     model = keras.Model(inputs=input_layer, outputs=output_layer)
     return model
 

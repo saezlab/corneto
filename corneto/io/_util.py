@@ -1,4 +1,3 @@
-
 def _is_url(url):
     from urllib.parse import urlparse
 

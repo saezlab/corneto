@@ -34,9 +34,7 @@ class OptionalNumba(OptionalModule):
 
                         # Iterate over the first axis (rows)
                         for i in range(a.shape[0]):
-                            func(
-                                a[i], window_arr, out[i]
-                            )  # Call the function for each row
+                            func(a[i], window_arr, out[i])  # Call the function for each row
 
                         return out
 

@@ -16,19 +16,13 @@ def get_local_dynamic_version(package_name):
         module = __import__(package_name)
         version = getattr(module, "__version__", None)
         if version:
-            print(
-                f"Successfully imported '{package_name}' and found __version__: {version}"
-            )
+            print(f"Successfully imported '{package_name}' and found __version__: {version}")
             return version
         else:
-            print(
-                f"Warning: Imported '{package_name}' but it has no __version__ attribute."
-            )
+            print(f"Warning: Imported '{package_name}' but it has no __version__ attribute.")
             return None
     except ImportError:
-        print(
-            f"Warning: Could not import package '{package_name}' to get local dynamic version."
-        )
+        print(f"Warning: Could not import package '{package_name}' to get local dynamic version.")
         return None
 
 
@@ -41,14 +35,10 @@ def get_git_tags():
             stderr=subprocess.PIPE,
             stdout=subprocess.PIPE,
         )
-        output = subprocess.check_output(
-            ["git", "tag", "--sort=-committerdate"], text=True
-        )
+        output = subprocess.check_output(["git", "tag", "--sort=-committerdate"], text=True)
         return [line.strip() for line in output.splitlines() if line.strip()]
     except subprocess.CalledProcessError as e:
-        print(
-            f"Warning: Git tag command failed. Stderr: {e.stderr}. Falling back to unsorted tags."
-        )
+        print(f"Warning: Git tag command failed. Stderr: {e.stderr}. Falling back to unsorted tags.")
         try:
             output = subprocess.check_output(["git", "tag"], text=True)
             return [line.strip() for line in output.splitlines() if line.strip()]
@@ -82,29 +72,19 @@ def get_deployed_versions():
             stderr=subprocess.PIPE,
             stdout=subprocess.PIPE,
         )
-        output = subprocess.check_output(
-            ["git", "ls-tree", "-d", "--name-only", "gh-pages"], text=True
-        )
-        deployed = {
-            line.strip()
-            for line in output.splitlines()
-            if line.strip() and not line.startswith(".")
-        }
+        output = subprocess.check_output(["git", "ls-tree", "-d", "--name-only", "gh-pages"], text=True)
+        deployed = {line.strip() for line in output.splitlines() if line.strip() and not line.startswith(".")}
         print(f"Found deployed versions (directories in gh-pages): {deployed}")
         return deployed
     except subprocess.CalledProcessError as e:
-        print(
-            f"Warning: Could not determine deployed versions from gh-pages. Stderr: {e.stderr}"
-        )
+        print(f"Warning: Could not determine deployed versions from gh-pages. Stderr: {e.stderr}")
         return set()
 
 
 def get_version_from_pyproject(git_ref, file_path="pyproject.toml"):
     """Attempts to read pyproject.toml from a git ref and extract the version."""
     try:
-        output = subprocess.check_output(
-            ["git", "show", f"{git_ref}:{file_path}"], text=True, stderr=subprocess.PIPE
-        )
+        output = subprocess.check_output(["git", "show", f"{git_ref}:{file_path}"], text=True, stderr=subprocess.PIPE)
         # Allow leading whitespace before the version key; escape inner quotes
         match = re.search(r"^\s*version\s*=\s*[\"']([^\"']+)[\"']", output, re.M)
         if match:
@@ -114,9 +94,7 @@ def get_version_from_pyproject(git_ref, file_path="pyproject.toml"):
         print(f"Warning: Version pattern not found in {file_path} on {git_ref}.")
         return None
     except subprocess.CalledProcessError as e:
-        print(
-            f"Warning: 'git show {git_ref}:{file_path}' failed. Stderr: {e.stderr.strip()}"
-        )
+        print(f"Warning: 'git show {git_ref}:{file_path}' failed. Stderr: {e.stderr.strip()}")
         return None
 
 
@@ -132,9 +110,7 @@ def get_base_url():
         fallback_url = f"https://{user}.github.io/{project}"
         print(f"PAGE_URL not set. Using fallback GitHub Pages URL: {fallback_url}")
         return fallback_url
-    print(
-        "Error: Could not determine base URL. GITHUB_REPOSITORY and PAGE_URL are not set."
-    )
+    print("Error: Could not determine base URL. GITHUB_REPOSITORY and PAGE_URL are not set.")
     return "https://your-username.github.io/your-repo"
 
 
@@ -167,9 +143,7 @@ def main():
             version_from_toml = get_version_from_pyproject(git_ref_for_remote_lookup)
             if version_from_toml and version_from_toml != "0.0.0":
                 switcher_version_str = version_from_toml
-            print(
-                f"Using version '{switcher_version_str}' for '{branch_id}' switcher entry."
-            )
+            print(f"Using version '{switcher_version_str}' for '{branch_id}' switcher entry.")
 
         if remote_branch_exists(branch_id):
             entry = {
@@ -186,9 +160,7 @@ def main():
 
     deployed = get_deployed_versions()
     if not deployed and os.environ.get("GITHUB_ACTIONS") == "true":
-        print(
-            "Warning: Could not get deployed versions. Tags will be added without checking deployment status."
-        )
+        print("Warning: Could not get deployed versions. Tags will be added without checking deployment status.")
 
     all_tags = get_git_tags()
     print(f"Found git tags: {all_tags}")
@@ -202,9 +174,7 @@ def main():
         tag_version_str = tag
         if tag == current_ci_ref_name and local_dynamic_version:
             tag_version_str = local_dynamic_version
-            print(
-                f"CI is building tag '{tag}'. Using local dynamic version '{local_dynamic_version}'."
-            )
+            print(f"CI is building tag '{tag}'. Using local dynamic version '{local_dynamic_version}'.")
 
         entry = {"name": tag, "version": tag_version_str, "url": f"{base_url}/{tag}/"}
         switcher.append(entry)
@@ -212,9 +182,7 @@ def main():
 
     final_switcher = []
     main_entry = next((e for e in switcher if e.get("preferred")), None)
-    dev_entry = next(
-        (e for e in switcher if e["name"] == "dev" and not e.get("preferred")), None
-    )
+    dev_entry = next((e for e in switcher if e["name"] == "dev" and not e.get("preferred")), None)
     if main_entry:
         final_switcher.append(main_entry)
     if dev_entry:
@@ -232,9 +200,7 @@ def main():
     with open(output_path, "w") as f:
         json.dump(final_switcher, f, indent=2)
 
-    print(
-        f"Switcher file generated at '{output_path}' with {len(final_switcher)} entries."
-    )
+    print(f"Switcher file generated at '{output_path}' with {len(final_switcher)} entries.")
 
 
 if __name__ == "__main__":

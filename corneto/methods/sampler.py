@@ -114,10 +114,7 @@ def sample_alternative_solutions(
     logger.debug("Solving original model …")
     problem.solve(**solver_kwargs, verbosity=0)
     baseline_obj = {o.name: float(o.value) for o in problem.objectives}
-    logger.debug(
-        "Baseline objectives: "
-        + ", ".join(f"{k}={v:.6g}" for k, v in baseline_obj.items())
-    )
+    logger.debug("Baseline objectives: " + ", ".join(f"{k}={v:.6g}" for k, v in baseline_obj.items()))
 
     for v in collect_vars:
         collected[v].append(np.asarray(problem.expr[v].value).copy())
@@ -128,9 +125,7 @@ def sample_alternative_solutions(
     n_perturb = max(1, int(total_elems * percentage))
 
     noise_buf = np.zeros(var_shape, dtype=float)
-    pert = problem.backend.Parameter(
-        name=f"{perturbation_name}_param", shape=var_shape, value=noise_buf
-    )
+    pert = problem.backend.Parameter(name=f"{perturbation_name}_param", shape=var_shape, value=noise_buf)
     problem.add_objective(
         (target_var.multiply(pert))
         .sum()
@@ -193,11 +188,7 @@ def sample_alternative_solutions(
 
         # Check tolerance only on non-excluded objectives
         violated = next(
-            (
-                (name, err)
-                for name, err in objectives_to_check_for_tolerance.items()
-                if err > rel_opt_tol
-            ),
+            ((name, err) for name, err in objectives_to_check_for_tolerance.items() if err > rel_opt_tol),
             None,
         )
 
@@ -226,14 +217,10 @@ def sample_alternative_solutions(
         detail_msg = ", ".join(detail_msg_parts)
 
         if violated is None:
-            for (
-                v_name
-            ) in collect_vars:  # Use v_name to avoid conflict with collected value v
+            for v_name in collect_vars:  # Use v_name to avoid conflict with collected value v
                 collected[v_name].append(np.asarray(problem.expr[v_name].value).copy())
             n_accept += 1
-            logger.info(
-                f"[{trial}/{max_samples}] accepted (total accepted={n_accept}) -> {detail_msg}"
-            )
+            logger.info(f"[{trial}/{max_samples}] accepted (total accepted={n_accept}) -> {detail_msg}")
         else:
             n_reject += 1
             # More detailed rejection message
@@ -249,11 +236,7 @@ def sample_alternative_solutions(
         # Check if any variables were actually collected (n_accept > 0 or initial solution)
         # collected will always have the initial solution if collect_vars is not empty
         if any(collected.values()):
-            out = {
-                v_name: np.stack(values, axis=0)
-                for v_name, values in collected.items()
-                if values
-            }
+            out = {v_name: np.stack(values, axis=0) for v_name, values in collected.items() if values}
         else:  # Should not happen if initial solution is always added and collect_vars is not empty
             out = {v_name: np.array([]) for v_name in collect_vars}
 
@@ -261,17 +244,12 @@ def sample_alternative_solutions(
     # If out is empty (e.g. collect_vars=[]), then num_solutions is 0 for logging,
     # or handle based on collected dict before it's potentially emptied.
     num_solutions_returned = 0
-    if collected and next(
-        iter(collected)
-    ):  # Check if collected is not empty and has at least one key
+    if collected and next(iter(collected)):  # Check if collected is not empty and has at least one key
         # Get the count from the first variable that has collected data
         # This assumes all collected variables will have the same number of samples
         first_collected_var_key = next(iter(collected))
         if collected[first_collected_var_key]:
             num_solutions_returned = len(collected[first_collected_var_key])
 
-    logger.info(
-        f"Done. accepted={n_accept}, rejected={n_reject}, solutions returned="
-        f"{num_solutions_returned}"
-    )
+    logger.info(f"Done. accepted={n_accept}, rejected={n_reject}, solutions returned={num_solutions_returned}")
     return out

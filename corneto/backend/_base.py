@@ -75,9 +75,7 @@ class CExpression(abc.ABC):
         return self._name
 
     @abc.abstractmethod
-    def _create_proxy_expr(
-        self, expr: Any, symbols: Optional[Set["CSymbol"]] = None
-    ) -> "CExpression":
+    def _create_proxy_expr(self, expr: Any, symbols: Optional[Set["CSymbol"]] = None) -> "CExpression":
         pass
 
     @property
@@ -383,30 +381,22 @@ class CSymbol(CExpression):
         if isinstance(lb, np.ndarray):
             # TODO: change the way we handle this
             if not _eq_shape(lb, expr):
-                raise ValueError(
-                    f"Shape of lb is {lb.shape}, whereas symbol has a shape of {expr.shape}"
-                )
+                raise ValueError(f"Shape of lb is {lb.shape}, whereas symbol has a shape of {expr.shape}")
             lb_r = lb
         elif isinstance(lb, numbers.Number):
             lb_r = np.full(expr.shape, lb)
         else:
             if lb is not None:
-                raise ValueError(
-                    f"lb has an invalid type ({type(lb)}). It must be a number or numpy array"
-                )
+                raise ValueError(f"lb has an invalid type ({type(lb)}). It must be a number or numpy array")
         if isinstance(ub, np.ndarray):
             if not _eq_shape(ub, expr):
-                raise ValueError(
-                    f"Shape of ub is {ub.shape}, whereas symbol has a shape of {expr.shape}"
-                )
+                raise ValueError(f"Shape of ub is {ub.shape}, whereas symbol has a shape of {expr.shape}")
             ub_r = ub
         elif isinstance(ub, numbers.Number):
             ub_r = np.full(expr.shape, ub)
         else:
             if ub is not None:
-                raise ValueError(
-                    f"ub has an invalid type ({type(ub)}). It must be a number or numpy array"
-                )
+                raise ValueError(f"ub has an invalid type ({type(ub)}). It must be a number or numpy array")
         self._lb = lb_r
         self._ub = ub_r
         self._name = name
@@ -485,9 +475,7 @@ class ProblemDef:
     def symbols(self) -> Dict[str, CSymbol]:
         # show deprecated warning:
         # warnings.warn("Use ProblemDef.expressions instead.", DeprecationWarning)
-        return {
-            s.name: s for s in Backend.get_symbols(self._constraints + self._objectives)
-        }
+        return {s.name: s for s in Backend.get_symbols(self._constraints + self._objectives)}
 
     @property
     def expressions(self) -> Attributes:
@@ -597,9 +585,7 @@ class ProblemDef:
             avail_solvers = self._backend.available_solvers()
             # We need to match solver with the available solvers
             # being case-insensitive
-            solver = next(
-                (s for s in avail_solvers if s.lower() == solver.lower()), None
-            )
+            solver = next((s for s in avail_solvers if s.lower() == solver.lower()), None)
         backend_problem = self._backend.solve(
             self,
             solver=solver,
@@ -613,18 +599,14 @@ class ProblemDef:
 
     def merge(self, other: "ProblemDef", inplace=False) -> "ProblemDef":
         # TODO: If the other is empty (or instance of grammar?) build the problem before merging
-        if isinstance(other, ProblemDef) and hasattr(
-            other, "_build_problem"
-        ):  # TODO Change by isinstance
+        if isinstance(other, ProblemDef) and hasattr(other, "_build_problem"):  # TODO Change by isinstance
             f = getattr(other, "_build_problem")
             other = f(self)
         b = self._backend if not None else other._backend
         if not b:
             raise ValueError("Problems have no backend associated.")
         if self._backend and other._backend and (self._backend != other._backend):
-            raise ValueError(
-                "The two problems have different instantiations of the backend."
-            )
+            raise ValueError("The two problems have different instantiations of the backend.")
         if inplace:
             self.add_constraints(other._constraints, inplace=True)
             self.add_objectives(other._objectives, other._weights, inplace=True)
@@ -638,9 +620,7 @@ class ProblemDef:
         # TODO: Subclasses of ProblemDef not supported
         return self.__class__(b, c, o, e, w)
 
-    def register(
-        self, name: str, expr: CExpression, inplace: bool = True
-    ) -> "ProblemDef":
+    def register(self, name: str, expr: CExpression, inplace: bool = True) -> "ProblemDef":
         if name in self._expressions:
             raise ValueError(f"Expression with name {name} already exists")
         if name in self.symbols:
@@ -839,9 +819,7 @@ class Backend(abc.ABC):
             weights = [weights]
         elif isinstance(weights, numbers.Number):
             weights = [float(weights)]
-        return ProblemDef(
-            self, constraints, objectives, expressions, weights, direction
-        )
+        return ProblemDef(self, constraints, objectives, expressions, weights, direction)
 
     @abc.abstractmethod
     def build(self, p: ProblemDef) -> Any:
@@ -874,11 +852,7 @@ class Backend(abc.ABC):
             # ov = self.vstack(p.objectives)
             o = sum(p.weights[i] * p.objectives[i] for i in range(len(p.objectives)))
         else:
-            o = (
-                p.weights[0] * p.objectives[0]
-                if p.objectives and p.weights[0] != 0
-                else None
-            )
+            o = p.weights[0] * p.objectives[0] if p.objectives and p.weights[0] != 0 else None
         return self._solve(
             p,
             objective=o,
@@ -940,13 +914,9 @@ class Backend(abc.ABC):
         if shared_bounds and n_flows > 1:
             # check num dims of lb
             if len(shape) > 1 and shape[1] > 1 and not _identical_columns(lb):
-                raise ValueError(
-                    "shared_bounds=True cannot be used when lower bounds are not identical across flows"
-                )
+                raise ValueError("shared_bounds=True cannot be used when lower bounds are not identical across flows")
             if len(shape) > 1 and shape[1] > 1 and not _identical_columns(ub):
-                raise ValueError(
-                    "shared_bounds=True cannot be used when upper bounds are not identical across flows"
-                )
+                raise ValueError("shared_bounds=True cannot be used when upper bounds are not identical across flows")
             S = F.sum(axis=1)
             P += S <= ub[:, 0]
             P += S >= lb[:, 0]
@@ -1014,10 +984,7 @@ class Backend(abc.ABC):
         if isinstance(max_parents, int):
             max_parents = {v: max_parents for v in g.vertices}
         Ip = In = None
-        if (
-            indicator_positive_var_name is not None
-            and indicator_negative_var_name is not None
-        ):
+        if indicator_positive_var_name is not None and indicator_negative_var_name is not None:
             Ip = P.expressions[indicator_positive_var_name]
             In = P.expressions[indicator_negative_var_name]
             I = Ip + In
@@ -1045,9 +1012,7 @@ class Backend(abc.ABC):
             n_samples = I.shape[1]
 
         # Create a DAG layer num for each vertex
-        L = self.Variable(
-            acyclic_var_name, (g.num_vertices, n_samples), 0, g.num_vertices - 1
-        )
+        L = self.Variable(acyclic_var_name, (g.num_vertices, n_samples), 0, g.num_vertices - 1)
         vix = {v: i for i, v in enumerate(g.vertices)}
         for i_sample in range(n_samples):
             if Ip is not None:
@@ -1066,13 +1031,9 @@ class Backend(abc.ABC):
                 # check if Ip has ub field
                 if hasattr(Ip, "ub"):
                     e_pos = [(i, g.get_edge(i)) for i in np.flatnonzero(Ip.ub > 0)]
-                    e_ix = np.array(
-                        [i for i, (s, t) in e_pos if len(s) > 0 and len(t) > 0]
-                    )
+                    e_ix = np.array([i for i, (s, t) in e_pos if len(s) > 0 and len(t) > 0])
                 else:
-                    e_ix = np.array(
-                        [i for i, (s, t) in enumerate(g.E) if len(s) > 0 and len(t) > 0]
-                    )
+                    e_ix = np.array([i for i, (s, t) in enumerate(g.E) if len(s) > 0 and len(t) > 0])
                 edges = [g.get_edge(i) for i in e_ix]
                 # Get the index of the source / target vertices of the edge
                 s_idx = np.array([vix[list(s)[0]] for (s, _) in edges])
@@ -1080,30 +1041,26 @@ class Backend(abc.ABC):
                 # The layer position in a DAG of the target vertex of the edge
                 # has to be greater than the source vertex, otherwise Ip (pos flow) has to be 0
                 if len(e_ix) > 0:
-                    P += L[t_idx, i_sample] - L[s_idx, i_sample] >= Ip_i_order[e_ix] + (
-                        1 - g.num_vertices
-                    ) * (1 - Ip_i_order[e_ix])
+                    P += L[t_idx, i_sample] - L[s_idx, i_sample] >= Ip_i_order[e_ix] + (1 - g.num_vertices) * (
+                        1 - Ip_i_order[e_ix]
+                    )
                     P += L[t_idx, i_sample] - L[s_idx, i_sample] <= g.num_vertices - 1
             if In is not None:
                 # NOTE: Negative flows eq. to reversed directed edge
                 # Get edges s->t that can have a positive flow
                 if hasattr(In, "lb"):
                     e_neg = [(i, g.get_edge(i)) for i in np.flatnonzero(In.lb < 0)]
-                    e_ix = np.array(
-                        [i for i, (s, t) in e_neg if len(s) > 0 and len(t) > 0]
-                    )
+                    e_ix = np.array([i for i, (s, t) in e_neg if len(s) > 0 and len(t) > 0])
                 else:
-                    e_ix = np.array(
-                        [i for i, (s, t) in enumerate(g.E) if len(s) > 0 and len(t) > 0]
-                    )
+                    e_ix = np.array([i for i, (s, t) in enumerate(g.E) if len(s) > 0 and len(t) > 0])
                 edges = [g.get_edge(i) for i in e_ix]
                 # Get the index of the source / target vertices of the edge
                 s_idx = np.array([vix[list(s)[0]] for (s, _) in edges])
                 t_idx = np.array([vix[list(t)[0]] for (_, t) in edges])
                 if len(e_ix) > 0:
-                    P += L[s_idx, i_sample] - L[t_idx, i_sample] >= In_i_order[e_ix] + (
-                        1 - g.num_vertices
-                    ) * (1 - In_i_order[e_ix])
+                    P += L[s_idx, i_sample] - L[t_idx, i_sample] >= In_i_order[e_ix] + (1 - g.num_vertices) * (
+                        1 - In_i_order[e_ix]
+                    )
                     P += L[s_idx, i_sample] - L[t_idx, i_sample] <= g.num_vertices - 1
             # TODO: Raise error if hypergraph
         return P
@@ -1172,10 +1129,7 @@ class Backend(abc.ABC):
             max_parents = {v: max_parents for v in g.vertices}
 
         Ip = In = None
-        if (
-            indicator_positive_var_name is not None
-            and indicator_negative_var_name is not None
-        ):
+        if indicator_positive_var_name is not None and indicator_negative_var_name is not None:
             Ip = P.expressions[indicator_positive_var_name]
             In = P.expressions[indicator_negative_var_name]
             I = Ip + In
@@ -1203,9 +1157,7 @@ class Backend(abc.ABC):
             n_samples = I.shape[1]
 
         # Create a DAG layer variable for each vertex, one per sample.
-        L = self.Variable(
-            acyclic_var_name, (g.num_vertices, n_samples), 0, g.num_vertices - 1
-        )
+        L = self.Variable(acyclic_var_name, (g.num_vertices, n_samples), 0, g.num_vertices - 1)
         vix = {v: i for i, v in enumerate(g.vertices)}
 
         # If bounds lists are provided, ensure their length matches the number of samples.
@@ -1233,9 +1185,9 @@ class Backend(abc.ABC):
                 s_idx = np.array([vix[list(s)[0]] for (s, _) in edges])
                 t_idx = np.array([vix[list(t)[0]] for (_, t) in edges])
                 if len(e_ix) > 0:
-                    P += L[t_idx, i_sample] - L[s_idx, i_sample] >= Ip_i_order[e_ix] + (
-                        1 - g.num_vertices
-                    ) * (1 - Ip_i_order[e_ix])
+                    P += L[t_idx, i_sample] - L[s_idx, i_sample] >= Ip_i_order[e_ix] + (1 - g.num_vertices) * (
+                        1 - Ip_i_order[e_ix]
+                    )
                     P += L[t_idx, i_sample] - L[s_idx, i_sample] <= g.num_vertices - 1
 
             if In is not None:
@@ -1250,9 +1202,9 @@ class Backend(abc.ABC):
                 s_idx = np.array([vix[list(s)[0]] for (s, _) in edges])
                 t_idx = np.array([vix[list(t)[0]] for (_, t) in edges])
                 if len(e_ix) > 0:
-                    P += L[s_idx, i_sample] - L[t_idx, i_sample] >= In_i_order[e_ix] + (
-                        1 - g.num_vertices
-                    ) * (1 - In_i_order[e_ix])
+                    P += L[s_idx, i_sample] - L[t_idx, i_sample] >= In_i_order[e_ix] + (1 - g.num_vertices) * (
+                        1 - In_i_order[e_ix]
+                    )
                     P += L[s_idx, i_sample] - L[t_idx, i_sample] <= g.num_vertices - 1
 
             # --- New: Add vertex lower and upper bound constraints ---
@@ -1358,9 +1310,7 @@ class Backend(abc.ABC):
             # The layer position in a DAG of the target vertex of the edge
             # has to be greater than the source vertex, otherwise Ip (pos flow) has to be 0
             if len(e_ix) > 0:
-                P += L[t_idx] - L[s_idx] >= Ip[e_ix] + (1 - g.num_vertices) * (
-                    1 - Ip[e_ix]
-                )
+                P += L[t_idx] - L[s_idx] >= Ip[e_ix] + (1 - g.num_vertices) * (1 - Ip[e_ix])
                 P += L[t_idx] - L[s_idx] <= g.num_vertices - 1
         if np.any(lb < 0):
             # NOTE: Negative flows eq. to reversed directed edge
@@ -1373,9 +1323,7 @@ class Backend(abc.ABC):
             s_idx = np.array([vix[next(iter(s))] for (s, _) in edges])
             t_idx = np.array([vix[next(iter(t))] for (_, t) in edges])
             if len(e_ix) > 0:
-                P += L[s_idx] - L[t_idx] >= In[e_ix] + (1 - g.num_vertices) * (
-                    1 - In[e_ix]
-                )
+                P += L[s_idx] - L[t_idx] >= In[e_ix] + (1 - g.num_vertices) * (1 - In[e_ix])
                 P += L[s_idx] - L[t_idx] <= g.num_vertices - 1
         # TODO: Raise error if hypergraph
         return P
@@ -1408,9 +1356,7 @@ class Backend(abc.ABC):
             c += [I[idx] == 0, S[idx] == 0]
         # Add constraint: lb * I <= V <= ub * I
         if V._provided_lb is None or V._provided_ub is None:
-            raise ValueError(
-                f"The continuous variable {V.name} is unbounded, indicators cannot be created."
-            )
+            raise ValueError(f"The continuous variable {V.name} is unbounded, indicators cannot be created.")
         c += [S >= I.multiply(lb), S <= I.multiply(ub)]
         return self.Problem(c)
 
@@ -1425,15 +1371,11 @@ class Backend(abc.ABC):
     ) -> ProblemDef:
         # Ensure the variable is bounded
         if V._provided_lb is None or V._provided_ub is None:
-            raise ValueError(
-                f"The continuous variable {V.name} is unbounded, indicators cannot be created."
-            )
+            raise ValueError(f"The continuous variable {V.name} is unbounded, indicators cannot be created.")
 
         # Avoid ambiguity: don't allow both positional indices and the 'indexes' keyword
         if args and indexes is not None:
-            raise ValueError(
-                "Provide either positional indices or the 'indexes' keyword, not both."
-            )
+            raise ValueError("Provide either positional indices or the 'indexes' keyword, not both.")
 
         # If args is not none, we need to check if it is a tuple and more than
         # one dimension was provided.
@@ -1442,9 +1384,7 @@ class Backend(abc.ABC):
             if diff_len_shape > 0:
                 # If the last dimension is not 0, raise an error
                 if args[-1] != 0:
-                    raise ValueError(
-                        f"Cannot use {len(args)} positional indices for a variable of shape {V.shape}"
-                    )
+                    raise ValueError(f"Cannot use {len(args)} positional indices for a variable of shape {V.shape}")
                 else:
                     # We ignore the last dimension
                     args = args[:-1]
@@ -1463,12 +1403,8 @@ class Backend(abc.ABC):
             ub = V.ub
 
         c = []
-        I_pos = self.Variable(
-            V.name + suffix_pos, S.shape, 0, 1, vartype=VarType.BINARY
-        )
-        I_neg = self.Variable(
-            V.name + suffix_neg, S.shape, 0, 1, vartype=VarType.BINARY
-        )
+        I_pos = self.Variable(V.name + suffix_pos, S.shape, 0, 1, vartype=VarType.BINARY)
+        I_neg = self.Variable(V.name + suffix_neg, S.shape, 0, 1, vartype=VarType.BINARY)
         I = I_pos + I_neg
         c += [I <= 1]  # Ensure mutual exclusivity
 
@@ -1510,15 +1446,11 @@ class Backend(abc.ABC):
         if not (positive or negative):
             raise ValueError("At least one of positive or negative must be True.")
         if positive:
-            I_pos = self.Variable(
-                V.name + suffix_pos, V.shape, 0, 1, vartype=VarType.BINARY
-            )
+            I_pos = self.Variable(V.name + suffix_pos, V.shape, 0, 1, vartype=VarType.BINARY)
             if np.sum(V.ub <= 0) > 0:
                 constraints.append(I_pos[np.where(V.ub <= 0)[0]] == 0)
         if negative:
-            I_neg = self.Variable(
-                V.name + suffix_neg, V.shape, 0, 1, vartype=VarType.BINARY
-            )
+            I_neg = self.Variable(V.name + suffix_neg, V.shape, 0, 1, vartype=VarType.BINARY)
             if np.sum(V.lb >= 0) > 0:
                 constraints.append(I_neg[np.where(V.lb >= 0)[0]] == 0)
         if positive and negative:
@@ -1540,9 +1472,7 @@ class Backend(abc.ABC):
 
     def Xor(self, x: CExpression, y: CExpression, varname="_xor"):
         # Deprecated
-        warnings.warn(
-            "The Xor method is deprecated, use linear_xor instead", DeprecationWarning
-        )
+        warnings.warn("The Xor method is deprecated, use linear_xor instead", DeprecationWarning)
         if isinstance(x, CSymbol) and x._vartype != VarType.BINARY:
             raise ValueError(f"Variable x has type {x._vartype} instead of BINARY")
         if isinstance(y, CSymbol) and y._vartype != VarType.BINARY:
@@ -1551,9 +1481,7 @@ class Backend(abc.ABC):
             raise ValueError(f"Shape of x ({x.shape}) is different from y ({y.shape})")
         # Create a new binary variable to compute xor(x,y)
         xor = self.Variable(varname, x.shape, 0, 1, vartype=VarType.BINARY)
-        return self.Problem(
-            [xor >= x - y, xor >= y - x, xor <= x + y, xor <= 2 - x - y]
-        )
+        return self.Problem([xor >= x - y, xor >= y - x, xor <= x + y, xor <= 2 - x - y])
 
     def linear_or(
         self,
@@ -1569,9 +1497,7 @@ class Backend(abc.ABC):
             for s in x._proxy_symbols:
                 if s._vartype != VarType.BINARY:
                     # Show warning only
-                    LOGGER.warn(
-                        f"Variable {s.name} has type {s._vartype}, expression is assumed to be binary"
-                    )
+                    LOGGER.warn(f"Variable {s.name} has type {s._vartype}, expression is assumed to be binary")
                     break
 
         Z = x.sum(axis=axis)
@@ -1580,9 +1506,7 @@ class Backend(abc.ABC):
         Or = self.Variable(varname, Z.shape, 0, 1, vartype=VarType.BINARY)
         return self.Problem([Or >= Z_norm, Or <= Z])
 
-    def linear_and(
-        self, x: CExpression, axis: Optional[int] = None, varname="and"
-    ) -> ProblemDef:
+    def linear_and(self, x: CExpression, axis: Optional[int] = None, varname="and") -> ProblemDef:
         # Check if the variable is binary, otherwise throw an error
         if hasattr(x, "_vartype") and x._vartype != VarType.BINARY:
             raise ValueError(f"Variable x has type {x._vartype} instead of BINARY")
@@ -1590,9 +1514,7 @@ class Backend(abc.ABC):
             for s in x._proxy_symbols:
                 if s._vartype != VarType.BINARY:
                     # Show warning only
-                    LOGGER.warn(
-                        f"Variable {s.name} has type {s._vartype}, expression is assumed to be binary"
-                    )
+                    LOGGER.warn(f"Variable {s.name} has type {s._vartype}, expression is assumed to be binary")
                     break
         Z = x.sum(axis=axis)
         N = x.shape[axis]
@@ -1614,9 +1536,7 @@ class Backend(abc.ABC):
             for s in x._proxy_symbols:
                 if s._vartype != VarType.BINARY:
                     # Show warning only
-                    LOGGER.warn(
-                        f"Variable {s.name} has type {s._vartype}, expression is assumed to be binary"
-                    )
+                    LOGGER.warn(f"Variable {s.name} has type {s._vartype}, expression is assumed to be binary")
                     break
         # Sum the binary variables along the specified axis
         Z = x.sum(axis=axis)
@@ -1678,9 +1598,7 @@ def _find_continuous_var(p):
         LOGGER.debug(f"No variable provided, creating indicators for {cvars[0]}")
         return cvars[0]
     else:
-        raise ValueError(
-            f"There are {len(cvars)} continous vars, but no var_name is provided."
-        )
+        raise ValueError(f"There are {len(cvars)} continous vars, but no var_name is provided.")
 
 
 class Indicator(ProblemBuilder):
@@ -1788,9 +1706,6 @@ class HammingLoss(ProblemBuilder):
         P = ProblemDef()
         diff_zeros = y[idx_zero] - x[idx_zero]
         diff_ones = x[idx_one] - y[idx_one]
-        hamming_dist = (
-            np.ones(diff_zeros.shape) @ diff_zeros
-            + np.ones(diff_ones.shape) @ diff_ones
-        )
+        hamming_dist = np.ones(diff_zeros.shape) @ diff_zeros + np.ones(diff_ones.shape) @ diff_ones
         P.add_objectives(hamming_dist, weights=self.penalty, inplace=True)  # type: ignore
         return P

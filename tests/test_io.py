@@ -32,4 +32,3 @@ def test_load_compressed_gem():
     assert S.shape == (441, 555), f"Expected stoichiometric matrix shape (441, 555), got {S.shape}"
     assert R.shape == (555,), f"Expected reaction vector shape (555,), got {R.shape}"
     assert M.shape == (441,), f"Expected metabolite vector shape (441,), got {M.shape}"
-

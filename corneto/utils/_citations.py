@@ -102,9 +102,7 @@ def unescape_latex(text: str) -> str:
         accent = match.group(1)  # Could be empty, or one of: ", ', `, ^, ~
         command = match.group(2)
         # Look up in the mapping based on the tuple key.
-        return mapping.get(
-            (accent, command), match.group(0)
-        )  # default: leave unchanged
+        return mapping.get((accent, command), match.group(0))  # default: leave unchanged
 
     # Replace all occurrences in the text.
     return pattern.sub(replace_match, text)
@@ -194,15 +192,11 @@ def parse_bibtex(bibtex_str: str) -> List[Dict[str, str]]:
         citation["id"] = entry_type_match.group(2)
 
         # Extract all field-value pairs.
-        fields = re.findall(
-            r'(\w+)\s*=\s*(?:{((?:[^{}]|{[^{}]*})+)}|"([^"]*)")', entry, re.DOTALL
-        )
+        fields = re.findall(r'(\w+)\s*=\s*(?:{((?:[^{}]|{[^{}]*})+)}|"([^"]*)")', entry, re.DOTALL)
 
         for field, brace_value, quote_value in fields:
             # Select value from braces (if present) or from quotes.
-            value = (
-                (brace_value if brace_value else quote_value).strip().replace("\n", " ")
-            )
+            value = (brace_value if brace_value else quote_value).strip().replace("\n", " ")
             # Unescape any LaTeX symbols before storing.
             citation[field.strip().lower()] = unescape_latex(value)
 
@@ -270,9 +264,7 @@ def render_references_html(citations: List[Dict[str, str]]) -> str:
         if "pages" in c:
             extra.append(f"pp. {c['pages']}")
 
-        citation_str = (
-            f"<strong>{author}</strong>. <em>{title}</em>. {', '.join(extra)} ({year})."
-        )
+        citation_str = f"<strong>{author}</strong>. <em>{title}</em>. {', '.join(extra)} ({year})."
         html_entries.append(f"<li>{citation_str}</li>")
 
     return f"<ul>{''.join(html_entries)}</ul>"

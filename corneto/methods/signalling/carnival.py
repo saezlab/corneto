@@ -13,9 +13,7 @@ from corneto.methods.signal._util import (
 )
 
 
-def preprocess(
-    pkn: BaseGraph, inputs: set, outputs: set
-) -> Tuple[BaseGraph, set, set, Dict[str, Any]]:
+def preprocess(pkn: BaseGraph, inputs: set, outputs: set) -> Tuple[BaseGraph, set, set, Dict[str, Any]]:
     """Preprocesses the given graph by pruning it based on inputs (perturbations) and outputs (measurements).
 
     Then extracts the reachable inputs and outputs from the pruned graph, while collecting various statistics.
@@ -80,9 +78,7 @@ def preprocess(
     return pruned_graph, reachable_inputs, reachable_outputs, stats
 
 
-def create_signed_error_expression(
-    P, values, index_of_vertices=None, condition_index=None, vertex_variable=None
-):
+def create_signed_error_expression(P, values, index_of_vertices=None, condition_index=None, vertex_variable=None):
     # If variable not provided, assumes we have the expected variables in the problem
     if vertex_variable is None:
         if "vertex_value" not in P.expr:
@@ -96,23 +92,12 @@ def create_signed_error_expression(
         raise ValueError("vertex_variable must be 1D or 2D")
     if len(vertex_variable.shape) == 2:
         if condition_index is None:
-            raise ValueError(
-                "condition_index must be provided if there are more than one sample"
-            )
-        return (
-            1
-            - vertex_variable[index_of_vertices, condition_index].multiply(
-                np.sign(values)
-            )
-        ).multiply(abs(values))
+            raise ValueError("condition_index must be provided if there are more than one sample")
+        return (1 - vertex_variable[index_of_vertices, condition_index].multiply(np.sign(values))).multiply(abs(values))
     else:
         if condition_index is not None and condition_index > 0:
-            raise ValueError(
-                "condition_index must be None or 0 if there is only one single sample"
-            )
-        return (
-            1 - vertex_variable[index_of_vertices].multiply(np.sign(values))
-        ).multiply(abs(values))
+            raise ValueError("condition_index must be None or 0 if there is only one single sample")
+        return (1 - vertex_variable[index_of_vertices].multiply(np.sign(values))).multiply(abs(values))
 
 
 def create_carnival_problem(
@@ -161,12 +146,8 @@ def create_carnival_problem(
         P += cn.Indicator()
 
     # Create binary variables for edge activations and inhibitions
-    Eact = backend.Variable(
-        "edge_activates", (G.num_edges, len(experiment_list)), vartype=cn.VarType.BINARY
-    )
-    Einh = backend.Variable(
-        "edge_inhibits", (G.num_edges, len(experiment_list)), vartype=cn.VarType.BINARY
-    )
+    Eact = backend.Variable("edge_activates", (G.num_edges, len(experiment_list)), vartype=cn.VarType.BINARY)
+    Einh = backend.Variable("edge_inhibits", (G.num_edges, len(experiment_list)), vartype=cn.VarType.BINARY)
 
     # Ensure edges cannot activate and inhibit at the same time
     P += Eact + Einh <= 1
@@ -200,26 +181,15 @@ def create_carnival_problem(
     P += Eact + Einh <= F
 
     # Sparsify the interaction matrix for computational efficiency
-    Int = sparsify(
-        np.reshape(interaction, (interaction.shape[0], 1))
-        @ np.ones((1, len(experiment_list)))
-    )
+    Int = sparsify(np.reshape(interaction, (interaction.shape[0], 1)) @ np.ones((1, len(experiment_list))))
 
     # Add constraints on activations and inhibitions based on upstream signals
-    sum_upstream_act = (Ah.T @ Va)[edges_with_head, :].multiply(
-        Int[edges_with_head, :] > 0
-    )
-    sum_upstream_inh = (Ah.T @ Vi)[edges_with_head, :].multiply(
-        Int[edges_with_head, :] < 0
-    )
+    sum_upstream_act = (Ah.T @ Va)[edges_with_head, :].multiply(Int[edges_with_head, :] > 0)
+    sum_upstream_inh = (Ah.T @ Vi)[edges_with_head, :].multiply(Int[edges_with_head, :] < 0)
     P += Eact[edges_with_head, :] <= sum_upstream_act + sum_upstream_inh
 
-    sum_upstream_act = (Ah.T @ Va)[edges_with_head, :].multiply(
-        Int[edges_with_head, :] < 0
-    )
-    sum_upstream_inh = (Ah.T @ Vi)[edges_with_head, :].multiply(
-        Int[edges_with_head, :] > 0
-    )
+    sum_upstream_act = (Ah.T @ Va)[edges_with_head, :].multiply(Int[edges_with_head, :] < 0)
+    sum_upstream_inh = (Ah.T @ Vi)[edges_with_head, :].multiply(Int[edges_with_head, :] > 0)
     P += Einh[edges_with_head, :] <= sum_upstream_act + sum_upstream_inh
 
     # Set the perturbations for each vertex based on experimental inputs
@@ -237,9 +207,7 @@ def create_carnival_problem(
     P += V[vertex_indexes, :] == perturbation_values[:, None]
     """
 
-    all_inputs = set(
-        v for exp in experiment_list for v in experiment_list[exp]["input"]
-    )
+    all_inputs = set(v for exp in experiment_list for v in experiment_list[exp]["input"])
 
     # For each experiment, set constraints and add error to the objective function
     for i, exp in enumerate(experiment_list):
@@ -251,14 +219,12 @@ def create_carnival_problem(
         p_nodes_positions = [G.V.index(key) for key in p_nodes]
 
         # Get the p_nodes_positiosn for which their values are non-zero
-        p_nodes_positions_nz = [
-            p_nodes_positions[i] for i in range(len(p_nodes_positions)) if p_values[i] != 0
-        ]
+        p_nodes_positions_nz = [p_nodes_positions[i] for i in range(len(p_nodes_positions)) if p_values[i] != 0]
         # Get also the values of the non zero
         p_values_nz = [p_values[i] for i in range(len(p_values)) if p_values[i] != 0]
 
         # We dont want to force if v = 0 (in this case is free to be -1, 0 or 1)
-        #P += V[p_nodes_positions, i] == p_values
+        # P += V[p_nodes_positions, i] == p_values
         if len(p_nodes_positions_nz) > 0:
             P += V[p_nodes_positions_nz, i] == p_values_nz
 
@@ -267,10 +233,7 @@ def create_carnival_problem(
         if len(experiment_list) > 1:
             other_inputs = all_inputs - set(p_nodes)
             other_input_edges = [
-                idx
-                for v in other_inputs
-                for (idx, _) in G.in_edges(v)
-                if len(G.get_edge(idx)[0]) == 0
+                idx for v in other_inputs for (idx, _) in G.in_edges(v) if len(G.get_edge(idx)[0]) == 0
             ]
             if len(other_input_edges) > 0:
                 P += Eact[other_input_edges, i] == 0
@@ -297,9 +260,7 @@ def create_carnival_problem(
         elif penalty_on == "flow":
             y = sum(P.expr._flow_i)
         else:
-            raise ValueError(
-                f"Invalid penalty_on={penalty_on}. Only 'signal' or 'flow' are supported."
-            )
+            raise ValueError(f"Invalid penalty_on={penalty_on}. Only 'signal' or 'flow' are supported.")
 
         # Apply slack regularization if specified
         if slack_regularization:
@@ -339,9 +300,7 @@ def multi_carnival(
     exp_list = dict()
     for k, v in dataset.items():
         filtered_in = {key: value for key, value in v["input"].items() if key in all_v}
-        filtered_out = {
-            key: value for key, value in v["output"].items() if key in all_v
-        }
+        filtered_out = {key: value for key, value in v["output"].items() if key in all_v}
         exp_list[k] = {"input": filtered_in, "output": filtered_out}
     G_exp_e = expand_graph_for_flows(G_multi, exp_list)
 

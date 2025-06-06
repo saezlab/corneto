@@ -38,9 +38,7 @@ def build_docs(force=False, stop_on_warning=False, clean=False):
     print(" ".join(sphinx_cmd))
 
     # Run sphinx-build command
-    result = subprocess.run(
-        sphinx_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
-    )
+    result = subprocess.run(sphinx_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
     if result.returncode == 0:
         print("Sphinx build completed successfully.")
@@ -75,9 +73,7 @@ def serve_docs():
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="Build and serve Sphinx documentation."
-    )
+    parser = argparse.ArgumentParser(description="Build and serve Sphinx documentation.")
     parser.add_argument(
         "--force",
         action="store_true",

@@ -218,9 +218,9 @@ class MultiSampleFBA(FlowMethod):
             # Process objective reactions
             # objs = sample_data.filter_by("type", "objective")
             objs = dict(
-                sample_data.query.filter(
-                    lambda f: f.data.get("role", None) == "objective"
-                ).pluck(lambda f: (f.id, f.value))
+                sample_data.query.filter(lambda f: f.data.get("role", None) == "objective").pluck(
+                    lambda f: (f.id, f.value)
+                )
             )
             for rxn_id, value in objs.items():
                 rxn_obj = next(iter(graph.get_edges_by_attr("id", rxn_id)))
@@ -237,9 +237,7 @@ class MultiSampleFBA(FlowMethod):
                 upper_bound = feature.data.get("upper_bound", None)
                 rid = next(iter(graph.get_edges_by_attr("id", rxn_id)))
                 if rid is None:
-                    raise ValueError(
-                        f"Reaction ID {rxn_id} not found in the graph edges."
-                    )
+                    raise ValueError(f"Reaction ID {rxn_id} not found in the graph edges.")
                 if lower_bound is not None:
                     lb_rxn.append((rid, float(lower_bound)))
                 if upper_bound is not None:

@@ -43,9 +43,7 @@ def sample_dataset():
         ):
             results = {}
             for sample_id, sample in self.data.items():
-                matching = sample.filter_values_by(
-                    metadata_key, metadata_value, value_key
-                )
+                matching = sample.filter_values_by(metadata_key, metadata_value, value_key)
                 if matching:
                     if return_values:
                         # Collect the actual values
@@ -226,10 +224,7 @@ def test_tight_format_conversion():
     assert set(ds_new.data.keys()) == set(ds.data.keys())
     for sample_id in ds.data:
         for feat in ds.data[sample_id].features:
-            assert (
-                ds_new.data[sample_id].features[feat]
-                == ds.data[sample_id].features[feat]
-            )
+            assert ds_new.data[sample_id].features[feat] == ds.data[sample_id].features[feat]
 
 
 def test_sample_value_dict_conversion():
@@ -242,10 +237,7 @@ def test_sample_value_dict_conversion():
     assert set(ds_new.data.keys()) == set(ds.data.keys())
     for sample_id in ds.data:
         for feat in ds.data[sample_id].features:
-            assert (
-                ds_new.data[sample_id].features[feat]
-                == ds.data[sample_id].features[feat]
-            )
+            assert ds_new.data[sample_id].features[feat] == ds.data[sample_id].features[feat]
 
 
 def test_merge_datasets():
@@ -274,9 +266,7 @@ def test_filter_samples():
     ds.add_sample("s3", {"feat1": 30})
 
     # Filter samples where 'feat1' is greater than 15.
-    filtered = ds.filter_samples(
-        lambda sid, sample: sample.features.get("feat1", 0) > 15
-    )
+    filtered = ds.filter_samples(lambda sid, sample: sample.features.get("feat1", 0) > 15)
     assert set(filtered.data.keys()) == {"s2", "s3"}
 
 
@@ -337,9 +327,7 @@ def test_sample_filter_values():
     sample.add_feature("feat1", {"value": 50})
     sample.add_feature("feat2", {"value": 30})
     sample.add_feature("feat3", 10)
-    filtered = sample.filter_values(
-        lambda name, feat: (feat["value"] if isinstance(feat, dict) else feat) > 20
-    )
+    filtered = sample.filter_values(lambda name, feat: (feat["value"] if isinstance(feat, dict) else feat) > 20)
     assert filtered["feat1"] == 50
     assert filtered["feat2"] == 30
     assert "feat3" not in filtered
@@ -401,9 +389,7 @@ def test_repr_dataset():
 def test_subset_features():
     ds = Data()
     # Create sample s1 with three features
-    ds.add_sample(
-        "s1", {"feat1": 10, "feat2": {"value": 20, "unit": "cm"}, "feat3": 30}
-    )
+    ds.add_sample("s1", {"feat1": 10, "feat2": {"value": 20, "unit": "cm"}, "feat3": 30})
     # Create sample s2 with two features
     ds.add_sample("s2", {"feat2": {"value": 40, "unit": "kg"}, "feat4": 50})
 
@@ -428,9 +414,7 @@ def test_data_filter():
     ds.add_sample("s2", {"feat1": 5, "feat2": -10, "feat4": 30})
 
     # Filter to keep only features with positive values
-    filtered = ds.filter(
-        lambda sid, fname, fvalue: isinstance(fvalue, (int, float)) and fvalue > 0
-    )
+    filtered = ds.filter(lambda sid, fname, fvalue: isinstance(fvalue, (int, float)) and fvalue > 0)
 
     assert "s1" in filtered.data
     assert "s2" in filtered.data

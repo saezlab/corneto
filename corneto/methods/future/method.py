@@ -35,9 +35,7 @@ class Method(ABC):
         if backend is None:
             backend = DEFAULT_BACKEND
         self._backend = backend
-        self.lambda_reg_param = backend.Parameter(
-            name="lambda_reg_param", value=lambda_reg
-        )
+        self.lambda_reg_param = backend.Parameter(name="lambda_reg_param", value=lambda_reg)
         self._reg_varname = reg_varname
         self._reg_varname_suffix = reg_varname_suffix
         self.problem = None
@@ -78,16 +76,10 @@ class Method(ABC):
                 "_reg_varname_suffix",
             ]:
                 # For problem, processed_data, etc. that could be None initially, skip them
-                if (
-                    attr_name in ["problem", "processed_data", "processed_graph"]
-                    and attr_value is None
-                ):
+                if attr_name in ["problem", "processed_data", "processed_graph"] and attr_value is None:
                     continue
                 # Skip complex objects that aren't useful for a summary
-                if (
-                    isinstance(attr_value, (list, dict, tuple))
-                    and len(str(attr_value)) > 100
-                ):
+                if isinstance(attr_value, (list, dict, tuple)) and len(str(attr_value)) > 100:
                     continue
                 # Format the parameter name (remove leading underscore if present)
                 param_name = attr_name[1:] if attr_name.startswith("_") else attr_name
@@ -193,11 +185,7 @@ class Method(ABC):
                 newvar_name = self._reg_varname + self._reg_varname_suffix
                 ax = 0 if len(reg_var.shape) == 1 else 1
                 # If we only have a 1D vector, we dont need linear or, we compute the sum:
-                if (
-                    len(reg_var.shape) == 1
-                    or reg_var.shape[1] == 1
-                    or reg_var.shape[0] == 1
-                ):
+                if len(reg_var.shape) == 1 or reg_var.shape[1] == 1 or reg_var.shape[0] == 1:
                     self.problem.add_objective(
                         reg_var.sum(),
                         weight=self.lambda_reg_param,
@@ -205,18 +193,14 @@ class Method(ABC):
                     )
                 else:
                     # Structured sparsity regularization
-                    self.problem += self._backend.linear_or(
-                        reg_var, axis=ax, varname=newvar_name
-                    )
+                    self.problem += self._backend.linear_or(reg_var, axis=ax, varname=newvar_name)
                     self.problem.add_objective(
                         self.problem.expr[newvar_name].sum(),
                         weight=self.lambda_reg_param,
                         name=f"regularization_{newvar_name}",
                     )
             else:
-                raise ValueError(
-                    "Parameter lambda_reg > 0 but no regularization variable name provided"
-                )
+                raise ValueError("Parameter lambda_reg > 0 but no regularization variable name provided")
         return self.problem
 
     @staticmethod
@@ -489,15 +473,9 @@ class GeneralizedMultiSampleMethod(Method):
             list_selected_edges.append(edge_ids)
 
             # If we're using structured sparsity, collect the edge selection variable for this sample
-            if (
-                not self.disable_structured_sparsity
-                and self.lambda_reg_param.value > 0
-                and self.edge_selection_varname
-            ):
+            if not self.disable_structured_sparsity and self.lambda_reg_param.value > 0 and self.edge_selection_varname:
                 if self.edge_selection_varname in sample_problem.expr:
-                    edge_selection_vars.append(
-                        sample_problem.expr[self.edge_selection_varname]
-                    )
+                    edge_selection_vars.append(sample_problem.expr[self.edge_selection_varname])
                 else:
                     raise ValueError(
                         f"Edge selection variable '{self.edge_selection_varname}' not found in the problem created by the base method"
@@ -515,24 +493,16 @@ class GeneralizedMultiSampleMethod(Method):
 
         # If we have collected edge selection variables and structured sparsity is enabled,
         # create a combined variable for regularization
-        if (
-            edge_selection_vars
-            and not self.disable_structured_sparsity
-            and self.lambda_reg_param.value > 0
-        ):
+        if edge_selection_vars and not self.disable_structured_sparsity and self.lambda_reg_param.value > 0:
             num_samples = len(data.samples)
-            final_result = self._backend.Constant(
-                np.zeros((graph.num_edges, num_samples))
-            )
+            final_result = self._backend.Constant(np.zeros((graph.num_edges, num_samples)))
             for i, selected_edges in enumerate(list_selected_edges):
                 # The length of selected_edges matches the number of edges in preprocessed graph i
                 # It can contain None if the edge does not appear in the original graph, those we
                 # need to ignore.
                 vec = edge_selection_vars[i]
                 if len(selected_edges) != vec.shape[0]:
-                    raise ValueError(
-                        f"Mismatch between selected edges and edge selection variable size for sample {i}"
-                    )
+                    raise ValueError(f"Mismatch between selected edges and edge selection variable size for sample {i}")
                 # We need to map the values in `vec`, which indicates if an edge in the preprocessed graph
                 # is selected or not, to the edges in the original graph, using the selected_edges list that
                 # contains the indexes of the edges in the original graph. The variable selected_edges contains
@@ -545,9 +515,7 @@ class GeneralizedMultiSampleMethod(Method):
                 valid_vec = vec[np.flatnonzero(valid_mask)]  # .reshape(-1, 1)
 
                 # Extract the valid edge indices (they are already 0-indexed)
-                valid_edges = np.array(
-                    [edge for edge in selected_edges if edge is not None]
-                )
+                valid_edges = np.array([edge for edge in selected_edges if edge is not None])
 
                 # --- Step 2: Build the indicator matrix E ---
                 # m is the number of edges in the original graph

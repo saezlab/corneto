@@ -138,14 +138,7 @@ class NetworkXWrapper:
 
             def wrapped(*args, **kwargs):
                 # Convert all corneto graph arguments to networkx graphs
-                new_args = [
-                    (
-                        corneto_graph_to_networkx(arg)
-                        if isinstance(arg, BaseGraph)
-                        else arg
-                    )
-                    for arg in args
-                ]
+                new_args = [(corneto_graph_to_networkx(arg) if isinstance(arg, BaseGraph) else arg) for arg in args]
                 # Call the original NetworkX function with the possibly converted arguments
                 return original_attr(*new_args, **kwargs)
 

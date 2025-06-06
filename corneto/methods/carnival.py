@@ -74,9 +74,7 @@ def read_dataset(zip_path):
     return G, data_dict
 
 
-def preprocess_graph(
-    priorKnowledgeNetwork: BaseGraph, perturbations: Dict, measurements: Dict
-):
+def preprocess_graph(priorKnowledgeNetwork: BaseGraph, perturbations: Dict, measurements: Dict):
     V = set(priorKnowledgeNetwork.vertices)
     inputs = set(perturbations.keys())
     outputs = set(measurements.keys())
@@ -162,9 +160,7 @@ def runInverseCarnival(
     else:
         raise ValueError("Provide a list of sif tuples or a graph")
     perturbations = {v: 0.0 for v in G.get_source_vertices()}
-    return runVanillaCarnival(
-        perturbations, measurements, G, betaWeight=betaWeight, solver=solver, **kwargs
-    )
+    return runVanillaCarnival(perturbations, measurements, G, betaWeight=betaWeight, solver=solver, **kwargs)
 
 
 def heuristic_carnival(
@@ -335,9 +331,7 @@ def reachability_graph(
                     str_reached = "/".join(reached_outputs)
                 else:
                     # Get only the first max_printed_outputs items
-                    str_reached = (
-                        "/".join(list(reached_outputs)[:max_printed_outputs]) + "..."
-                    )
+                    str_reached = "/".join(list(reached_outputs)[:max_printed_outputs]) + "..."
                 print(f" > {len(reached_outputs):<4} output(s): {str_reached}")
             else:
                 print("")
@@ -440,21 +434,13 @@ def bfs_search(
                     if verbose:
                         print(" >", _str_state(new_state))
                     if not valid:
-                        print(
-                            "   ! conflict: {} != {}".format(
-                                _str_path_nodes(p_a), _str_path_nodes(p_b)
-                            )
-                        )
+                        print("   ! conflict: {} != {}".format(_str_path_nodes(p_a), _str_path_nodes(p_b)))
                         stats["conflicts"] += 1
                         continue
                     reached |= {nt}
                     paths.append(new_state)
                     # Add edges
-                    selected_edges |= set(
-                        edge_idx
-                        for (_, _, edge_idx) in nv.values()
-                        if edge_idx is not None
-                    )
+                    selected_edges |= set(edge_idx for (_, _, edge_idx) in nv.values() if edge_idx is not None)
                     if max_edges is not None and len(selected_edges) >= max_edges:
                         if verbose:
                             print("Max edges reached.")
@@ -468,11 +454,7 @@ def bfs_search(
             Q.append(new_state)
             if len(Q) > maxq:
                 maxq = len(Q)
-            if (
-                queue_max_size is not None
-                and queue_max_size > 0
-                and len(Q) > queue_max_size
-            ):
+            if queue_max_size is not None and queue_max_size > 0 and len(Q) > queue_max_size:
                 break
         stats["iters"] += 1
     if verbose:
@@ -509,12 +491,8 @@ def create_flow_carnival_v4(
     if penalty_on == "flow":
         P += cn.Indicator()
 
-    Eact = backend.Variable(
-        "edge_activates", (G.num_edges, len(exp_list)), vartype=cn.VarType.BINARY
-    )
-    Einh = backend.Variable(
-        "edge_inhibits", (G.num_edges, len(exp_list)), vartype=cn.VarType.BINARY
-    )
+    Eact = backend.Variable("edge_activates", (G.num_edges, len(exp_list)), vartype=cn.VarType.BINARY)
+    Einh = backend.Variable("edge_inhibits", (G.num_edges, len(exp_list)), vartype=cn.VarType.BINARY)
 
     # Edge cannot activate and inhibit at the same time
     P += Eact + Einh <= 1
@@ -547,46 +525,26 @@ def create_flow_carnival_v4(
     # If no flow, no signal (signal cannot circulate in a non-selected subgraph)
     P += Eact + Einh <= F
 
-    Int = sparsify(
-        np.reshape(interaction, (interaction.shape[0], 1)) @ np.ones((1, len(exp_list)))
-    )
+    Int = sparsify(np.reshape(interaction, (interaction.shape[0], 1)) @ np.ones((1, len(exp_list))))
 
     # Sum incoming signals for edges with head (for all samples)
     # An edge can only be active in two situations:
     # - the head vertex is active and the edge activatory
     # - or the head vertex is inactive and the edge inhibitory
-    sum_upstream_act = (Ah.T @ Va)[edges_with_head, :].multiply(
-        Int[edges_with_head, :] > 0
-    )
-    sum_upstream_inh = (Ah.T @ Vi)[edges_with_head, :].multiply(
-        Int[edges_with_head, :] < 0
-    )
+    sum_upstream_act = (Ah.T @ Va)[edges_with_head, :].multiply(Int[edges_with_head, :] > 0)
+    sum_upstream_inh = (Ah.T @ Vi)[edges_with_head, :].multiply(Int[edges_with_head, :] < 0)
     P += Eact[edges_with_head, :] <= sum_upstream_act + sum_upstream_inh
     # The opposite for inhibition
-    sum_upstream_act = (Ah.T @ Va)[edges_with_head, :].multiply(
-        Int[edges_with_head, :] < 0
-    )
-    sum_upstream_inh = (Ah.T @ Vi)[edges_with_head, :].multiply(
-        Int[edges_with_head, :] > 0
-    )
+    sum_upstream_act = (Ah.T @ Va)[edges_with_head, :].multiply(Int[edges_with_head, :] < 0)
+    sum_upstream_inh = (Ah.T @ Vi)[edges_with_head, :].multiply(Int[edges_with_head, :] > 0)
     P += Einh[edges_with_head, :] <= sum_upstream_act + sum_upstream_inh
 
-    vertex_indexes = np.array(
-        [G.V.index(v) for exp in exp_list for v in exp_list[exp]["input"]]
-    )
-    perturbation_values = np.array(
-        [
-            int(np.sign(val))
-            for exp in exp_list
-            for val in exp_list[exp]["input"].values()
-        ]
-    )
+    vertex_indexes = np.array([G.V.index(v) for exp in exp_list for v in exp_list[exp]["input"]])
+    perturbation_values = np.array([int(np.sign(val)) for exp in exp_list for val in exp_list[exp]["input"].values()])
 
     # Set the perturbations to the given values
     if set_perturbation_values:
-        warnings.warn(
-            "Using set_perturbation_values, please disable since behavior differs from original carnival"
-        )
+        warnings.warn("Using set_perturbation_values, please disable since behavior differs from original carnival")
         nonzero_mask = perturbation_values != 0
         nonzero_vertex_indexes = vertex_indexes[nonzero_mask]
         nonzero_perturbation_values = perturbation_values[nonzero_mask]
@@ -622,9 +580,7 @@ def create_flow_carnival_v4(
 
         # Count the negative and the positive parts of the measurements
         # Compute the error and add it to the objective function
-        error = (1 - V[m_nodes_positions, i].multiply(np.sign(m_values))).multiply(
-            abs(m_values)
-        )
+        error = (1 - V[m_nodes_positions, i].multiply(np.sign(m_values))).multiply(abs(m_values))
         P.add_objectives(sum(error))
 
     if lambd > 0:
@@ -635,9 +591,7 @@ def create_flow_carnival_v4(
         elif penalty_on == "flow":
             obj = sum(P.expr._flow_i)
         else:
-            raise ValueError(
-                f"Invalid penalty_on={penalty_on} not valid. Only signal or flow are supported."
-            )
+            raise ValueError(f"Invalid penalty_on={penalty_on} not valid. Only signal or flow are supported.")
         if slack_reg:
             s = backend.Variable(lb=0, ub=G.num_edges)
             max_edges = G.num_edges - s
@@ -669,16 +623,10 @@ def create_flow_carnival_v3(
     # to the value of the Big-M in the constraints.
     P = backend.Flow(G, ub=upper_bound_flow)
 
-    Eact = backend.Variable(
-        "edge_activates", (G.num_edges, len(exp_list)), vartype=cn.VarType.BINARY
-    )
-    Einh = backend.Variable(
-        "edge_inhibits", (G.num_edges, len(exp_list)), vartype=cn.VarType.BINARY
-    )
+    Eact = backend.Variable("edge_activates", (G.num_edges, len(exp_list)), vartype=cn.VarType.BINARY)
+    Einh = backend.Variable("edge_inhibits", (G.num_edges, len(exp_list)), vartype=cn.VarType.BINARY)
     # This var should be removed
-    Z = backend.Variable(
-        "dummy", (G.num_vertices, len(exp_list)), vartype=cn.VarType.CONTINUOUS
-    )
+    Z = backend.Variable("dummy", (G.num_vertices, len(exp_list)), vartype=cn.VarType.CONTINUOUS)
     P += Z >= 0
 
     # Edge cannot activate and inhibit at the same time
@@ -714,14 +662,10 @@ def create_flow_carnival_v3(
 
         P += Eact[edges_with_head, iexp] <= (Ah.T @ Va)[edges_with_head, iexp].multiply(
             interaction[edges_with_head] > 0
-        ) + (Ah.T @ Vi)[edges_with_head, iexp].multiply(
-            interaction[edges_with_head] < 0
-        )  # constrain 1B
+        ) + (Ah.T @ Vi)[edges_with_head, iexp].multiply(interaction[edges_with_head] < 0)  # constrain 1B
         P += Einh[edges_with_head, iexp] <= (Ah.T @ Va)[edges_with_head, iexp].multiply(
             interaction[edges_with_head] < 0
-        ) + (Ah.T @ Vi)[edges_with_head, iexp].multiply(
-            interaction[edges_with_head] > 0
-        )  # constrain 2B
+        ) + (Ah.T @ Vi)[edges_with_head, iexp].multiply(interaction[edges_with_head] > 0)  # constrain 2B
 
         # perturbation:
         p_nodes = list(exp_list[exp]["input"].keys())
@@ -738,22 +682,15 @@ def create_flow_carnival_v3(
         # Count the negative and the positive parts of the measurements
 
         # linearization of the ABS function: https://optimization.cbe.cornell.edu/index.php?title=Optimization_with_absolute_values
-        P += (
-            V[m_nodes_positions, iexp] - np.sign(m_values) <= Z[m_nodes_positions, iexp]
-        )
-        P += (
-            -V[m_nodes_positions, iexp] + np.sign(m_values)
-            <= Z[m_nodes_positions, iexp]
-        )
+        P += V[m_nodes_positions, iexp] - np.sign(m_values) <= Z[m_nodes_positions, iexp]
+        P += -V[m_nodes_positions, iexp] + np.sign(m_values) <= Z[m_nodes_positions, iexp]
 
         # Compute the error and add it to the objective function
         # error = abs(m_values) * (1 - np.sign(m_values) * V[m_nodes_positions, iexp])
 
         P.add_objectives(sum(Z[m_nodes_positions, iexp].multiply(abs(m_values))))
     if lambd > 0:
-        P += cn.opt.linear_or(
-            Eact + Einh, axis=1, varname="edge_has_signal_in_any_sample"
-        )
+        P += cn.opt.linear_or(Eact + Einh, axis=1, varname="edge_has_signal_in_any_sample")
         P.add_objectives(sum(P.expr.edge_has_signal_in_any_sample), weights=lambd)
     else:
         P.add_objectives(0)
@@ -770,15 +707,9 @@ def create_flow_carnival_v2(G, exp_list, lambd=0.2):
 
     # TODO: check input graph, experiment list and their compatibility
 
-    Eact = cn.opt.Variable(
-        "edge_activates", (G.num_edges, len(exp_list)), vartype=cn.VarType.BINARY
-    )
-    Einh = cn.opt.Variable(
-        "edge_inhibits", (G.num_edges, len(exp_list)), vartype=cn.VarType.BINARY
-    )
-    Z = cn.opt.Variable(
-        "dummy", (G.num_vertices, len(exp_list)), vartype=cn.VarType.CONTINUOUS
-    )
+    Eact = cn.opt.Variable("edge_activates", (G.num_edges, len(exp_list)), vartype=cn.VarType.BINARY)
+    Einh = cn.opt.Variable("edge_inhibits", (G.num_edges, len(exp_list)), vartype=cn.VarType.BINARY)
+    Z = cn.opt.Variable("dummy", (G.num_vertices, len(exp_list)), vartype=cn.VarType.CONTINUOUS)
     P += Z >= 0
 
     # Edge cannot activate and inhibit at the same time
@@ -805,14 +736,10 @@ def create_flow_carnival_v2(G, exp_list, lambd=0.2):
 
         P += Eact[edges_with_head, iexp] <= (Ah.T @ Va)[edges_with_head, iexp].multiply(
             interaction[edges_with_head] > 0
-        ) + (Ah.T @ Vi)[edges_with_head, iexp].multiply(
-            interaction[edges_with_head] < 0
-        )  # constrain 1B
+        ) + (Ah.T @ Vi)[edges_with_head, iexp].multiply(interaction[edges_with_head] < 0)  # constrain 1B
         P += Einh[edges_with_head, iexp] <= (Ah.T @ Va)[edges_with_head, iexp].multiply(
             interaction[edges_with_head] < 0
-        ) + (Ah.T @ Vi)[edges_with_head, iexp].multiply(
-            interaction[edges_with_head] > 0
-        )  # constrain 2B
+        ) + (Ah.T @ Vi)[edges_with_head, iexp].multiply(interaction[edges_with_head] > 0)  # constrain 2B
 
         # perturbation:
         p_nodes = list(exp_list[exp]["input"].keys())
@@ -827,13 +754,8 @@ def create_flow_carnival_v2(G, exp_list, lambd=0.2):
         m_nodes_positions = [G.V.index(key) for key in m_nodes]
 
         # linearization of the ABS function: https://optimization.cbe.cornell.edu/index.php?title=Optimization_with_absolute_values
-        P += (
-            V[m_nodes_positions, iexp] - np.sign(m_values) <= Z[m_nodes_positions, iexp]
-        )
-        P += (
-            -V[m_nodes_positions, iexp] + np.sign(m_values)
-            <= Z[m_nodes_positions, iexp]
-        )
+        P += V[m_nodes_positions, iexp] - np.sign(m_values) <= Z[m_nodes_positions, iexp]
+        P += -V[m_nodes_positions, iexp] + np.sign(m_values) <= Z[m_nodes_positions, iexp]
 
         P.add_objectives(sum(Z[m_nodes_positions, iexp].multiply(abs(m_values))))
     if lambd > 0:
@@ -847,16 +769,10 @@ def create_flow_carnival(G, exp_list, lambd=0.2):
     At, Ah = get_incidence_matrices_of_edges(G)
     interaction = get_interactions(G)
     P = cn.opt.AcyclicFlow(G)
-    Eact = cn.opt.Variable(
-        "edge_activates", (G.num_edges, len(exp_list)), vartype=cn.VarType.BINARY
-    )
-    Einh = cn.opt.Variable(
-        "edge_inhibits", (G.num_edges, len(exp_list)), vartype=cn.VarType.BINARY
-    )
+    Eact = cn.opt.Variable("edge_activates", (G.num_edges, len(exp_list)), vartype=cn.VarType.BINARY)
+    Einh = cn.opt.Variable("edge_inhibits", (G.num_edges, len(exp_list)), vartype=cn.VarType.BINARY)
     # TODO: Remove dummy
-    Z = cn.opt.Variable(
-        "dummy", (G.num_vertices, len(exp_list)), vartype=cn.VarType.CONTINUOUS
-    )
+    Z = cn.opt.Variable("dummy", (G.num_vertices, len(exp_list)), vartype=cn.VarType.CONTINUOUS)
     P += Z >= 0
 
     # Edge cannot activate and inhibit at the same time
@@ -880,14 +796,10 @@ def create_flow_carnival(G, exp_list, lambd=0.2):
 
         P += Eact[edges_with_head, iexp] <= (Ah.T @ Va)[edges_with_head, iexp].multiply(
             interaction[edges_with_head] > 0
-        ) + (Ah.T @ Vi)[edges_with_head, iexp].multiply(
-            interaction[edges_with_head] < 0
-        )  # constrain 1B
+        ) + (Ah.T @ Vi)[edges_with_head, iexp].multiply(interaction[edges_with_head] < 0)  # constrain 1B
         P += Einh[edges_with_head, iexp] <= (Ah.T @ Va)[edges_with_head, iexp].multiply(
             interaction[edges_with_head] < 0
-        ) + (Ah.T @ Vi)[edges_with_head, iexp].multiply(
-            interaction[edges_with_head] > 0
-        )  # constrain 2B
+        ) + (Ah.T @ Vi)[edges_with_head, iexp].multiply(interaction[edges_with_head] > 0)  # constrain 2B
 
         # perturbation:
         p_nodes = list(exp_list[exp]["input"].keys())
@@ -902,13 +814,8 @@ def create_flow_carnival(G, exp_list, lambd=0.2):
         m_nodes_positions = [G.V.index(key) for key in m_nodes]
 
         # linearization of the ABS function: https://optimization.cbe.cornell.edu/index.php?title=Optimization_with_absolute_values
-        P += (
-            V[m_nodes_positions, iexp] - np.sign(m_values) <= Z[m_nodes_positions, iexp]
-        )
-        P += (
-            -V[m_nodes_positions, iexp] + np.sign(m_values)
-            <= Z[m_nodes_positions, iexp]
-        )
+        P += V[m_nodes_positions, iexp] - np.sign(m_values) <= Z[m_nodes_positions, iexp]
+        P += -V[m_nodes_positions, iexp] + np.sign(m_values) <= Z[m_nodes_positions, iexp]
 
         P.add_objectives(sum(Z[m_nodes_positions, iexp].multiply(abs(m_values))))
     if lambd > 0:
@@ -919,24 +826,16 @@ def create_flow_carnival(G, exp_list, lambd=0.2):
 
 
 # CARNIVAL with flow (single flow)
-def runCARNIVAL_AcyclicFlow(
-    G, exp_list, betaWeight: float = 0.2, solver=None, verbosity=False
-):
+def runCARNIVAL_AcyclicFlow(G, exp_list, betaWeight: float = 0.2, solver=None, verbosity=False):
     At, Ah = get_incidence_matrices_of_edges(G)
     interaction = get_interactions(G)
     P = cn.K.AcyclicFlow(G)
 
     # TODO: check input grahp, experiment list and their compatibility
 
-    Eact = cn.K.Variable(
-        "edge_activates", (G.num_edges, len(exp_list)), vartype=cn.VarType.BINARY
-    )
-    Einh = cn.K.Variable(
-        "edge_inhibits", (G.num_edges, len(exp_list)), vartype=cn.VarType.BINARY
-    )
-    Z = cn.K.Variable(
-        "dummy", (G.num_vertices, len(exp_list)), vartype=cn.VarType.CONTINUOUS
-    )
+    Eact = cn.K.Variable("edge_activates", (G.num_edges, len(exp_list)), vartype=cn.VarType.BINARY)
+    Einh = cn.K.Variable("edge_inhibits", (G.num_edges, len(exp_list)), vartype=cn.VarType.BINARY)
+    Z = cn.K.Variable("dummy", (G.num_vertices, len(exp_list)), vartype=cn.VarType.CONTINUOUS)
     P += Z >= 0
 
     # Edge cannot activate and inhibit at the same time
@@ -960,14 +859,10 @@ def runCARNIVAL_AcyclicFlow(
 
         P += Eact[edges_with_head, iexp] <= (Ah.T @ Va)[edges_with_head, iexp].multiply(
             interaction[edges_with_head] > 0
-        ) + (Ah.T @ Vi)[edges_with_head, iexp].multiply(
-            interaction[edges_with_head] < 0
-        )  # constrain 1B
+        ) + (Ah.T @ Vi)[edges_with_head, iexp].multiply(interaction[edges_with_head] < 0)  # constrain 1B
         P += Einh[edges_with_head, iexp] <= (Ah.T @ Va)[edges_with_head, iexp].multiply(
             interaction[edges_with_head] < 0
-        ) + (Ah.T @ Vi)[edges_with_head, iexp].multiply(
-            interaction[edges_with_head] > 0
-        )  # constrain 2B
+        ) + (Ah.T @ Vi)[edges_with_head, iexp].multiply(interaction[edges_with_head] > 0)  # constrain 2B
 
         # perturbation:
         p_nodes = list(exp_list[exp]["input"].keys())
@@ -982,13 +877,8 @@ def runCARNIVAL_AcyclicFlow(
         m_nodes_positions = [G.V.index(key) for key in m_nodes]
 
         # linearization of the ABS function: https://optimization.cbe.cornell.edu/index.php?title=Optimization_with_absolute_values
-        P += (
-            V[m_nodes_positions, iexp] - np.sign(m_values) <= Z[m_nodes_positions, iexp]
-        )
-        P += (
-            -V[m_nodes_positions, iexp] + np.sign(m_values)
-            <= Z[m_nodes_positions, iexp]
-        )
+        P += V[m_nodes_positions, iexp] - np.sign(m_values) <= Z[m_nodes_positions, iexp]
+        P += -V[m_nodes_positions, iexp] + np.sign(m_values) <= Z[m_nodes_positions, iexp]
 
         P.add_objectives(sum(Z[m_nodes_positions, iexp].multiply(abs(m_values))))
     P.add_objectives(betaWeight * sum(sum(Eact + Einh)))
@@ -998,9 +888,7 @@ def runCARNIVAL_AcyclicFlow(
 
 
 # CARNIVAL with acyclic flow (single flow)
-def runCARNIVAL_Flow_Acyclic(
-    G, exp_list, betaWeight: float = 0.2, solver=None, verbosity=False
-):
+def runCARNIVAL_Flow_Acyclic(G, exp_list, betaWeight: float = 0.2, solver=None, verbosity=False):
     At, Ah = get_incidence_matrices_of_edges(G)
     interaction = get_interactions(G)
 
@@ -1021,15 +909,9 @@ def runCARNIVAL_Flow_Acyclic(
 
     # TODO: check input graph, experiment list and their compatibility
 
-    Eact = cn.opt.Variable(
-        "edge_activates", (G.num_edges, len(exp_list)), vartype=cn.VarType.BINARY
-    )
-    Einh = cn.opt.Variable(
-        "edge_inhibits", (G.num_edges, len(exp_list)), vartype=cn.VarType.BINARY
-    )
-    Z = cn.opt.Variable(
-        "dummy", (G.num_vertices, len(exp_list)), vartype=cn.VarType.CONTINUOUS
-    )
+    Eact = cn.opt.Variable("edge_activates", (G.num_edges, len(exp_list)), vartype=cn.VarType.BINARY)
+    Einh = cn.opt.Variable("edge_inhibits", (G.num_edges, len(exp_list)), vartype=cn.VarType.BINARY)
+    Z = cn.opt.Variable("dummy", (G.num_vertices, len(exp_list)), vartype=cn.VarType.CONTINUOUS)
     P += Z >= 0
 
     # Edge cannot activate and inhibit at the same time
@@ -1052,14 +934,10 @@ def runCARNIVAL_Flow_Acyclic(
 
         P += Eact[edges_with_head, iexp] <= (Ah.T @ Va)[edges_with_head, iexp].multiply(
             interaction[edges_with_head] > 0
-        ) + (Ah.T @ Vi)[edges_with_head, iexp].multiply(
-            interaction[edges_with_head] < 0
-        )  # constrain 1B
+        ) + (Ah.T @ Vi)[edges_with_head, iexp].multiply(interaction[edges_with_head] < 0)  # constrain 1B
         P += Einh[edges_with_head, iexp] <= (Ah.T @ Va)[edges_with_head, iexp].multiply(
             interaction[edges_with_head] < 0
-        ) + (Ah.T @ Vi)[edges_with_head, iexp].multiply(
-            interaction[edges_with_head] > 0
-        )  # constrain 2B
+        ) + (Ah.T @ Vi)[edges_with_head, iexp].multiply(interaction[edges_with_head] > 0)  # constrain 2B
 
         # perturbation:
         p_nodes = list(exp_list[exp]["input"].keys())
@@ -1074,13 +952,8 @@ def runCARNIVAL_Flow_Acyclic(
         m_nodes_positions = [G.V.index(key) for key in m_nodes]
 
         # linearization of the ABS function: https://optimization.cbe.cornell.edu/index.php?title=Optimization_with_absolute_values
-        P += (
-            V[m_nodes_positions, iexp] - np.sign(m_values) <= Z[m_nodes_positions, iexp]
-        )
-        P += (
-            -V[m_nodes_positions, iexp] + np.sign(m_values)
-            <= Z[m_nodes_positions, iexp]
-        )
+        P += V[m_nodes_positions, iexp] - np.sign(m_values) <= Z[m_nodes_positions, iexp]
+        P += -V[m_nodes_positions, iexp] + np.sign(m_values) <= Z[m_nodes_positions, iexp]
 
         P.add_objectives(sum(Z[m_nodes_positions, iexp].multiply(abs(m_values))))
     P.add_objectives(betaWeight * sum(sum(Eact + Einh)))
@@ -1090,9 +963,7 @@ def runCARNIVAL_Flow_Acyclic(
 
 
 # CARNIVAL with flow and acyclic signaling
-def runCARNIVAL_Flow_Acyclic_Signal(
-    G, exp_list, betaWeight: float = 0.2, solver=None, verbosity=False
-):
+def runCARNIVAL_Flow_Acyclic_Signal(G, exp_list, betaWeight: float = 0.2, solver=None, verbosity=False):
     At, Ah = get_incidence_matrices_of_edges(G)
     interaction = get_interactions(G)
 
@@ -1101,15 +972,9 @@ def runCARNIVAL_Flow_Acyclic_Signal(
 
     # TODO: check input graph, experiment list and their compatibility
 
-    Eact = cn.opt.Variable(
-        "edge_activates", (G.num_edges, len(exp_list)), vartype=cn.VarType.BINARY
-    )
-    Einh = cn.opt.Variable(
-        "edge_inhibits", (G.num_edges, len(exp_list)), vartype=cn.VarType.BINARY
-    )
-    Z = cn.opt.Variable(
-        "dummy", (G.num_vertices, len(exp_list)), vartype=cn.VarType.CONTINUOUS
-    )
+    Eact = cn.opt.Variable("edge_activates", (G.num_edges, len(exp_list)), vartype=cn.VarType.BINARY)
+    Einh = cn.opt.Variable("edge_inhibits", (G.num_edges, len(exp_list)), vartype=cn.VarType.BINARY)
+    Z = cn.opt.Variable("dummy", (G.num_vertices, len(exp_list)), vartype=cn.VarType.CONTINUOUS)
     P += Z >= 0
 
     # Edge cannot activate and inhibit at the same time
@@ -1136,14 +1001,10 @@ def runCARNIVAL_Flow_Acyclic_Signal(
 
         P += Eact[edges_with_head, iexp] <= (Ah.T @ Va)[edges_with_head, iexp].multiply(
             interaction[edges_with_head] > 0
-        ) + (Ah.T @ Vi)[edges_with_head, iexp].multiply(
-            interaction[edges_with_head] < 0
-        )  # constrain 1B
+        ) + (Ah.T @ Vi)[edges_with_head, iexp].multiply(interaction[edges_with_head] < 0)  # constrain 1B
         P += Einh[edges_with_head, iexp] <= (Ah.T @ Va)[edges_with_head, iexp].multiply(
             interaction[edges_with_head] < 0
-        ) + (Ah.T @ Vi)[edges_with_head, iexp].multiply(
-            interaction[edges_with_head] > 0
-        )  # constrain 2B
+        ) + (Ah.T @ Vi)[edges_with_head, iexp].multiply(interaction[edges_with_head] > 0)  # constrain 2B
 
         # perturbation:
         p_nodes = list(exp_list[exp]["input"].keys())
@@ -1158,13 +1019,8 @@ def runCARNIVAL_Flow_Acyclic_Signal(
         m_nodes_positions = [G.V.index(key) for key in m_nodes]
 
         # linearization of the ABS function: https://optimization.cbe.cornell.edu/index.php?title=Optimization_with_absolute_values
-        P += (
-            V[m_nodes_positions, iexp] - np.sign(m_values) <= Z[m_nodes_positions, iexp]
-        )
-        P += (
-            -V[m_nodes_positions, iexp] + np.sign(m_values)
-            <= Z[m_nodes_positions, iexp]
-        )
+        P += V[m_nodes_positions, iexp] - np.sign(m_values) <= Z[m_nodes_positions, iexp]
+        P += -V[m_nodes_positions, iexp] + np.sign(m_values) <= Z[m_nodes_positions, iexp]
 
         P.add_objectives(sum(Z[m_nodes_positions, iexp].multiply(abs(m_values))))
     P.add_objectives(betaWeight * sum(sum(Eact + Einh)))
@@ -1213,18 +1069,10 @@ def milp_carnival(
     max_dist = G.num_vertices if max_dist is None else max_dist
 
     # The problem uses 2*|V| + 2*|E| binary variables + |V| continuous variables
-    V_act = backend.Variable(
-        "vertex_activated", shape=(len(G.V),), vartype=cn.VarType.BINARY
-    )
-    V_inh = backend.Variable(
-        "vertex_inhibited", shape=(len(G.V),), vartype=cn.VarType.BINARY
-    )
-    E_act = backend.Variable(
-        "edge_activating", shape=(len(G.E),), vartype=cn.VarType.BINARY
-    )
-    E_inh = backend.Variable(
-        "edge_inhibiting", shape=(len(G.E),), vartype=cn.VarType.BINARY
-    )
+    V_act = backend.Variable("vertex_activated", shape=(len(G.V),), vartype=cn.VarType.BINARY)
+    V_inh = backend.Variable("vertex_inhibited", shape=(len(G.V),), vartype=cn.VarType.BINARY)
+    E_act = backend.Variable("edge_activating", shape=(len(G.E),), vartype=cn.VarType.BINARY)
+    E_inh = backend.Variable("edge_inhibiting", shape=(len(G.E),), vartype=cn.VarType.BINARY)
     V_pos = backend.Variable(
         "vertex_position",
         shape=(len(G.V),),
@@ -1309,12 +1157,8 @@ def milp_carnival(
             P += sum(in_edges_selected) <= 1
         # And the value of the target vertex equals the value of the selected edge
         # If no edge is selected, then the value is 0]
-        incoming_activating = (
-            sum(E_act[j] for j in in_edges_idx) if len(in_edges_idx) > 0 else 0
-        )
-        incoming_inhibiting = (
-            sum(E_inh[j] for j in in_edges_idx) if len(in_edges_idx) > 0 else 0
-        )
+        incoming_activating = sum(E_act[j] for j in in_edges_idx) if len(in_edges_idx) > 0 else 0
+        incoming_inhibiting = sum(E_inh[j] for j in in_edges_idx) if len(in_edges_idx) > 0 else 0
         P += V_act[i] <= int(perturbed) + incoming_activating
         P += V_inh[i] <= int(perturbed) + incoming_inhibiting
         # If perturbed but value is 0, then perturbation can take any value,

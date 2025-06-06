@@ -2,6 +2,7 @@ import numpy as np
 
 try:
     from scipy.sparse import coo_matrix, csr_matrix
+
     _SPARSE_AVAILABLE = True
 except ImportError:
     _SPARSE_AVAILABLE = False
@@ -31,6 +32,7 @@ def get_incidence_matrices_of_edges(G, as_dataframe=False, sparse=False):
 
     if as_dataframe:
         import pandas as pd
+
         # If using sparse matrices, convert to dense arrays for DataFrame conversion.
         if sparse:
             Ah = pd.DataFrame(Ah.toarray(), index=G.V, columns=G.E)
@@ -118,17 +120,11 @@ def check_exp_graph_consistency(G, exp_list):
     for exp in exp_list:
         for node in exp_list[exp]["input"]:
             if node not in G.V:
-                raise ValueError(
-                    f"Node {node} in experiment {exp} is not in the graph."
-                )
+                raise ValueError(f"Node {node} in experiment {exp} is not in the graph.")
         for node in exp_list[exp]["output"]:
             if node not in G.V:
-                raise ValueError(
-                    f"Node {node} in experiment {exp} is not in the graph."
-                )
+                raise ValueError(f"Node {node} in experiment {exp} is not in the graph.")
         if "inhibition" in exp_list[exp]:
             for node in exp_list[exp]["inhibition"]:
                 if node not in G.V:
-                    raise ValueError(
-                        f"Node {node} in experiment {exp} is not in the graph."
-                    )
+                    raise ValueError(f"Node {node} in experiment {exp} is not in the graph.")

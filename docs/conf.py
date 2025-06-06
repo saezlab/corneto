@@ -23,9 +23,7 @@ username = repo.split("/")[0]
 
 # -- Project information -----------------------------------------------------
 project = "CORNETO"
-copyright = (
-    f"2023-{datetime.now().year}, Saez-Rodriguez lab. (EMBL-EBI, Heidelberg University)"
-)
+copyright = f"2023-{datetime.now().year}, Saez-Rodriguez lab. (EMBL-EBI, Heidelberg University)"
 author = "Pablo Rodriguez-Mier"
 
 # -- General configuration ---------------------------------------------------
