@@ -153,6 +153,8 @@ class CarnivalFlow(FlowMethod):
         vertex_lb_dist=None,
         max_flow=1000,
         enable_bfs_heuristic=True,
+        indirect_rule_penalty=0,
+        depth_penalty=0,
         data_type_key="role",
         data_input_key="input",
         data_output_key="output",
@@ -170,6 +172,7 @@ class CarnivalFlow(FlowMethod):
         self.data_output_key = data_output_key
         self.vertex_lb_dist = vertex_lb_dist
         self.use_heuristic_bfs = enable_bfs_heuristic
+        self.indirect_rule_penalty = indirect_rule_penalty
 
     def preprocess(self, graph: BaseGraph, data: Data) -> Tuple[BaseGraph, Data]:
         """Preprocess the input graph and dataset before optimization.
@@ -359,7 +362,7 @@ class CarnivalFlow(FlowMethod):
             )
 
             # If multiple experiments, enforce that only designated perturbation inputs are active.
-            # NOTE: In this version, we use a single flow, multiple acyclic signals across the
+            # NOTE: In this version, we use a single flow, and multiple acyclic signals across the
             # sub-graph which has flow. This means that we cannot block flow edges, only signal.
             if num_experiments > 1:
                 p_nodes_set = set(sample_inputs.keys())
@@ -412,6 +415,22 @@ class CarnivalFlow(FlowMethod):
             # problem.add_objectives(sum(error_expr))
             # problem.add_objectives(error_expr @ ones)
             problem.add_objective(error_expr.sum(), name=f"error_{sample_name}_{i}")
+            if self.indirect_rule_penalty > 0:
+                # Penalize more indirect rules:
+                # A -> B interaction, but edge activity = -1 or
+                # A -| B interaction, but edge activity = 1
+                # i.e., in the first case, B is inhibited just 
+                # because A is inhibited and B is active just 
+                # because A is inhibited
+                activatory_interactions = (Int[:, i] > 0).astype(int)
+                inhibitory_interactions = (Int[:, i] < 0).astype(int)
+                penalty_rule1 = Einh[:, i].T @ activatory_interactions
+                penalty_rule2 = Eact[:, i].T @ inhibitory_interactions
+                problem.add_objective(
+                    penalty_rule1 + penalty_rule2,
+                    weight=self.indirect_rule_penalty,
+                    name=f"penalty_indirect_rules_{i}",
+                )
 
         return problem
 
