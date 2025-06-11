@@ -283,6 +283,8 @@ class CarnivalFlow(FlowMethod):
             indicator_positive_var_name="edge_has_signal",
             vertex_lb_dist=self.vertex_lb_dist,
         )
+        # Alias for default _dag_layer (to be changed in the future)
+        problem.register("vertex_max_depth", problem.expr._dag_layer)
 
         # Identify edges with outgoing connections (heads)
         edges_with_head = np.flatnonzero(np.sum(np.abs(Ah), axis=0) > 0)
