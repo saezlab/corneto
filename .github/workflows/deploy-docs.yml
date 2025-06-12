@@ -87,15 +87,24 @@ jobs:
         run: |
           echo "GH CLI version: $(gh --version)"
           echo "Fetching Pages URL for ${{ github.repository }}…"
-          page_url=$(gh api \
+
+          # Try to get the Pages URL, but handle the case where Pages isn't set up yet
+          if page_url=$(gh api \
             -H "Accept: application/vnd.github.v3+json" \
             /repos/${{ github.repository }}/pages \
-            --jq .html_url \
-          )
-          echo "Retrieved page_url: $page_url"
-          # Export it so later steps see it:
-          echo "PAGE_URL=${page_url:-}" >> $GITHUB_ENV
-          echo "Exported PAGE_URL=${page_url:-}"
+            --jq .html_url 2>/dev/null); then
+            echo "Retrieved page_url: $page_url"
+            echo "PAGE_URL=${page_url}" >> $GITHUB_ENV
+            echo "Exported PAGE_URL=${page_url}"
+          else
+            echo "GitHub Pages not found or not yet activated for this repository."
+            echo "This is normal for the first deployment. Pages will be available after this workflow completes."
+            # Set a default URL that will be correct once Pages is activated
+            default_url="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}"
+            echo "Using default URL: $default_url"
+            echo "PAGE_URL=${default_url}" >> $GITHUB_ENV
+            echo "Exported PAGE_URL=${default_url}"
+          fi
 
       - name: Generate switcher.json
         run: |

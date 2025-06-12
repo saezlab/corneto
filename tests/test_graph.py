@@ -274,6 +274,7 @@ def test_graph_bfs_rev():
     assert dist[4] == 2
     assert 5 not in dist
 
+
 def test_graph_toposort():
     g = Graph()
     g.add_edge("a", "b")
@@ -289,6 +290,7 @@ def test_graph_toposort():
     assert order.index("c") < order.index("d")
     assert order.index("d") < order.index("e")
     assert order.index("b") < order.index("d")
+
 
 def test_incidence_single_edge_single_source_vertex():
     g = Graph()

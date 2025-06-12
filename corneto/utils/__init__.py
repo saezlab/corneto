@@ -97,9 +97,7 @@ def get_library_version(lib_name):
             raise ValueError(f"Library {lib_name} not found in pyproject.toml")
 
     except FileNotFoundError:
-        raise RuntimeError(
-            "pyproject.toml not found. Ensure your project structure is correct."
-        )
+        raise RuntimeError("pyproject.toml not found. Ensure your project structure is correct.")
 
 
 def import_optional_module(module_name):
@@ -113,4 +111,3 @@ def import_optional_module(module_name):
         else:
             error_msg = f"{module_name} is not installed and no version specification found in pyproject.toml. It may be an optional dependency not configured."
         raise ImportError(error_msg) from e
-

@@ -5,6 +5,7 @@ import warnings
 from corneto import _plotting as pl
 from corneto._constants import *
 from corneto._data import Data, Feature, GraphData, Sample
+from corneto._logging import disable_logging, enable_logging, set_verbosity
 from corneto._util import info, suppress_output
 from corneto.backend import DEFAULT_BACKEND, DEFAULT_SOLVER, available_backends
 
@@ -14,7 +15,7 @@ from corneto.backend import DEFAULT_BACKEND as opt
 from corneto.backend._base import HammingLoss as hamming_loss
 from corneto.backend._base import Indicator, NonZeroIndicator
 
-#from corneto._graph import Attr, Attributes, EdgeType, Graph
+# from corneto._graph import Attr, Attributes, EdgeType, Graph
 from corneto.graph import Attr, Attributes, EdgeType, Graph
 from corneto.io import load_graph_from_sif
 
@@ -27,10 +28,8 @@ from corneto.methods import (
 )
 from corneto.utils import Attr, Attributes
 
-from corneto._logging import disable_logging, enable_logging, set_verbosity
-
-#logger = logging.getLogger(__name__)
-#logger.addHandler(logging.NullHandler())
+# logger = logging.getLogger(__name__)
+# logger.addHandler(logging.NullHandler())
 
 
 def get_version():
@@ -77,7 +76,7 @@ __all__ = [
     "Feature",
     "Graph",
     "GraphData",
-    "K", # deprecated
+    "K",  # deprecated
     "Sample",
     "available_backends",
     "info",
@@ -86,7 +85,7 @@ __all__ = [
 ]
 
 
-#import_sif = Graph.from_sif
+# import_sif = Graph.from_sif
 import_sif = load_graph_from_sif
 
 try:

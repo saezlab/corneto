@@ -43,9 +43,7 @@ def sample_dataset():
         ):
             results = {}
             for sample_id, sample in self.data.items():
-                matching = sample.filter_values_by(
-                    metadata_key, metadata_value, value_key
-                )
+                matching = sample.filter_values_by(metadata_key, metadata_value, value_key)
                 if matching:
                     if return_values:
                         # Collect the actual values
@@ -226,10 +224,7 @@ def test_tight_format_conversion():
     assert set(ds_new.data.keys()) == set(ds.data.keys())
     for sample_id in ds.data:
         for feat in ds.data[sample_id].features:
-            assert (
-                ds_new.data[sample_id].features[feat]
-                == ds.data[sample_id].features[feat]
-            )
+            assert ds_new.data[sample_id].features[feat] == ds.data[sample_id].features[feat]
 
 
 def test_sample_value_dict_conversion():
@@ -242,10 +237,7 @@ def test_sample_value_dict_conversion():
     assert set(ds_new.data.keys()) == set(ds.data.keys())
     for sample_id in ds.data:
         for feat in ds.data[sample_id].features:
-            assert (
-                ds_new.data[sample_id].features[feat]
-                == ds.data[sample_id].features[feat]
-            )
+            assert ds_new.data[sample_id].features[feat] == ds.data[sample_id].features[feat]
 
 
 def test_merge_datasets():
@@ -274,9 +266,7 @@ def test_filter_samples():
     ds.add_sample("s3", {"feat1": 30})
 
     # Filter samples where 'feat1' is greater than 15.
-    filtered = ds.filter_samples(
-        lambda sid, sample: sample.features.get("feat1", 0) > 15
-    )
+    filtered = ds.filter_samples(lambda sid, sample: sample.features.get("feat1", 0) > 15)
     assert set(filtered.data.keys()) == {"s2", "s3"}
 
 
@@ -337,9 +327,7 @@ def test_sample_filter_values():
     sample.add_feature("feat1", {"value": 50})
     sample.add_feature("feat2", {"value": 30})
     sample.add_feature("feat3", 10)
-    filtered = sample.filter_values(
-        lambda name, feat: (feat["value"] if isinstance(feat, dict) else feat) > 20
-    )
+    filtered = sample.filter_values(lambda name, feat: (feat["value"] if isinstance(feat, dict) else feat) > 20)
     assert filtered["feat1"] == 50
     assert filtered["feat2"] == 30
     assert "feat3" not in filtered
@@ -401,9 +389,7 @@ def test_repr_dataset():
 def test_subset_features():
     ds = Data()
     # Create sample s1 with three features
-    ds.add_sample(
-        "s1", {"feat1": 10, "feat2": {"value": 20, "unit": "cm"}, "feat3": 30}
-    )
+    ds.add_sample("s1", {"feat1": 10, "feat2": {"value": 20, "unit": "cm"}, "feat3": 30})
     # Create sample s2 with two features
     ds.add_sample("s2", {"feat2": {"value": 40, "unit": "kg"}, "feat4": 50})
 
@@ -426,23 +412,23 @@ def test_data_filter():
     ds = Data()
     ds.add_sample("s1", {"feat1": 10, "feat2": 20, "feat3": -5})
     ds.add_sample("s2", {"feat1": 5, "feat2": -10, "feat4": 30})
-    
+
     # Filter to keep only features with positive values
     filtered = ds.filter(lambda sid, fname, fvalue: isinstance(fvalue, (int, float)) and fvalue > 0)
-    
+
     assert "s1" in filtered.data
     assert "s2" in filtered.data
     assert set(filtered.data["s1"].features.keys()) == {"feat1", "feat2"}
     assert set(filtered.data["s2"].features.keys()) == {"feat1", "feat4"}
     assert filtered.data["s1"].features["feat1"] == 10
     assert filtered.data["s2"].features["feat4"] == 30
-    
+
     # Filter with sample ID condition
     filtered_s1 = ds.filter(lambda sid, fname, fvalue: sid == "s1" and fvalue > 0)
     assert "s1" in filtered_s1.data
     assert "s2" not in filtered_s1.data
     assert set(filtered_s1.data["s1"].features.keys()) == {"feat1", "feat2"}
-    
+
     # Filter with feature name condition
     filtered_feat1 = ds.filter(lambda sid, fname, fvalue: fname == "feat1")
     assert "s1" in filtered_feat1.data
@@ -454,31 +440,41 @@ def test_data_filter():
 def test_data_filter_by():
     """Test the filter_by method on the Data class."""
     ds = Data()
-    ds.add_sample("s1", {
-        "feat1": {"value": 10, "type": "numeric", "importance": "high"},
-        "feat2": {"value": 20, "type": "numeric", "importance": "medium"},
-        "feat3": {"value": -5, "type": "numeric", "importance": "low"}
-    })
-    ds.add_sample("s2", {
-        "feat1": {"value": 5, "type": "numeric", "importance": "medium"},
-        "feat2": {"value": -10, "type": "numeric", "importance": "low"},
-        "feat4": {"value": 30, "type": "categorical", "importance": "high"}
-    })
-    
+    ds.add_sample(
+        "s1",
+        {
+            "feat1": {"value": 10, "type": "numeric", "importance": "high"},
+            "feat2": {"value": 20, "type": "numeric", "importance": "medium"},
+            "feat3": {"value": -5, "type": "numeric", "importance": "low"},
+        },
+    )
+    ds.add_sample(
+        "s2",
+        {
+            "feat1": {"value": 5, "type": "numeric", "importance": "medium"},
+            "feat2": {"value": -10, "type": "numeric", "importance": "low"},
+            "feat4": {"value": 30, "type": "categorical", "importance": "high"},
+        },
+    )
+
     # Filter by type
     filtered_numeric = ds.filter_by("type", "numeric")
     assert "s1" in filtered_numeric.data
     assert "s2" in filtered_numeric.data
-    assert set(filtered_numeric.data["s1"].features.keys()) == {"feat1", "feat2", "feat3"}
+    assert set(filtered_numeric.data["s1"].features.keys()) == {
+        "feat1",
+        "feat2",
+        "feat3",
+    }
     assert set(filtered_numeric.data["s2"].features.keys()) == {"feat1", "feat2"}
-    
+
     # Filter by importance
     filtered_high = ds.filter_by("importance", "high")
     assert "s1" in filtered_high.data
     assert "s2" in filtered_high.data
     assert set(filtered_high.data["s1"].features.keys()) == {"feat1"}
     assert set(filtered_high.data["s2"].features.keys()) == {"feat4"}
-    
+
     # Filter that results in empty sample should exclude that sample
     filtered_low = ds.filter_by("importance", "low")
     assert "s1" in filtered_low.data

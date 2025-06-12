@@ -32,11 +32,12 @@ T = TypeVar("T")
 
 class EdgeType(str, Enum):
     """Edge type enumeration.
-    
+
     Attributes:
         DIRECTED: Represents a directed edge
         UNDIRECTED: Represents an undirected edge
     """
+
     DIRECTED = "directed"
     UNDIRECTED = "undirected"
 
@@ -82,7 +83,7 @@ def _tpl(elements: Union[Any, Iterable[Any]]) -> Tuple[Any, ...]:
 
     Args:
         elements: Element or iterable of elements
-    
+
     Returns:
         Tuple containing the elements
     """
@@ -116,10 +117,7 @@ class BaseGraph(abc.ABC):
             Dict mapping vertices to their attributes
         """
         if isinstance(s, dict):
-            return {
-                k: v if isinstance(v, (dict, Number)) else ValueError()
-                for k, v in s.items()
-            }
+            return {k: v if isinstance(v, (dict, Number)) else ValueError() for k, v in s.items()}
         elif isinstance(s, (str, Number, Iterable)):
             return {v: {} for v in (s if isinstance(s, Iterable) else [s])}
         else:
@@ -136,17 +134,9 @@ class BaseGraph(abc.ABC):
             Dict mapping vertices to their attributes
         """
         if isinstance(s, dict):
-            return {
-                k: v if isinstance(v, (dict, Number)) else ValueError()
-                for k, v in s.items()
-            }
+            return {k: v if isinstance(v, (dict, Number)) else ValueError() for k, v in s.items()}
         elif isinstance(s, (str, Number, Iterable)):
-            return {
-                v: {}
-                for v in (
-                    s if not isinstance(s, str) and isinstance(s, Iterable) else [s]
-                )
-            }
+            return {v: {} for v in (s if not isinstance(s, str) and isinstance(s, Iterable) else [s])}
         else:
             raise ValueError()
 
@@ -299,9 +289,7 @@ class BaseGraph(abc.ABC):
         return self.extract_subgraph(vertices=vertices, edges=None)
 
     @abc.abstractmethod
-    def extract_subgraph(
-        self, vertices: Optional[Iterable] = None, edges: Optional[Iterable[int]] = None
-    ):
+    def extract_subgraph(self, vertices: Optional[Iterable] = None, edges: Optional[Iterable[int]] = None):
         """Extract subgraph induced by a set of vertices and/or edges.
 
         Args:
@@ -361,9 +349,7 @@ class BaseGraph(abc.ABC):
         """
         return self._get_vertex_attributes(v)
 
-    def get_attr_edges(
-        self, indexes: Optional[Iterable[int]] = None
-    ) -> List[Attributes]:
+    def get_attr_edges(self, indexes: Optional[Iterable[int]] = None) -> List[Attributes]:
         """Get attributes of multiple edges.
 
         Args:
@@ -403,9 +389,7 @@ class BaseGraph(abc.ABC):
             if key in e and e[key] == value:
                 yield i
 
-    def get_attr_vertices(
-        self, vertices: Optional[Iterable] = None
-    ) -> List[Attributes]:
+    def get_attr_vertices(self, vertices: Optional[Iterable] = None) -> List[Attributes]:
         """Get attributes of multiple vertices.
 
         Args:
@@ -444,9 +428,7 @@ class BaseGraph(abc.ABC):
         for i, v in enumerate(self._get_vertices()):
             if i == index:
                 return v
-        raise IndexError(
-            f"Vertex index {index} out of range [0 - {self.num_vertices - 1}]"
-        )
+        raise IndexError(f"Vertex index {index} out of range [0 - {self.num_vertices - 1}]")
 
     def get_incident_edges(self, vertices) -> Iterable[int]:
         """Get incident edges for multiple vertices.
@@ -515,9 +497,7 @@ class BaseGraph(abc.ABC):
         """
         return NotImplementedError()
 
-    def _edges_by_dir(
-        self, vertices, direction: Optional[str] = None
-    ) -> Iterable[Tuple[int, Edge]]:
+    def _edges_by_dir(self, vertices, direction: Optional[str] = None) -> Iterable[Tuple[int, Edge]]:
         """Get edges by direction relative to vertices.
 
         Args:
@@ -575,6 +555,7 @@ class BaseGraph(abc.ABC):
         Returns:
             Iterable of successor vertices
         """
+
         def succ():
             for i, (s, t) in self._edges_by_dir(vertex, direction="out"):
                 attr = self.get_attr_edge(i)
@@ -611,6 +592,7 @@ class BaseGraph(abc.ABC):
         Returns:
             Iterable of predecessor vertices
         """
+
         def succ():
             for i, (s, t) in self._edges_by_dir(vertex, direction="in"):
                 attr = self.get_attr_edge(i)
@@ -636,9 +618,7 @@ class BaseGraph(abc.ABC):
             Iterable of predecessor vertices
         """
         vertices = _tpl(vertices)
-        return unique_iter(
-            chain.from_iterable((self._predecessors(v) for v in vertices))
-        )
+        return unique_iter(chain.from_iterable((self._predecessors(v) for v in vertices)))
 
     def neighbors(self, vertex) -> Iterable:
         """Get neighbors of a vertex (ignoring edge direction).
@@ -649,9 +629,7 @@ class BaseGraph(abc.ABC):
         Returns:
             Iterable of neighbor vertices
         """
-        iter_vertices = (
-            s | t for _, (s, t) in self._edges_by_dir(vertex, direction=None)
-        )
+        iter_vertices = (s | t for _, (s, t) in self._edges_by_dir(vertex, direction=None))
         return unique_iter(chain.from_iterable(iter_vertices))
 
     def is_hypergraph(self) -> bool:
@@ -867,7 +845,6 @@ class BaseGraph(abc.ABC):
 
     import numpy as np
 
-
     def vertex_incidence_matrix(self, values: bool = False, sparse: bool = False):
         """Get vertex incidence matrix.
 
@@ -879,9 +856,10 @@ class BaseGraph(abc.ABC):
             Vertex incidence matrix as a numpy array or a sparse matrix.
         """
         data, (row_ind, col_ind) = self.get_vertex_incidence_matrix_as_lists(values)
-        
+
         if sparse:
             from scipy.sparse import csr_matrix
+
             # Create a sparse CSR matrix
             A = csr_matrix((data, (row_ind, col_ind)), shape=(self.num_vertices, self.num_edges))
         else:
@@ -891,10 +869,7 @@ class BaseGraph(abc.ABC):
 
         return A
 
-
-    def bfs(
-        self, starting_vertices: Any, reverse: bool = False, undirected: bool = False
-    ) -> Dict[Any, int]:
+    def bfs(self, starting_vertices: Any, reverse: bool = False, undirected: bool = False) -> Dict[Any, int]:
         """Perform breadth-first search (BFS) traversal.
 
         Args:
@@ -991,14 +966,12 @@ class BaseGraph(abc.ABC):
                 LOGGER.debug("HTML rendering not supported.")
                 raise e
 
-    def plot_values(
-        self, vertex_values=None, edge_values=None, vertex_props=None, edge_props=None
-    ):
+    def plot_values(self, vertex_values=None, edge_values=None, vertex_props=None, edge_props=None):
         """Plot graph with vertex and edge values visualized.
 
         Args:
             vertex_values: Optional values to display on vertices
-            edge_values: Optional values to display on edges  
+            edge_values: Optional values to display on edges
             vertex_props: Optional dict of vertex drawing properties
             edge_props: Optional dict of edge drawing properties
 
@@ -1024,9 +997,7 @@ class BaseGraph(abc.ABC):
         if edge_values is not None:
             if hasattr(edge_values, "value"):
                 edge_values = edge_values.value
-            edge_drawing_props = create_graphviz_edge_attributes(
-                edge_values=edge_values, **edge_props
-            )
+            edge_drawing_props = create_graphviz_edge_attributes(edge_values=edge_values, **edge_props)
         return self.plot(
             custom_edge_attr=edge_drawing_props,
             custom_vertex_attr=vertex_drawing_props,
@@ -1068,7 +1039,7 @@ class BaseGraph(abc.ABC):
         g = Graph()
         if len(vertex_ids) != A.shape[0]:
             raise ValueError(
-                """The number of rows in A matrix is different from 
+                """The number of rows in A matrix is different from
                 the number of vertex ids"""
             )
         if len(edge_ids) != A.shape[1]:
@@ -1125,7 +1096,7 @@ class BaseGraph(abc.ABC):
 
         Supports various compression formats:
         - .gz (gzip)
-        - .bz2 (bzip2)  
+        - .bz2 (bzip2)
         - .xz (LZMA)
         - .zip (zip archive, reads first file)
 
@@ -1162,7 +1133,7 @@ class BaseGraph(abc.ABC):
 
     def toposort(self):
         """Perform topological sort on the graph using Kahn's algorithm.
-        
+
         Returns:
             List of vertices in topological order
 
@@ -1192,7 +1163,6 @@ class BaseGraph(abc.ABC):
             return result
         else:
             raise ValueError("Graph contains a cycle, so topological sort is not possible.")
-
 
     def reachability_analysis(
         self,
@@ -1252,10 +1222,7 @@ class BaseGraph(abc.ABC):
                         str_reached = "/".join(reached_outputs)
                     else:
                         # Get only the first max_printed_outputs items
-                        str_reached = (
-                            "/".join(list(reached_outputs)[:max_printed_outputs])
-                            + "..."
-                        )
+                        str_reached = "/".join(list(reached_outputs)[:max_printed_outputs]) + "..."
                     print(f" > {len(reached_outputs):<4} output(s): {str_reached}")
                 else:
                     print("")
@@ -1306,14 +1273,12 @@ class Graph(BaseGraph):
     (edges connecting multiple vertices). Edges and vertices can have attributes.
 
     Examples:
-        >>> graph = corneto.Graph() 
+        >>> graph = corneto.Graph()
         >>> graph.add_edge(1, 2)
         >>> graph.plot()
     """
 
-    def __init__(
-        self, default_edge_type: EdgeType = EdgeType.DIRECTED, **kwargs
-    ) -> None:
+    def __init__(self, default_edge_type: EdgeType = EdgeType.DIRECTED, **kwargs) -> None:
         """Initialize Graph.
 
         Args:
@@ -1352,7 +1317,7 @@ class Graph(BaseGraph):
 
         Args:
             source: Source vertices
-            target: Target vertices 
+            target: Target vertices
             type: Edge type
             edge_source_attr: Optional attributes for source vertices
             edge_target_attr: Optional attributes for target vertices
@@ -1491,9 +1456,7 @@ class Graph(BaseGraph):
         """
         return len(self._edges)
 
-    def extract_subgraph(
-        self, vertices: Optional[Iterable] = None, edges: Optional[Iterable[int]] = None
-    ):
+    def extract_subgraph(self, vertices: Optional[Iterable] = None, edges: Optional[Iterable[int]] = None):
         """Extract subgraph induced by vertices and/or edges.
 
         Args:
@@ -1552,9 +1515,7 @@ class Graph(BaseGraph):
             g.add_edge(s, t, **attr)
         return g
 
-    def _extract_subgraph_keep_order(
-        self, vertices: Optional[Iterable] = None, edges: Optional[Iterable[int]] = None
-    ):
+    def _extract_subgraph_keep_order(self, vertices: Optional[Iterable] = None, edges: Optional[Iterable[int]] = None):
         """Extract subgraph while preserving vertex and edge order.
 
         Internal method that maintains insertion order of vertices and edges.

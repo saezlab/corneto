@@ -2,7 +2,7 @@
 
 We welcome contributions of tutorials that showcase how to use CORNETO for biological network inference, optimisation, and analysis. If you’ve built something useful or interesting with CORNETO, share it to help others learn!
 
-All tutorials are stored in:  
+All tutorials are stored in:
 ```
 corneto/docs/tutorials/
 ```
@@ -54,7 +54,7 @@ dependencies:
   - matplotlib>=3.5
 ```
 
-> ℹ️ If your tutorial has no extra dependencies, include an empty file or write:  
+> ℹ️ If your tutorial has no extra dependencies, include an empty file or write:
 > `# No additional dependencies required`
 
 ---
@@ -77,7 +77,17 @@ git checkout dev
 git checkout -b contrib/my-tutorial-name
 ```
 
-### 4. Add Your Tutorial Folder
+### 4. Set Up Pre-commit Hooks (Required)
+We use pre-commit hooks to ensure code quality and consistency. Install and set up pre-commit before making any commits:
+
+```bash
+poetry install  # If you haven't installed dependencies yet
+poetry run pre-commit install
+```
+
+This will automatically check your code with `ruff` when you commit changes.
+
+### 5. Add Your Tutorial Folder
 Place your folder here:
 ```
 corneto/docs/tutorials/contrib/my_tutorial_name/
@@ -86,7 +96,7 @@ Include:
 - `my_tutorial_name.ipynb`
 - `requirements.txt` or `dependencies.yaml` with **minimum versions**
 
-### 5. Commit and Push
+### 6. Commit and Push
 
 Use **[Conventional Commits](https://www.conventionalcommits.org/)**:
 
@@ -96,7 +106,7 @@ git commit -m "docs(tutorial): add my_tutorial_name example notebook"
 git push origin contrib/my-tutorial-name
 ```
 
-### 6. Open a Pull Request
+### 7. Open a Pull Request
 
 Open a **PR against `dev`** with title:
 ```

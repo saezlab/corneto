@@ -18,9 +18,9 @@
 Reference
 =========
 
-CORNETO's functionality is built on various classes and functions, which 
-are detailed in this reference. However, for practical guidance on their 
-implementation, it is recommended to consult the :doc:`/guide/index`, 
+CORNETO's functionality is built on various classes and functions, which
+are detailed in this reference. However, for practical guidance on their
+implementation, it is recommended to consult the :doc:`/guide/index`,
 as raw specifications may not always provide sufficient context.
 
 

@@ -1,4 +1,4 @@
-from typing import Any, Dict, Literal, Optional, Tuple, Union, List
+from typing import Any, Dict, List, Literal, Optional, Tuple, Union
 
 import numpy as np
 
@@ -187,12 +187,7 @@ class SteinerTreeFlow(FlowMethod):
             # Create a list of lower-bound arrays (one per sample)
             lb = [
                 np.array(
-                    [
-                        0
-                        if prop.has_attr(Attr.EDGE_TYPE, EdgeType.DIRECTED)
-                        else -mf
-                        for prop in graph.get_attr_edges()
-                    ]
+                    [0 if prop.has_attr(Attr.EDGE_TYPE, EdgeType.DIRECTED) else -mf for prop in graph.get_attr_edges()]
                 )
                 for mf in self._max_flow_list
             ]
@@ -200,9 +195,7 @@ class SteinerTreeFlow(FlowMethod):
         else:
             lb = np.array(
                 [
-                    0
-                    if prop.has_attr(Attr.EDGE_TYPE, EdgeType.DIRECTED)
-                    else -self._max_flow
+                    0 if prop.has_attr(Attr.EDGE_TYPE, EdgeType.DIRECTED) else -self._max_flow
                     for prop in graph.get_attr_edges()
                 ]
             )
@@ -215,9 +208,7 @@ class SteinerTreeFlow(FlowMethod):
             "shared_bounds": False,
         }
 
-    def create_flow_based_problem(
-        self, flow_problem: ProblemDef, graph: BaseGraph, data: Data
-    ):
+    def create_flow_based_problem(self, flow_problem: ProblemDef, graph: BaseGraph, data: Data):
         """Create the flow-based Steiner tree optimization problem.
 
         Sets up the constraints and objectives for the Steiner tree problem.
@@ -234,9 +225,7 @@ class SteinerTreeFlow(FlowMethod):
         edge_ids = list(set(range(graph.num_edges)) - set(flow_edge_ids))
 
         if self.strict_acyclic:
-            flow_problem += self.backend.NonZeroIndicator(
-                flow_problem.expr._flow, tolerance=self.epsilon
-            )
+            flow_problem += self.backend.NonZeroIndicator(flow_problem.expr._flow, tolerance=self.epsilon)
             flow_problem += self.backend.Acyclic(
                 graph,
                 flow_problem,
@@ -245,9 +234,7 @@ class SteinerTreeFlow(FlowMethod):
             )
             with_flow = flow_problem.expr._flow_ipos + flow_problem.expr._flow_ineg
         else:
-            flow_problem += self.backend.Indicator(
-                flow_problem.expr._flow, indexes=edge_ids
-            )
+            flow_problem += self.backend.Indicator(flow_problem.expr._flow, indexes=edge_ids)
             with_flow = flow_problem.expr._flow_i
 
         flow_problem.register("with_flow", with_flow)
@@ -256,9 +243,7 @@ class SteinerTreeFlow(FlowMethod):
         # Process each sample individually.
         for i, sample_data in enumerate(data.samples.values()):
             # Determine the sample-specific max_flow
-            sample_max_flow = (
-                self._max_flow_list[i] if self._max_flow_list is not None else self._max_flow
-            )
+            sample_max_flow = self._max_flow_list[i] if self._max_flow_list is not None else self._max_flow
             # Determine the sample-specific root vertex
             sample_selected_root = self._selected_roots[i]
 
@@ -266,13 +251,9 @@ class SteinerTreeFlow(FlowMethod):
             F = F if len(F.shape) == 1 else F[:, i]
 
             vertices_edgeflow_idx = []
-            all_vertices_with_data = sample_data.query.select(
-                lambda f: f.mapping == "vertex"
-            ).pluck()
+            all_vertices_with_data = sample_data.query.select(lambda f: f.mapping == "vertex").pluck()
             terminals_edgeflow_idx = []
-            terminals = sample_data.query.select(
-                lambda f: f.mapping == "vertex" and not f.value
-            ).pluck()
+            terminals = sample_data.query.select(lambda f: f.mapping == "vertex" and not f.value).pluck()
             # For terminals, if a root is chosen, skip it
             for terminal in terminals:
                 if sample_selected_root is None or terminal != sample_selected_root:
@@ -317,18 +298,14 @@ class SteinerTreeFlow(FlowMethod):
                     flow_problem += flow_problem.expr[terminal_neg].sum() == 1
                     t_idx = [vertices_edgeflow_idx.index(idx) for idx in terminals_edgeflow_idx]
                     if t_idx:
-                        flow_problem += (
-                            flow_problem.expr[terminal_pos][t_idx].sum() == len(t_idx) - 1
-                        )
+                        flow_problem += flow_problem.expr[terminal_pos][t_idx].sum() == len(t_idx) - 1
 
             # Add edge cost to the objective.
             edge_costs = np.ones((len(edge_ids))) * self.default_edge_cost
             selected = with_flow if len(with_flow.shape) == 1 else with_flow[:, i]
 
             # Incorporate edge-specific costs from the sample data.
-            edge_data = sample_data.query.select(
-                lambda f: f.mapping == "edge"
-            ).to_list()
+            edge_data = sample_data.query.select(lambda f: f.mapping == "edge").to_list()
             for edata in edge_data:
                 edge_costs[edata.id] = float(edata.value)
 

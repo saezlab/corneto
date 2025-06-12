@@ -206,9 +206,7 @@ class Dataset:
             yield condition, features
 
     @classmethod
-    def from_dict(
-        cls, data: Dict[str, Dict[str, Dict[str, Any]]], is_flat: bool = False
-    ) -> "Dataset":
+    def from_dict(cls, data: Dict[str, Dict[str, Dict[str, Any]]], is_flat: bool = False) -> "Dataset":
         """Creates a Dataset instance from a nested dictionary.
 
         The top-level keys are conditions. If `is_flat` is True, each condition is
@@ -254,10 +252,7 @@ class Dataset:
         if not is_flat:
             data = flatten_condition_features(data, metadata_key="type")
         for condition, features in data.items():
-            processed_features = {
-                name: Feature.from_dict(feature_data)
-                for name, feature_data in features.items()
-            }
+            processed_features = {name: Feature.from_dict(feature_data) for name, feature_data in features.items()}
             dataset.samples[condition] = processed_features
         return dataset
 
@@ -332,18 +327,13 @@ class Dataset:
                     if meta_value is not None:
                         if meta_value not in arranged_features:
                             arranged_features[meta_value] = {}
-                        arranged_features[meta_value][feature_name] = transform_feature(
-                            feature
-                        )
+                        arranged_features[meta_value][feature_name] = transform_feature(feature)
                 if arranged_features:
                     arranged_samples[condition] = arranged_features
             return arranged_samples
 
         result = {
-            condition: {
-                feature_name: transform_feature(feature)
-                for feature_name, feature in features.items()
-            }
+            condition: {feature_name: transform_feature(feature) for feature_name, feature in features.items()}
             for condition, features in self.samples.items()
         }
 

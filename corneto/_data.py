@@ -56,11 +56,7 @@ class Feature:
         return cls(id=d["id"], value=d.get("value"), mapping=mapping, **extra)
 
     def __repr__(self) -> str:
-        extras = ", ".join(
-            f"{k}={v}"
-            for k, v in self.data.items()
-            if k not in ("id", "value", "mapping")
-        )
+        extras = ", ".join(f"{k}={v}" for k, v in self.data.items() if k not in ("id", "value", "mapping"))
         return (
             f"Feature(id={self.id}, value={self.value}, mapping={self.mapping}"
             + (f", {extras}" if extras else "")
@@ -114,9 +110,7 @@ class Data:
     """
 
     def __init__(self, samples: Optional[Dict[Any, Sample]] = None) -> None:
-        self._samples: OrderedDict[Any, Sample] = (
-            OrderedDict(samples) if samples else OrderedDict()
-        )
+        self._samples: OrderedDict[Any, Sample] = OrderedDict(samples) if samples else OrderedDict()
 
     def add_sample(self, key: Any, sample: Sample) -> None:
         self._samples[key] = sample
@@ -141,9 +135,7 @@ class Data:
             for feat_key, feat_attrs in features_dict.items():
                 value = feat_attrs.get("value")
                 mapping = feat_attrs.get("mapping", "none")
-                extra = {
-                    k: v for k, v in feat_attrs.items() if k not in ("value", "mapping")
-                }
+                extra = {k: v for k, v in feat_attrs.items() if k not in ("value", "mapping")}
                 feature = Feature(id=feat_key, value=value, mapping=mapping, **extra)
                 features.append(feature)
             samples[sample_key] = Sample(features)
@@ -231,11 +223,7 @@ class Data:
     def __repr__(self) -> str:
         sample_features = [len(sample.features) for sample in self._samples.values()]
         if len(sample_features) > 5:
-            features_str = (
-                " ".join(map(str, sample_features[:4]))
-                + " ... "
-                + str(sample_features[-1])
-            )
+            features_str = " ".join(map(str, sample_features[:4])) + " ... " + str(sample_features[-1])
         else:
             features_str = " ".join(map(str, sample_features))
         return f"Data(n_samples={len(self._samples)}, n_feats=[{features_str}])"
@@ -310,9 +298,7 @@ class DataQuery:
     further chaining is possible.
     """
 
-    def __init__(
-        self, samples: Union[Iterator[Tuple[Any, Sample]], List[Tuple[Any, Sample]]]
-    ) -> None:
+    def __init__(self, samples: Union[Iterator[Tuple[Any, Sample]], List[Tuple[Any, Sample]]]) -> None:
         self._samples = samples
 
     def filter(self, predicate: Callable[[Tuple[Any, Sample]], bool]) -> "DataQuery":
@@ -320,9 +306,7 @@ class DataQuery:
 
     select = filter
 
-    def map(
-        self, func: Callable[[Tuple[Any, Sample]], Tuple[Any, Sample]]
-    ) -> "DataQuery":
+    def map(self, func: Callable[[Tuple[Any, Sample]], Tuple[Any, Sample]]) -> "DataQuery":
         return DataQuery(func(s) for s in self._samples)
 
     def collect(self) -> Data:
@@ -339,9 +323,7 @@ class DataQuery:
     def map_features(self, func: Callable[[Feature], Feature]) -> "DataQuery":
         return self.map(lambda kv: (kv[0], kv[1].query.map(func).collect()))
 
-    def pluck_features(
-        self, extractor: Callable[[Feature], Any] = lambda f: f.id
-    ) -> set:
+    def pluck_features(self, extractor: Callable[[Feature], Any] = lambda f: f.id) -> set:
         return {extractor(f) for _, sample in self.to_list() for f in sample.features}
 
     pluck = pluck_features

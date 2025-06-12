@@ -6,9 +6,7 @@ def check_gurobi(verbose=True, solver_verbose=False):
     try:
         import gurobipy as gp
     except ImportError:
-        raise ImportError(
-            "Gurobipy is not installed. Please install Gurobi and its Python bindings."
-        )
+        raise ImportError("Gurobipy is not installed. Please install Gurobi and its Python bindings.")
     if verbose:
         print("Gurobipy successfully imported.")
 
@@ -39,9 +37,7 @@ def check_gurobi(verbose=True, solver_verbose=False):
         model.optimize()
 
         if model.Status != gp.GRB.OPTIMAL:
-            raise RuntimeError(
-                f"Gurobi failed to solve the test problem optimally. Status: {model.Status}"
-            )
+            raise RuntimeError(f"Gurobi failed to solve the test problem optimally. Status: {model.Status}")
         if verbose:
             print("Test optimization was successful.")
     except gp.GurobiError as e:

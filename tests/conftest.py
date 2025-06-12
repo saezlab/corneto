@@ -27,9 +27,7 @@ def pytest_addoption(parser):
         choices=["cvxpy", "picos"],
         help="Specify which backend to run tests with (cvxpy or picos)",
     )
-    parser.addoption(
-        "--run-optional", action="store_true", default=False, help="Run optional tests"
-    )
+    parser.addoption("--run-optional", action="store_true", default=False, help="Run optional tests")
 
 
 @pytest.fixture
@@ -65,17 +63,13 @@ def backend(request, solver):
 
     # Skip if a specific backend was requested and this is not it
     if selected_backend and backend_name != selected_backend:
-        pytest.skip(
-            f"Skipping backend '{backend_name}' because --backend={selected_backend} was specified."
-        )
+        pytest.skip(f"Skipping backend '{backend_name}' because --backend={selected_backend} was specified.")
 
     if backend_name == "cvxpy":
         opt = CvxpyBackend()
         solvers = [s.lower() for s in opt.available_solvers()]
         if solver and solver.lower() not in solvers:
-            pytest.skip(
-                f"Solver '{solver}' is not available in CvxpyBackend. Available solvers: {', '.join(solvers)}"
-            )
+            pytest.skip(f"Solver '{solver}' is not available in CvxpyBackend. Available solvers: {', '.join(solvers)}")
         opt._default_solver = solver if solver else "SCIPY"
         return opt
 
@@ -83,8 +77,6 @@ def backend(request, solver):
         opt = PicosBackend()
         solvers = [s.lower() for s in opt.available_solvers()]
         if solver and solver.lower() not in solvers:
-            pytest.skip(
-                f"Solver '{solver}' is not available in PicosBackend. Available solvers: {', '.join(solvers)}"
-            )
+            pytest.skip(f"Solver '{solver}' is not available in PicosBackend. Available solvers: {', '.join(solvers)}")
         opt._default_solver = solver if solver else "glpk"
         return opt

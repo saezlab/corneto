@@ -17,9 +17,7 @@ def suppress_repr_warnings(g):
             The instance whose _repr_* methods should have their warnings suppressed.
     """
     # Identify all representation methods (names starting with '_repr_') on the instance.
-    repr_methods = [
-        m for m in dir(g) if m.startswith("_repr_") and callable(getattr(g, m))
-    ]
+    repr_methods = [m for m in dir(g) if m.startswith("_repr_") and callable(getattr(g, m))]
     for method_name in repr_methods:
         original = getattr(g, method_name)
 
@@ -182,9 +180,7 @@ def flow_style(
         else:
             edge_width = min_edge_width
         if scale is not None:
-            edge_width = min_edge_width + (max_edge_width - min_edge_width) * abs(
-                v / max_flow
-            )
+            edge_width = min_edge_width + (max_edge_width - min_edge_width) * abs(v / max_flow)
         edge_attrs[i] = {"penwidth": str(edge_width)}
         if flow[i] > 0:
             edge_attrs[i]["color"] = positive_color
@@ -255,14 +251,10 @@ def to_python_graphviz(
         keys = list(custom_vertex_attr.keys())
         if all(isinstance(k, int) for k in keys):
             vertices = graph.V
-            custom_vertex_attr = {
-                str(v): custom_vertex_attr[i] for i, v in enumerate(vertices)
-            }
+            custom_vertex_attr = {str(v): custom_vertex_attr[i] for i, v in enumerate(vertices)}
     if node_attr is None:
         node_attr = dict(fixedsize="true")
-    g = graphviz.Digraph(
-        engine=layout, graph_attr=graph_attr, node_attr=node_attr, edge_attr=edge_attr
-    )
+    g = graphviz.Digraph(engine=layout, graph_attr=graph_attr, node_attr=node_attr, edge_attr=edge_attr)
     for i, e in enumerate(graph.edges()):
         if edge_indexes is not None and i not in edge_indexes:
             continue
@@ -282,10 +274,7 @@ def to_python_graphviz(
                 e_attr = custom_edge_attr.get(i, {})
                 g.edge(edge_center, v, **e_attr)
         else:
-            if (
-                graph.get_attr_edge(i).get_attr(Attr.EDGE_TYPE, "")
-                == EdgeType.UNDIRECTED.value
-            ):
+            if graph.get_attr_edge(i).get_attr(Attr.EDGE_TYPE, "") == EdgeType.UNDIRECTED.value:
                 e_attr = dict(arrowhead="none", dir="none")
                 e_attr.update(custom_edge_attr.get(i, {}))
                 g.edge(v_s[0], v_t[0], **e_attr)
@@ -359,9 +348,7 @@ def to_pydot(
         keys = list(custom_vertex_attr.keys())
         if all(isinstance(k, int) for k in keys):
             vertices = graph.V
-            custom_vertex_attr = {
-                str(v): custom_vertex_attr[i] for i, v in enumerate(vertices)
-            }
+            custom_vertex_attr = {str(v): custom_vertex_attr[i] for i, v in enumerate(vertices)}
     # Create a pydot.Dot graph
     g = pydot.Dot(graph_type="digraph", **(graph_attr if graph_attr else {}))
     if node_attr is not None:
@@ -378,9 +365,7 @@ def to_pydot(
         if len(s) > 1 or len(t) > 1:
             is_hypergraph = True
             edge_center = f"e_{i}_center"
-            center_node = pydot.Node(
-                edge_center, shape="square", width="0.1", height="0.1", label=""
-            )
+            center_node = pydot.Node(edge_center, shape="square", width="0.1", height="0.1", label="")
             g.add_node(center_node)
             for v in v_s:
                 e_attr = dict(arrowtail="none", arrowhead="none", dir="both")
@@ -392,10 +377,7 @@ def to_pydot(
                 edge = pydot.Edge(edge_center, v, **e_attr)
                 g.add_edge(edge)
         else:
-            if (
-                graph.get_attr_edge(i).get_attr(Attr.EDGE_TYPE, "")
-                == EdgeType.UNDIRECTED.value
-            ):
+            if graph.get_attr_edge(i).get_attr(Attr.EDGE_TYPE, "") == EdgeType.UNDIRECTED.value:
                 e_attr = dict(arrowhead="none", dir="none")
                 e_attr.update(custom_edge_attr.get(i, {}))
                 edge = pydot.Edge(v_s[0], v_t[0], **e_attr)

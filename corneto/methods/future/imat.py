@@ -5,7 +5,7 @@ gene expression data into metabolic network analysis by maximizing the agreement
 flux distributions and gene expression measurements across samples.
 """
 
-from typing import Optional, Tuple, Union
+from typing import Optional, Tuple
 
 import numpy as np
 
@@ -136,33 +136,22 @@ class MultiSampleIMAT(MultiSampleFBA):
             for feature in sample.features:
                 # Check if this is a gene feature (mapping="none")
                 if feature.mapping == "none":
-                    gene_scores[feature.id] = (
-                        float(feature.value) if feature.value is not None else 0.0
-                    )
+                    gene_scores[feature.id] = float(feature.value) if feature.value is not None else 0.0
 
             if not gene_scores:
                 continue
 
             # Check if thresholds are provided (non-None values)
-            use_thresholds = (
-                self.high_expression_threshold is not None
-                or self.low_expression_threshold is not None
-            )
+            use_thresholds = self.high_expression_threshold is not None or self.low_expression_threshold is not None
 
             # Process gene scores - either apply thresholds or use directly
             processed_gene_scores = {}
             if use_thresholds:
                 # Apply thresholds to gene scores before GPR evaluation
                 for gene, score in gene_scores.items():
-                    if (
-                        self.high_expression_threshold is not None
-                        and score >= self.high_expression_threshold
-                    ):
+                    if self.high_expression_threshold is not None and score >= self.high_expression_threshold:
                         processed_gene_scores[gene] = 1.0
-                    elif (
-                        self.low_expression_threshold is not None
-                        and score <= self.low_expression_threshold
-                    ):
+                    elif self.low_expression_threshold is not None and score <= self.low_expression_threshold:
                         processed_gene_scores[gene] = -1.0
                     # Genes with expressions between thresholds are not included
             else:
@@ -192,9 +181,7 @@ class MultiSampleIMAT(MultiSampleFBA):
 
                 # Filter for genes we have scores for
                 relevant_genes = {
-                    g: processed_gene_scores.get(g, 0.0)
-                    for g in rule_genes
-                    if g in processed_gene_scores
+                    g: processed_gene_scores.get(g, 0.0) for g in rule_genes if g in processed_gene_scores
                 }
 
                 if not relevant_genes:
@@ -273,9 +260,7 @@ class MultiSampleIMAT(MultiSampleFBA):
                 continue
 
             # Convert reaction IDs to indices
-            rxn_indices = [
-                next(iter(graph.get_edges_by_attr("id", rxn_id))) for rxn_id in rxn_ids
-            ]
+            rxn_indices = [next(iter(graph.get_edges_by_attr("id", rxn_id))) for rxn_id in rxn_ids]
             weights = np.array(weights)
 
             # Scale weights if requested
@@ -293,14 +278,13 @@ class MultiSampleIMAT(MultiSampleFBA):
                 unblocked_sample = unblocked[:, i]
             else:
                 sample_active = active
+                unblocked_sample = unblocked
 
             # Add objectives for highly expressed reactions
             if np.any(idx_pos):
                 pos_weights = weights[idx_pos]
                 pos_indices = np.array(rxn_indices)[idx_pos]
-                flow_problem.add_objectives(
-                    pos_weights @ (1 - sample_active[pos_indices])
-                )
+                flow_problem.add_objectives(pos_weights @ (1 - sample_active[pos_indices]))
 
             # Add objectives for lowly expressed reactions
             if np.any(idx_neg):
@@ -308,13 +292,9 @@ class MultiSampleIMAT(MultiSampleFBA):
                 neg_indices = np.array(rxn_indices)[idx_neg]
                 if self.use_bigm_constraints:
                     # 1 if the reactions is unblocked (can have positive/negative flux)
-                    flow_problem.add_objectives(
-                        np.abs(neg_weights) @ unblocked_sample[neg_indices]
-                    )
+                    flow_problem.add_objectives(np.abs(neg_weights) @ unblocked_sample[neg_indices])
                 else:
-                    flow_problem.add_objectives(
-                        np.abs(neg_weights) @ sample_active[neg_indices]
-                    )
+                    flow_problem.add_objectives(np.abs(neg_weights) @ sample_active[neg_indices])
 
         return flow_problem
 

@@ -32,10 +32,7 @@ def _import_optional(module_name: str, attribute: str) -> Any:
         return attr
     except (ImportError, AttributeError) as e:
         # Log the failure and fallback to Any.
-        LOGGER.warning(
-            f"Failed to import '{attribute}' from '{module_name}': {e}. "
-            "Defaulting to Any."
-        )
+        LOGGER.warning(f"Failed to import '{attribute}' from '{module_name}': {e}. Defaulting to Any.")
         return Any
 
 

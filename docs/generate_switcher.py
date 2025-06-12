@@ -2,11 +2,13 @@ import json
 import os
 import re
 import subprocess
+
 # For robust version parsing and sorting if you have complex tags (e.g., v1.0.0-alpha.1)
 # from packaging.version import parse as parse_version
 
 # Define your package name here
 PACKAGE_NAME_TO_IMPORT = "corneto"
+
 
 def get_local_dynamic_version(package_name):
     """Tries to import the specified package and return its __version__."""
@@ -23,15 +25,17 @@ def get_local_dynamic_version(package_name):
         print(f"Warning: Could not import package '{package_name}' to get local dynamic version.")
         return None
 
+
 def get_git_tags():
     """Return a list of git tags, sorted from newest to oldest if possible."""
     try:
-        subprocess.check_call([
-            "git", "fetch", "origin", "--tags", "--force"
-        ], text=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
-        output = subprocess.check_output([
-            "git", "tag", "--sort=-committerdate"
-        ], text=True)
+        subprocess.check_call(
+            ["git", "fetch", "origin", "--tags", "--force"],
+            text=True,
+            stderr=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+        )
+        output = subprocess.check_output(["git", "tag", "--sort=-committerdate"], text=True)
         return [line.strip() for line in output.splitlines() if line.strip()]
     except subprocess.CalledProcessError as e:
         print(f"Warning: Git tag command failed. Stderr: {e.stderr}. Falling back to unsorted tags.")
@@ -42,40 +46,45 @@ def get_git_tags():
             print("Error: Could not retrieve git tags.")
             return []
 
+
 def remote_branch_exists(branch_name):
     """Return True if the given remote branch exists (e.g. 'origin/main')."""
     try:
-        subprocess.check_call([
-            "git", "remote", "update", "origin", "--prune"
-        ], text=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+        subprocess.check_call(
+            ["git", "remote", "update", "origin", "--prune"],
+            text=True,
+            stderr=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+        )
         output = subprocess.check_output(["git", "branch", "-r"], text=True)
         return any(f"origin/{branch_name}" in line for line in output.splitlines())
     except subprocess.CalledProcessError as e:
         print(f"Error checking remote branches: {e.stderr}")
         return False
 
+
 def get_deployed_versions():
     """Fetch the gh-pages branch and return a set of directory names."""
     try:
-        subprocess.check_call([
-            "git", "fetch", "origin", "gh-pages:gh-pages", "--force"
-        ], text=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
-        output = subprocess.check_output([
-            "git", "ls-tree", "-d", "--name-only", "gh-pages"
-        ], text=True)
-        deployed = {line.strip() for line in output.splitlines() if line.strip() and not line.startswith('.')}
+        subprocess.check_call(
+            ["git", "fetch", "origin", "gh-pages:gh-pages", "--force"],
+            text=True,
+            stderr=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+        )
+        output = subprocess.check_output(["git", "ls-tree", "-d", "--name-only", "gh-pages"], text=True)
+        deployed = {line.strip() for line in output.splitlines() if line.strip() and not line.startswith(".")}
         print(f"Found deployed versions (directories in gh-pages): {deployed}")
         return deployed
     except subprocess.CalledProcessError as e:
         print(f"Warning: Could not determine deployed versions from gh-pages. Stderr: {e.stderr}")
         return set()
 
+
 def get_version_from_pyproject(git_ref, file_path="pyproject.toml"):
     """Attempts to read pyproject.toml from a git ref and extract the version."""
     try:
-        output = subprocess.check_output([
-            "git", "show", f"{git_ref}:{file_path}"
-        ], text=True, stderr=subprocess.PIPE)
+        output = subprocess.check_output(["git", "show", f"{git_ref}:{file_path}"], text=True, stderr=subprocess.PIPE)
         # Allow leading whitespace before the version key; escape inner quotes
         match = re.search(r"^\s*version\s*=\s*[\"']([^\"']+)[\"']", output, re.M)
         if match:
@@ -87,6 +96,7 @@ def get_version_from_pyproject(git_ref, file_path="pyproject.toml"):
     except subprocess.CalledProcessError as e:
         print(f"Warning: 'git show {git_ref}:{file_path}' failed. Stderr: {e.stderr.strip()}")
         return None
+
 
 def get_base_url():
     """Determines the base URL for documentation links."""
@@ -102,6 +112,7 @@ def get_base_url():
         return fallback_url
     print("Error: Could not determine base URL. GITHUB_REPOSITORY and PAGE_URL are not set.")
     return "https://your-username.github.io/your-repo"
+
 
 def main():
     base_url = get_base_url()
@@ -125,7 +136,9 @@ def main():
 
         if branch_id == current_ci_ref_name and local_dynamic_version:
             switcher_version_str = local_dynamic_version
-            print(f"Using local dynamic version '{switcher_version_str}' for '{branch_id}' switcher entry (CI is on '{current_ci_ref_name}').")
+            print(
+                f"Using local dynamic version '{switcher_version_str}' for '{branch_id}' switcher entry (CI is on '{current_ci_ref_name}')."
+            )
         else:
             version_from_toml = get_version_from_pyproject(git_ref_for_remote_lookup)
             if version_from_toml and version_from_toml != "0.0.0":
@@ -163,11 +176,7 @@ def main():
             tag_version_str = local_dynamic_version
             print(f"CI is building tag '{tag}'. Using local dynamic version '{local_dynamic_version}'.")
 
-        entry = {
-            "name": tag,
-            "version": tag_version_str,
-            "url": f"{base_url}/{tag}/"
-        }
+        entry = {"name": tag, "version": tag_version_str, "url": f"{base_url}/{tag}/"}
         switcher.append(entry)
         processed_identifiers.add(tag)
 
@@ -182,7 +191,7 @@ def main():
     other_entries = [e for e in switcher if e not in (main_entry, dev_entry)]
     # For true SemVer sorting, uncomment below and import parse_version
     # other_entries.sort(key=lambda x: parse_version(x['version']), reverse=True)
-    other_entries.sort(key=lambda x: x['version'], reverse=True)
+    other_entries.sort(key=lambda x: x["version"], reverse=True)
     final_switcher.extend(other_entries)
 
     script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -192,6 +201,7 @@ def main():
         json.dump(final_switcher, f, indent=2)
 
     print(f"Switcher file generated at '{output_path}' with {len(final_switcher)} entries.")
+
 
 if __name__ == "__main__":
     main()

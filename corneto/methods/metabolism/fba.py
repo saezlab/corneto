@@ -72,9 +72,7 @@ class FBAProblem(ProblemDef):
             Dict: Dictionary mapping reaction IDs to their flux values.
         """
         fluxes = self.get_fluxes()
-        reaction_ids = [
-            self._graph.get_attr_edge(i).get("id") for i in range(self._graph.ne)
-        ]
+        reaction_ids = [self._graph.get_attr_edge(i).get("id") for i in range(self._graph.ne)]
         return {r: fluxes[i] for i, r in enumerate(reaction_ids)}
 
 
@@ -97,9 +95,7 @@ def fba_problem(G, create_reaction_indicators=False, num_fluxes=1, eps=1e-4, bac
         attr = G.get_attr_edge(i)
         lb.append(attr.default_lb)
         ub.append(attr.default_ub)
-    P = backend.Flow(
-        G, lb=np.array(lb), ub=np.array(ub), values=True, n_flows=num_fluxes
-    )
+    P = backend.Flow(G, lb=np.array(lb), ub=np.array(ub), values=True, n_flows=num_fluxes)
     if create_reaction_indicators:
         P += NonZeroIndicator(tolerance=eps)
     return P
@@ -156,9 +152,7 @@ def multicondition_imat(
     loss_w = 1
     if scale:
         if alpha < 0 or alpha > 1:
-            raise ValueError(
-                "If scale=True, alpha has to be a number between 0 and 1 (inclusive)"
-            )
+            raise ValueError("If scale=True, alpha has to be a number between 0 and 1 (inclusive)")
         # Scale the weights of each condition dividing by the total weight per condition
         # Scale in %, avoid very small error numbers (solver tolerances)
         w = (w / np.abs(w).sum(axis=0)) * 100  # error is in %
@@ -170,9 +164,7 @@ def multicondition_imat(
     # contributes 1%. Scale n_edges so a network with all edges
     # has a penalty of 100 (%).
 
-    P = fba_problem(
-        model, create_reaction_indicators=True, num_fluxes=n_conditions, eps=eps
-    )
+    P = fba_problem(model, create_reaction_indicators=True, num_fluxes=n_conditions, eps=eps)
     active = P.symbols["_flow_ineg"] + P.symbols["_flow_ipos"]
     if use_unblocked_flux_indicators and np.abs(alpha) > 0:
         P += Indicator()  # I = 0 <=> F = 0
@@ -219,9 +211,7 @@ def multicondition_imat(
     # P.register("has_flux", has_flux)
 
     if np.abs(alpha) > 0:
-        logic_or = backend.Variable(
-            name="_or", shape=total.shape, vartype=VarType.BINARY
-        )
+        logic_or = backend.Variable(name="_or", shape=total.shape, vartype=VarType.BINARY)
         P += [
             # only 0 if total is 0
             logic_or >= total / n_conditions,

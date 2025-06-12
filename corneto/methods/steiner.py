@@ -34,9 +34,7 @@ def _exact_steiner_tree(
         root = terminals[0]
     Gc = G.copy()
     # TODO: If graph is directed, edges for inflow/outflow should be reversible
-    eidx = Gc.add_edge(
-        (), root, type=EdgeType.UNDIRECTED
-    )  # () -> root (input flow, source flow node)
+    eidx = Gc.add_edge((), root, type=EdgeType.UNDIRECTED)  # () -> root (input flow, source flow node)
     dummy_edges[root] = eidx
     ids = []
     for v in terminals:
@@ -48,12 +46,7 @@ def _exact_steiner_tree(
     # lower/upper bounds for flow. If directed, lb=0, ub>0, if undirected, lb<0, ub>0
     # NOTE: bounds are arbitrary, but very large/small numbers can introduce issues with integrality tolerances
     # TODO: lb/ub could be provided, or taken from the graph
-    lb = np.array(
-        [
-            0 if prop.has_attr(Attr.EDGE_TYPE, EdgeType.DIRECTED) else -10
-            for prop in Gc.get_attr_edges()
-        ]
-    )
+    lb = np.array([0 if prop.has_attr(Attr.EDGE_TYPE, EdgeType.DIRECTED) else -10 for prop in Gc.get_attr_edges()])
     if strict_acyclic:
         P = K.AcyclicFlow(Gc, lb=lb, ub=10)
     else:
@@ -133,9 +126,7 @@ def exact_steiner_tree(
         root = terminals[0]
     Gc = G.copy()
     # TODO: If graph is directed, edges for inflow/outflow should be reversible
-    eidx = Gc.add_edge(
-        (), root, type=in_flow_edge_type
-    )  # () -> root (input flow, source flow node)
+    eidx = Gc.add_edge((), root, type=in_flow_edge_type)  # () -> root (input flow, source flow node)
     dummy_edges[root] = eidx
     ids = []
     for v in terminals:
@@ -147,12 +138,7 @@ def exact_steiner_tree(
     # lower/upper bounds for flow. If directed, lb=0, ub>0, if undirected, lb<0, ub>0
     # NOTE: bounds are arbitrary, but very large/small numbers can introduce issues with integrality tolerances
     # TODO: lb/ub could be provided, or taken from the graph
-    lb = np.array(
-        [
-            0 if prop.has_attr(Attr.EDGE_TYPE, EdgeType.DIRECTED) else -10
-            for prop in Gc.get_attr_edges()
-        ]
-    )
+    lb = np.array([0 if prop.has_attr(Attr.EDGE_TYPE, EdgeType.DIRECTED) else -10 for prop in Gc.get_attr_edges()])
     if strict_acyclic:
         P = K.AcyclicFlow(Gc, lb=lb, ub=flow_injected, varname=flow_name)
     else:
@@ -183,9 +169,7 @@ def exact_steiner_tree(
     if len(prized_nodes) == 0:
         # If not prized
         P += F[eidx] == flow_injected  # inject non-zero flow
-        P += F[ids] >= flow_injected / (
-            len(terminals) + 1
-        )  # Force all terminals to be present
+        P += F[ids] >= flow_injected / (len(terminals) + 1)  # Force all terminals to be present
     else:
         id_edge_prized = np.array([dummy_edges[v] for v in prized_nodes])
         P += K.NonZeroIndicator(
@@ -195,9 +179,7 @@ def exact_steiner_tree(
             suffix_pos="_nz_ipos",
             suffix_neg="_nz_ineg",
         )
-        I_prized_selected = (
-            P.symbols[f"{flow_name}_nz_ipos"] + P.symbols[f"{flow_name}_nz_ineg"]
-        )
+        I_prized_selected = P.symbols[f"{flow_name}_nz_ipos"] + P.symbols[f"{flow_name}_nz_ineg"]
         P.add_objectives(np.array(prizes) @ I_prized_selected, weights=-1)
 
     # Add an objective for non-zero flow on prized nodes
@@ -236,9 +218,7 @@ def create_exact_multi_steiner_tree(
         P, Gc = exact_steiner_tree(
             G,
             terminals,
-            edge_weights=edge_weights_per_condition[i]
-            if edge_weights_per_condition is not None
-            else None,
+            edge_weights=edge_weights_per_condition[i] if edge_weights_per_condition is not None else None,
             root=root_vertices[i] if root_vertices is not None else None,
             tolerance=tolerance,
             strict_acyclic=strict_acyclic,
@@ -300,9 +280,7 @@ def _exact_multi_steiner_tree(
         else:
             root = root_vertices[i]
         # TODO: Check if this root does not have a flow edge
-        eidx = Gc.add_edge(
-            (), root, type=EdgeType.UNDIRECTED
-        )  # () -> root (input flow, source flow node)
+        eidx = Gc.add_edge((), root, type=EdgeType.UNDIRECTED)  # () -> root (input flow, source flow node)
         dummy_edges[root] = eidx
         ids = []
         for v in terminals:
@@ -311,17 +289,10 @@ def _exact_multi_steiner_tree(
                 ids.append(idx)  # terminal -> () (sink node, remove flow)
                 dummy_edges[v] = idx
         ids = np.array(ids)
-        lb = np.array(
-            [
-                0 if prop.has_attr(Attr.EDGE_TYPE, EdgeType.DIRECTED) else -10
-                for prop in Gc.get_attr_edges()
-            ]
-        )
+        lb = np.array([0 if prop.has_attr(Attr.EDGE_TYPE, EdgeType.DIRECTED) else -10 for prop in Gc.get_attr_edges()])
 
     if strict_acyclic:
-        raise NotImplementedError(
-            "Acyclic Flow for multi flows required, or Acyclic component (WIP)"
-        )
+        raise NotImplementedError("Acyclic Flow for multi flows required, or Acyclic component (WIP)")
     else:
         P = backend.Flow(Gc, lb=lb, ub=10, n_flows=len(conditions))
 
@@ -341,9 +312,7 @@ def _exact_multi_steiner_tree(
             edge_weights = edge_weights_per_condition[i]
 
         if edge_weights is None:
-            edge_weights = np.array(
-                [prop.get("weight", 0) for prop in Gc.get_attr_edges()]
-            )
+            edge_weights = np.array([prop.get("weight", 0) for prop in Gc.get_attr_edges()])
         elif isinstance(edge_weights, (list, tuple)):
             edge_weights = np.array(edge_weights)
         else:
@@ -358,9 +327,7 @@ def _exact_multi_steiner_tree(
             P += F[ids] >= 10 / (len(terminals) + 1)
         else:
             id_edge_prized = np.array([dummy_edges[v] for v in prized_nodes])
-            P += backend.NonZeroIndicator(
-                F, indexes=id_edge_prized, tolerance=tolerance
-            )
+            P += backend.NonZeroIndicator(F, indexes=id_edge_prized, tolerance=tolerance)
             I_prized_selected = P.symbols["_flow_ipos"] + P.symbols["_flow_ineg"]
             # Maximize the selection of nodes with prizes
             P.add_objectives(np.array(prizes) @ I_prized_selected, weights=-1)

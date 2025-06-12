@@ -65,16 +65,13 @@ def sample_alternative_solutions(
     # Validate inputs
     if not isinstance(problem.backend, CvxpyBackend):
         raise ValueError(
-            "The sampler only works with the CvxpyBackend, but the provided problem "
-            "uses a different backend."
+            "The sampler only works with the CvxpyBackend, but the provided problem uses a different backend."
         )
     if percentage <= 0 or percentage > 1:
         raise ValueError("Percentage must be between 0 and 1")
 
     if target_variable_name not in problem.expr:
-        raise ValueError(
-            f"Target variable '{target_variable_name}' not found in problem expressions"
-        )
+        raise ValueError(f"Target variable '{target_variable_name}' not found in problem expressions")
 
     # Solve original problem and store objective values (except for the perturbation objective)
     verbosity: int = 1 if display_backend_output else 0
@@ -92,9 +89,7 @@ def sample_alternative_solutions(
     target_variable = problem.expr[target_variable_name]
     shape = target_variable.shape
     num_elements: int = shape[0]
-    n_elements: int = max(
-        int(num_elements * percentage), 1
-    )  # Ensure at least one element is perturbed
+    n_elements: int = max(int(num_elements * percentage), 1)  # Ensure at least one element is perturbed
     vec: np.ndarray = np.zeros(num_elements)
 
     # Create a parameter in the backend representing the perturbation
@@ -116,9 +111,7 @@ def sample_alternative_solutions(
     for i in range(max_samples):
         # Generate random perturbation vector
         c: np.ndarray = np.random.normal(scale=scale, size=n_elements)
-        random_indices: np.ndarray = np.random.choice(
-            vec.shape[0], size=n_elements, replace=False
-        )
+        random_indices: np.ndarray = np.random.choice(vec.shape[0], size=n_elements, replace=False)
         vec[:] = 0  # Reset vector
         vec[random_indices] = c
 
@@ -144,18 +137,13 @@ def sample_alternative_solutions(
                 continue
             orig_val = orig_objectives.get(obj.name)
             if orig_val is None:
-                warning_message = (
-                    f"Original objective value for '{obj.name}' not found."
-                )
+                warning_message = f"Original objective value for '{obj.name}' not found."
                 logger.warning(warning_message)
                 if verbose:
                     print(warning_message)
                 continue
             relative_error = np.abs(obj.value - orig_val) / (np.abs(orig_val) + 1e-10)
-            debug_message = (
-                f"Objective '{obj.name}': solved value {obj.value:.4f}, "
-                f"relative error {relative_error:.4f}"
-            )
+            debug_message = f"Objective '{obj.name}': solved value {obj.value:.4f}, relative error {relative_error:.4f}"
             logger.debug(debug_message)
             if verbose:
                 print(debug_message)
@@ -181,12 +169,8 @@ def sample_alternative_solutions(
                 print(f"Sample {i + 1} accepted. Total accepted: {accepted_count}")
 
     if accepted_count == 0:
-        logger.warning(
-            "No valid alternative solutions were found under the given constraints"
-        )
+        logger.warning("No valid alternative solutions were found under the given constraints")
         if verbose:
-            print(
-                "No valid alternative solutions were found. Consider adjusting parameters."
-            )
+            print("No valid alternative solutions were found. Consider adjusting parameters.")
 
     return results

@@ -23,11 +23,7 @@ def _get_shape(a: Any):
     if hasattr(a, "_csymbol_shape"):
         return a._csymbol_shape
     if hasattr(a, "_expr"):
-        return (
-            a._expr._csymbol_shape
-            if hasattr(a._expr, "_csymbol_shape")
-            else a._expr.shape
-        )
+        return a._expr._csymbol_shape if hasattr(a._expr, "_csymbol_shape") else a._expr.shape
     if hasattr(a, "shape"):
         return a.shape
     return ()
@@ -59,9 +55,7 @@ class PicosExpression(CExpression):
     def shape(self) -> Tuple[int, ...]:
         return _infer_shape(self)
 
-    def _create_proxy_expr(
-        self, expr: Any, symbols: Optional[Set["CSymbol"]] = None
-    ) -> "PicosExpression":
+    def _create_proxy_expr(self, expr: Any, symbols: Optional[Set["CSymbol"]] = None) -> "PicosExpression":
         return PicosExpression(expr, symbols)
 
     def _elementwise_mul(self, other: Any) -> Any:
@@ -137,9 +131,7 @@ class PicosSymbol(CSymbol, PicosExpression):
         vartype: VarType = VarType.CONTINUOUS,
         variable: bool = True,
     ) -> None:
-        super().__init__(
-            expr, name, shape=shape, lb=lb, ub=ub, vartype=vartype, variable=variable
-        )
+        super().__init__(expr, name, shape=shape, lb=lb, ub=ub, vartype=vartype, variable=variable)
 
     @CSymbol.value.setter
     def value(self, value: Any) -> None:
@@ -201,9 +193,7 @@ class PicosBackend(Backend):
             v = pc.BinaryVariable(name, shape)
         else:
             v = pc.RealVariable(name, shape, lower=lb, upper=ub)
-        return PicosSymbol(
-            v, name, shape=shape, lb=lb, ub=ub, vartype=vartype, variable=variable
-        )
+        return PicosSymbol(v, name, shape=shape, lb=lb, ub=ub, vartype=vartype, variable=variable)
 
     def Parameter(
         self,
@@ -230,7 +220,7 @@ class PicosBackend(Backend):
         P = pc.Problem()
         # Use default solver tolerances
         P.options["*_tol"] = None
-        #P.options["primals"] = False
+        # P.options["primals"] = False
         for c in p.constraints:
             P += c.e
         if objective is not None:

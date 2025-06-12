@@ -41,12 +41,7 @@ def _numpy_array(arg1, shape=None, dtype=None):
         return arg1
 
     # Handle (data, (row_ind, col_ind)) case
-    if (
-        isinstance(arg1, tuple)
-        and len(arg1) == 2
-        and isinstance(arg1[1], tuple)
-        and len(arg1[1]) == 2
-    ):
+    if isinstance(arg1, tuple) and len(arg1) == 2 and isinstance(arg1[1], tuple) and len(arg1[1]) == 2:
         data, (row_ind, col_ind) = arg1
         if shape is None:
             shape = (max(row_ind) + 1, max(col_ind) + 1)

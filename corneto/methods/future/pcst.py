@@ -65,9 +65,7 @@ class PrizeCollectingSteinerTree(SteinerTreeFlow):
         # For each sample, add extra edges for prized nodes
         for i, sample_data in enumerate(data.samples.values()):
             sample_root = self._selected_roots[i]
-            prized_nodes = sample_data.query.select(
-                lambda f: f.mapping == "vertex" and f.value
-            ).pluck()
+            prized_nodes = sample_data.query.select(lambda f: f.mapping == "vertex" and f.value).pluck()
             for prized in prized_nodes:
                 # Only add an edge if the prized node is not the sample's root
                 # and it has not been already assigned a flow edge
@@ -78,9 +76,7 @@ class PrizeCollectingSteinerTree(SteinerTreeFlow):
 
         return flow_graph, processed_data
 
-    def create_flow_based_problem(
-        self, flow_problem: ProblemDef, graph: BaseGraph, data: Data
-    ):
+    def create_flow_based_problem(self, flow_problem: ProblemDef, graph: BaseGraph, data: Data):
         """Create the flow-based Prize-Collecting Steiner tree optimization problem.
 
         Builds on the base Steiner tree problem and adds prize-collecting functionality.
@@ -97,25 +93,17 @@ class PrizeCollectingSteinerTree(SteinerTreeFlow):
 
             # Retrieve prized terminals from the sample.
             prized_terminals = dict(
-                sample_data.query.select(
-                    lambda f: f.mapping == "vertex" and f.value
-                ).pluck(lambda f: (f.id, f.value))
+                sample_data.query.select(lambda f: f.mapping == "vertex" and f.value).pluck(lambda f: (f.id, f.value))
             )
 
             if prized_terminals:
                 prized_idx = [
-                    self.flow_edges[prized]
-                    for prized in prized_terminals.keys()
-                    if prized in self.flow_edges
+                    self.flow_edges[prized] for prized in prized_terminals.keys() if prized in self.flow_edges
                 ]
                 if prized_idx:
                     # Build a prize vector (order must match the prized_idx)
                     prizes = np.array(
-                        [
-                            prized_terminals[prized]
-                            for prized in prized_terminals.keys()
-                            if prized in self.flow_edges
-                        ]
+                        [prized_terminals[prized] for prized in prized_terminals.keys() if prized in self.flow_edges]
                     )
                     if self.strict_acyclic:
                         selected = flow_problem.expr._flow_ipos + flow_problem.expr._flow_ineg
@@ -137,24 +125,18 @@ class PrizeCollectingSteinerTree(SteinerTreeFlow):
                                 suffix_neg=f"_terminal_neg_{i}",
                             )
                             selected_prized_flow_edges = (
-                                flow_problem.expr[indicator_terminal_pos]
-                                + flow_problem.expr[indicator_terminal_neg]
+                                flow_problem.expr[indicator_terminal_pos] + flow_problem.expr[indicator_terminal_neg]
                             )
                         else:
                             flow_edges_idxs = self._terminal_edgeflow_idx[i]
-                            prized_idx_in_list = [
-                                flow_edges_idxs.index(idx) for idx in prized_idx
-                            ]
+                            prized_idx_in_list = [flow_edges_idxs.index(idx) for idx in prized_idx]
                             selected = (
-                                flow_problem.expr[indicator_terminal_pos]
-                                + flow_problem.expr[indicator_terminal_neg]
+                                flow_problem.expr[indicator_terminal_pos] + flow_problem.expr[indicator_terminal_neg]
                             )
                             selected = selected if len(selected.shape) == 1 else selected[:, i]
                             selected_prized_flow_edges = selected[prized_idx_in_list]
 
-                    flow_problem.register(
-                        f"selected_prized_flow_edges_{i}", selected_prized_flow_edges
-                    )
+                    flow_problem.register(f"selected_prized_flow_edges_{i}", selected_prized_flow_edges)
 
                     # Add an objective term (with negative weight) to maximize prizes.
                     flow_problem.add_objectives(

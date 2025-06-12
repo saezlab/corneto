@@ -39,9 +39,7 @@ def test_cvxpy_convex():
     x = backend.Variable("x", (A.shape[1],))
     P += sum(x) == 1, x >= 0  # type: ignore
     # Convex optimization problem
-    P.add_objectives(
-        cp.sum_squares((A @ x - b).e), inplace=True
-    )  # TODO: add sum squares
+    P.add_objectives(cp.sum_squares((A @ x - b).e), inplace=True)  # TODO: add sum squares
     bp = P.solve(solver="cvxopt", verbosity=1)
     assert np.all(np.array(x.value) < np.array([1e-6, 0.64, 0.37, 1e-6, 1e-6]))
     assert np.all(np.array(x.value) > np.array([-1e-6, 0.62, 0.36, -1e-6, -1e-6]))

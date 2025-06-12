@@ -38,21 +38,15 @@ def create_flow_graph(
             direction = 1 if value >= 0 else -1
             # Perturbations
             if type.casefold() == pert_id.casefold():
-                gc.add_edge(
-                    dummy_cond_pert, species, interaction=direction, value=value
-                )
+                gc.add_edge(dummy_cond_pert, species, interaction=direction, value=value)
                 # If measurement is 0, add also an inhibitory edge
                 if value == 0:
                     gc.add_edge(dummy_cond_pert, species, interaction=-1, value=value)
             # Measurements
             elif type.casefold() == meas_id.casefold():
-                gc.add_edge(
-                    species, dummy_cond_meas, interaction=direction, value=value
-                )
+                gc.add_edge(species, dummy_cond_meas, interaction=direction, value=value)
                 if value == 0:
-                    gc.add_edge(
-                        species, dummy_cond_meas, interaction=direction, value=value
-                    )
+                    gc.add_edge(species, dummy_cond_meas, interaction=direction, value=value)
         if longitudinal_samples:
             gc.add_edge(dummy_cond_meas, "_meas_CTP", interaction=1)
         else:
@@ -77,9 +71,7 @@ def signflow_constraints(
     vertices = g.vertices
     A = g.vertex_incidence_matrix()
     if "_s" not in vertices:
-        raise ValueError(
-            "The provided network does not have the `_s` and `_t` dummy nodes."
-        )
+        raise ValueError("The provided network does not have the `_s` and `_t` dummy nodes.")
     perturbations = g.successors("_s")
     conditions = []
     for pert in perturbations:
@@ -140,12 +132,8 @@ def signflow_constraints(
         non_reachable = [vidx[v] for v in non_reachable]
         reachable = [vidx[v] for v in reachable]
 
-        N_act = backend.Variable(
-            f"species_activated_{c}", (g.num_vertices,), vartype=VarType.BINARY
-        )
-        N_inh = backend.Variable(
-            f"species_inhibited_{c}", (g.num_vertices,), vartype=VarType.BINARY
-        )
+        N_act = backend.Variable(f"species_activated_{c}", (g.num_vertices,), vartype=VarType.BINARY)
+        N_inh = backend.Variable(f"species_inhibited_{c}", (g.num_vertices,), vartype=VarType.BINARY)
         R_act = backend.Variable(
             f"reaction_sends_activation_{c}",
             (g.num_edges,),
@@ -173,13 +161,8 @@ def signflow_constraints(
         # meas_rxns = [eidx[e] for e in g.get_edges_with_target_vertex(f"_meas_{c}")]
         meas_rxns = [i for i, _ in g.in_edges(f"_meas_{c}")]
         # meas_species = [rn.get_reactants_of_reaction(r).pop() for r in meas_rxns]
-        meas_species = [
-            vidx[list(g.get_edge(i)[0])[0]] for i in meas_rxns
-        ]  # assumes a single vertex
-        p += (
-            R_act[meas_rxns] + R_inh[meas_rxns]
-            == N_act[meas_species] + N_inh[meas_species]
-        )
+        meas_species = [vidx[list(g.get_edge(i)[0])[0]] for i in meas_rxns]  # assumes a single vertex
+        p += R_act[meas_rxns] + R_inh[meas_rxns] == N_act[meas_species] + N_inh[meas_species]
 
         # Just for convenience, force the dummy measurement node to be active. Not required
         # p += N_act[vidx[f"_meas_{c}"]] == 1
@@ -224,18 +207,14 @@ def signflow_constraints(
                 lb=dist_lbound,
                 ub=dist_ubound,
             )
-            p += L[ix_prod] - L[ix_react] >= Ra + Ri + (1 - g.num_vertices) * (
-                1 - (Ra + Ri)
-            )
+            p += L[ix_prod] - L[ix_react] >= Ra + Ri + (1 - g.num_vertices) * (1 - (Ra + Ri))
             p += L[ix_prod] - L[ix_react] <= g.num_vertices - 1
 
         # Link flow with signal
         if signal_implies_flow and flow_implies_signal:
             # Bi-directional implication
             if Fi is None:
-                raise NotImplementedError(
-                    "flow <=> signal implication supported only with flow indicators"
-                )
+                raise NotImplementedError("flow <=> signal implication supported only with flow indicators")
             else:
                 p += R_act + R_inh == Fi
         elif signal_implies_flow:
@@ -292,17 +271,11 @@ def default_sign_loss(
     if VAR_FLOW + "_ipos" in problem.symbols.keys():
         Fi = problem.get_symbol(VAR_FLOW + "_ipos")
     for i, c in enumerate(conditions.keys()):
-        N_act, N_inh = problem.get_symbols(
-            f"species_activated_{c}", f"species_inhibited_{c}"
-        )
+        N_act, N_inh = problem.get_symbols(f"species_activated_{c}", f"species_inhibited_{c}")
         # Get the values of the species for the given condition
-        species_values = np.array(
-            [conditions[c][s][1] if s in conditions[c] else 0 for s in g.vertices]
-        )
+        species_values = np.array([conditions[c][s][1] if s in conditions[c] else 0 for s in g.vertices])
         pos = species_values.clip(0, np.inf).reshape(1, -1) @ (1 - (N_act - N_inh))
-        neg = np.abs(species_values.clip(-np.inf, 0)).reshape(1, -1) @ (
-            (N_act - N_inh) + 1
-        )
+        neg = np.abs(species_values.clip(-np.inf, 0)).reshape(1, -1) @ ((N_act - N_inh) + 1)
         loss = pos + neg
         losses.append(loss)
         if ub_loss is not None:
@@ -320,9 +293,7 @@ def default_sign_loss(
     weights = [1.0] * len(losses)
     if l0_edges > 0:
         if Fi is None:
-            raise ValueError(
-                "L0 regularization on flow cannot be used if signal is not connected to flow."
-            )
+            raise ValueError("L0 regularization on flow cannot be used if signal is not connected to flow.")
         # TODO: Issues with sum and PICOS (https://gitlab.com/picos-api/picos/-/issues/330)
         # override sum with picos.sum method
         losses.append(np.ones(Fi.shape) @ Fi)
@@ -382,12 +353,8 @@ def signflow(
 def expand_graph_for_flows(G: BaseGraph, exp_list):
     """Add edges to the perturbed and measured nodes in graph G to make flow possible."""
     G1 = G.copy()
-    output_names = list(
-        {key for exp in exp_list.values() for key in exp["output"].keys()}
-    )
-    input_names = list(
-        {key for exp in exp_list.values() for key in exp["input"].keys()}
-    )
+    output_names = list({key for exp in exp_list.values() for key in exp["output"].keys()})
+    input_names = list({key for exp in exp_list.values() for key in exp["input"].keys()})
 
     output_names = list(set(output_names))
     input_names = list(set(input_names))

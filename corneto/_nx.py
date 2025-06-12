@@ -94,9 +94,7 @@ def plot(
         try:
             pos = nx.nx_pydot.graphviz_layout(G, prog="dot")
         except Exception as err:
-            warnings.warn(
-                f"Failed to use graphviz with dot layout: {err!s}. Using spring_layout instead."
-            )
+            warnings.warn(f"Failed to use graphviz with dot layout: {err!s}. Using spring_layout instead.")
             pos = nx.spring_layout(G)
 
     inhibitor_style = ArrowStyle("-[", widthB=1.0, lengthB=0.0, angleB=None)
@@ -188,18 +186,14 @@ def to_nxgraph(
     try:
         from networkx import DiGraph, set_edge_attributes, set_node_attributes
     except ImportError:
-        raise ImportError(
-            "NetworkX is required to convert a Reaction Network to a networkx graph."
-        )
+        raise ImportError("NetworkX is required to convert a Reaction Network to a networkx graph.")
     G = DiGraph()
     edges = []
     edge_attributes = dict()
     if reactions is None:
         rxns = list(range(len(renet.reactions)))
     else:
-        rxns = [
-            renet.get_reaction_id(r) if isinstance(r, str) else r for r in reactions
-        ]
+        rxns = [renet.get_reaction_id(r) if isinstance(r, str) else r for r in reactions]
     for rid in rxns:
         reactants, products = (
             renet.get_reactants_of_reaction(rid),

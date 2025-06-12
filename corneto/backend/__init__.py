@@ -9,7 +9,7 @@ from corneto.backend._picos_backend import PicosBackend
 
 supported_backends = [CvxpyBackend(), PicosBackend()]
 
-__all__ = ["Backend", "VarType", "CvxpyBackend", "PicosBackend", "s"]
+__all__ = ["Backend", "CvxpyBackend", "PicosBackend", "VarType", "s"]
 
 
 def available_backends():

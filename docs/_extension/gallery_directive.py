@@ -111,23 +111,15 @@ class GalleryDirective(SphinxDirective):
 
             title = item.get("title", "")
             content_str += "\n"
-            grid_items.append(
-                GRID_CARD.format(
-                    card_options=options_str, content=content_str, title=title
-                )
-            )
+            grid_items.append(GRID_CARD.format(card_options=options_str, content=content_str, title=title))
 
         # Parse the template with Sphinx Design to create an output
         container = nodes.container()
         # Prep the options for the template grid
         container_options = {"gutter": 2, "class-container": "gallery-directive"}
         if "class-container" in self.options:
-            container_options["class-container"] += (
-                f' {self.options["class-container"]}'
-            )
-        container_options_str = "\n".join(
-            f":{k}: {v}" for k, v in container_options.items()
-        )
+            container_options["class-container"] += f" {self.options['class-container']}"
+        container_options_str = "\n".join(f":{k}: {v}" for k, v in container_options.items())
 
         # Create the directive string for the grid
         grid_directive = TEMPLATE_GRID.format(

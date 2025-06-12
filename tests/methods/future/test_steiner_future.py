@@ -53,7 +53,7 @@ def _run_steiner_test(undirected_steiner, backend, strict_acyclic=False):
     P.solve()
     # PICOS returns a cxvopt matrix
     sel = np.array(P.expr.with_flow.value)
-    sol = m.processed_graph.edge_subgraph(np.flatnonzero(sel  > 0.5))
+    sol = m.processed_graph.edge_subgraph(np.flatnonzero(sel > 0.5))
     cost = sum([attr.get("value", 0) for attr in sol.get_attr_edges()])
     assert np.isclose(P.objectives[0].value, 45.00, atol=1e-2)
     assert np.isclose(cost, 45.00, atol=1e-2)
@@ -77,36 +77,24 @@ def _run_steiner_test_directed(directed_steiner, backend, strict_acyclic=False):
 
 
 def test_undirected_steiner_single_sample(undirected_steiner, backend, request):
-    if isinstance(backend, PicosBackend) and not request.config.getoption(
-        "--run-optional"
-    ):
+    if isinstance(backend, PicosBackend) and not request.config.getoption("--run-optional"):
         pytest.skip("PicosBackend is optional (use --run-optional)")
     _run_steiner_test(undirected_steiner, backend, strict_acyclic=False)
 
 
-def test_undirected_steiner_single_sample_strict_acyclic(
-    undirected_steiner, backend, request
-):
-    if isinstance(backend, PicosBackend) and not request.config.getoption(
-        "--run-optional"
-    ):
+def test_undirected_steiner_single_sample_strict_acyclic(undirected_steiner, backend, request):
+    if isinstance(backend, PicosBackend) and not request.config.getoption("--run-optional"):
         pytest.skip("PicosBackend is optional (use --run-optional)")
     _run_steiner_test(undirected_steiner, backend, strict_acyclic=True)
 
 
-def test_directed_steiner_single_sample_strict_acyclic(
-    directed_steiner, backend, request
-):
-    if isinstance(backend, PicosBackend) and not request.config.getoption(
-        "--run-optional"
-    ):
+def test_directed_steiner_single_sample_strict_acyclic(directed_steiner, backend, request):
+    if isinstance(backend, PicosBackend) and not request.config.getoption("--run-optional"):
         pytest.skip("PicosBackend is optional (use --run-optional)")
     _run_steiner_test_directed(directed_steiner, backend, strict_acyclic=True)
 
 
 def test_directed_steiner_single_sample(directed_steiner, backend, request):
-    if isinstance(backend, PicosBackend) and not request.config.getoption(
-        "--run-optional"
-    ):
+    if isinstance(backend, PicosBackend) and not request.config.getoption("--run-optional"):
         pytest.skip("PicosBackend is optional (use --run-optional)")
     _run_steiner_test_directed(directed_steiner, backend, strict_acyclic=False)

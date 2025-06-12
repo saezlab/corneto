@@ -37,8 +37,8 @@ Note:
 from typing import Callable, Optional, Union
 
 import corneto as cn
-from corneto.graph import BaseGraph
 from corneto._types import NxDiGraph, NxGraph
+from corneto.graph import BaseGraph
 from corneto.utils import Attr, import_optional_module
 
 
@@ -97,6 +97,7 @@ def networkx_to_corneto_graph(G: Union[NxGraph, NxDiGraph]):
         cn.Graph: A Corneto graph.
     """
     from corneto.graph import Graph
+
     Gc = Graph()
     edge_type = cn.EdgeType.DIRECTED if G.is_directed() else cn.EdgeType.UNDIRECTED
     for edge in G.edges():
@@ -137,14 +138,7 @@ class NetworkXWrapper:
 
             def wrapped(*args, **kwargs):
                 # Convert all corneto graph arguments to networkx graphs
-                new_args = [
-                    (
-                        corneto_graph_to_networkx(arg)
-                        if isinstance(arg, BaseGraph)
-                        else arg
-                    )
-                    for arg in args
-                ]
+                new_args = [(corneto_graph_to_networkx(arg) if isinstance(arg, BaseGraph) else arg) for arg in args]
                 # Call the original NetworkX function with the possibly converted arguments
                 return original_attr(*new_args, **kwargs)
 

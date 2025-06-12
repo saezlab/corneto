@@ -108,9 +108,7 @@ def preferential_attachment_network(n, m, interactions=None, probs=None, seed=No
         return [(f"v{u + 1}", f"v{v + 1}") for u, v in edges]
 
 
-def duplication_divergence_network(
-    n, p_retain=0.3, interactions=None, probs=None, seed=None
-):
+def duplication_divergence_network(n, p_retain=0.3, interactions=None, probs=None, seed=None):
     """Generate a random network using the duplication-divergence model.
 
     Parameters

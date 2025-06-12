@@ -22,14 +22,9 @@ class Sample:
 
     def get_values(self, key: str = "value") -> Dict[str, Any]:
         """Returns a dictionary of feature names and their values."""
-        return {
-            name: feat[key] if isinstance(feat, dict) else feat
-            for name, feat in self.features.items()
-        }
+        return {name: feat[key] if isinstance(feat, dict) else feat for name, feat in self.features.items()}
 
-    def filter_values(
-        self, predicate: Callable[[str, Any], bool], value_key: str = "value"
-    ) -> Dict[str, Any]:
+    def filter_values(self, predicate: Callable[[str, Any], bool], value_key: str = "value") -> Dict[str, Any]:
         """Filters the features and returns a new dict containing only those that satisfy the predicate."""
         return {
             name: feat[value_key] if isinstance(feat, dict) else feat
@@ -37,9 +32,7 @@ class Sample:
             if predicate(name, feat)
         }
 
-    def filter_values_by(
-        self, key: str, value: Any, value_key: str = "value"
-    ) -> Dict[str, Any]:
+    def filter_values_by(self, key: str, value: Any, value_key: str = "value") -> Dict[str, Any]:
         """Returns features that have metadata matching the given key and value."""
         return {
             name: feat[value_key]
@@ -54,17 +47,11 @@ class Sample:
 
     def filter(self, predicate: Callable[[str, Any], bool]) -> Dict[str, Any]:
         """Filters the features and returns a new dict containing only those that satisfy the predicate."""
-        return {
-            name: feat for name, feat in self.features.items() if predicate(name, feat)
-        }
+        return {name: feat for name, feat in self.features.items() if predicate(name, feat)}
 
     def filter_by(self, key: str, value: Any) -> Dict[str, Any]:
         """Returns features that have metadata matching the given key and value."""
-        return {
-            name: feat
-            for name, feat in self.features.items()
-            if isinstance(feat, dict) and feat.get(key) == value
-        }
+        return {name: feat for name, feat in self.features.items() if isinstance(feat, dict) and feat.get(key) == value}
 
     def __getitem__(self, key: str) -> Any:
         return self.features[key]
@@ -105,9 +92,7 @@ class Data(UserDict[Any, Sample]):
         Dataset(num_samples=2)
     """
 
-    def add_sample(
-        self, sample_id: str, features: Optional[Dict[str, Any]] = None
-    ) -> None:
+    def add_sample(self, sample_id: str, features: Optional[Dict[str, Any]] = None) -> None:
         """Add a new sample with the given features to the dataset.
 
         Args:
@@ -161,7 +146,7 @@ class Data(UserDict[Any, Sample]):
                 sample.add_feature(feat_name, feat_data)
             dataset.data[sample_id] = sample
         return dataset
-        
+
     def filter(self, predicate: Callable[[str, str, Any], bool]) -> "Data":
         """Filter features across all samples based on a predicate function.
 
@@ -225,9 +210,7 @@ class Data(UserDict[Any, Sample]):
             >>> filtered.data["cell2"].features
             {'KRAS': {'value': 1.2, 'type': 'oncogene'}}
         """
-        return self.filter(
-            lambda _, __, feat: isinstance(feat, dict) and feat.get(key) == value
-        )
+        return self.filter(lambda _, __, feat: isinstance(feat, dict) and feat.get(key) == value)
 
     def subset_features(self, feature_list: List[str]) -> "Data":
         """Create a new Data instance containing only the specified features.
@@ -332,9 +315,7 @@ class Data(UserDict[Any, Sample]):
             dataset.data[sample_id].add_feature(feat_name, feat_value)
         return dataset
 
-    def to_sample_value_dict(
-        self, value_key: str = "value"
-    ) -> Dict[str, Dict[str, dict]]:
+    def to_sample_value_dict(self, value_key: str = "value") -> Dict[str, Dict[str, dict]]:
         """Convert the dataset to a nested dictionary of sample IDs mapping to feature dictionaries,
         where each feature is represented as a dictionary that includes a value and optional metadata.
 
@@ -359,18 +340,14 @@ class Data(UserDict[Any, Sample]):
             for feat_name, feat in sample.features.items():
                 if isinstance(feat, dict) and value_key in feat:
                     feature_dict = {value_key: feat[value_key]}
-                    feature_dict.update(
-                        {k: v for k, v in feat.items() if k != value_key}
-                    )
+                    feature_dict.update({k: v for k, v in feat.items() if k != value_key})
                 else:
                     feature_dict = {value_key: feat}
                 result[sample_id][feat_name] = feature_dict
         return result
 
     @classmethod
-    def from_sample_value_dict(
-        cls, condition_dict: Dict[str, Dict[str, dict]], value_key: str = "value"
-    ) -> "Data":
+    def from_sample_value_dict(cls, condition_dict: Dict[str, Dict[str, dict]], value_key: str = "value") -> "Data":
         """Create a Data instance from a nested dictionary of sample IDs to feature dictionaries.
 
         Each feature dictionary must contain the specified `value_key`.
@@ -403,9 +380,7 @@ class Data(UserDict[Any, Sample]):
             sample = Sample()
             for feat_name, feat_data in features.items():
                 if value_key not in feat_data:
-                    raise ValueError(
-                        f"Feature '{feat_name}' in sample '{sample_id}' is missing the '{value_key}' key"
-                    )
+                    raise ValueError(f"Feature '{feat_name}' in sample '{sample_id}' is missing the '{value_key}' key")
                 if len(feat_data) > 1:
                     feat_value = {
                         "value": feat_data[value_key],
@@ -582,9 +557,7 @@ class Data(UserDict[Any, Sample]):
 
         for sample_id, sample in self.data.items():
             # filter_values_by returns a dict {feature_name: value} for those matching metadata_key == metadata_value
-            matching = sample.filter_values_by(
-                metadata_key, metadata_value, value_key=value_key
-            )
+            matching = sample.filter_values_by(metadata_key, metadata_value, value_key=value_key)
             if matching:
                 if return_values:
                     # Collect the actual values

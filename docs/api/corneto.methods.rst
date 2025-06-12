@@ -13,7 +13,7 @@ Network methods to infer signaling networks from omics data.
 .. autosummary::
     :toctree: generated/
 
-    
+
     CarnivalFlow
     CarnivalILP
 
@@ -24,5 +24,5 @@ Network methods for flux balance analysis in metabolic networks.
 
 .. autosummary::
     :toctree: generated/
-    
+
     MultiSampleFBA

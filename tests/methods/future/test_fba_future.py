@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 from corneto._data import Data
-from corneto.backend import Backend, CvxpyBackend, PicosBackend
+from corneto.backend import PicosBackend
 from corneto.io import import_miom_model
 from corneto.methods.future.fba import MultiSampleFBA
 

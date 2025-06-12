@@ -184,9 +184,7 @@ def generate_random_signalling_network(n, m, p_inhibitory=0.3, seed=None):
     return _add_signaling_signs(base_network, p_inhibitory, seed)
 
 
-def generate_random_duplication_divergence_signalling_network(
-    n, p_retain=0.3, p_inhibitory=0.3, seed=None
-):
+def generate_random_duplication_divergence_signalling_network(n, p_retain=0.3, p_inhibitory=0.3, seed=None):
     """Generate a random signaling network using the duplication-divergence model.
 
     Parameters
