@@ -21,4 +21,3 @@ Modules
 
 .. automodule:: corneto.data
     :no-members:
-

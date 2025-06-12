@@ -15,3 +15,11 @@ network-sampler.ipynb
 network-sampler-example.ipynb
 kpnn-with-sc.ipynb
 ```
+
+## Additional Tutorials
+
+```{toctree}
+:maxdepth: 1
+
+contrib/multi_condition_tutorial/multi_condition_carnival.ipynb
+```

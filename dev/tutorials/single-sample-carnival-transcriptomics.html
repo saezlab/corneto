@@ -33,7 +33,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=5ec6e6de" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=53e23fa6" />
   
   <!-- So that users can add custom icons -->
   <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
@@ -56,7 +56,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = '/switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.0.0.dev16+81550a6';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.0.0.dev37+91f98a8';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
@@ -353,6 +353,9 @@
 <li class="toctree-l1"><a class="reference internal" href="network-sampler-example.html">Exploring alternative solutions with <span class="math notranslate nohighlight">\(\epsilon\)</span>-perturbation sampling</a></li>
 <li class="toctree-l1"><a class="reference internal" href="kpnn-with-sc.html">Knowledge-primed Neural Networks (KPNNs) for single cell data</a></li>
 </ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="contrib/multi_condition_tutorial/multi_condition_carnival.html">Multi-condition signalling network inference</a></li>
+</ul>
 </div>
 </nav></div>
     </div>
@@ -415,37 +418,48 @@
   <section class="tex2jax_ignore mathjax_ignore" id="single-sample-intracellular-signalling-network-inference">
 <h1>Single sample intracellular signalling network inference<a class="headerlink" href="#single-sample-intracellular-signalling-network-inference" title="Link to this heading">#</a></h1>
 <p>In this notebook we showcase how to use the advanced CARNIVAL implementation available in CORNETO. This implementation extends the capabilities of the original CARNIVAL method by enabling advanced modelling and injection of knowledge for hypothesis generation. We will use a dataset consisting of 6 samples of hepatic stellate cells (HSC) where three of them were activated by the cytokine Transforming growth factor (TGF-β).</p>
-<p>In the first part, we will show how to estimate Transcription Factor activities from gene expression data, following the <a class="reference external" href="https://decoupler-py.readthedocs.io/en/latest/notebooks/bulk.html">Decoupler tutorial</a> for functional analysis. Then, we will use the CARNIVAL method available in CORNETO to infer a network from TFs to receptors, assuming that we don’t really know which treatment was used.</p>
+<p>In the first part, we will show how to estimate Transcription Factor activities from gene expression data, following the <a class="reference external" href="https://decoupler-py.readthedocs.io/en/latest/notebooks/bulk.html">Decoupler tutorial</a> for functional analysis. Then, we will use the CARNIVAL method available in CORNETO to infer a network from TFs to receptors, assuming that we don’t really know which treatment was used. We will see how to do some basic modeling and adding information from pathway enrichment using PROGENy to bias the inferred networks.</p>
+<blockquote>
+<div><p><strong>NOTE:</strong> This tutorial uses the new <strong>Decoupler v2</strong> version. We also use the <strong>highs</strong> solver, which has to be installed with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">highspy</span></code></p>
+</div></blockquote>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># --- Saezlab tools ---</span>
-<span class="c1"># https://decoupler-py.readthedocs.io/</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">gzip</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">gzip</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">urllib.request</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
+<span class="c1"># https://decoupler-py.readthedocs.io</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">decoupler</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dc</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="c1"># https://omnipathdb.org/</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">omnipath</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">op</span>
 
-<span class="c1"># Additional packages</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-
-<span class="c1"># --- Additional libs ---</span>
 <span class="c1"># Pydeseq for differential expression analysis</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydeseq2.dds</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultInference</span><span class="p">,</span> <span class="n">DeseqDataSet</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydeseq2.ds</span><span class="w"> </span><span class="kn">import</span> <span class="n">DeseqStats</span>
 
-<span class="c1"># https://saezlab.github.io/</span>
+<span class="c1"># https://corneto.org</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">corneto</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cn</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dc</span><span class="o">.</span><span class="n">__version__</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&#39;2.0.4&#39;
+</pre></div>
+</div>
 </div>
 </div>
 <div class="cell docutils container">
@@ -458,330 +472,39 @@
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We need to download the dataset, available at GEO GSE151251</span>
-<span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE151251&amp;format=file&amp;file=GSE151251</span><span class="si">%5F</span><span class="s2">HSCs</span><span class="si">%5F</span><span class="s2">Ctrl</span><span class="si">%2E</span><span class="s2">vs</span><span class="si">%2E</span><span class="s2">HSCs</span><span class="si">%5F</span><span class="s2">TGFb</span><span class="si">%2E</span><span class="s2">counts</span><span class="si">%2E</span><span class="s2">tsv</span><span class="si">%2E</span><span class="s2">gz&quot;</span>
-
-<span class="n">adata</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tmpdirname</span><span class="p">:</span>
-    <span class="c1"># Path for the gzipped file in the temp folder</span>
-    <span class="n">gz_file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tmpdirname</span><span class="p">,</span> <span class="s2">&quot;counts.txt.gz&quot;</span><span class="p">)</span>
-
-    <span class="c1"># Download the file</span>
-    <span class="k">with</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">url</span><span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">gz_file_path</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">out_file</span><span class="p">:</span>
-            <span class="n">shutil</span><span class="o">.</span><span class="n">copyfileobj</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">out_file</span><span class="p">)</span>
-
-    <span class="c1"># Decompress the file</span>
-    <span class="n">decompressed_file_path</span> <span class="o">=</span> <span class="n">gz_file_path</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span>  <span class="c1"># Removing &#39;.gz&#39; extension</span>
-    <span class="k">with</span> <span class="n">gzip</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">gz_file_path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f_in</span><span class="p">:</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">decompressed_file_path</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f_out</span><span class="p">:</span>
-            <span class="n">shutil</span><span class="o">.</span><span class="n">copyfileobj</span><span class="p">(</span><span class="n">f_in</span><span class="p">,</span> <span class="n">f_out</span><span class="p">)</span>
-
-    <span class="n">adata</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">decompressed_file_path</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="mi">5</span><span class="p">:]</span><span class="o">.</span><span class="n">T</span>
-
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load the dataset</span>
+<span class="n">adata</span> <span class="o">=</span> <span class="n">dc</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">hsctgfb</span><span class="p">()</span>
 <span class="n">adata</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th>GeneName</th>
-      <th>DDX11L1</th>
-      <th>WASH7P</th>
-      <th>MIR6859-1</th>
-      <th>MIR1302-11</th>
-      <th>MIR1302-9</th>
-      <th>FAM138A</th>
-      <th>OR4G4P</th>
-      <th>OR4G11P</th>
-      <th>OR4F5</th>
-      <th>RP11-34P13.7</th>
-      <th>...</th>
-      <th>MT-ND4</th>
-      <th>MT-TH</th>
-      <th>MT-TS2</th>
-      <th>MT-TL2</th>
-      <th>MT-ND5</th>
-      <th>MT-ND6</th>
-      <th>MT-TE</th>
-      <th>MT-CYB</th>
-      <th>MT-TT</th>
-      <th>MT-TP</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>25_HSCs-Ctrl1</th>
-      <td>0</td>
-      <td>9</td>
-      <td>10</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>33</td>
-      <td>...</td>
-      <td>93192</td>
-      <td>342</td>
-      <td>476</td>
-      <td>493</td>
-      <td>54466</td>
-      <td>17184</td>
-      <td>1302</td>
-      <td>54099</td>
-      <td>258</td>
-      <td>475</td>
-    </tr>
-    <tr>
-      <th>26_HSCs-Ctrl2</th>
-      <td>0</td>
-      <td>12</td>
-      <td>14</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>66</td>
-      <td>...</td>
-      <td>114914</td>
-      <td>355</td>
-      <td>388</td>
-      <td>436</td>
-      <td>64698</td>
-      <td>21106</td>
-      <td>1492</td>
-      <td>62679</td>
-      <td>253</td>
-      <td>396</td>
-    </tr>
-    <tr>
-      <th>27_HSCs-Ctrl3</th>
-      <td>0</td>
-      <td>14</td>
-      <td>10</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>52</td>
-      <td>...</td>
-      <td>155365</td>
-      <td>377</td>
-      <td>438</td>
-      <td>480</td>
-      <td>85650</td>
-      <td>31860</td>
-      <td>2033</td>
-      <td>89559</td>
-      <td>282</td>
-      <td>448</td>
-    </tr>
-    <tr>
-      <th>31_HSCs-TGFb1</th>
-      <td>0</td>
-      <td>11</td>
-      <td>16</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>54</td>
-      <td>...</td>
-      <td>110866</td>
-      <td>373</td>
-      <td>441</td>
-      <td>481</td>
-      <td>60325</td>
-      <td>19496</td>
-      <td>1447</td>
-      <td>66283</td>
-      <td>172</td>
-      <td>341</td>
-    </tr>
-    <tr>
-      <th>32_HSCs-TGFb2</th>
-      <td>0</td>
-      <td>5</td>
-      <td>8</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>44</td>
-      <td>...</td>
-      <td>45488</td>
-      <td>239</td>
-      <td>331</td>
-      <td>343</td>
-      <td>27442</td>
-      <td>9054</td>
-      <td>624</td>
-      <td>27535</td>
-      <td>96</td>
-      <td>216</td>
-    </tr>
-    <tr>
-      <th>33_HSCs-TGFb3</th>
-      <td>0</td>
-      <td>12</td>
-      <td>5</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>32</td>
-      <td>...</td>
-      <td>70704</td>
-      <td>344</td>
-      <td>453</td>
-      <td>497</td>
-      <td>45443</td>
-      <td>13796</td>
-      <td>1077</td>
-      <td>43415</td>
-      <td>192</td>
-      <td>243</td>
-    </tr>
-  </tbody>
-</table>
-<p>6 rows × 64253 columns</p>
-</div></div></div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>AnnData object with n_obs × n_vars = 6 × 58674
+    obs: &#39;condition&#39;, &#39;sample_id&#39;
+</pre></div>
+</div>
+</div>
 </div>
 <section id="data-preprocessing">
 <h2>Data preprocessing<a class="headerlink" href="#data-preprocessing" title="Link to this heading">#</a></h2>
 <p>We will use AnnData and PyDeseq2 to pre-process the data and compute differential expression between control and tretament</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">anndata</span><span class="w"> </span><span class="kn">import</span> <span class="n">AnnData</span>
-
-<span class="n">adata</span> <span class="o">=</span> <span class="n">AnnData</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
-<span class="n">adata</span><span class="o">.</span><span class="n">var_names_make_unique</span><span class="p">()</span>
-<span class="n">adata</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>AnnData object with n_obs × n_vars = 6 × 64253
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Process treatment information</span>
-<span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s2">&quot;condition&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;control&quot;</span> <span class="k">if</span> <span class="s2">&quot;-Ctrl&quot;</span> <span class="ow">in</span> <span class="n">sample_id</span> <span class="k">else</span> <span class="s2">&quot;treatment&quot;</span> <span class="k">for</span> <span class="n">sample_id</span> <span class="ow">in</span> <span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="o">.</span><span class="n">index</span>
-<span class="p">]</span>
-
-<span class="c1"># Process sample information</span>
-<span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s2">&quot;sample_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">sample_id</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">sample_id</span> <span class="ow">in</span> <span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
-
-<span class="c1"># Visualize metadata</span>
-<span class="n">adata</span><span class="o">.</span><span class="n">obs</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_html"><div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>condition</th>
-      <th>sample_id</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>25_HSCs-Ctrl1</th>
-      <td>control</td>
-      <td>25</td>
-    </tr>
-    <tr>
-      <th>26_HSCs-Ctrl2</th>
-      <td>control</td>
-      <td>26</td>
-    </tr>
-    <tr>
-      <th>27_HSCs-Ctrl3</th>
-      <td>control</td>
-      <td>27</td>
-    </tr>
-    <tr>
-      <th>31_HSCs-TGFb1</th>
-      <td>treatment</td>
-      <td>31</td>
-    </tr>
-    <tr>
-      <th>32_HSCs-TGFb2</th>
-      <td>treatment</td>
-      <td>32</td>
-    </tr>
-    <tr>
-      <th>33_HSCs-TGFb3</th>
-      <td>treatment</td>
-      <td>33</td>
-    </tr>
-  </tbody>
-</table>
-</div></div></div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Obtain genes that pass the thresholds</span>
-<span class="n">genes</span> <span class="o">=</span> <span class="n">dc</span><span class="o">.</span><span class="n">filter_by_expr</span><span class="p">(</span>
-    <span class="n">adata</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="s2">&quot;condition&quot;</span><span class="p">,</span> <span class="n">min_count</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">min_total_count</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">large_n</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">min_prop</span><span class="o">=</span><span class="mi">1</span>
+<span class="n">dc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">filter_by_expr</span><span class="p">(</span>
+    <span class="n">adata</span><span class="o">=</span><span class="n">adata</span><span class="p">,</span>
+    <span class="n">group</span><span class="o">=</span><span class="s2">&quot;condition&quot;</span><span class="p">,</span>
+    <span class="n">min_count</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">min_total_count</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span>
+    <span class="n">large_n</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">min_prop</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span>
 <span class="p">)</span>
-
-<span class="c1"># Filter by these genes</span>
-<span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">[:,</span> <span class="n">genes</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 <span class="n">adata</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>AnnData object with n_obs × n_vars = 6 × 19713
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>AnnData object with n_obs × n_vars = 6 × 19510
     obs: &#39;condition&#39;, &#39;sample_id&#39;
 </pre></div>
 </div>
@@ -789,75 +512,56 @@
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Estimation of differential expression</span>
-
-<span class="n">inference</span> <span class="o">=</span> <span class="n">DefaultInference</span><span class="p">()</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Build DESeq2 object</span>
+<span class="n">inference</span> <span class="o">=</span> <span class="n">DefaultInference</span><span class="p">(</span><span class="n">n_cpus</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
 <span class="n">dds</span> <span class="o">=</span> <span class="n">DeseqDataSet</span><span class="p">(</span>
     <span class="n">adata</span><span class="o">=</span><span class="n">adata</span><span class="p">,</span>
     <span class="n">design_factors</span><span class="o">=</span><span class="s2">&quot;condition&quot;</span><span class="p">,</span>
     <span class="n">refit_cooks</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">inference</span><span class="o">=</span><span class="n">inference</span><span class="p">,</span>
 <span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compute LFCs</span>
-<span class="n">dds</span><span class="o">.</span><span class="n">deseq2</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Using None as control genes, passed at DeseqDataSet initialization
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">stat_res</span> <span class="o">=</span> <span class="n">DeseqStats</span><span class="p">(</span>
-    <span class="n">dds</span><span class="p">,</span> <span class="n">contrast</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;condition&quot;</span><span class="p">,</span> <span class="s2">&quot;treatment&quot;</span><span class="p">,</span> <span class="s2">&quot;control&quot;</span><span class="p">],</span> <span class="n">inference</span><span class="o">=</span><span class="n">inference</span>
-<span class="p">)</span>
 
+<span class="c1"># Compute LFCs</span>
+<span class="n">dds</span><span class="o">.</span><span class="n">deseq2</span><span class="p">()</span>
+
+<span class="c1"># Extract contrast between conditions</span>
+<span class="n">stat_res</span> <span class="o">=</span> <span class="n">DeseqStats</span><span class="p">(</span><span class="n">dds</span><span class="p">,</span> <span class="n">contrast</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;condition&quot;</span><span class="p">,</span> <span class="s2">&quot;treatment&quot;</span><span class="p">,</span> <span class="s2">&quot;control&quot;</span><span class="p">],</span> <span class="n">inference</span><span class="o">=</span><span class="n">inference</span><span class="p">)</span>
+
+<span class="c1"># Compute Wald test</span>
 <span class="n">stat_res</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Log2 fold change &amp; Wald test p-value: condition treatment vs control
-                  baseMean  log2FoldChange     lfcSE      stat    pvalue  \
-GeneName                                                                   
-WASH7P           10.349784       -0.011139  0.651659 -0.017093  0.986362   
-MIR6859-1        10.114621        0.000646  0.657316  0.000982  0.999216   
-RP11-34P13.7     45.731312        0.078207  0.324393  0.241087  0.809487   
-RP11-34P13.8     29.498379       -0.065184  0.393560 -0.165626  0.868451   
-CICP27          106.032659        0.150600  0.222955  0.675471  0.499377   
-...                    ...             ...       ...       ...       ...   
-MT-ND6        17914.984474       -0.435304  0.278796 -1.561372  0.118436   
-MT-TE          1281.293477       -0.332495  0.288073 -1.154204  0.248416   
-MT-CYB        54955.449372       -0.313285  0.286900 -1.091966  0.274848   
-MT-TT           204.692221       -0.485883  0.220564 -2.202915  0.027601   
-MT-TP           345.049755       -0.460674  0.161681 -2.849280  0.004382   
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Using None as control genes, passed at DeseqDataSet initialization
+Log2 fold change &amp; Wald test p-value: condition treatment vs control
+                  baseMean  log2FoldChange     lfcSE       stat  \
+RP11-347I19.8    88.877997       -0.207119  0.252510  -0.820242   
+TMEM170B        103.807801       -0.276960  0.210533  -1.315516   
+RP11-91P24.6    185.514929       -0.305844  0.180907  -1.690620   
+SLC33A1        2559.269047        0.595912  0.085251   6.990075   
+SNORA61          66.168502        0.746772  0.266416   2.803032   
+...                    ...             ...       ...        ...   
+RP11-75I2.3     771.828248        3.812419  0.128104  29.760449   
+SLC25A24       3525.523888        0.651017  0.087598   7.431841   
+BTN2A2          674.018191       -0.107905  0.106212  -1.015945   
+RP11-101E3.5    194.084339        0.092515  0.181943   0.508484   
+RP11-91I8.3      10.761886       -3.804522  0.920080  -4.134989   
 
-                  padj  
-GeneName                
-WASH7P        0.991392  
-MIR6859-1     0.999509  
-RP11-34P13.7  0.877264  
-RP11-34P13.8  0.917051  
-CICP27        0.637262  
-...                ...  
-MT-ND6        0.210925  
-MT-TE         0.380027  
-MT-CYB        0.411208  
-MT-TT         0.061573  
-MT-TP         0.012206  
+                      pvalue           padj  
+RP11-347I19.8   4.120781e-01   5.540360e-01  
+TMEM170B        1.883365e-01   3.052879e-01  
+RP11-91P24.6    9.090941e-02   1.681656e-01  
+SLC33A1         2.747400e-12   2.423226e-11  
+SNORA61         5.062459e-03   1.380028e-02  
+...                      ...            ...  
+RP11-75I2.3    1.270300e-194  4.130591e-192  
+SLC25A24        1.070963e-13   1.049974e-12  
+BTN2A2          3.096555e-01   4.491264e-01  
+RP11-101E3.5    6.111136e-01   7.290020e-01  
+RP11-91I8.3     3.549714e-05   1.471318e-04  
 
-[19713 rows x 6 columns]
+[19510 rows x 6 columns]
 </pre></div>
 </div>
 </div>
@@ -895,61 +599,52 @@ MT-TP         0.012206
       <th>pvalue</th>
       <th>padj</th>
     </tr>
-    <tr>
-      <th>GeneName</th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-    </tr>
   </thead>
   <tbody>
     <tr>
-      <th>WASH7P</th>
-      <td>10.349784</td>
-      <td>-0.011139</td>
-      <td>0.651659</td>
-      <td>-0.017093</td>
-      <td>0.986362</td>
-      <td>0.991392</td>
+      <th>RP11-347I19.8</th>
+      <td>88.877997</td>
+      <td>-0.207119</td>
+      <td>0.252510</td>
+      <td>-0.820242</td>
+      <td>4.120781e-01</td>
+      <td>5.540360e-01</td>
     </tr>
     <tr>
-      <th>MIR6859-1</th>
-      <td>10.114621</td>
-      <td>0.000646</td>
-      <td>0.657316</td>
-      <td>0.000982</td>
-      <td>0.999216</td>
-      <td>0.999509</td>
+      <th>TMEM170B</th>
+      <td>103.807801</td>
+      <td>-0.276960</td>
+      <td>0.210533</td>
+      <td>-1.315516</td>
+      <td>1.883365e-01</td>
+      <td>3.052879e-01</td>
     </tr>
     <tr>
-      <th>RP11-34P13.7</th>
-      <td>45.731312</td>
-      <td>0.078207</td>
-      <td>0.324393</td>
-      <td>0.241087</td>
-      <td>0.809487</td>
-      <td>0.877264</td>
+      <th>RP11-91P24.6</th>
+      <td>185.514929</td>
+      <td>-0.305844</td>
+      <td>0.180907</td>
+      <td>-1.690620</td>
+      <td>9.090941e-02</td>
+      <td>1.681656e-01</td>
     </tr>
     <tr>
-      <th>RP11-34P13.8</th>
-      <td>29.498379</td>
-      <td>-0.065184</td>
-      <td>0.393560</td>
-      <td>-0.165626</td>
-      <td>0.868451</td>
-      <td>0.917051</td>
+      <th>SLC33A1</th>
+      <td>2559.269047</td>
+      <td>0.595912</td>
+      <td>0.085251</td>
+      <td>6.990075</td>
+      <td>2.747400e-12</td>
+      <td>2.423226e-11</td>
     </tr>
     <tr>
-      <th>CICP27</th>
-      <td>106.032659</td>
-      <td>0.150600</td>
-      <td>0.222955</td>
-      <td>0.675471</td>
-      <td>0.499377</td>
-      <td>0.637262</td>
+      <th>SNORA61</th>
+      <td>66.168502</td>
+      <td>0.746772</td>
+      <td>0.266416</td>
+      <td>2.803032</td>
+      <td>5.062459e-03</td>
+      <td>1.380028e-02</td>
     </tr>
     <tr>
       <th>...</th>
@@ -961,53 +656,132 @@ MT-TP         0.012206
       <td>...</td>
     </tr>
     <tr>
-      <th>MT-ND6</th>
-      <td>17914.984474</td>
-      <td>-0.435304</td>
-      <td>0.278796</td>
-      <td>-1.561372</td>
-      <td>0.118436</td>
-      <td>0.210925</td>
+      <th>RP11-75I2.3</th>
+      <td>771.828248</td>
+      <td>3.812419</td>
+      <td>0.128104</td>
+      <td>29.760449</td>
+      <td>1.270300e-194</td>
+      <td>4.130591e-192</td>
     </tr>
     <tr>
-      <th>MT-TE</th>
-      <td>1281.293477</td>
-      <td>-0.332495</td>
-      <td>0.288073</td>
-      <td>-1.154204</td>
-      <td>0.248416</td>
-      <td>0.380027</td>
+      <th>SLC25A24</th>
+      <td>3525.523888</td>
+      <td>0.651017</td>
+      <td>0.087598</td>
+      <td>7.431841</td>
+      <td>1.070963e-13</td>
+      <td>1.049974e-12</td>
     </tr>
     <tr>
-      <th>MT-CYB</th>
-      <td>54955.449372</td>
-      <td>-0.313285</td>
-      <td>0.286900</td>
-      <td>-1.091966</td>
-      <td>0.274848</td>
-      <td>0.411208</td>
+      <th>BTN2A2</th>
+      <td>674.018191</td>
+      <td>-0.107905</td>
+      <td>0.106212</td>
+      <td>-1.015945</td>
+      <td>3.096555e-01</td>
+      <td>4.491264e-01</td>
     </tr>
     <tr>
-      <th>MT-TT</th>
-      <td>204.692221</td>
-      <td>-0.485883</td>
-      <td>0.220564</td>
-      <td>-2.202915</td>
-      <td>0.027601</td>
-      <td>0.061573</td>
+      <th>RP11-101E3.5</th>
+      <td>194.084339</td>
+      <td>0.092515</td>
+      <td>0.181943</td>
+      <td>0.508484</td>
+      <td>6.111136e-01</td>
+      <td>7.290020e-01</td>
     </tr>
     <tr>
-      <th>MT-TP</th>
-      <td>345.049755</td>
-      <td>-0.460674</td>
-      <td>0.161681</td>
-      <td>-2.849280</td>
-      <td>0.004382</td>
-      <td>0.012206</td>
+      <th>RP11-91I8.3</th>
+      <td>10.761886</td>
+      <td>-3.804522</td>
+      <td>0.920080</td>
+      <td>-4.134989</td>
+      <td>3.549714e-05</td>
+      <td>1.471318e-04</td>
     </tr>
   </tbody>
 </table>
-<p>19713 rows × 6 columns</p>
+<p>19510 rows × 6 columns</p>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">results_df</span><span class="p">[[</span><span class="s2">&quot;stat&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;stat&quot;</span><span class="p">:</span> <span class="s2">&quot;treatment.vs.control&quot;</span><span class="p">})</span>
+<span class="n">data</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>RP11-347I19.8</th>
+      <th>TMEM170B</th>
+      <th>RP11-91P24.6</th>
+      <th>SLC33A1</th>
+      <th>SNORA61</th>
+      <th>THAP9-AS1</th>
+      <th>LIX1L</th>
+      <th>TTC8</th>
+      <th>WBSCR22</th>
+      <th>LPHN2</th>
+      <th>...</th>
+      <th>STARD4-AS1</th>
+      <th>ZNF845</th>
+      <th>NIPSNAP3B</th>
+      <th>ARL6IP5</th>
+      <th>MATN1-AS1</th>
+      <th>RP11-75I2.3</th>
+      <th>SLC25A24</th>
+      <th>BTN2A2</th>
+      <th>RP11-101E3.5</th>
+      <th>RP11-91I8.3</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>treatment.vs.control</th>
+      <td>-0.820242</td>
+      <td>-1.315516</td>
+      <td>-1.69062</td>
+      <td>6.990075</td>
+      <td>2.803032</td>
+      <td>1.531275</td>
+      <td>2.164138</td>
+      <td>-0.579879</td>
+      <td>-0.945672</td>
+      <td>-14.351588</td>
+      <td>...</td>
+      <td>14.484214</td>
+      <td>0.56727</td>
+      <td>-1.883272</td>
+      <td>-8.42519</td>
+      <td>-1.739921</td>
+      <td>29.760449</td>
+      <td>7.431841</td>
+      <td>-1.015945</td>
+      <td>0.508484</td>
+      <td>-4.134989</td>
+    </tr>
+  </tbody>
+</table>
+<p>1 rows × 19510 columns</p>
 </div></div></div>
 </div>
 </section>
@@ -1015,8 +789,10 @@ MT-TP         0.012206
 <h2>Prior knowledge with Decoupler and Omnipath<a class="headerlink" href="#prior-knowledge-with-decoupler-and-omnipath" title="Link to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Retrieve CollecTRI gene regulatory network (through Omnipath)</span>
-<span class="n">collectri</span> <span class="o">=</span> <span class="n">dc</span><span class="o">.</span><span class="n">get_collectri</span><span class="p">(</span><span class="n">organism</span><span class="o">=</span><span class="s2">&quot;human&quot;</span><span class="p">,</span> <span class="n">split_complexes</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Retrieve CollecTRI gene regulatory network (through Omnipath).</span>
+<span class="c1"># These are regulons that we will use for enrichment tests</span>
+<span class="c1"># to infer TF activities</span>
+<span class="n">collectri</span> <span class="o">=</span> <span class="n">dc</span><span class="o">.</span><span class="n">op</span><span class="o">.</span><span class="n">collectri</span><span class="p">(</span><span class="n">organism</span><span class="o">=</span><span class="s2">&quot;human&quot;</span><span class="p">)</span>
 <span class="n">collectri</span>
 </pre></div>
 </div>
@@ -1043,7 +819,9 @@ MT-TP         0.012206
       <th>source</th>
       <th>target</th>
       <th>weight</th>
-      <th>PMID</th>
+      <th>resources</th>
+      <th>references</th>
+      <th>sign_decision</th>
     </tr>
   </thead>
   <tbody>
@@ -1051,36 +829,46 @@ MT-TP         0.012206
       <th>0</th>
       <td>MYC</td>
       <td>TERT</td>
-      <td>1</td>
+      <td>1.0</td>
+      <td>DoRothEA-A;ExTRI;HTRI;NTNU.Curated;Pavlidis202...</td>
       <td>10022128;10491298;10606235;10637317;10723141;1...</td>
+      <td>PMID</td>
     </tr>
     <tr>
       <th>1</th>
       <td>SPI1</td>
       <td>BGLAP</td>
-      <td>1</td>
+      <td>1.0</td>
+      <td>ExTRI</td>
       <td>10022617</td>
+      <td>default activation</td>
     </tr>
     <tr>
       <th>2</th>
       <td>SMAD3</td>
       <td>JUN</td>
-      <td>1</td>
+      <td>1.0</td>
+      <td>ExTRI;NTNU.Curated;TFactS;TRRUST</td>
       <td>10022869;12374795</td>
+      <td>PMID</td>
     </tr>
     <tr>
       <th>3</th>
       <td>SMAD4</td>
       <td>JUN</td>
-      <td>1</td>
+      <td>1.0</td>
+      <td>ExTRI;NTNU.Curated;TFactS;TRRUST</td>
       <td>10022869;12374795</td>
+      <td>PMID</td>
     </tr>
     <tr>
       <th>4</th>
       <td>STAT5A</td>
       <td>IL2</td>
-      <td>1</td>
+      <td>1.0</td>
+      <td>ExTRI</td>
       <td>10022878;11435608;17182565;17911616;22854263;2...</td>
+      <td>default activation</td>
     </tr>
     <tr>
       <th>...</th>
@@ -1088,137 +876,73 @@ MT-TP         0.012206
       <td>...</td>
       <td>...</td>
       <td>...</td>
+      <td>...</td>
+      <td>...</td>
     </tr>
     <tr>
-      <th>43173</th>
+      <th>42985</th>
       <td>NFKB</td>
       <td>hsa-miR-143-3p</td>
-      <td>1</td>
+      <td>1.0</td>
+      <td>ExTRI</td>
       <td>19472311</td>
+      <td>default activation</td>
     </tr>
     <tr>
-      <th>43174</th>
+      <th>42986</th>
       <td>AP1</td>
       <td>hsa-miR-206</td>
-      <td>1</td>
+      <td>1.0</td>
+      <td>ExTRI;GEREDB;NTNU.Curated</td>
       <td>19721712</td>
+      <td>PMID</td>
     </tr>
     <tr>
-      <th>43175</th>
+      <th>42987</th>
       <td>NFKB</td>
-      <td>hsa-miR-21-5p</td>
-      <td>1</td>
+      <td>hsa-miR-21</td>
+      <td>1.0</td>
+      <td>ExTRI</td>
       <td>20813833;22387281</td>
+      <td>default activation</td>
     </tr>
     <tr>
-      <th>43176</th>
+      <th>42988</th>
       <td>NFKB</td>
       <td>hsa-miR-224-5p</td>
-      <td>1</td>
+      <td>1.0</td>
+      <td>ExTRI</td>
       <td>23474441;23988648</td>
+      <td>default activation</td>
     </tr>
     <tr>
-      <th>43177</th>
+      <th>42989</th>
       <td>AP1</td>
-      <td>hsa-miR-144</td>
-      <td>1</td>
+      <td>hsa-miR-144-3p</td>
+      <td>1.0</td>
+      <td>ExTRI</td>
       <td>23546882</td>
+      <td>default activation</td>
     </tr>
   </tbody>
 </table>
-<p>43178 rows × 4 columns</p>
+<p>42990 rows × 6 columns</p>
 </div></div></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mat</span> <span class="o">=</span> <span class="n">results_df</span><span class="p">[[</span><span class="s2">&quot;stat&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;stat&quot;</span><span class="p">:</span> <span class="s2">&quot;treatment.vs.control&quot;</span><span class="p">})</span>
-<span class="n">mat</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_html"><div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Run</span>
+<span class="n">tf_acts</span><span class="p">,</span> <span class="n">tf_padj</span> <span class="o">=</span> <span class="n">dc</span><span class="o">.</span><span class="n">mt</span><span class="o">.</span><span class="n">ulm</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">net</span><span class="o">=</span><span class="n">collectri</span><span class="p">)</span>
 
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
+<span class="c1"># Filter by sign padj</span>
+<span class="n">msk</span> <span class="o">=</span> <span class="p">(</span><span class="n">tf_padj</span><span class="o">.</span><span class="n">T</span> <span class="o">&lt;</span> <span class="mf">0.05</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="n">tf_acts</span> <span class="o">=</span> <span class="n">tf_acts</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">msk</span><span class="p">]</span>
 
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th>GeneName</th>
-      <th>WASH7P</th>
-      <th>MIR6859-1</th>
-      <th>RP11-34P13.7</th>
-      <th>RP11-34P13.8</th>
-      <th>CICP27</th>
-      <th>FO538757.2</th>
-      <th>AP006222.2</th>
-      <th>RP4-669L17.10</th>
-      <th>MTND1P23</th>
-      <th>MTND2P28</th>
-      <th>...</th>
-      <th>MT-ND4</th>
-      <th>MT-TH</th>
-      <th>MT-TS2</th>
-      <th>MT-TL2</th>
-      <th>MT-ND5</th>
-      <th>MT-ND6</th>
-      <th>MT-TE</th>
-      <th>MT-CYB</th>
-      <th>MT-TT</th>
-      <th>MT-TP</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>treatment.vs.control</th>
-      <td>-0.017093</td>
-      <td>0.000982</td>
-      <td>0.241087</td>
-      <td>-0.165626</td>
-      <td>0.675471</td>
-      <td>-1.646005</td>
-      <td>2.042031</td>
-      <td>-0.376975</td>
-      <td>-1.994364</td>
-      <td>-0.498507</td>
-      <td>...</td>
-      <td>-1.435973</td>
-      <td>0.75501</td>
-      <td>1.139089</td>
-      <td>1.167108</td>
-      <td>-1.242582</td>
-      <td>-1.561372</td>
-      <td>-1.154204</td>
-      <td>-1.091966</td>
-      <td>-2.202915</td>
-      <td>-2.84928</td>
-    </tr>
-  </tbody>
-</table>
-<p>1 rows × 19713 columns</p>
-</div></div></div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tf_acts</span><span class="p">,</span> <span class="n">tf_pvals</span> <span class="o">=</span> <span class="n">dc</span><span class="o">.</span><span class="n">run_ulm</span><span class="p">(</span><span class="n">mat</span><span class="o">=</span><span class="n">mat</span><span class="p">,</span> <span class="n">net</span><span class="o">=</span><span class="n">collectri</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">tf_acts</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Running ulm on mat with 1 samples and 19713 targets for 655 sources.
-</pre></div>
-</div>
 <div class="output text_html"><div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
@@ -1237,80 +961,74 @@ MT-TP         0.012206
   <thead>
     <tr style="text-align: right;">
       <th></th>
-      <th>ABL1</th>
-      <th>AHR</th>
-      <th>AIRE</th>
-      <th>AP1</th>
       <th>APEX1</th>
-      <th>AR</th>
       <th>ARID1A</th>
-      <th>ARID3A</th>
-      <th>ARID3B</th>
-      <th>ARID4A</th>
+      <th>ARID4B</th>
+      <th>ARNT</th>
+      <th>ASXL1</th>
+      <th>ATF6</th>
+      <th>BARX2</th>
+      <th>BCL11A</th>
+      <th>BCL11B</th>
+      <th>BMAL2</th>
       <th>...</th>
-      <th>ZNF362</th>
-      <th>ZNF382</th>
-      <th>ZNF384</th>
-      <th>ZNF395</th>
-      <th>ZNF436</th>
-      <th>ZNF699</th>
-      <th>ZNF76</th>
+      <th>TBX10</th>
+      <th>TCF21</th>
+      <th>TFAP2C</th>
+      <th>TP53</th>
+      <th>VEZF1</th>
+      <th>WWTR1</th>
+      <th>ZBTB33</th>
+      <th>ZEB2</th>
       <th>ZNF804A</th>
-      <th>ZNF91</th>
       <th>ZXDC</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <th>treatment.vs.control</th>
-      <td>-2.179559</td>
-      <td>-1.561975</td>
-      <td>-1.822945</td>
-      <td>-1.981524</td>
-      <td>-2.67045</td>
-      <td>0.21549</td>
-      <td>-3.931481</td>
-      <td>0.870412</td>
-      <td>1.648694</td>
-      <td>-0.611922</td>
+      <td>-2.65907</td>
+      <td>-3.917428</td>
+      <td>-2.808733</td>
+      <td>3.174004</td>
+      <td>3.747021</td>
+      <td>2.707775</td>
+      <td>5.35855</td>
+      <td>2.649554</td>
+      <td>-4.204618</td>
+      <td>3.869672</td>
       <td>...</td>
-      <td>-0.062613</td>
-      <td>2.121308</td>
-      <td>1.886897</td>
-      <td>-1.14056</td>
-      <td>-1.571203</td>
-      <td>-1.276569</td>
-      <td>-0.116815</td>
-      <td>3.373271</td>
-      <td>0.86042</td>
-      <td>-2.742784</td>
+      <td>-3.705089</td>
+      <td>6.163829</td>
+      <td>-2.579863</td>
+      <td>-3.571649</td>
+      <td>4.208695</td>
+      <td>-3.968034</td>
+      <td>3.238391</td>
+      <td>5.791132</td>
+      <td>3.366525</td>
+      <td>-2.734602</td>
     </tr>
   </tbody>
 </table>
-<p>1 rows × 655 columns</p>
+<p>1 rows × 143 columns</p>
 </div></div></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dc</span><span class="o">.</span><span class="n">plot_barplot</span><span class="p">(</span>
-    <span class="n">acts</span><span class="o">=</span><span class="n">tf_acts</span><span class="p">,</span> <span class="n">contrast</span><span class="o">=</span><span class="s2">&quot;treatment.vs.control&quot;</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">vertical</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
-<span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">barplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">tf_acts</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;treatment.vs.control&quot;</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/648143e649b52a6961b477c13423ac9189e73f988882b00774a85370ef910300.png" src="../_images/648143e649b52a6961b477c13423ac9189e73f988882b00774a85370ef910300.png" />
+<img alt="../_images/3cd9175d4f3ebf7e7c6c51b095a59c19be3d33c901d30d4bf1e0f5a2b1606c54.png" src="../_images/3cd9175d4f3ebf7e7c6c51b095a59c19be3d33c901d30d4bf1e0f5a2b1606c54.png" />
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We obtain ligand-receptor interactions from Omnipath, and we keep only the receptors</span>
 <span class="c1"># This is our list of a prior potential receptors from which we will infer the network</span>
-<span class="n">unique_receptors</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
-    <span class="n">op</span><span class="o">.</span><span class="n">interactions</span><span class="o">.</span><span class="n">LigRecExtra</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">genesymbols</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span>
-        <span class="s2">&quot;target_genesymbol&quot;</span>
-    <span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
-<span class="p">)</span>
+<span class="n">unique_receptors</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">interactions</span><span class="o">.</span><span class="n">LigRecExtra</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">genesymbols</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="s2">&quot;target_genesymbol&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
 <span class="nb">len</span><span class="p">(</span><span class="n">unique_receptors</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -1324,16 +1042,157 @@ MT-TP         0.012206
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_de_receptors</span> <span class="o">=</span> <span class="n">results_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">results_df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">unique_receptors</span><span class="p">)]</span>
+<span class="n">df_de_receptors</span> <span class="o">=</span> <span class="n">df_de_receptors</span><span class="p">[</span><span class="n">df_de_receptors</span><span class="o">.</span><span class="n">pvalue</span> <span class="o">&lt;=</span> <span class="mf">1e-3</span><span class="p">]</span>
 <span class="n">df_de_receptors</span> <span class="o">=</span> <span class="n">df_de_receptors</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s2">&quot;stat&quot;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="n">df_de_receptors</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s2">&quot;log2FoldChange&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;stat&quot;</span><span class="p">)</span>
+<span class="n">df_de_receptors</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Axes: xlabel=&#39;log2FoldChange&#39;, ylabel=&#39;stat&#39;&gt;
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>baseMean</th>
+      <th>log2FoldChange</th>
+      <th>lfcSE</th>
+      <th>stat</th>
+      <th>pvalue</th>
+      <th>padj</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>CDH6</th>
+      <td>28267.981856</td>
+      <td>3.020228</td>
+      <td>0.077434</td>
+      <td>39.003986</td>
+      <td>0.000000e+00</td>
+      <td>0.000000e+00</td>
+    </tr>
+    <tr>
+      <th>CRLF1</th>
+      <td>7921.375581</td>
+      <td>3.342105</td>
+      <td>0.088004</td>
+      <td>37.976732</td>
+      <td>0.000000e+00</td>
+      <td>0.000000e+00</td>
+    </tr>
+    <tr>
+      <th>FZD8</th>
+      <td>2720.368078</td>
+      <td>3.843472</td>
+      <td>0.102667</td>
+      <td>37.436438</td>
+      <td>9.984600e-307</td>
+      <td>1.025261e-303</td>
+    </tr>
+    <tr>
+      <th>CDH2</th>
+      <td>7112.916583</td>
+      <td>2.809906</td>
+      <td>0.081906</td>
+      <td>34.306464</td>
+      <td>6.285559e-258</td>
+      <td>3.606802e-255</td>
+    </tr>
+    <tr>
+      <th>DYSF</th>
+      <td>441.551809</td>
+      <td>4.593718</td>
+      <td>0.182110</td>
+      <td>25.225001</td>
+      <td>2.130572e-140</td>
+      <td>3.711381e-138</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>TNFRSF1B</th>
+      <td>646.930651</td>
+      <td>-3.540723</td>
+      <td>0.137121</td>
+      <td>-25.821870</td>
+      <td>5.038067e-147</td>
+      <td>9.542979e-145</td>
+    </tr>
+    <tr>
+      <th>CHRM2</th>
+      <td>5807.106139</td>
+      <td>-2.477402</td>
+      <td>0.086007</td>
+      <td>-28.804799</td>
+      <td>1.867752e-182</td>
+      <td>5.521189e-180</td>
+    </tr>
+    <tr>
+      <th>TNFRSF19</th>
+      <td>4210.866189</td>
+      <td>-3.038970</td>
+      <td>0.101233</td>
+      <td>-30.019698</td>
+      <td>5.430089e-198</td>
+      <td>1.858615e-195</td>
+    </tr>
+    <tr>
+      <th>LPAR1</th>
+      <td>12716.045776</td>
+      <td>-2.581318</td>
+      <td>0.070856</td>
+      <td>-36.430237</td>
+      <td>1.414312e-290</td>
+      <td>1.103729e-287</td>
+    </tr>
+    <tr>
+      <th>SMAD3</th>
+      <td>13965.722982</td>
+      <td>-3.073656</td>
+      <td>0.072182</td>
+      <td>-42.582053</td>
+      <td>0.000000e+00</td>
+      <td>0.000000e+00</td>
+    </tr>
+  </tbody>
+</table>
+<p>283 rows × 6 columns</p>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">volcano</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">df_de_receptors</span><span class="p">,</span>
+    <span class="n">x</span><span class="o">=</span><span class="s2">&quot;log2FoldChange&quot;</span><span class="p">,</span>
+    <span class="n">y</span><span class="o">=</span><span class="s2">&quot;padj&quot;</span><span class="p">,</span>
+    <span class="n">top</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+<span class="p">)</span>
 </pre></div>
 </div>
-<img alt="../_images/37770b4040d2bdd8a7f8798e5782b7369dc342db14c162c06ef2fc5aa03862da.png" src="../_images/37770b4040d2bdd8a7f8798e5782b7369dc342db14c162c06ef2fc5aa03862da.png" />
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/343bfb791c3f33ef6b5748cd9651501b46a8b449199d4fb9ad53151ba0eb7148.png" src="../_images/343bfb791c3f33ef6b5748cd9651501b46a8b449199d4fb9ad53151ba0eb7148.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1370,196 +1229,187 @@ MT-TP         0.012206
       <th>pvalue</th>
       <th>padj</th>
     </tr>
-    <tr>
-      <th>GeneName</th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-    </tr>
   </thead>
   <tbody>
     <tr>
       <th>CDH6</th>
-      <td>28262.296983</td>
-      <td>3.019806</td>
-      <td>0.077448</td>
-      <td>38.991476</td>
+      <td>28267.981856</td>
+      <td>3.020228</td>
+      <td>0.077434</td>
+      <td>39.003986</td>
       <td>0.000000e+00</td>
       <td>0.000000e+00</td>
     </tr>
     <tr>
       <th>CRLF1</th>
-      <td>7919.672343</td>
-      <td>3.341645</td>
-      <td>0.088026</td>
-      <td>37.962070</td>
+      <td>7921.375581</td>
+      <td>3.342105</td>
+      <td>0.088004</td>
+      <td>37.976732</td>
       <td>0.000000e+00</td>
       <td>0.000000e+00</td>
     </tr>
     <tr>
       <th>FZD8</th>
-      <td>2719.781498</td>
-      <td>3.843017</td>
-      <td>0.102718</td>
-      <td>37.413242</td>
-      <td>2.380145e-306</td>
-      <td>2.469463e-303</td>
+      <td>2720.368078</td>
+      <td>3.843472</td>
+      <td>0.102667</td>
+      <td>37.436438</td>
+      <td>9.984600e-307</td>
+      <td>1.025261e-303</td>
     </tr>
     <tr>
       <th>CDH2</th>
-      <td>7111.507547</td>
-      <td>2.809462</td>
-      <td>0.081958</td>
-      <td>34.279439</td>
-      <td>1.589168e-257</td>
-      <td>9.213903e-255</td>
+      <td>7112.916583</td>
+      <td>2.809906</td>
+      <td>0.081906</td>
+      <td>34.306464</td>
+      <td>6.285559e-258</td>
+      <td>3.606802e-255</td>
     </tr>
     <tr>
       <th>DYSF</th>
-      <td>441.449511</td>
-      <td>4.593250</td>
-      <td>0.182196</td>
-      <td>25.210487</td>
-      <td>3.073961e-140</td>
-      <td>5.362566e-138</td>
+      <td>441.551809</td>
+      <td>4.593718</td>
+      <td>0.182110</td>
+      <td>25.225001</td>
+      <td>2.130572e-140</td>
+      <td>3.711381e-138</td>
     </tr>
     <tr>
       <th>INHBA</th>
-      <td>24329.359641</td>
-      <td>2.598613</td>
-      <td>0.104350</td>
-      <td>24.902821</td>
-      <td>6.934669e-137</td>
-      <td>1.139193e-134</td>
+      <td>24333.979039</td>
+      <td>2.599031</td>
+      <td>0.104354</td>
+      <td>24.905991</td>
+      <td>6.407468e-137</td>
+      <td>1.041748e-134</td>
     </tr>
     <tr>
       <th>CELSR1</th>
-      <td>492.324435</td>
-      <td>3.517315</td>
-      <td>0.154487</td>
-      <td>22.767746</td>
-      <td>9.574546e-115</td>
-      <td>1.258287e-112</td>
+      <td>492.430456</td>
+      <td>3.517760</td>
+      <td>0.154404</td>
+      <td>22.782885</td>
+      <td>6.777783e-115</td>
+      <td>8.815637e-113</td>
     </tr>
     <tr>
       <th>PDGFC</th>
-      <td>5481.167075</td>
-      <td>1.894858</td>
-      <td>0.083837</td>
-      <td>22.601620</td>
-      <td>4.177614e-113</td>
-      <td>5.453862e-111</td>
+      <td>5482.100375</td>
+      <td>1.895284</td>
+      <td>0.083804</td>
+      <td>22.615764</td>
+      <td>3.032358e-113</td>
+      <td>3.917967e-111</td>
     </tr>
     <tr>
       <th>VDR</th>
-      <td>1450.304353</td>
-      <td>2.555008</td>
-      <td>0.116797</td>
-      <td>21.875720</td>
-      <td>4.424761e-106</td>
-      <td>5.286382e-104</td>
+      <td>1450.584956</td>
+      <td>2.555486</td>
+      <td>0.116713</td>
+      <td>21.895517</td>
+      <td>2.866339e-106</td>
+      <td>3.389228e-104</td>
     </tr>
     <tr>
       <th>HHIP</th>
-      <td>379.064034</td>
-      <td>6.005841</td>
-      <td>0.287363</td>
-      <td>20.899827</td>
-      <td>5.373904e-97</td>
-      <td>5.323406e-95</td>
+      <td>379.147209</td>
+      <td>6.006281</td>
+      <td>0.287273</td>
+      <td>20.907896</td>
+      <td>4.538088e-97</td>
+      <td>4.426905e-95</td>
     </tr>
     <tr>
       <th>IGF1</th>
-      <td>361.189076</td>
-      <td>6.462657</td>
-      <td>0.311785</td>
-      <td>20.727921</td>
-      <td>1.939904e-95</td>
-      <td>1.874575e-93</td>
+      <td>361.270588</td>
+      <td>6.463104</td>
+      <td>0.311704</td>
+      <td>20.734725</td>
+      <td>1.684142e-95</td>
+      <td>1.595030e-93</td>
     </tr>
     <tr>
       <th>NPTN</th>
-      <td>12640.971164</td>
-      <td>1.418676</td>
-      <td>0.079385</td>
-      <td>17.870802</td>
-      <td>1.991103e-71</td>
-      <td>1.226582e-69</td>
+      <td>12642.896518</td>
+      <td>1.419111</td>
+      <td>0.079336</td>
+      <td>17.887451</td>
+      <td>1.477122e-71</td>
+      <td>9.062470e-70</td>
     </tr>
     <tr>
       <th>EFNB2</th>
-      <td>3320.076805</td>
-      <td>1.560331</td>
-      <td>0.087871</td>
-      <td>17.757127</td>
-      <td>1.518082e-70</td>
-      <td>9.096034e-69</td>
+      <td>3320.622767</td>
+      <td>1.560757</td>
+      <td>0.087882</td>
+      <td>17.759772</td>
+      <td>1.448216e-70</td>
+      <td>8.640581e-69</td>
     </tr>
     <tr>
       <th>ITGB3</th>
-      <td>6530.314159</td>
-      <td>1.364766</td>
-      <td>0.078800</td>
-      <td>17.319326</td>
-      <td>3.362752e-67</td>
-      <td>1.851674e-65</td>
+      <td>6531.344110</td>
+      <td>1.365175</td>
+      <td>0.078855</td>
+      <td>17.312493</td>
+      <td>3.786612e-67</td>
+      <td>2.069378e-65</td>
     </tr>
     <tr>
       <th>TGFB1</th>
-      <td>8948.243694</td>
-      <td>1.335271</td>
-      <td>0.077647</td>
-      <td>17.196617</td>
-      <td>2.814963e-66</td>
-      <td>1.524488e-64</td>
+      <td>8949.673773</td>
+      <td>1.335719</td>
+      <td>0.077680</td>
+      <td>17.195118</td>
+      <td>2.888671e-66</td>
+      <td>1.552561e-64</td>
     </tr>
     <tr>
       <th>IL21R</th>
-      <td>259.221468</td>
-      <td>3.227903</td>
-      <td>0.192069</td>
-      <td>16.805944</td>
-      <td>2.207685e-63</td>
-      <td>1.130392e-61</td>
+      <td>259.279854</td>
+      <td>3.228392</td>
+      <td>0.191940</td>
+      <td>16.819816</td>
+      <td>1.747011e-63</td>
+      <td>8.876088e-62</td>
     </tr>
     <tr>
       <th>ITGA1</th>
-      <td>26223.832504</td>
-      <td>1.310351</td>
-      <td>0.079861</td>
-      <td>16.407981</td>
-      <td>1.676899e-60</td>
-      <td>8.023475e-59</td>
+      <td>26227.719647</td>
+      <td>1.310776</td>
+      <td>0.079834</td>
+      <td>16.418868</td>
+      <td>1.401577e-60</td>
+      <td>6.653227e-59</td>
     </tr>
     <tr>
       <th>FAP</th>
-      <td>7231.157483</td>
-      <td>1.750901</td>
-      <td>0.115214</td>
-      <td>15.196911</td>
-      <td>3.706936e-52</td>
-      <td>1.488286e-50</td>
+      <td>7232.349199</td>
+      <td>1.751321</td>
+      <td>0.115213</td>
+      <td>15.200707</td>
+      <td>3.498272e-52</td>
+      <td>1.392883e-50</td>
     </tr>
     <tr>
       <th>EGF</th>
-      <td>144.262044</td>
-      <td>3.733297</td>
-      <td>0.251588</td>
-      <td>14.838931</td>
-      <td>8.205292e-50</td>
-      <td>3.063465e-48</td>
+      <td>144.293093</td>
+      <td>3.733752</td>
+      <td>0.251374</td>
+      <td>14.853364</td>
+      <td>6.616320e-50</td>
+      <td>2.458751e-48</td>
     </tr>
     <tr>
       <th>ITGA11</th>
-      <td>12471.033668</td>
-      <td>3.673199</td>
-      <td>0.250314</td>
-      <td>14.674378</td>
-      <td>9.407359e-49</td>
-      <td>3.377910e-47</td>
+      <td>12473.737723</td>
+      <td>3.673720</td>
+      <td>0.250064</td>
+      <td>14.691129</td>
+      <td>7.347932e-49</td>
+      <td>2.630425e-47</td>
     </tr>
   </tbody>
 </table>
@@ -1584,7 +1434,7 @@ MT-TP         0.012206
             </td>
             <td>
             <table>
-                <tr><td>Installed version:</td><td style='text-align:left'>v1.0.0.dev5 (latest stable: v1.0.0-alpha)</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.6.4, PICOS v2.6.0</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CLARABEL, CVXOPT, GLOP, GLPK, GLPK_MI, GUROBI, HIGHS, OSQP, PDLP, PROXQP, SCIP, SCIPY, SCS</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.3</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/Users/pablorodriguezmier/Documents/work/repos/pablormier/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href=https://github.com/saezlab/corneto>https://github.com/saezlab/corneto</a></td></tr>
+                <tr><td>Installed version:</td><td style='text-align:left'>v1.0.0.dev37+db611743</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.6.5</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CLARABEL, GUROBI, HIGHS, OSQP, SCIP, SCIPY, SCS</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.3</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/Users/pablorodriguezmier/Documents/work/repos/pablormier/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href=https://github.com/saezlab/corneto>https://github.com/saezlab/corneto</a></td></tr>
             </table>
             </td>
         </tr>
@@ -1594,7 +1444,7 @@ MT-TP         0.012206
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods.future</span><span class="w"> </span><span class="kn">import</span> <span class="n">CarnivalFlow</span>
 
-<span class="n">CarnivalFlow</span><span class="o">.</span><span class="n">show_citations</span><span class="p">()</span>
+<span class="n">CarnivalFlow</span><span class="o">.</span><span class="n">show_references</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -1755,9 +1605,7 @@ MT-TP         0.012206
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pkn</span><span class="p">[</span><span class="s2">&quot;interaction&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pkn</span><span class="p">[</span><span class="s2">&quot;is_stimulation&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="o">-</span> <span class="n">pkn</span><span class="p">[</span><span class="s2">&quot;is_inhibition&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
-    <span class="nb">int</span>
-<span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pkn</span><span class="p">[</span><span class="s2">&quot;interaction&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pkn</span><span class="p">[</span><span class="s2">&quot;is_stimulation&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="o">-</span> <span class="n">pkn</span><span class="p">[</span><span class="s2">&quot;is_inhibition&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
 <span class="n">sel_pkn</span> <span class="o">=</span> <span class="n">pkn</span><span class="p">[[</span><span class="s2">&quot;source_genesymbol&quot;</span><span class="p">,</span> <span class="s2">&quot;interaction&quot;</span><span class="p">,</span> <span class="s2">&quot;target_genesymbol&quot;</span><span class="p">]]</span>
 <span class="n">sel_pkn</span>
 </pre></div>
@@ -1862,11 +1710,9 @@ MT-TP         0.012206
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We create the CORNETO graph by importing the edges and interaction</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">corneto.graph</span><span class="w"> </span><span class="kn">import</span> <span class="n">Graph</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">corneto.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_graph_from_sif_tuples</span>
-<span class="n">G</span> <span class="o">=</span> <span class="n">load_graph_from_sif_tuples</span><span class="p">(</span>
-    <span class="p">[(</span><span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">sel_pkn</span><span class="o">.</span><span class="n">iterrows</span><span class="p">()</span> <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">]</span>
-<span class="p">)</span>
+
+<span class="n">G</span> <span class="o">=</span> <span class="n">load_graph_from_sif_tuples</span><span class="p">([(</span><span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">sel_pkn</span><span class="o">.</span><span class="n">iterrows</span><span class="p">()</span> <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">])</span>
 <span class="n">G</span><span class="o">.</span><span class="n">shape</span>
 </pre></div>
 </div>
@@ -1880,11 +1726,7 @@ MT-TP         0.012206
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># As measurements, we take the estimated TFs, we will filter out TFs with p-val &gt; 0.001</span>
-<span class="n">significant_tfs</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="n">tf_acts</span><span class="p">[</span><span class="n">tf_pvals</span> <span class="o">&lt;=</span> <span class="mf">0.001</span><span class="p">]</span>
-    <span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
-    <span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s2">&quot;treatment.vs.control&quot;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="p">)</span>
+<span class="n">significant_tfs</span> <span class="o">=</span> <span class="n">tf_acts</span><span class="p">[</span><span class="n">tf_padj</span> <span class="o">&lt;=</span> <span class="mf">0.001</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s2">&quot;treatment.vs.control&quot;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">significant_tfs</span>
 </pre></div>
 </div>
@@ -1914,128 +1756,218 @@ MT-TP         0.012206
   <tbody>
     <tr>
       <th>SRF</th>
-      <td>7.402565</td>
+      <td>7.386495</td>
     </tr>
     <tr>
       <th>MYOCD</th>
-      <td>7.366407</td>
+      <td>7.347742</td>
     </tr>
     <tr>
       <th>SMAD3</th>
-      <td>7.205507</td>
+      <td>7.088954</td>
     </tr>
     <tr>
       <th>TCF21</th>
-      <td>6.178324</td>
+      <td>6.163829</td>
     </tr>
     <tr>
       <th>ZEB2</th>
-      <td>5.804123</td>
+      <td>5.791132</td>
     </tr>
     <tr>
-      <th>...</th>
-      <td>...</td>
+      <th>SMAD2</th>
+      <td>5.618762</td>
+    </tr>
+    <tr>
+      <th>JUNB</th>
+      <td>5.615222</td>
+    </tr>
+    <tr>
+      <th>FOXD1</th>
+      <td>5.569866</td>
+    </tr>
+    <tr>
+      <th>SOX5</th>
+      <td>5.389520</td>
+    </tr>
+    <tr>
+      <th>BARX2</th>
+      <td>5.358550</td>
+    </tr>
+    <tr>
+      <th>HMGA2</th>
+      <td>4.922228</td>
+    </tr>
+    <tr>
+      <th>POU3F1</th>
+      <td>4.907625</td>
+    </tr>
+    <tr>
+      <th>RORA</th>
+      <td>4.752798</td>
+    </tr>
+    <tr>
+      <th>SMAD4</th>
+      <td>4.444091</td>
+    </tr>
+    <tr>
+      <th>OVOL1</th>
+      <td>4.283683</td>
+    </tr>
+    <tr>
+      <th>MEF2A</th>
+      <td>4.237091</td>
+    </tr>
+    <tr>
+      <th>FGF2</th>
+      <td>4.210589</td>
+    </tr>
+    <tr>
+      <th>VEZF1</th>
+      <td>4.208695</td>
+    </tr>
+    <tr>
+      <th>SMAD5</th>
+      <td>-4.006207</td>
+    </tr>
+    <tr>
+      <th>CIITA</th>
+      <td>-4.135701</td>
+    </tr>
+    <tr>
+      <th>NFKBIB</th>
+      <td>-4.156185</td>
+    </tr>
+    <tr>
+      <th>REL</th>
+      <td>-4.166855</td>
+    </tr>
+    <tr>
+      <th>PITX3</th>
+      <td>-4.200417</td>
+    </tr>
+    <tr>
+      <th>BCL11B</th>
+      <td>-4.204618</td>
+    </tr>
+    <tr>
+      <th>IRF3</th>
+      <td>-4.274769</td>
+    </tr>
+    <tr>
+      <th>PITX1</th>
+      <td>-4.343406</td>
+    </tr>
+    <tr>
+      <th>PARK7</th>
+      <td>-4.447971</td>
+    </tr>
+    <tr>
+      <th>KLF8</th>
+      <td>-4.469644</td>
+    </tr>
+    <tr>
+      <th>DNMT3A</th>
+      <td>-4.642777</td>
+    </tr>
+    <tr>
+      <th>RELB</th>
+      <td>-4.684388</td>
+    </tr>
+    <tr>
+      <th>NFE2L2</th>
+      <td>-4.912650</td>
+    </tr>
+    <tr>
+      <th>MECOM</th>
+      <td>-4.945147</td>
+    </tr>
+    <tr>
+      <th>KLF2</th>
+      <td>-5.097029</td>
+    </tr>
+    <tr>
+      <th>STAT1</th>
+      <td>-5.190882</td>
+    </tr>
+    <tr>
+      <th>HOXC6</th>
+      <td>-5.261961</td>
+    </tr>
+    <tr>
+      <th>IRF2</th>
+      <td>-5.272425</td>
+    </tr>
+    <tr>
+      <th>KLF11</th>
+      <td>-5.272849</td>
     </tr>
     <tr>
       <th>SPI1</th>
-      <td>-5.442575</td>
+      <td>-5.424463</td>
     </tr>
     <tr>
       <th>NR4A3</th>
-      <td>-5.745412</td>
+      <td>-5.726818</td>
     </tr>
     <tr>
       <th>NR1H4</th>
-      <td>-5.917429</td>
+      <td>-6.058745</td>
     </tr>
     <tr>
       <th>SKIL</th>
-      <td>-7.463470</td>
+      <td>-7.437972</td>
     </tr>
     <tr>
       <th>IRF1</th>
-      <td>-9.437411</td>
+      <td>-9.363009</td>
     </tr>
   </tbody>
 </table>
-<p>85 rows × 1 columns</p>
 </div></div></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We keep only the ones in the PKN graph</span>
-<span class="n">measurements</span> <span class="o">=</span> <span class="n">significant_tfs</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">significant_tfs</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">V</span><span class="p">)]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()[</span>
-    <span class="s2">&quot;treatment.vs.control&quot;</span>
-<span class="p">]</span>
+<span class="n">measurements</span> <span class="o">=</span> <span class="n">significant_tfs</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">significant_tfs</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">V</span><span class="p">)]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()[</span><span class="s2">&quot;treatment.vs.control&quot;</span><span class="p">]</span>
 <span class="n">measurements</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;SRF&#39;: 7.402564525604248,
- &#39;MYOCD&#39;: 7.36640739440918,
- &#39;SMAD3&#39;: 7.205506801605225,
- &#39;ZEB2&#39;: 5.8041229248046875,
- &#39;SMAD2&#39;: 5.7937397956848145,
- &#39;JUNB&#39;: 5.62872314453125,
- &#39;HMGA2&#39;: 4.934858322143555,
- &#39;POU3F1&#39;: 4.918986797332764,
- &#39;RORA&#39;: 4.76252555847168,
- &#39;SMAD4&#39;: 4.730061054229736,
- &#39;MEF2A&#39;: 4.285721302032471,
- &#39;FGF2&#39;: 4.222509860992432,
- &#39;FOSL1&#39;: 3.9362800121307373,
- &#39;SOX4&#39;: 3.92212176322937,
- &#39;NCOA1&#39;: 3.8224685192108154,
- &#39;ASXL1&#39;: 3.7563669681549072,
- &#39;SFPQ&#39;: 3.7415316104888916,
- &#39;FOSB&#39;: 3.7254574298858643,
- &#39;SP7&#39;: 3.695308208465576,
- &#39;CREB3&#39;: 3.6301043033599854,
- &#39;NFATC3&#39;: 3.5302765369415283,
- &#39;MEIS2&#39;: 3.4903156757354736,
- &#39;ZNF804A&#39;: 3.3732707500457764,
- &#39;TAL1&#39;: 3.353253126144409,
- &#39;DLX5&#39;: 3.33522367477417,
- &#39;DLX2&#39;: -3.2915139198303223,
- &#39;CDX2&#39;: -3.296456813812256,
- &#39;CEBPG&#39;: -3.307525396347046,
- &#39;MAFA&#39;: -3.3084702491760254,
- &#39;NFIB&#39;: -3.3599045276641846,
- &#39;NFKB1&#39;: -3.4378252029418945,
- &#39;RXRB&#39;: -3.4568121433258057,
- &#39;STAT5A&#39;: -3.5282504558563232,
- &#39;MSX2&#39;: -3.5356292724609375,
- &#39;PLAGL1&#39;: -3.6181154251098633,
- &#39;TP53&#39;: -3.6528894901275635,
- &#39;GFI1&#39;: -3.6557135581970215,
- &#39;NKX2-1&#39;: -3.6595804691314697,
- &#39;MECP2&#39;: -3.7389347553253174,
- &#39;CEBPA&#39;: -3.775284767150879,
- &#39;CEBPB&#39;: -3.8758962154388428,
- &#39;SMAD6&#39;: -3.8772501945495605,
- &#39;WWTR1&#39;: -3.9811408519744873,
- &#39;SMAD5&#39;: -4.017445087432861,
- &#39;CIITA&#39;: -4.1478800773620605,
- &#39;NFKBIB&#39;: -4.171163558959961,
- &#39;PITX3&#39;: -4.213423728942871,
- &#39;REL&#39;: -4.263958930969238,
- &#39;IRF3&#39;: -4.2882513999938965,
- &#39;PITX1&#39;: -4.355759620666504,
- &#39;KLF8&#39;: -4.4818549156188965,
- &#39;DNMT3A&#39;: -4.6564249992370605,
- &#39;RELB&#39;: -4.845225811004639,
- &#39;NFE2L2&#39;: -4.9314775466918945,
- &#39;MECOM&#39;: -4.961089611053467,
- &#39;STAT1&#39;: -5.2104878425598145,
- &#39;HOXC6&#39;: -5.278722763061523,
- &#39;IRF2&#39;: -5.287947177886963,
- &#39;KLF11&#39;: -5.2895355224609375,
- &#39;SPI1&#39;: -5.442574501037598,
- &#39;NR4A3&#39;: -5.745412349700928,
- &#39;NR1H4&#39;: -5.917429447174072,
- &#39;SKIL&#39;: -7.463469505310059,
- &#39;IRF1&#39;: -9.437411308288574}
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;SRF&#39;: 7.386495312851475,
+ &#39;MYOCD&#39;: 7.3477418488593,
+ &#39;SMAD3&#39;: 7.088953922116064,
+ &#39;ZEB2&#39;: 5.7911322785963435,
+ &#39;SMAD2&#39;: 5.618762357005816,
+ &#39;JUNB&#39;: 5.615222387859854,
+ &#39;HMGA2&#39;: 4.922227935739035,
+ &#39;POU3F1&#39;: 4.907624790924594,
+ &#39;RORA&#39;: 4.752798433353922,
+ &#39;SMAD4&#39;: 4.444090714736604,
+ &#39;MEF2A&#39;: 4.237091117534177,
+ &#39;FGF2&#39;: 4.210588858175027,
+ &#39;SMAD5&#39;: -4.006207147710557,
+ &#39;CIITA&#39;: -4.1357011230543845,
+ &#39;NFKBIB&#39;: -4.156185003186268,
+ &#39;REL&#39;: -4.1668552776199554,
+ &#39;PITX3&#39;: -4.20041706737378,
+ &#39;IRF3&#39;: -4.274768908592069,
+ &#39;PITX1&#39;: -4.3434055546060915,
+ &#39;KLF8&#39;: -4.469643880727271,
+ &#39;DNMT3A&#39;: -4.64277743087254,
+ &#39;RELB&#39;: -4.684387581686191,
+ &#39;NFE2L2&#39;: -4.912649636784848,
+ &#39;MECOM&#39;: -4.945146818217912,
+ &#39;STAT1&#39;: -5.190882487350966,
+ &#39;HOXC6&#39;: -5.261961030902404,
+ &#39;IRF2&#39;: -5.272425389933752,
+ &#39;KLF11&#39;: -5.272848781428293,
+ &#39;SPI1&#39;: -5.424462691953871,
+ &#39;NR4A3&#39;: -5.726818220249099,
+ &#39;NR1H4&#39;: -6.058745290814488,
+ &#39;SKIL&#39;: -7.437972448180294,
+ &#39;IRF1&#39;: -9.363009055573007}
 </pre></div>
 </div>
 </div>
@@ -2080,11 +2012,15 @@ MT-TP         0.012206
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Data(n_samples=1, n_feats=[77])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Data(n_samples=1, n_feats=[46])
 </pre></div>
 </div>
 </div>
 </div>
+</section>
+<section id="carnival">
+<h2>CARNIVAL<a class="headerlink" href="#carnival" title="Link to this heading">#</a></h2>
+<p>We will use now the standard CARNIVAL with a regularization penalty of 0.5. Typically, we would need additional data or information to select the optimal parameter. For hypothesis exploration, we can try different values and manually inspect the solutions</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">carnival</span> <span class="o">=</span> <span class="n">CarnivalFlow</span><span class="p">(</span><span class="n">lambda_reg</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
@@ -2097,18 +2033,19 @@ MT-TP         0.012206
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Unreachable vertices for sample: 0
 </pre></div>
 </div>
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;edge_activates&#39;: edge_activates: Variable((3374, 1), edge_activates, boolean=True),
- &#39;const0x1ed29ddbdc597523&#39;: const0x1ed29ddbdc597523: Constant(CONSTANT, NONNEGATIVE, (970, 3374)),
- &#39;_flow&#39;: _flow: Variable((3374,), _flow),
- &#39;edge_inhibits&#39;: edge_inhibits: Variable((3374, 1), edge_inhibits, boolean=True),
- &#39;const0x70b316d8f961cc5&#39;: const0x70b316d8f961cc5: Constant(CONSTANT, NONNEGATIVE, (970, 3374)),
- &#39;_dag_layer&#39;: _dag_layer: Variable((970, 1), _dag_layer),
- &#39;flow&#39;: _flow: Variable((3374,), _flow),
- &#39;vertex_value&#39;: Expression(AFFINE, UNKNOWN, (970, 1)),
- &#39;vertex_activated&#39;: Expression(AFFINE, NONNEGATIVE, (970, 1)),
- &#39;vertex_inhibited&#39;: Expression(AFFINE, NONNEGATIVE, (970, 1)),
- &#39;edge_value&#39;: Expression(AFFINE, UNKNOWN, (3374, 1)),
- &#39;edge_has_signal&#39;: Expression(AFFINE, NONNEGATIVE, (3374, 1))}
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_flow&#39;: _flow: Variable((3279,), _flow),
+ &#39;edge_activates&#39;: edge_activates: Variable((3279, 1), edge_activates, boolean=True),
+ &#39;edge_inhibits&#39;: edge_inhibits: Variable((3279, 1), edge_inhibits, boolean=True),
+ &#39;const0x94da39a381f04fe&#39;: const0x94da39a381f04fe: Constant(CONSTANT, NONNEGATIVE, (947, 3279)),
+ &#39;_dag_layer&#39;: _dag_layer: Variable((947, 1), _dag_layer),
+ &#39;const0x1aa7a82deb9aa0b6&#39;: const0x1aa7a82deb9aa0b6: Constant(CONSTANT, NONNEGATIVE, (947, 3279)),
+ &#39;flow&#39;: _flow: Variable((3279,), _flow),
+ &#39;vertex_value&#39;: Expression(AFFINE, UNKNOWN, (947, 1)),
+ &#39;vertex_activated&#39;: Expression(AFFINE, NONNEGATIVE, (947, 1)),
+ &#39;vertex_inhibited&#39;: Expression(AFFINE, NONNEGATIVE, (947, 1)),
+ &#39;edge_value&#39;: Expression(AFFINE, UNKNOWN, (3279, 1)),
+ &#39;edge_has_signal&#39;: Expression(AFFINE, NONNEGATIVE, (3279, 1)),
+ &#39;vertex_max_depth&#39;: _dag_layer: Variable((947, 1), _dag_layer)}
 </pre></div>
 </div>
 </div>
@@ -2122,110 +2059,124 @@ MT-TP         0.012206
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>===============================================================================
                                      CVXPY                                     
-                                     v1.6.4                                    
+                                     v1.6.5                                    
 ===============================================================================
-(CVXPY) Apr 16 11:41:50 AM: Your problem has 11092 variables, 31652 constraints, and 1 parameters.
-(CVXPY) Apr 16 11:41:50 AM: It is compliant with the following grammars: DCP, DQCP
-(CVXPY) Apr 16 11:41:50 AM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
-(CVXPY) Apr 16 11:41:50 AM: Your problem is compiled with the CPP canonicalization backend.
+(CVXPY) Jun 11 06:19:10 PM: Your problem has 10784 variables, 30852 constraints, and 1 parameters.
+(CVXPY) Jun 11 06:19:10 PM: It is compliant with the following grammars: DCP, DQCP
+(CVXPY) Jun 11 06:19:10 PM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
+(CVXPY) Jun 11 06:19:10 PM: Your problem is compiled with the CPP canonicalization backend.
 -------------------------------------------------------------------------------
                                   Compilation                                  
 -------------------------------------------------------------------------------
-(CVXPY) Apr 16 11:41:50 AM: Compiling problem (target solver=HIGHS).
-(CVXPY) Apr 16 11:41:50 AM: Reduction chain: Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; HIGHS
-(CVXPY) Apr 16 11:41:50 AM: Applying reduction Dcp2Cone
-(CVXPY) Apr 16 11:41:50 AM: Applying reduction CvxAttr2Constr
-(CVXPY) Apr 16 11:41:50 AM: Applying reduction ConeMatrixStuffing
-(CVXPY) Apr 16 11:41:50 AM: Applying reduction HIGHS
-(CVXPY) Apr 16 11:41:50 AM: Finished problem compilation (took 5.614e-02 seconds).
-(CVXPY) Apr 16 11:41:50 AM: (Subsequent compilations of this problem, using the same arguments, should take less time.)
+(CVXPY) Jun 11 06:19:10 PM: Compiling problem (target solver=HIGHS).
+(CVXPY) Jun 11 06:19:10 PM: Reduction chain: Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; HIGHS
+(CVXPY) Jun 11 06:19:10 PM: Applying reduction Dcp2Cone
+(CVXPY) Jun 11 06:19:10 PM: Applying reduction CvxAttr2Constr
+(CVXPY) Jun 11 06:19:10 PM: Applying reduction ConeMatrixStuffing
+(CVXPY) Jun 11 06:19:10 PM: Applying reduction HIGHS
+(CVXPY) Jun 11 06:19:10 PM: Finished problem compilation (took 6.457e-02 seconds).
+(CVXPY) Jun 11 06:19:10 PM: (Subsequent compilations of this problem, using the same arguments, should take less time.)
 -------------------------------------------------------------------------------
                                 Numerical solver                               
 -------------------------------------------------------------------------------
-(CVXPY) Apr 16 11:41:50 AM: Invoking solver HIGHS  to obtain a solution.
-Running HiGHS 1.10.0 (git hash: fd86653): Copyright (c) 2025 HiGHS under MIT licence terms
-MIP  has 31652 rows; 11092 cols; 111482 nonzeros; 6748 integer variables (6748 binary)
+(CVXPY) Jun 11 06:19:10 PM: Invoking solver HIGHS  to obtain a solution.
+Running HiGHS 1.11.0 (git hash: 364c83a): Copyright (c) 2025 HiGHS under MIT licence terms
+MIP  has 30852 rows; 10784 cols; 108719 nonzeros; 6558 integer variables (6558 binary)
 Coefficient ranges:
-  Matrix [1e+00, 1e+03]
+  Matrix [1e+00, 9e+02]
   Cost   [5e-01, 8e+00]
   Bound  [1e+00, 1e+00]
   RHS    [1e+00, 1e+03]
 Presolving model
-18338 rows, 10622 cols, 93928 nonzeros  0s
-13396 rows, 9435 cols, 71834 nonzeros  0s
-13024 rows, 9360 cols, 71388 nonzeros  0s
+17921 rows, 10381 cols, 91785 nonzeros  0s
+13133 rows, 9253 cols, 70701 nonzeros  0s
+12754 rows, 9174 cols, 70260 nonzeros  0s
 
 Solving MIP model with:
-   13024 rows
-   9360 cols (5850 binary, 0 integer, 0 implied int., 3510 continuous)
-   71388 nonzeros
+   12754 rows
+   9174 cols (5768 binary, 0 integer, 0 implied int., 3406 continuous, 0 domain fixed)
+   70260 nonzeros
 
-Src: B =&gt; Branching; C =&gt; Central rounding; F =&gt; Feasibility pump; H =&gt; Heuristic; L =&gt; Sub-MIP;
-     P =&gt; Empty MIP; R =&gt; Randomized rounding; S =&gt; Solve LP; T =&gt; Evaluate node; U =&gt; Unbounded;
-     z =&gt; Trivial zero; l =&gt; Trivial lower; u =&gt; Trivial upper; p =&gt; Trivial point; X =&gt; User solution
+Src: B =&gt; Branching; C =&gt; Central rounding; F =&gt; Feasibility pump; J =&gt; Feasibility jump;
+     H =&gt; Heuristic; L =&gt; Sub-MIP; P =&gt; Empty MIP; R =&gt; Randomized rounding; Z =&gt; ZI Round;
+     I =&gt; Shifting; S =&gt; Solve LP; T =&gt; Evaluate node; U =&gt; Unbounded; X =&gt; User solution;
+     z =&gt; Trivial zero; l =&gt; Trivial lower; u =&gt; Trivial upper; p =&gt; Trivial point
 
         Nodes      |    B&amp;B Tree     |            Objective Bounds              |  Dynamic Constraints |       Work      
 Src  Proc. InQueue |  Leaves   Expl. | BestBound       BestSol              Gap |   Cuts   InLp Confl. | LpIters     Time
 
-         0       0         0   0.00%   -298.7062635    inf                  inf        0      0      0         0     0.3s
-         0       0         0   0.00%   -172.2083844    inf                  inf        0      0      5      1707     0.4s
- C       0       0         0   0.00%   -167.0036403    0                  Large      501     37     10      2237     1.2s
- L       0       0         0   0.00%   -166.1703069    -165.1703069       0.61%     1959    117     10      8802     3.9s
+ J       0       0         0   0.00%   -inf            0                  Large        0      0      0         0     0.4s
+         0       0         0   0.00%   -100.0153165    0                  Large        0      0      0      1834     0.5s
+ L       0       0         0   0.00%   -97.38159462    -90.88159462       7.15%     1663     70      0      3162     4.0s
 
-9.2% inactive integer columns, restarting
-Model after restart has 12184 rows, 8682 cols (5196 bin., 0 int., 0 impl., 3486 cont.), and 63464 nonzeros
+1.5% inactive integer columns, restarting
+Model after restart has 12621 rows, 9052 cols (5650 bin., 0 int., 0 impl., 3402 cont., 0 dom.fix.), and 69099 nonzeros
 
-         0       0         0   0.00%   -166.1703069    -165.1703069       0.61%       44      0      0      9812     4.0s
-         0       0         0   0.00%   -166.1703069    -165.1703069       0.61%       44     28      4     11329     4.1s
+         0       0         0   0.00%   -97.38159462    -90.88159462       7.15%       27      0      0     12413     6.0s
+         0       0         0   0.00%   -97.38159462    -90.88159462       7.15%       27     19     21     13585     6.1s
+ L       0       0         0   0.00%   -97.38159462    -96.88159462       0.52%      365     58     21     13760     8.1s
+
+11.6% inactive integer columns, restarting
+Model after restart has 10990 rows, 8004 cols (4780 bin., 0 int., 0 impl., 3224 cont., 0 dom.fix.), and 57133 nonzeros
+
+         0       0         0   0.00%   -97.38159462    -96.88159462       0.52%       27      0      0     18245     8.3s
+         0       0         0   0.00%   -97.38159462    -96.88159462       0.52%       27     16      5     19546     8.3s
 
 Symmetry detection completed in 0.0s
-Found 29 generator(s)
+Found 19 generator(s)
 
-         8       0         4 100.00%   -165.1703069    -165.1703069       0.00%      902     56     16     21107     7.1s
+        34       1        16  46.09%   -97.38159462    -96.88159462       0.52%      603     27   1383     43341    13.5s
+
+Restarting search from the root node
+Model after restart has 869 rows, 2591 cols (75 bin., 0 int., 0 impl., 2516 cont., 0 dom.fix.), and 6771 nonzeros
+
+        50       0         0   0.00%   -97.37842673    -96.88159462       0.51%       10      0      0     55711    16.4s
+        51       0         1 100.00%   -96.88159462    -96.88159462       0.00%       10      0      0     56356    16.4s
 
 Solving report
   Status            Optimal
-  Primal bound      -165.170306921
-  Dual bound        -165.170306921
+  Primal bound      -96.8815946237
+  Dual bound        -96.8815946237
   Gap               0% (tolerance: 0.01%)
-  P-D integral      0.0195956875377
+  P-D integral      0.338566345924
   Solution status   feasible
-                    -165.170306921 (objective)
+                    -96.8815946237 (objective)
                     0 (bound viol.)
-                    0 (int. viol.)
+                    2.22044604925e-16 (int. viol.)
                     0 (row viol.)
-  Timing            7.10 (total)
+  Timing            16.42 (total)
                     0.00 (presolve)
                     0.00 (solve)
                     0.00 (postsolve)
   Max sub-MIP depth 8
-  Nodes             8
+  Nodes             51
   Repair LPs        0 (0 feasible; 0 iterations)
-  LP iterations     21107 (total)
-                    428 (strong br.)
-                    1865 (separation)
-                    15487 (heuristics)
+  LP iterations     56356 (total)
+                    28833 (strong br.)
+                    1751 (separation)
+                    13653 (heuristics)
 -------------------------------------------------------------------------------
                                     Summary                                    
 -------------------------------------------------------------------------------
-(CVXPY) Apr 16 11:41:57 AM: Problem status: optimal
-(CVXPY) Apr 16 11:41:57 AM: Optimal value: 5.302e+01
-(CVXPY) Apr 16 11:41:57 AM: Compilation took 5.614e-02 seconds
-(CVXPY) Apr 16 11:41:57 AM: Solver (including time spent in interface) took 7.115e+00 seconds
+(CVXPY) Jun 11 06:19:27 PM: Problem status: optimal
+(CVXPY) Jun 11 06:19:27 PM: Optimal value: 2.650e+01
+(CVXPY) Jun 11 06:19:27 PM: Compilation took 6.457e-02 seconds
+(CVXPY) Jun 11 06:19:27 PM: Solver (including time spent in interface) took 1.643e+01 seconds
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">P</span><span class="o">.</span><span class="n">objectives</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Error for sample is 0, meaning that all reachable TFs (from receptors) are correctly explained</span>
+<span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">P</span><span class="o">.</span><span class="n">objectives</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;-&gt;&quot;</span><span class="p">,</span> <span class="n">o</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>7.0169713497161865
-92.0
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>error_sample1_0 -&gt; 1.050898412285121e-15
+regularization_edge_has_signal -&gt; 53.0
 </pre></div>
 </div>
 </div>
@@ -2235,15 +2186,15 @@ Solving report
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We extract the selected edges</span>
 <span class="n">sol_edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">edge_value</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">)</span>
 <span class="n">carnival</span><span class="o">.</span><span class="n">processed_graph</span><span class="o">.</span><span class="n">plot_values</span><span class="p">(</span>
-    <span class="n">vertex_values</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">vertex_value</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
-    <span class="n">edge_values</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">edge_value</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
-    <span class="n">edge_indexes</span> <span class="o">=</span> <span class="n">sol_edges</span>
+    <span class="n">vertex_values</span><span class="o">=</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">vertex_value</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+    <span class="n">edge_values</span><span class="o">=</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">edge_value</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+    <span class="n">edge_indexes</span><span class="o">=</span><span class="n">sol_edges</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/e1f7317e98cd18d0998869dcfe3e76268906efdfbb05ee92845b464a8d8582b4.svg" src="../_images/e1f7317e98cd18d0998869dcfe3e76268906efdfbb05ee92845b464a8d8582b4.svg" />
+<img alt="../_images/a2e40127fd28fbe18a04e547913cfeda8b0c3f028fd9efc3a90dd9f72eb82137.svg" src="../_images/a2e40127fd28fbe18a04e547913cfeda8b0c3f028fd9efc3a90dd9f72eb82137.svg" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -2255,16 +2206,18 @@ Solving report
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(92, 92)
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(53, 53)
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-
-<span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">vertex_value</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">carnival</span><span class="o">.</span><span class="n">processed_graph</span><span class="o">.</span><span class="n">V</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;node_activity&quot;</span><span class="p">])</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">vertex_value</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+    <span class="n">index</span><span class="o">=</span><span class="n">carnival</span><span class="o">.</span><span class="n">processed_graph</span><span class="o">.</span><span class="n">V</span><span class="p">,</span>
+    <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;node_activity&quot;</span><span class="p">],</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -2292,23 +2245,23 @@ Solving report
   </thead>
   <tbody>
     <tr>
-      <th>PRKCA</th>
-      <td>-1.0</td>
-    </tr>
-    <tr>
-      <th>ARHGEF1</th>
+      <th>PTPRC</th>
       <td>0.0</td>
     </tr>
     <tr>
-      <th>CXCL1</th>
+      <th>GEM</th>
       <td>0.0</td>
     </tr>
     <tr>
-      <th>CAMKK1</th>
+      <th>MYO10</th>
       <td>0.0</td>
     </tr>
     <tr>
-      <th>PEX5</th>
+      <th>ARHGEF12</th>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>TP53RK</th>
       <td>0.0</td>
     </tr>
     <tr>
@@ -2316,28 +2269,28 @@ Solving report
       <td>...</td>
     </tr>
     <tr>
-      <th>BAG3</th>
+      <th>NUAK1</th>
       <td>0.0</td>
     </tr>
     <tr>
-      <th>SKP2</th>
+      <th>CAMKK2</th>
       <td>0.0</td>
     </tr>
     <tr>
-      <th>HIPK2</th>
-      <td>-1.0</td>
+      <th>P0C725_UBB</th>
+      <td>0.0</td>
     </tr>
     <tr>
-      <th>SMAD4</th>
-      <td>1.0</td>
+      <th>CSNK2B</th>
+      <td>0.0</td>
     </tr>
     <tr>
-      <th>CSDE1</th>
+      <th>ANAPC1_ANAPC10_ANAPC11_ANAPC13_ANAPC2_ANAPC4_ANAPC5_ANAPC7_CDC16_CDC23_CDC26_CDC27</th>
       <td>0.0</td>
     </tr>
   </tbody>
 </table>
-<p>970 rows × 1 columns</p>
+<p>947 rows × 1 columns</p>
 </div></div></div>
 </div>
 <div class="cell docutils container">
@@ -2402,45 +2355,46 @@ Solving report
     </tr>
     <tr>
       <th rowspan="5" valign="top">()</th>
-      <th>(IL21R)</th>
-      <td>0.0</td>
-    </tr>
-    <tr>
       <th>(FZD8)</th>
       <td>0.0</td>
     </tr>
     <tr>
-      <th>(TGFB1)</th>
-      <td>-1.0</td>
-    </tr>
-    <tr>
-      <th>(CDH6)</th>
+      <th>(IL21R)</th>
       <td>0.0</td>
     </tr>
     <tr>
-      <th>(INHBA)</th>
+      <th>(EGF)</th>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>(TGFB1)</th>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>(CDH2)</th>
       <td>0.0</td>
     </tr>
   </tbody>
 </table>
-<p>3374 rows × 1 columns</p>
+<p>3279 rows × 1 columns</p>
 </div></div></div>
 </div>
 </section>
 <section id="changing-modelling-assumptions">
 <h2>Changing modelling assumptions<a class="headerlink" href="#changing-modelling-assumptions" title="Link to this heading">#</a></h2>
-<p>Thanks to CORNETO’s modeling capabilities, we can manipulate the problems to add more knowledge, new objectives or different constraints. Now, we are going to penalize the use of inhibitory interactions from the PKN</p>
+<p>Thanks to CORNETO’s modeling capabilities, we can manipulate the problems to add more knowledge, new objectives or different constraints. As an example, we are going to penalize the use of inhibitory interactions from the PKN to simplify the reconstructed networks in CARNIVAL</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">edge_interactions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">carnival</span><span class="o">.</span><span class="n">processed_graph</span><span class="o">.</span><span class="n">get_attr_from_edges</span><span class="p">(</span><span class="s2">&quot;interaction&quot;</span><span class="p">))</span>
 <span class="n">penalties</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">edge_interactions</span><span class="p">)</span>
+<span class="c1"># We add a large penalty to each interaction which is inhibitory (-1)</span>
 <span class="n">penalties</span><span class="p">[</span><span class="n">edge_interactions</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10</span>
 <span class="n">penalties</span><span class="o">.</span><span class="n">shape</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(3374,)
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(3279,)
 </pre></div>
 </div>
 </div>
@@ -2469,116 +2423,102 @@ Solving report
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>===============================================================================
                                      CVXPY                                     
-                                     v1.6.4                                    
+                                     v1.6.5                                    
 ===============================================================================
-(CVXPY) Apr 16 11:41:57 AM: Your problem has 11092 variables, 31652 constraints, and 1 parameters.
-(CVXPY) Apr 16 11:41:57 AM: It is compliant with the following grammars: DCP, DQCP
-(CVXPY) Apr 16 11:41:57 AM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
-(CVXPY) Apr 16 11:41:57 AM: Your problem is compiled with the CPP canonicalization backend.
+(CVXPY) Jun 11 06:19:27 PM: Your problem has 10784 variables, 30852 constraints, and 1 parameters.
+(CVXPY) Jun 11 06:19:27 PM: It is compliant with the following grammars: DCP, DQCP
+(CVXPY) Jun 11 06:19:27 PM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
+(CVXPY) Jun 11 06:19:27 PM: Your problem is compiled with the CPP canonicalization backend.
 -------------------------------------------------------------------------------
                                   Compilation                                  
 -------------------------------------------------------------------------------
-(CVXPY) Apr 16 11:41:57 AM: Compiling problem (target solver=HIGHS).
-(CVXPY) Apr 16 11:41:57 AM: Reduction chain: Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; HIGHS
-(CVXPY) Apr 16 11:41:57 AM: Applying reduction Dcp2Cone
-(CVXPY) Apr 16 11:41:57 AM: Applying reduction CvxAttr2Constr
-(CVXPY) Apr 16 11:41:57 AM: Applying reduction ConeMatrixStuffing
-(CVXPY) Apr 16 11:41:57 AM: Applying reduction HIGHS
-(CVXPY) Apr 16 11:41:57 AM: Finished problem compilation (took 6.065e-02 seconds).
-(CVXPY) Apr 16 11:41:57 AM: (Subsequent compilations of this problem, using the same arguments, should take less time.)
+(CVXPY) Jun 11 06:19:27 PM: Compiling problem (target solver=HIGHS).
+(CVXPY) Jun 11 06:19:27 PM: Reduction chain: Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; HIGHS
+(CVXPY) Jun 11 06:19:27 PM: Applying reduction Dcp2Cone
+(CVXPY) Jun 11 06:19:27 PM: Applying reduction CvxAttr2Constr
+(CVXPY) Jun 11 06:19:27 PM: Applying reduction ConeMatrixStuffing
+(CVXPY) Jun 11 06:19:27 PM: Applying reduction HIGHS
+(CVXPY) Jun 11 06:19:27 PM: Finished problem compilation (took 5.865e-02 seconds).
+(CVXPY) Jun 11 06:19:27 PM: (Subsequent compilations of this problem, using the same arguments, should take less time.)
 -------------------------------------------------------------------------------
                                 Numerical solver                               
 -------------------------------------------------------------------------------
-(CVXPY) Apr 16 11:41:57 AM: Invoking solver HIGHS  to obtain a solution.
-Running HiGHS 1.10.0 (git hash: fd86653): Copyright (c) 2025 HiGHS under MIT licence terms
-MIP  has 31652 rows; 11092 cols; 111482 nonzeros; 6748 integer variables (6748 binary)
+(CVXPY) Jun 11 06:19:27 PM: Invoking solver HIGHS  to obtain a solution.
+Running HiGHS 1.11.0 (git hash: 364c83a): Copyright (c) 2025 HiGHS under MIT licence terms
+MIP  has 30852 rows; 10784 cols; 108719 nonzeros; 6558 integer variables (6558 binary)
 Coefficient ranges:
-  Matrix [1e+00, 1e+03]
+  Matrix [1e+00, 9e+02]
   Cost   [5e-01, 2e+01]
   Bound  [1e+00, 1e+00]
   RHS    [1e+00, 1e+03]
 Presolving model
-18338 rows, 10622 cols, 93928 nonzeros  0s
-13176 rows, 9346 cols, 70802 nonzeros  0s
-12790 rows, 9263 cols, 70335 nonzeros  0s
+17921 rows, 10381 cols, 91785 nonzeros  0s
+13026 rows, 9212 cols, 70234 nonzeros  0s
+12645 rows, 9131 cols, 69798 nonzeros  0s
 
 Solving MIP model with:
-   12790 rows
-   9263 cols (5764 binary, 0 integer, 0 implied int., 3499 continuous)
-   70335 nonzeros
+   12645 rows
+   9131 cols (5727 binary, 0 integer, 0 implied int., 3404 continuous, 0 domain fixed)
+   69798 nonzeros
 
-Src: B =&gt; Branching; C =&gt; Central rounding; F =&gt; Feasibility pump; H =&gt; Heuristic; L =&gt; Sub-MIP;
-     P =&gt; Empty MIP; R =&gt; Randomized rounding; S =&gt; Solve LP; T =&gt; Evaluate node; U =&gt; Unbounded;
-     z =&gt; Trivial zero; l =&gt; Trivial lower; u =&gt; Trivial upper; p =&gt; Trivial point; X =&gt; User solution
+Src: B =&gt; Branching; C =&gt; Central rounding; F =&gt; Feasibility pump; J =&gt; Feasibility jump;
+     H =&gt; Heuristic; L =&gt; Sub-MIP; P =&gt; Empty MIP; R =&gt; Randomized rounding; Z =&gt; ZI Round;
+     I =&gt; Shifting; S =&gt; Solve LP; T =&gt; Evaluate node; U =&gt; Unbounded; X =&gt; User solution;
+     z =&gt; Trivial zero; l =&gt; Trivial lower; u =&gt; Trivial upper; p =&gt; Trivial point
 
         Nodes      |    B&amp;B Tree     |            Objective Bounds              |  Dynamic Constraints |       Work      
 Src  Proc. InQueue |  Leaves   Expl. | BestBound       BestSol              Gap |   Cuts   InLp Confl. | LpIters     Time
 
-         0       0         0   0.00%   -205.9936554    inf                  inf        0      0      0         0     0.3s
-         0       0         0   0.00%   -121.8853879    inf                  inf        0      0      0      1641     0.4s
- C       0       0         0   0.00%   -113.9104206    1                  Large      508     25      0      2000     1.6s
- L       0       0         0   0.00%   -112.2153925    -109.1006672       2.85%     1454     80      0     11709     5.5s
-
-46.4% inactive integer columns, restarting
-Model after restart has 6110 rows, 5509 cols (2418 bin., 0 int., 0 impl., 3091 cont.), and 28900 nonzeros
-
-         0       0         0   0.00%   -112.2119847    -109.1006672       2.85%       42      0      0     13907     5.7s
-         0       0         0   0.00%   -112.2119847    -109.1006672       2.85%       42     30     18     15117     5.7s
-
-Symmetry detection completed in 0.0s
-Found 16 generator(s)
-
-        20       0         6  50.10%   -112.1425009    -109.1006672       2.79%     2753     44    123     77529    12.2s
-       179      16        79  62.84%   -110.1849936    -109.1006672       0.99%     2833     71   1336    115436    17.3s
-       458      38       200  76.99%   -110.18492      -109.1006672       0.99%     4099     66   2511    154779    22.5s
-       954      93       415  84.75%   -110.1848812    -109.1006672       0.99%     5488     90   3997    187699    27.5s
-      1704     197       718  87.72%   -110.1006672    -109.1006672       0.92%     5637    141   5879    214807    32.5s
- T    2029      10       860  98.53%   -109.9131672    -109.6006672       0.29%     7544    103   7167    236564    36.7s
-      2056       0       877 100.00%   -109.6006672    -109.6006672       0.00%     8193     94   7242    240627    37.3s
+ J       0       0         0   0.00%   -inf            0                  Large        0      0      0         0     0.4s
+         0       0         0   0.00%   -80.01008213    0                  Large        0      0      0      1331     0.5s
+ C       0       0         0   0.00%   -72.82817579    -2.006207148    3530.14%      356     21      0      1844     1.2s
+ L       0       0         0   0.00%   -72.41150912    -72.41150912       0.00%     1082     50      0      2307     2.5s
+         1       0         1 100.00%   -72.41150912    -72.41150912       0.00%     1082     50      0      4414     2.5s
 
 Solving report
   Status            Optimal
-  Primal bound      -109.600667238
-  Dual bound        -109.600667238
+  Primal bound      -72.411509124
+  Dual bound        -72.411509124
   Gap               0% (tolerance: 0.01%)
-  P-D integral      445.855556496
+  P-D integral      46.7809634959
   Solution status   feasible
-                    -109.600667238 (objective)
+                    -72.411509124 (objective)
                     0 (bound viol.)
-                    2.03537315471e-14 (int. viol.)
+                    0 (int. viol.)
                     0 (row viol.)
-  Timing            37.26 (total)
+  Timing            2.53 (total)
                     0.00 (presolve)
                     0.00 (solve)
                     0.00 (postsolve)
-  Max sub-MIP depth 7
-  Nodes             2056
+  Max sub-MIP depth 5
+  Nodes             1
   Repair LPs        0 (0 feasible; 0 iterations)
-  LP iterations     240627 (total)
-                    129542 (strong br.)
-                    11730 (separation)
-                    17795 (heuristics)
+  LP iterations     4414 (total)
+                    0 (strong br.)
+                    976 (separation)
+                    2107 (heuristics)
 -------------------------------------------------------------------------------
                                     Summary                                    
 -------------------------------------------------------------------------------
-(CVXPY) Apr 16 11:42:35 AM: Problem status: optimal
-(CVXPY) Apr 16 11:42:35 AM: Optimal value: 1.086e+02
-(CVXPY) Apr 16 11:42:35 AM: Compilation took 6.065e-02 seconds
-(CVXPY) Apr 16 11:42:35 AM: Solver (including time spent in interface) took 3.728e+01 seconds
+(CVXPY) Jun 11 06:19:30 PM: Problem status: optimal
+(CVXPY) Jun 11 06:19:30 PM: Optimal value: 5.097e+01
+(CVXPY) Jun 11 06:19:30 PM: Compilation took 5.865e-02 seconds
+(CVXPY) Jun 11 06:19:30 PM: Solver (including time spent in interface) took 2.544e+00 seconds
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">P</span><span class="o">.</span><span class="n">objectives</span><span class="p">:</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Note that the networks have a larger error (many TFs are now not explained)</span>
+<span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">P</span><span class="o">.</span><span class="n">objectives</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>73.08661103248596
-71.0
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>26.970085499734868
+48.0
 [0.]
 </pre></div>
 </div>
@@ -2586,18 +2526,1047 @@ Solving report
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We extract the selected edges</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We extract the selected edges. Networks are simpler,</span>
+<span class="c1"># and they show again some activation of CDH2 and inhibition of IGF1</span>
 <span class="n">sol_edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">edge_value</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">)</span>
 <span class="n">carnival</span><span class="o">.</span><span class="n">processed_graph</span><span class="o">.</span><span class="n">plot_values</span><span class="p">(</span>
-    <span class="n">vertex_values</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">vertex_value</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
-    <span class="n">edge_values</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">edge_value</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
-    <span class="n">edge_indexes</span> <span class="o">=</span> <span class="n">sol_edges</span>
+    <span class="n">vertex_values</span><span class="o">=</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">vertex_value</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+    <span class="n">edge_values</span><span class="o">=</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">edge_value</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+    <span class="n">edge_indexes</span><span class="o">=</span><span class="n">sol_edges</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/c36adcb32bea610dbe36514142b2832fc454b6861aaf50071f03309b3acbe09f.svg" src="../_images/c36adcb32bea610dbe36514142b2832fc454b6861aaf50071f03309b3acbe09f.svg" />
+<img alt="../_images/aebeead010ccc046a49ec68b0f4bb04c1f69bf064a8af0ac293906bc563827e7.svg" src="../_images/aebeead010ccc046a49ec68b0f4bb04c1f69bf064a8af0ac293906bc563827e7.svg" />
+</div>
+</div>
+</section>
+<section id="other-options">
+<h2>Other options<a class="headerlink" href="#other-options" title="Link to this heading">#</a></h2>
+<p>We included an option to simplify the networks inferred by CARNIVAL, by penalizing the selection of indirect rules. These rules are:</p>
+<ul class="simple">
+<li><p>A -&gt; B in the PKN, and we observe B is downregulated, we explain it with downregulation of its upstream gene A</p></li>
+<li><p>A -| B in the PKN, and we observe B is upregulated, we explain it with downregulation of A</p></li>
+</ul>
+<blockquote>
+<div><p>NOTE: This is an experimental feature and was not benchmarked in the original CARNIVAL paper.</p>
+</div></blockquote>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">carnival</span> <span class="o">=</span> <span class="n">CarnivalFlow</span><span class="p">(</span><span class="n">lambda_reg</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">indirect_rule_penalty</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">P</span> <span class="o">=</span> <span class="n">carnival</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+<span class="n">P</span><span class="o">.</span><span class="n">expr</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Unreachable vertices for sample: 0
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_flow&#39;: _flow: Variable((3279,), _flow),
+ &#39;edge_inhibits&#39;: edge_inhibits: Variable((3279, 1), edge_inhibits, boolean=True),
+ &#39;edge_activates&#39;: edge_activates: Variable((3279, 1), edge_activates, boolean=True),
+ &#39;const0x1735def7420c5858&#39;: const0x1735def7420c5858: Constant(CONSTANT, NONNEGATIVE, (947, 3279)),
+ &#39;_dag_layer&#39;: _dag_layer: Variable((947, 1), _dag_layer),
+ &#39;const0xb46ccbceabe3b17&#39;: const0xb46ccbceabe3b17: Constant(CONSTANT, NONNEGATIVE, (947, 3279)),
+ &#39;flow&#39;: _flow: Variable((3279,), _flow),
+ &#39;vertex_value&#39;: Expression(AFFINE, UNKNOWN, (947, 1)),
+ &#39;vertex_activated&#39;: Expression(AFFINE, NONNEGATIVE, (947, 1)),
+ &#39;vertex_inhibited&#39;: Expression(AFFINE, NONNEGATIVE, (947, 1)),
+ &#39;edge_value&#39;: Expression(AFFINE, UNKNOWN, (3279, 1)),
+ &#39;edge_has_signal&#39;: Expression(AFFINE, NONNEGATIVE, (3279, 1)),
+ &#39;vertex_max_depth&#39;: _dag_layer: Variable((947, 1), _dag_layer)}
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;highs&quot;</span><span class="p">,</span> <span class="n">max_seconds</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">1</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>===============================================================================
+                                     CVXPY                                     
+                                     v1.6.5                                    
+===============================================================================
+(CVXPY) Jun 11 06:19:30 PM: Your problem has 10784 variables, 30852 constraints, and 1 parameters.
+(CVXPY) Jun 11 06:19:30 PM: It is compliant with the following grammars: DCP, DQCP
+(CVXPY) Jun 11 06:19:30 PM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
+(CVXPY) Jun 11 06:19:30 PM: Your problem is compiled with the CPP canonicalization backend.
+-------------------------------------------------------------------------------
+                                  Compilation                                  
+-------------------------------------------------------------------------------
+(CVXPY) Jun 11 06:19:30 PM: Compiling problem (target solver=HIGHS).
+(CVXPY) Jun 11 06:19:30 PM: Reduction chain: Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; HIGHS
+(CVXPY) Jun 11 06:19:30 PM: Applying reduction Dcp2Cone
+(CVXPY) Jun 11 06:19:30 PM: Applying reduction CvxAttr2Constr
+(CVXPY) Jun 11 06:19:30 PM: Applying reduction ConeMatrixStuffing
+(CVXPY) Jun 11 06:19:30 PM: Applying reduction HIGHS
+(CVXPY) Jun 11 06:19:30 PM: Finished problem compilation (took 7.756e-02 seconds).
+(CVXPY) Jun 11 06:19:30 PM: (Subsequent compilations of this problem, using the same arguments, should take less time.)
+-------------------------------------------------------------------------------
+                                Numerical solver                               
+-------------------------------------------------------------------------------
+(CVXPY) Jun 11 06:19:30 PM: Invoking solver HIGHS  to obtain a solution.
+Running HiGHS 1.11.0 (git hash: 364c83a): Copyright (c) 2025 HiGHS under MIT licence terms
+MIP  has 30852 rows; 10784 cols; 108719 nonzeros; 6558 integer variables (6558 binary)
+Coefficient ranges:
+  Matrix [1e+00, 9e+02]
+  Cost   [5e-01, 2e+01]
+  Bound  [1e+00, 1e+00]
+  RHS    [1e+00, 1e+03]
+Presolving model
+17921 rows, 10381 cols, 91785 nonzeros  0s
+12937 rows, 9173 cols, 69770 nonzeros  0s
+12555 rows, 9092 cols, 69332 nonzeros  0s
+
+Solving MIP model with:
+   12555 rows
+   9092 cols (5685 binary, 0 integer, 0 implied int., 3407 continuous, 0 domain fixed)
+   69332 nonzeros
+
+Src: B =&gt; Branching; C =&gt; Central rounding; F =&gt; Feasibility pump; J =&gt; Feasibility jump;
+     H =&gt; Heuristic; L =&gt; Sub-MIP; P =&gt; Empty MIP; R =&gt; Randomized rounding; Z =&gt; ZI Round;
+     I =&gt; Shifting; S =&gt; Solve LP; T =&gt; Evaluate node; U =&gt; Unbounded; X =&gt; User solution;
+     z =&gt; Trivial zero; l =&gt; Trivial lower; u =&gt; Trivial upper; p =&gt; Trivial point
+
+        Nodes      |    B&amp;B Tree     |            Objective Bounds              |  Dynamic Constraints |       Work      
+Src  Proc. InQueue |  Leaves   Expl. | BestBound       BestSol              Gap |   Cuts   InLp Confl. | LpIters     Time
+
+ J       0       0         0   0.00%   -inf            0                  Large        0      0      0         0     0.4s
+         0       0         0   0.00%   -54.39752097    0                  Large        0      0     16       912     0.5s
+ L       0       0         0   0.00%   -49.48644796    -48.98644796       1.02%      896     48     35      1408     3.0s
+
+62.0% inactive integer columns, restarting
+Model after restart has 4380 rows, 4101 cols (1192 bin., 0 int., 0 impl., 2909 cont., 0 dom.fix.), and 18621 nonzeros
+
+         0       0         0   0.00%   -49.48644796    -48.98644796       1.02%       16      0      0      6197     3.4s
+         0       0         0   0.00%   -49.48644796    -48.98644796       1.02%       16     13      7      6871     3.5s
+
+Symmetry detection completed in 0.0s
+Found 10 generator(s)
+
+         5       0         3 100.00%   -48.98644796    -48.98644796       0.00%      726     19     46     13939     4.5s
+
+Solving report
+  Status            Optimal
+  Primal bound      -48.9864479649
+  Dual bound        -48.9864479649
+  Gap               0% (tolerance: 0.01%)
+  P-D integral      0.0145504962008
+  Solution status   feasible
+                    -48.9864479649 (objective)
+                    0 (bound viol.)
+                    0 (int. viol.)
+                    0 (row viol.)
+  Timing            4.46 (total)
+                    0.00 (presolve)
+                    0.00 (solve)
+                    0.00 (postsolve)
+  Max sub-MIP depth 5
+  Nodes             5
+  Repair LPs        0 (0 feasible; 0 iterations)
+  LP iterations     13939 (total)
+                    771 (strong br.)
+                    770 (separation)
+                    10556 (heuristics)
+-------------------------------------------------------------------------------
+                                    Summary                                    
+-------------------------------------------------------------------------------
+(CVXPY) Jun 11 06:19:35 PM: Problem status: optimal
+(CVXPY) Jun 11 06:19:35 PM: Optimal value: 7.440e+01
+(CVXPY) Jun 11 06:19:35 PM: Compilation took 7.756e-02 seconds
+(CVXPY) Jun 11 06:19:35 PM: Solver (including time spent in interface) took 4.473e+00 seconds
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sol_edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">edge_value</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">)</span>
+<span class="n">carnival</span><span class="o">.</span><span class="n">processed_graph</span><span class="o">.</span><span class="n">plot_values</span><span class="p">(</span>
+    <span class="n">vertex_values</span><span class="o">=</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">vertex_value</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+    <span class="n">edge_values</span><span class="o">=</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">edge_value</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+    <span class="n">edge_indexes</span><span class="o">=</span><span class="n">sol_edges</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/4d627a4182090803f9c611b7f105aadb2afcface264d6e5a1471a8b74acbe181.svg" src="../_images/4d627a4182090803f9c611b7f105aadb2afcface264d6e5a1471a8b74acbe181.svg" />
+</div>
+</div>
+</section>
+<section id="using-information-from-progeny">
+<h2>Using information from PROGENy<a class="headerlink" href="#using-information-from-progeny" title="Link to this heading">#</a></h2>
+<p>In the previous examples, we used only information from TF activities and de-regulated receptors, and we tested different options. However, results can be highly variable, due to uncertainty in the intermediate signalling proteins (downstream receptors and upstream TFs), and due to the existence of multiple paths in the PKN.</p>
+<p>Additional information can be used to bias the reconstruction towards more plausible signalling pathways. Here, we will use information from PROGENy, which infers pathway activities from gene expression data.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">progeny</span> <span class="o">=</span> <span class="n">dc</span><span class="o">.</span><span class="n">op</span><span class="o">.</span><span class="n">progeny</span><span class="p">(</span><span class="n">organism</span><span class="o">=</span><span class="s2">&quot;human&quot;</span><span class="p">)</span>
+<span class="n">progeny</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>source</th>
+      <th>target</th>
+      <th>weight</th>
+      <th>padj</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Androgen</td>
+      <td>TMPRSS2</td>
+      <td>11.490631</td>
+      <td>2.384806e-47</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Androgen</td>
+      <td>NKX3-1</td>
+      <td>10.622551</td>
+      <td>2.205102e-44</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Androgen</td>
+      <td>MBOAT2</td>
+      <td>10.472733</td>
+      <td>4.632376e-44</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Androgen</td>
+      <td>KLK2</td>
+      <td>10.176186</td>
+      <td>1.944410e-40</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Androgen</td>
+      <td>SARG</td>
+      <td>11.386852</td>
+      <td>2.790210e-40</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>62456</th>
+      <td>p53</td>
+      <td>ENPP2</td>
+      <td>2.771405</td>
+      <td>4.993215e-02</td>
+    </tr>
+    <tr>
+      <th>62457</th>
+      <td>p53</td>
+      <td>ARRDC4</td>
+      <td>3.494328</td>
+      <td>4.996747e-02</td>
+    </tr>
+    <tr>
+      <th>62458</th>
+      <td>p53</td>
+      <td>MYO1B</td>
+      <td>-1.148057</td>
+      <td>4.997905e-02</td>
+    </tr>
+    <tr>
+      <th>62459</th>
+      <td>p53</td>
+      <td>CTSC</td>
+      <td>-1.784693</td>
+      <td>4.998864e-02</td>
+    </tr>
+    <tr>
+      <th>62460</th>
+      <td>p53</td>
+      <td>NAA50</td>
+      <td>-1.435013</td>
+      <td>4.998884e-02</td>
+    </tr>
+  </tbody>
+</table>
+<p>62461 rows × 4 columns</p>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We will use the PyDeseq2 stat as the score for the genes</span>
+<span class="n">de_data</span> <span class="o">=</span> <span class="n">results_df</span><span class="p">[[</span><span class="s2">&quot;stat&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;stat&quot;</span><span class="p">:</span> <span class="s2">&quot;treatment.vs.control&quot;</span><span class="p">})</span>
+<span class="n">de_data</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>RP11-347I19.8</th>
+      <th>TMEM170B</th>
+      <th>RP11-91P24.6</th>
+      <th>SLC33A1</th>
+      <th>SNORA61</th>
+      <th>THAP9-AS1</th>
+      <th>LIX1L</th>
+      <th>TTC8</th>
+      <th>WBSCR22</th>
+      <th>LPHN2</th>
+      <th>...</th>
+      <th>STARD4-AS1</th>
+      <th>ZNF845</th>
+      <th>NIPSNAP3B</th>
+      <th>ARL6IP5</th>
+      <th>MATN1-AS1</th>
+      <th>RP11-75I2.3</th>
+      <th>SLC25A24</th>
+      <th>BTN2A2</th>
+      <th>RP11-101E3.5</th>
+      <th>RP11-91I8.3</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>treatment.vs.control</th>
+      <td>-0.820242</td>
+      <td>-1.315516</td>
+      <td>-1.69062</td>
+      <td>6.990075</td>
+      <td>2.803032</td>
+      <td>1.531275</td>
+      <td>2.164138</td>
+      <td>-0.579879</td>
+      <td>-0.945672</td>
+      <td>-14.351588</td>
+      <td>...</td>
+      <td>14.484214</td>
+      <td>0.56727</td>
+      <td>-1.883272</td>
+      <td>-8.42519</td>
+      <td>-1.739921</td>
+      <td>29.760449</td>
+      <td>7.431841</td>
+      <td>-1.015945</td>
+      <td>0.508484</td>
+      <td>-4.134989</td>
+    </tr>
+  </tbody>
+</table>
+<p>1 rows × 19510 columns</p>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Run</span>
+<span class="n">pw_acts</span><span class="p">,</span> <span class="n">pw_padj</span> <span class="o">=</span> <span class="n">dc</span><span class="o">.</span><span class="n">mt</span><span class="o">.</span><span class="n">ulm</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">de_data</span><span class="p">,</span> <span class="n">net</span><span class="o">=</span><span class="n">progeny</span><span class="p">)</span>
+
+<span class="c1"># Filter by sign padj</span>
+<span class="n">msk</span> <span class="o">=</span> <span class="p">(</span><span class="n">pw_padj</span><span class="o">.</span><span class="n">T</span> <span class="o">&lt;</span> <span class="mf">0.05</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="n">pw_acts</span> <span class="o">=</span> <span class="n">pw_acts</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">msk</span><span class="p">]</span>
+
+<span class="n">pw_acts</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Androgen</th>
+      <th>EGFR</th>
+      <th>Estrogen</th>
+      <th>Hypoxia</th>
+      <th>JAK-STAT</th>
+      <th>MAPK</th>
+      <th>NFkB</th>
+      <th>PI3K</th>
+      <th>TGFb</th>
+      <th>TNFa</th>
+      <th>VEGF</th>
+      <th>p53</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>treatment.vs.control</th>
+      <td>4.784375</td>
+      <td>17.220881</td>
+      <td>11.01434</td>
+      <td>5.69894</td>
+      <td>-14.308169</td>
+      <td>25.560896</td>
+      <td>-10.195328</td>
+      <td>24.644391</td>
+      <td>59.32932</td>
+      <td>-9.129273</td>
+      <td>11.437564</td>
+      <td>-12.589745</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">barplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">pw_acts</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;treatment.vs.control&quot;</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/2cf50048be85c256034a32f66c5bfadae711f411a476c04560af44aa5a28c7b9.png" src="../_images/2cf50048be85c256034a32f66c5bfadae711f411a476c04560af44aa5a28c7b9.png" />
+</div>
+</div>
+<p>We can see that the TGFb pathway is predicted to be stimulated, using the observed downstream changes in gene expression. Now that we have this info, we can bias the networks towards the selection of signalling proteins in that pathway. We can check first the up/down genes in that pathway using the PROGENy network:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">source_targets</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">results_df</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;stat&quot;</span><span class="p">,</span> <span class="n">net</span><span class="o">=</span><span class="n">progeny</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;TGFb&quot;</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/59bd9c7ee19f3f70180b948962cae58516b15cb27e3a6a70a76865180cff9ddf.png" src="../_images/59bd9c7ee19f3f70180b948962cae58516b15cb27e3a6a70a76865180cff9ddf.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_progeny_with_de</span> <span class="o">=</span> <span class="n">progeny</span><span class="p">[(</span><span class="n">progeny</span><span class="o">.</span><span class="n">source</span> <span class="o">==</span> <span class="s2">&quot;TGFb&quot;</span><span class="p">)]</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;target&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">results_df</span><span class="p">,</span> <span class="n">rsuffix</span><span class="o">=</span><span class="s2">&quot;_deseq&quot;</span><span class="p">)</span>
+<span class="n">df_progeny_with_de</span> <span class="o">=</span> <span class="n">df_progeny_with_de</span><span class="p">[(</span><span class="n">df_progeny_with_de</span><span class="o">.</span><span class="n">padj_deseq</span> <span class="o">&lt;=</span> <span class="mf">1e-2</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">df_progeny_with_de</span><span class="o">.</span><span class="n">padj</span> <span class="o">&lt;=</span> <span class="mf">1e-2</span><span class="p">)]</span>
+
+<span class="c1"># We remove the TFs, we keep only unscored nodes in the network</span>
+<span class="n">df_progeny_with_de</span> <span class="o">=</span> <span class="n">df_progeny_with_de</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df_progeny_with_de</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">tf_acts</span><span class="o">.</span><span class="n">columns</span><span class="p">)]</span>
+<span class="c1"># We will calculate an score of importance, based on the weight from progeny PKN (the coefficient of importance)</span>
+<span class="c1"># and the stat from DESeq2 for that gene in our dataset</span>
+<span class="n">df_progeny_with_de</span><span class="p">[</span><span class="s2">&quot;score&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_progeny_with_de</span><span class="p">[</span><span class="s2">&quot;weight&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span> <span class="o">*</span> <span class="n">df_progeny_with_de</span><span class="p">[</span><span class="s2">&quot;stat&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span>
+<span class="n">df_progeny_with_de</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>source</th>
+      <th>weight</th>
+      <th>padj</th>
+      <th>baseMean</th>
+      <th>log2FoldChange</th>
+      <th>lfcSE</th>
+      <th>stat</th>
+      <th>pvalue</th>
+      <th>padj_deseq</th>
+      <th>score</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>ABCA6</th>
+      <td>TGFb</td>
+      <td>-3.271537</td>
+      <td>3.259776e-08</td>
+      <td>21.312146</td>
+      <td>-3.113671</td>
+      <td>0.577035</td>
+      <td>-5.395978</td>
+      <td>6.815130e-08</td>
+      <td>4.058705e-07</td>
+      <td>17.653141</td>
+    </tr>
+    <tr>
+      <th>ABCA8</th>
+      <td>TGFb</td>
+      <td>-1.709245</td>
+      <td>9.264710e-08</td>
+      <td>1241.936380</td>
+      <td>-2.025544</td>
+      <td>0.110001</td>
+      <td>-18.413859</td>
+      <td>1.017102e-75</td>
+      <td>6.681365e-74</td>
+      <td>31.473798</td>
+    </tr>
+    <tr>
+      <th>ABL1</th>
+      <td>TGFb</td>
+      <td>1.417354</td>
+      <td>6.789650e-03</td>
+      <td>11992.405040</td>
+      <td>0.654017</td>
+      <td>0.077665</td>
+      <td>8.421013</td>
+      <td>3.732418e-17</td>
+      <td>4.470195e-16</td>
+      <td>11.935557</td>
+    </tr>
+    <tr>
+      <th>ACOX1</th>
+      <td>TGFb</td>
+      <td>1.248375</td>
+      <td>1.198791e-04</td>
+      <td>1932.465662</td>
+      <td>0.501733</td>
+      <td>0.090449</td>
+      <td>5.547157</td>
+      <td>2.903517e-08</td>
+      <td>1.797196e-07</td>
+      <td>6.924934</td>
+    </tr>
+    <tr>
+      <th>ACOX3</th>
+      <td>TGFb</td>
+      <td>2.721529</td>
+      <td>3.738116e-09</td>
+      <td>1298.226294</td>
+      <td>1.249147</td>
+      <td>0.089501</td>
+      <td>13.956818</td>
+      <td>2.859170e-44</td>
+      <td>9.070311e-43</td>
+      <td>37.983882</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>ZMIZ1</th>
+      <td>TGFb</td>
+      <td>1.957381</td>
+      <td>6.461094e-05</td>
+      <td>7721.447043</td>
+      <td>0.596702</td>
+      <td>0.085546</td>
+      <td>6.975202</td>
+      <td>3.054313e-12</td>
+      <td>2.685428e-11</td>
+      <td>13.653126</td>
+    </tr>
+    <tr>
+      <th>ZNF281</th>
+      <td>TGFb</td>
+      <td>1.989687</td>
+      <td>3.593457e-04</td>
+      <td>2098.460557</td>
+      <td>0.586130</td>
+      <td>0.094963</td>
+      <td>6.172166</td>
+      <td>6.736069e-10</td>
+      <td>4.833421e-09</td>
+      <td>12.280681</td>
+    </tr>
+    <tr>
+      <th>ZNF365</th>
+      <td>TGFb</td>
+      <td>1.237670</td>
+      <td>4.895429e-03</td>
+      <td>719.298471</td>
+      <td>2.121362</td>
+      <td>0.124407</td>
+      <td>17.051793</td>
+      <td>3.389758e-65</td>
+      <td>1.797124e-63</td>
+      <td>21.104492</td>
+    </tr>
+    <tr>
+      <th>ZNF48</th>
+      <td>TGFb</td>
+      <td>1.745462</td>
+      <td>1.500992e-05</td>
+      <td>638.023400</td>
+      <td>0.728684</td>
+      <td>0.105677</td>
+      <td>6.895368</td>
+      <td>5.372537e-12</td>
+      <td>4.650319e-11</td>
+      <td>12.035601</td>
+    </tr>
+    <tr>
+      <th>ZNF592</th>
+      <td>TGFb</td>
+      <td>0.740719</td>
+      <td>5.914911e-03</td>
+      <td>1654.348595</td>
+      <td>0.258427</td>
+      <td>0.088101</td>
+      <td>2.933306</td>
+      <td>3.353729e-03</td>
+      <td>9.545039e-03</td>
+      <td>2.172756</td>
+    </tr>
+  </tbody>
+</table>
+<p>600 rows × 10 columns</p>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We will favor now the inclusion of these genes. We will</span>
+<span class="c1"># increase lambda to get smaller networks for interpretation, and</span>
+<span class="c1"># we will use a large penalty for indirect rules.</span>
+<span class="n">carnival</span> <span class="o">=</span> <span class="n">CarnivalFlow</span><span class="p">(</span><span class="n">lambda_reg</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">indirect_rule_penalty</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">P</span> <span class="o">=</span> <span class="n">carnival</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Unreachable vertices for sample: 0
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We need to select the subset of genes in the processed graph, since after building carnival using the</span>
+<span class="c1"># inputs (receptors) and TFs, the processed graph is pruned (unreachable genes removed) and thus many</span>
+<span class="c1"># of the genes we want to score are not anymore in the graph</span>
+<span class="n">tgfb_genes</span> <span class="o">=</span> <span class="n">df_progeny_with_de</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">carnival</span><span class="o">.</span><span class="n">processed_graph</span><span class="o">.</span><span class="n">V</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+<span class="nb">len</span><span class="p">(</span><span class="n">tgfb_genes</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>45
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We can visualize only the genes in the pruned PKN that carnival will use</span>
+<span class="c1"># NOTE: The processed graph is the pruned PKN containing all interactions</span>
+<span class="c1"># connecting the selected receptors to TFs, before inferring the signalling</span>
+<span class="c1"># networks</span>
+<span class="n">dc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">source_targets</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">results_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">tgfb_genes</span><span class="p">],</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;stat&quot;</span><span class="p">,</span> <span class="n">net</span><span class="o">=</span><span class="n">progeny</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;TGFb&quot;</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/6902e78e030e16697622e671876a088a8a08fe0b81269c4e06e7654eed782868.png" src="../_images/6902e78e030e16697622e671876a088a8a08fe0b81269c4e06e7654eed782868.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">df_progeny_with_de</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">tgfb_genes</span><span class="p">,</span> <span class="s2">&quot;score&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">&quot;Importance scores of PROGENY TGFb genes for the given dataset&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/4702995f86e158e5fca583cf58cc1afeb6e0a562c9d82ea388030ee79c35e152.png" src="../_images/4702995f86e158e5fca583cf58cc1afeb6e0a562c9d82ea388030ee79c35e152.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Scale factor for influence in the overall CARNIVAL obj function</span>
+<span class="n">influence_factor</span> <span class="o">=</span> <span class="mf">0.1</span>
+
+<span class="c1"># Create the custom obj function to include in CARNIVAL</span>
+<span class="n">vertex_scores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">carnival</span><span class="o">.</span><span class="n">processed_graph</span><span class="o">.</span><span class="n">V</span><span class="p">))</span>
+<span class="n">vertex_selected_var</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">vertex_activated</span> <span class="o">+</span> <span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">vertex_inhibited</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">carnival</span><span class="o">.</span><span class="n">processed_graph</span><span class="o">.</span><span class="n">V</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">tgfb_genes</span><span class="p">:</span>
+        <span class="n">score</span> <span class="o">=</span> <span class="n">df_progeny_with_de</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">v</span><span class="p">]</span><span class="o">.</span><span class="n">score</span>
+        <span class="n">vertex_scores</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">score</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">score</span><span class="p">)</span>
+
+<span class="c1"># The objective is just c^T @ penalties</span>
+<span class="n">obj</span> <span class="o">=</span> <span class="n">vertex_selected_var</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">vertex_scores</span>
+
+<span class="c1"># We add a negative weight to maximize selection</span>
+<span class="n">P</span><span class="o">.</span><span class="n">add_objective</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;progeny_genes_score&quot;</span><span class="p">,</span> <span class="n">weight</span><span class="o">=-</span><span class="n">influence_factor</span><span class="p">)</span>
+<span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;highs&quot;</span><span class="p">,</span> <span class="n">max_seconds</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">1</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>21 NRAS 9.055651210075709
+25 GNAI1 19.972682422333143
+27 RAC2 25.75672169584716
+44 STK38L 71.06848321367565
+84 TGFBR1 19.78318967446914
+101 CDH2 112.81029585047202
+126 MAP3K4 18.633117866454263
+148 SMURF1 5.687767369319471
+189 SMAD9 29.108495622484853
+208 CAMKK1 9.853578482249983
+224 KIT 60.51896993721089
+287 RARA 10.473371785649258
+288 ULK1 16.78905409561297
+295 HES1 27.774456156272613
+314 UBE3A 4.198015442492376
+324 SH3PXD2A 90.03028888776223
+327 NOTCH2 6.0877870556111855
+335 IGF1 29.197953109742727
+370 NCOR2 5.253273919130532
+412 ZMIZ1 13.653126134909561
+434 RARG 4.459674733843175
+438 IL13RA1 7.412771495771951
+470 SPRY1 16.340142523123966
+480 TSHZ3 10.746459209540498
+533 HBEGF 25.871592750755017
+538 LMNA 4.330586475862753
+556 CDC25B 24.899175740820784
+608 SHC3 11.348956411416047
+643 DVL1 8.484789724643731
+672 NRBF2 31.751626499871815
+700 FN1 103.98952712958402
+715 SMAD7 117.45746080491878
+730 TGFBR2 45.037266815474084
+749 SKI 9.483452356595494
+758 GRB10 10.21623996260473
+828 BDKRB2 28.78488734209394
+881 AKT3 10.323123896941524
+883 TGFB1 34.09092982693877
+885 MAP3K5 46.20501733040189
+919 KSR1 8.971244710059793
+922 BMPR2 36.36346180289949
+927 OXTR 57.57638716147753
+937 FERMT2 57.35922796009637
+940 ABL1 11.93555671963558
+942 NUAK1 247.3297776135959
+===============================================================================
+                                     CVXPY                                     
+                                     v1.6.5                                    
+===============================================================================
+(CVXPY) Jun 11 06:19:42 PM: Your problem has 10784 variables, 30852 constraints, and 1 parameters.
+(CVXPY) Jun 11 06:19:42 PM: It is compliant with the following grammars: DCP, DQCP
+(CVXPY) Jun 11 06:19:42 PM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
+(CVXPY) Jun 11 06:19:42 PM: Your problem is compiled with the CPP canonicalization backend.
+-------------------------------------------------------------------------------
+                                  Compilation                                  
+-------------------------------------------------------------------------------
+(CVXPY) Jun 11 06:19:42 PM: Compiling problem (target solver=HIGHS).
+(CVXPY) Jun 11 06:19:42 PM: Reduction chain: Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; HIGHS
+(CVXPY) Jun 11 06:19:42 PM: Applying reduction Dcp2Cone
+(CVXPY) Jun 11 06:19:42 PM: Applying reduction CvxAttr2Constr
+(CVXPY) Jun 11 06:19:42 PM: Applying reduction ConeMatrixStuffing
+(CVXPY) Jun 11 06:19:42 PM: Applying reduction HIGHS
+(CVXPY) Jun 11 06:19:42 PM: Finished problem compilation (took 6.605e-02 seconds).
+(CVXPY) Jun 11 06:19:42 PM: (Subsequent compilations of this problem, using the same arguments, should take less time.)
+-------------------------------------------------------------------------------
+                                Numerical solver                               
+-------------------------------------------------------------------------------
+(CVXPY) Jun 11 06:19:42 PM: Invoking solver HIGHS  to obtain a solution.
+Running HiGHS 1.11.0 (git hash: 364c83a): Copyright (c) 2025 HiGHS under MIT licence terms
+MIP  has 30852 rows; 10784 cols; 108719 nonzeros; 6558 integer variables (6558 binary)
+Coefficient ranges:
+  Matrix [1e+00, 9e+02]
+  Cost   [1e-02, 2e+01]
+  Bound  [1e+00, 1e+00]
+  RHS    [1e+00, 1e+03]
+Presolving model
+17921 rows, 10381 cols, 91785 nonzeros  0s
+13093 rows, 9239 cols, 70459 nonzeros  0s
+12721 rows, 9164 cols, 70013 nonzeros  0s
+
+Solving MIP model with:
+   12721 rows
+   9164 cols (5762 binary, 0 integer, 0 implied int., 3402 continuous, 0 domain fixed)
+   70013 nonzeros
+
+Src: B =&gt; Branching; C =&gt; Central rounding; F =&gt; Feasibility pump; J =&gt; Feasibility jump;
+     H =&gt; Heuristic; L =&gt; Sub-MIP; P =&gt; Empty MIP; R =&gt; Randomized rounding; Z =&gt; ZI Round;
+     I =&gt; Shifting; S =&gt; Solve LP; T =&gt; Evaluate node; U =&gt; Unbounded; X =&gt; User solution;
+     z =&gt; Trivial zero; l =&gt; Trivial lower; u =&gt; Trivial upper; p =&gt; Trivial point
+
+        Nodes      |    B&amp;B Tree     |            Objective Bounds              |  Dynamic Constraints |       Work      
+Src  Proc. InQueue |  Leaves   Expl. | BestBound       BestSol              Gap |   Cuts   InLp Confl. | LpIters     Time
+
+ J       0       0         0   0.00%   -inf            0                  Large        0      0      0         0     0.4s
+         0       0         0   0.00%   -117.3104258    0                  Large        0      0      0      1299     0.5s
+ C       0       0         0   0.00%   -113.9766863    -16.59196353     586.94%      568     24      0      1571     1.6s
+ L       0       0         0   0.00%   -113.5162162    -113.5162162       0.00%      841     49      0      1753     2.4s
+         1       0         1 100.00%   -113.5162162    -113.5162162       0.00%      841     49      0      2589     2.4s
+
+Solving report
+  Status            Optimal
+  Primal bound      -113.51621621
+  Dual bound        -113.51621621
+  Gap               0% (tolerance: 0.01%)
+  P-D integral      4.86057835395
+  Solution status   feasible
+                    -113.51621621 (objective)
+                    0 (bound viol.)
+                    0 (int. viol.)
+                    0 (row viol.)
+  Timing            2.39 (total)
+                    0.00 (presolve)
+                    0.00 (solve)
+                    0.00 (postsolve)
+  Max sub-MIP depth 2
+  Nodes             1
+  Repair LPs        0 (0 feasible; 0 iterations)
+  LP iterations     2589 (total)
+                    0 (strong br.)
+                    454 (separation)
+                    836 (heuristics)
+-------------------------------------------------------------------------------
+                                    Summary                                    
+-------------------------------------------------------------------------------
+(CVXPY) Jun 11 06:19:44 PM: Problem status: optimal
+(CVXPY) Jun 11 06:19:44 PM: Optimal value: 9.865e+00
+(CVXPY) Jun 11 06:19:44 PM: Compilation took 6.605e-02 seconds
+(CVXPY) Jun 11 06:19:44 PM: Solver (including time spent in interface) took 2.406e+00 seconds
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">P</span><span class="o">.</span><span class="n">objectives</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">o</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>error_sample1_0 32.97458407452457
+penalty_indirect_rules_0 [8.]
+regularization_edge_has_signal 59.0
+progeny_genes_score [1196.09205661]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sol_edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">edge_value</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">)</span>
+<span class="n">carnival</span><span class="o">.</span><span class="n">processed_graph</span><span class="o">.</span><span class="n">plot_values</span><span class="p">(</span>
+    <span class="n">vertex_values</span><span class="o">=</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">vertex_value</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+    <span class="n">edge_values</span><span class="o">=</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">edge_value</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+    <span class="n">edge_indexes</span><span class="o">=</span><span class="n">sol_edges</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/11df107bb031e48f480da8287b6c92d653cca5c6963ae6d9669377a80eab76fc.svg" src="../_images/11df107bb031e48f480da8287b6c92d653cca5c6963ae6d9669377a80eab76fc.svg" />
+</div>
+</div>
+</section>
+<section id="advanced">
+<h2>Advanced<a class="headerlink" href="#advanced" title="Link to this heading">#</a></h2>
+<p>Finally, we will combine CVXPY with CORNETO to add a custom objective function that uses the <code class="docutils literal notranslate"><span class="pre">cvxpy.max</span></code> to penalize the depth of the vertex in the trees. Penalizing the depth will increase the number of different receptors used indirectly.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">cvxpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cp</span>
+
+<span class="n">carnival</span> <span class="o">=</span> <span class="n">CarnivalFlow</span><span class="p">(</span><span class="n">lambda_reg</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">indirect_rule_penalty</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">P</span> <span class="o">=</span> <span class="n">carnival</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+<span class="n">P</span><span class="o">.</span><span class="n">add_objective</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;progeny_genes_score&quot;</span><span class="p">,</span> <span class="n">weight</span><span class="o">=-</span><span class="n">influence_factor</span><span class="p">)</span>
+<span class="n">P</span><span class="o">.</span><span class="n">add_objective</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">vertex_max_depth</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">cp</span><span class="o">.</span><span class="n">max</span><span class="p">),</span> <span class="n">weight</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;highs&quot;</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Unreachable vertices for sample: 0
+===============================================================================
+                                     CVXPY                                     
+                                     v1.6.5                                    
+===============================================================================
+(CVXPY) Jun 11 06:19:45 PM: Your problem has 17342 variables, 30852 constraints, and 1 parameters.
+(CVXPY) Jun 11 06:19:45 PM: It is compliant with the following grammars: DCP, DQCP
+(CVXPY) Jun 11 06:19:45 PM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
+(CVXPY) Jun 11 06:19:45 PM: Your problem is compiled with the CPP canonicalization backend.
+-------------------------------------------------------------------------------
+                                  Compilation                                  
+-------------------------------------------------------------------------------
+(CVXPY) Jun 11 06:19:45 PM: Compiling problem (target solver=HIGHS).
+(CVXPY) Jun 11 06:19:45 PM: Reduction chain: Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; HIGHS
+(CVXPY) Jun 11 06:19:45 PM: Applying reduction Dcp2Cone
+(CVXPY) Jun 11 06:19:45 PM: Applying reduction CvxAttr2Constr
+(CVXPY) Jun 11 06:19:45 PM: Applying reduction ConeMatrixStuffing
+(CVXPY) Jun 11 06:19:45 PM: Applying reduction HIGHS
+(CVXPY) Jun 11 06:19:45 PM: Finished problem compilation (took 7.298e-02 seconds).
+(CVXPY) Jun 11 06:19:45 PM: (Subsequent compilations of this problem, using the same arguments, should take less time.)
+-------------------------------------------------------------------------------
+                                Numerical solver                               
+-------------------------------------------------------------------------------
+(CVXPY) Jun 11 06:19:45 PM: Invoking solver HIGHS  to obtain a solution.
+Running HiGHS 1.11.0 (git hash: 364c83a): Copyright (c) 2025 HiGHS under MIT licence terms
+MIP  has 31799 rows; 17343 cols; 110613 nonzeros; 13116 integer variables (13116 binary)
+Coefficient ranges:
+  Matrix [1e+00, 9e+02]
+  Cost   [1e-01, 2e+01]
+  Bound  [1e+00, 1e+00]
+  RHS    [1e+00, 1e+03]
+Presolving model
+18862 rows, 10395 cols, 93709 nonzeros  0s
+13892 rows, 9200 cols, 71597 nonzeros  0s
+13441 rows, 9121 cols, 71009 nonzeros  0s
+
+Solving MIP model with:
+   13441 rows
+   9121 cols (5690 binary, 0 integer, 0 implied int., 3431 continuous, 0 domain fixed)
+   71009 nonzeros
+
+Src: B =&gt; Branching; C =&gt; Central rounding; F =&gt; Feasibility pump; J =&gt; Feasibility jump;
+     H =&gt; Heuristic; L =&gt; Sub-MIP; P =&gt; Empty MIP; R =&gt; Randomized rounding; Z =&gt; ZI Round;
+     I =&gt; Shifting; S =&gt; Solve LP; T =&gt; Evaluate node; U =&gt; Unbounded; X =&gt; User solution;
+     z =&gt; Trivial zero; l =&gt; Trivial lower; u =&gt; Trivial upper; p =&gt; Trivial point
+
+        Nodes      |    B&amp;B Tree     |            Objective Bounds              |  Dynamic Constraints |       Work      
+Src  Proc. InQueue |  Leaves   Expl. | BestBound       BestSol              Gap |   Cuts   InLp Confl. | LpIters     Time
+
+ J       0       0         0   0.00%   -inf            -908.2539388       Large        0      0      0         0     0.4s
+         0       0         0   0.00%   -980.5254038    -908.2539388       7.96%        0      0      0      1121     0.5s
+ C       0       0         0   0.00%   -974.7403867    -941.8118251       3.50%      523     89      0      1403     1.4s
+ L       0       0         0 100.00%   -974.7403867    -974.7403867       0.00%      892     59      0      1957     2.0s
+         1       0         1 100.00%   -974.7403867    -974.7403867       0.00%      892     59      0      2666     2.0s
+
+Solving report
+  Status            Optimal
+  Primal bound      -974.740386722
+  Dual bound        -974.740386722
+  Gap               0% (tolerance: 0.01%)
+  P-D integral      0.0936236829513
+  Solution status   feasible
+                    -974.740386722 (objective)
+                    0 (bound viol.)
+                    0 (int. viol.)
+                    0 (row viol.)
+  Timing            2.04 (total)
+                    0.00 (presolve)
+                    0.00 (solve)
+                    0.00 (postsolve)
+  Max sub-MIP depth 1
+  Nodes             1
+  Repair LPs        0 (0 feasible; 0 iterations)
+  LP iterations     2666 (total)
+                    0 (strong br.)
+                    836 (separation)
+                    709 (heuristics)
+-------------------------------------------------------------------------------
+                                    Summary                                    
+-------------------------------------------------------------------------------
+(CVXPY) Jun 11 06:19:47 PM: Problem status: optimal
+(CVXPY) Jun 11 06:19:47 PM: Optimal value: -8.514e+02
+(CVXPY) Jun 11 06:19:47 PM: Compilation took 7.298e-02 seconds
+(CVXPY) Jun 11 06:19:47 PM: Solver (including time spent in interface) took 2.060e+00 seconds
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Problem(Minimize(Expression(CONVEX, UNKNOWN, (1,))), [Inequality(Constant(CONSTANT, ZERO, (3279,))), Inequality(Variable((3279,), _flow)), Inequality(Constant(CONSTANT, ZERO, (947, 1))), Inequality(Variable((947, 1), _dag_layer)), Equality(Expression(AFFINE, UNKNOWN, (947,)), Constant(CONSTANT, ZERO, ())), Inequality(Expression(AFFINE, NONNEGATIVE, (3279, 1))), Inequality(Expression(AFFINE, NONNEGATIVE, (947, 1))), Inequality(Expression(AFFINE, UNKNOWN, (3247,))), Inequality(Expression(AFFINE, UNKNOWN, (3247,))), Inequality(Constant(CONSTANT, NONNEGATIVE, (912,))), Inequality(Expression(AFFINE, NONNEGATIVE, (3279, 1))), Inequality(Expression(AFFINE, NONNEGATIVE, (3271, 1))), Inequality(Expression(AFFINE, NONNEGATIVE, (3271, 1)))])
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">P</span><span class="o">.</span><span class="n">objectives</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">o</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>error_sample1_0 56.895146658866466
+penalty_indirect_rules_0 [0.]
+regularization_edge_has_signal 42.0
+progeny_genes_score [9094.53938757]
+ 12.0
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sol_edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">edge_value</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">)</span>
+<span class="n">carnival</span><span class="o">.</span><span class="n">processed_graph</span><span class="o">.</span><span class="n">plot_values</span><span class="p">(</span>
+    <span class="n">vertex_values</span><span class="o">=</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">vertex_value</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+    <span class="n">edge_values</span><span class="o">=</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">edge_value</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+    <span class="n">edge_indexes</span><span class="o">=</span><span class="n">sol_edges</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/3f8da1ddfd28c96b8f1aae7c0feab7a399c4ffceb4b1622506cc89488540b273.svg" src="../_images/3f8da1ddfd28c96b8f1aae7c0feab7a399c4ffceb4b1622506cc89488540b273.svg" />
 </div>
 </div>
 </section>
@@ -2606,6 +3575,7 @@ Solving report
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto._data</span><span class="w"> </span><span class="kn">import</span> <span class="n">GraphData</span>
+
 <span class="n">GraphData</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;carnival_transcriptomics_dataset&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -2664,7 +3634,11 @@ Solving report
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-preprocessing">Data preprocessing</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prior-knowledge-with-decoupler-and-omnipath">Prior knowledge with Decoupler and Omnipath</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inferring-intracellular-signalling-network-with-carnival-and-corneto">Inferring intracellular signalling network with CARNIVAL and CORNETO</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#carnival">CARNIVAL</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#changing-modelling-assumptions">Changing modelling assumptions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#other-options">Other options</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-information-from-progeny">Using information from PROGENy</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#advanced">Advanced</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#saving-the-processed-dataset">Saving the processed dataset</a></li>
 </ul>
   </nav></div>

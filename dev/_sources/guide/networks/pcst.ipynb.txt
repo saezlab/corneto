@@ -55,14 +55,16 @@
     }
    ],
    "source": [
+    "import random\n",
+    "\n",
     "import matplotlib.pyplot as plt\n",
-    "import corneto as cn\n",
     "import networkx as nx\n",
     "import numpy as np\n",
-    "import random\n",
     "\n",
     "# https://github.com/fraenkel-lab/pcst_fast\n",
     "import pcst_fast\n",
+    "\n",
+    "import corneto as cn\n",
     "\n",
     "random.seed(0)\n",
     "\n",
@@ -77,8 +79,7 @@
    "outputs": [],
    "source": [
     "def generate_random_graph(num_nodes=100, probability=0.1, num_terminals=10, num_prized=10, prize_range=(1, 50)):\n",
-    "    \"\"\"\n",
-    "    Generates a random weighted graph using the Erdős-Rényi model,\n",
+    "    \"\"\"Generates a random weighted graph using the Erdős-Rényi model,\n",
     "    assigns random weights to edges, random terminal nodes, and random prizes to a subset of nodes.\n",
     "\n",
     "    Returns:\n",
@@ -88,25 +89,24 @@
     "\n",
     "    # Assign edge weights\n",
     "    for u, v in G.edges():\n",
-    "        G[u][v]['value'] = random.uniform(1, 10)\n",
+    "        G[u][v][\"value\"] = random.uniform(1, 10)\n",
     "\n",
     "    # Random terminal nodes\n",
     "    terminals = random.sample(list(G.nodes()), min(num_terminals, G.number_of_nodes()))\n",
     "    for node in G.nodes():\n",
-    "        G.nodes[node]['terminal'] = node in terminals\n",
+    "        G.nodes[node][\"terminal\"] = node in terminals\n",
     "\n",
     "    # Random prized nodes\n",
     "    available_nodes = list(set(G.nodes()) - set(terminals))\n",
     "    prized_nodes = random.sample(available_nodes, min(num_prized, len(available_nodes)))\n",
     "    for node in prized_nodes:\n",
-    "        G.nodes[node]['prize'] = random.uniform(*prize_range)\n",
+    "        G.nodes[node][\"prize\"] = random.uniform(*prize_range)\n",
     "\n",
     "    return G\n",
     "\n",
     "\n",
-    "def solve_pcst_with_pcst_fast(G, root=-1, num_clusters=1, pruning='gw', verbosity=0):\n",
-    "    \"\"\"\n",
-    "    Solves the PCST problem on a NetworkX graph using pcst_fast from:\n",
+    "def solve_pcst_with_pcst_fast(G, root=-1, num_clusters=1, pruning=\"gw\", verbosity=0):\n",
+    "    \"\"\"Solves the PCST problem on a NetworkX graph using pcst_fast from:\n",
     "    https://github.com/fraenkel-lab/pcst_fast\n",
     "\n",
     "    Args:\n",
@@ -128,27 +128,21 @@
     "    edge_costs = []\n",
     "    for u, v, data in G.edges(data=True):\n",
     "        edge_list.append([node_index_map[u], node_index_map[v]])\n",
-    "        edge_costs.append(data['value'])\n",
+    "        edge_costs.append(data[\"value\"])\n",
     "\n",
-    "    prizes = np.array([G.nodes[node].get('prize', 0) for node in node_list], dtype=np.float64)\n",
+    "    prizes = np.array([G.nodes[node].get(\"prize\", 0) for node in node_list], dtype=np.float64)\n",
     "\n",
     "    edges_array = np.array(edge_list, dtype=np.int64)\n",
     "    costs_array = np.array(edge_costs, dtype=np.float64)\n",
     "\n",
     "    vertices_out, edges_out = pcst_fast.pcst_fast(\n",
-    "        edges_array,\n",
-    "        prizes,\n",
-    "        costs_array,\n",
-    "        root,\n",
-    "        num_clusters,\n",
-    "        pruning,\n",
-    "        verbosity\n",
+    "        edges_array, prizes, costs_array, root, num_clusters, pruning, verbosity\n",
     "    )\n",
     "\n",
     "    selected_nodes = [index_node_map[i] for i in vertices_out]\n",
     "    selected_edges = [tuple(node_list[idx] for idx in edge_list[i]) for i in edges_out]\n",
     "\n",
-    "    return selected_nodes, selected_edges\n"
+    "    return selected_nodes, selected_edges"
    ]
   },
   {
@@ -195,21 +189,21 @@
    ],
    "source": [
     "def compute_pcst_cost(G, selected_nodes, selected_edges):\n",
-    "    \"\"\"\n",
-    "    Calculates the cost components and total PCST objective value.\n",
-    "    \n",
+    "    \"\"\"Calculates the cost components and total PCST objective value.\n",
+    "\n",
     "    Returns:\n",
     "        dict with 'edge_cost', 'prize_collected', and 'objective'\n",
     "    \"\"\"\n",
-    "    edge_cost = sum(G[u][v]['value'] for u, v in selected_edges)\n",
-    "    prize_collected = sum(G.nodes[n]['prize'] for n in selected_nodes if 'prize' in G.nodes[n])\n",
+    "    edge_cost = sum(G[u][v][\"value\"] for u, v in selected_edges)\n",
+    "    prize_collected = sum(G.nodes[n][\"prize\"] for n in selected_nodes if \"prize\" in G.nodes[n])\n",
     "    objective = edge_cost - prize_collected\n",
     "\n",
     "    return {\n",
-    "        'edge_cost': edge_cost,\n",
-    "        'prize_collected': prize_collected,\n",
-    "        'objective': objective\n",
+    "        \"edge_cost\": edge_cost,\n",
+    "        \"prize_collected\": prize_collected,\n",
+    "        \"objective\": objective,\n",
     "    }\n",
+    "\n",
     "\n",
     "def visualize(G, selected_nodes, selected_edges):\n",
     "    pos = nx.forceatlas2_layout(G, dissuade_hubs=False, seed=42)\n",
@@ -217,21 +211,29 @@
     "    plt.figure(figsize=(8, 8))\n",
     "\n",
     "    # Base layer: faint background graph\n",
-    "    nx.draw_networkx_edges(G, pos, alpha=0.5, width=0.5, edge_color='lightgray')\n",
-    "    nx.draw_networkx_nodes(G, pos, node_size=20, node_color='lightgray', alpha=0.3)\n",
+    "    nx.draw_networkx_edges(G, pos, alpha=0.5, width=0.5, edge_color=\"lightgray\")\n",
+    "    nx.draw_networkx_nodes(G, pos, node_size=20, node_color=\"lightgray\", alpha=0.3)\n",
     "\n",
     "    # Selected edges (solution)\n",
-    "    nx.draw_networkx_edges(G, pos, edgelist=selected_edges, width=2.5, edge_color='#007acc', alpha=0.9)\n",
+    "    nx.draw_networkx_edges(G, pos, edgelist=selected_edges, width=2.5, edge_color=\"#007acc\", alpha=0.9)\n",
     "\n",
     "    # Selected nodes (solution)\n",
-    "    nx.draw_networkx_nodes(G, pos, nodelist=selected_nodes, node_size=150, node_color='#d62728', edgecolors='white', linewidths=0.8)\n",
+    "    nx.draw_networkx_nodes(\n",
+    "        G,\n",
+    "        pos,\n",
+    "        nodelist=selected_nodes,\n",
+    "        node_size=150,\n",
+    "        node_color=\"#d62728\",\n",
+    "        edgecolors=\"white\",\n",
+    "        linewidths=0.8,\n",
+    "    )\n",
     "\n",
     "    # Optional: add labels or prizes\n",
     "    node_labels = {n: f\"{(G.nodes[n].get('prize', 0)):.2f}\" for n in selected_nodes}\n",
-    "    nx.draw_networkx_labels(G, pos, labels=node_labels, font_size=8, font_color='black')\n",
+    "    nx.draw_networkx_labels(G, pos, labels=node_labels, font_size=8, font_color=\"black\")\n",
     "\n",
-    "    plt.title(\"PCST Solution\", fontsize=16, fontweight='bold', pad=15)\n",
-    "    plt.axis('off')\n",
+    "    plt.title(\"PCST Solution\", fontsize=16, fontweight=\"bold\", pad=15)\n",
+    "    plt.axis(\"off\")\n",
     "    plt.tight_layout()\n",
     "    plt.show()\n",
     "\n",
@@ -282,9 +284,8 @@
    ],
    "source": [
     "def plot_tree_from_edges(selected_edges):\n",
-    "    \"\"\"\n",
-    "    Plots the tree defined by selected_edges using NetworkX.\n",
-    "    \n",
+    "    \"\"\"Plots the tree defined by selected_edges using NetworkX.\n",
+    "\n",
     "    Args:\n",
     "        selected_edges (list of tuple): List of (u, v) edges forming the tree.\n",
     "    \"\"\"\n",
@@ -296,10 +297,17 @@
     "    tree.add_edges_from(selected_edges)\n",
     "\n",
     "    pos = nx.spring_layout(tree, seed=42)  # Nice layout for trees\n",
-    "    nx.draw_networkx(tree, pos, with_labels=True, node_color='lightblue', edge_color='gray', node_size=500)\n",
+    "    nx.draw_networkx(\n",
+    "        tree,\n",
+    "        pos,\n",
+    "        with_labels=True,\n",
+    "        node_color=\"lightblue\",\n",
+    "        edge_color=\"gray\",\n",
+    "        node_size=500,\n",
+    "    )\n",
     "\n",
     "    plt.title(\"PCST Tree\")\n",
-    "    plt.axis('off')\n",
+    "    plt.axis(\"off\")\n",
     "    plt.show()\n",
     "\n",
     "\n",
@@ -324,7 +332,11 @@
     }
    ],
    "source": [
-    "from corneto.contrib.networkx import networkx_to_corneto_graph, corneto_graph_to_networkx\n",
+    "from corneto.contrib.networkx import (\n",
+    "    corneto_graph_to_networkx,\n",
+    "    networkx_to_corneto_graph,\n",
+    ")\n",
+    "\n",
     "Gc = networkx_to_corneto_graph(G)\n",
     "Gc.shape"
    ]
@@ -349,20 +361,22 @@
    "source": [
     "from corneto._data import Data\n",
     "\n",
+    "\n",
     "def get_data(G):\n",
     "    features = []\n",
-    "    \n",
+    "\n",
     "    for i, attr in enumerate(G.get_attr_edges()):\n",
     "        features.append(dict(id=i, mapping=\"edge\", value=attr.value))\n",
     "\n",
     "    for v in G.V:\n",
     "        attr = G.get_attr_vertex(v)\n",
-    "        if attr['terminal'] and not attr.get('prize', None):\n",
+    "        if attr[\"terminal\"] and not attr.get(\"prize\", None):\n",
     "            features.append(dict(id=v, mapping=\"vertex\", role=\"terminal\"))\n",
-    "        elif attr.get('prize', None):\n",
-    "            features.append(dict(id=v, mapping=\"vertex\", role=\"prize\", value=attr['prize']))\n",
+    "        elif attr.get(\"prize\", None):\n",
+    "            features.append(dict(id=v, mapping=\"vertex\", role=\"prize\", value=attr[\"prize\"]))\n",
     "    D = Data.from_dict({\"s1\": {\"features\": features}})\n",
     "    return D\n",
+    "\n",
     "\n",
     "D = get_data(Gc)\n",
     "D"
@@ -408,7 +422,7 @@
    "source": [
     "# We need to modify steiner since it is always enforcing the selection of all prizes, which\n",
     "# are considered terminals\n",
-    "#P.solve(solver=\"gurobi\", IntegralityFocus=1, TimeLimit=120, verbosity=0);\n",
+    "# P.solve(solver=\"gurobi\", IntegralityFocus=1, TimeLimit=120, verbosity=0);\n",
     "P.solve(solver=\"scipy\");"
    ]
   },
@@ -427,7 +441,11 @@
     }
    ],
    "source": [
-    "print(P.objectives[0].value, P.objectives[1].value, P.objectives[0].value - P.objectives[1].value) "
+    "print(\n",
+    "    P.objectives[0].value,\n",
+    "    P.objectives[1].value,\n",
+    "    P.objectives[0].value - P.objectives[1].value,\n",
+    ")"
    ]
   },
   {
@@ -449,7 +467,7 @@
    ],
    "source": [
     "# Corneto recovers an alternative solution with less cost\n",
-    "pcst_fast_result['edge_cost'], P.objectives[0].value"
+    "pcst_fast_result[\"edge_cost\"], P.objectives[0].value"
    ]
   },
   {
@@ -471,7 +489,7 @@
    ],
    "source": [
     "# Total prize is the same for both methods\n",
-    "pcst_fast_result['prize_collected'], P.objectives[1].value"
+    "pcst_fast_result[\"prize_collected\"], P.objectives[1].value"
    ]
   },
   {
@@ -699,7 +717,7 @@
     }
    ],
    "source": [
-    "sol = m.processed_graph.edge_subgraph(np.flatnonzero(P.expr.with_flow.value>0.5))\n",
+    "sol = m.processed_graph.edge_subgraph(np.flatnonzero(P.expr.with_flow.value > 0.5))\n",
     "sol.plot(orphan_edges=True, layout=\"neato\")"
    ]
   },
@@ -764,7 +782,7 @@
     }
    ],
    "source": [
-    "edges = np.flatnonzero(P.expr.with_flow.value>0.5)\n",
+    "edges = np.flatnonzero(P.expr.with_flow.value > 0.5)\n",
     "len(edges)"
    ]
   },
@@ -859,7 +877,7 @@
     }
    ],
    "source": [
-    "#P.solve(solver=\"gurobi\", verbosity=1, TimeLimit=300, NoRelHeurTime=0);\n",
+    "# P.solve(solver=\"gurobi\", verbosity=1, TimeLimit=300, NoRelHeurTime=0);\n",
     "P.solve(solver=\"scipy\")\n",
     "\n",
     "for o in P.objectives:\n",
@@ -1096,7 +1114,7 @@
     }
    ],
    "source": [
-    "sol = m.processed_graph.edge_subgraph(np.flatnonzero(np.abs(P.expr.with_flow.value)>0.5))\n",
+    "sol = m.processed_graph.edge_subgraph(np.flatnonzero(np.abs(P.expr.with_flow.value) > 0.5))\n",
     "sol.plot(orphan_edges=True)"
    ]
   },
@@ -1144,7 +1162,7 @@
     }
    ],
    "source": [
-    "D.samples['s1'].query.select(lambda f: f.mapping==\"vertex\").to_list()"
+    "D.samples[\"s1\"].query.select(lambda f: f.mapping == \"vertex\").to_list()"
    ]
   },
   {
@@ -1416,7 +1434,7 @@
     }
    ],
    "source": [
-    "sol = m.processed_graph.edge_subgraph(np.flatnonzero(np.abs(P.expr.with_flow.value)>0.5))\n",
+    "sol = m.processed_graph.edge_subgraph(np.flatnonzero(np.abs(P.expr.with_flow.value) > 0.5))\n",
     "sol.plot(orphan_edges=True)"
    ]
   },

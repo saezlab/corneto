@@ -33,7 +33,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=5ec6e6de" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=53e23fa6" />
   
   <!-- So that users can add custom icons -->
   <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
@@ -58,7 +58,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = '/switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.0.0.dev16+81550a6';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.0.0.dev37+91f98a8';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
@@ -355,6 +355,9 @@
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Exploring alternative solutions with <span class="math notranslate nohighlight">\(\epsilon\)</span>-perturbation sampling</a></li>
 <li class="toctree-l1"><a class="reference internal" href="kpnn-with-sc.html">Knowledge-primed Neural Networks (KPNNs) for single cell data</a></li>
 </ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="contrib/multi_condition_tutorial/multi_condition_carnival.html">Multi-condition signalling network inference</a></li>
+</ul>
 </div>
 </nav></div>
     </div>
@@ -423,9 +426,10 @@
 </div></blockquote>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">corneto</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cn</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">corneto</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cn</span>
 
 <span class="n">cn</span><span class="o">.</span><span class="n">enable_logging</span><span class="p">()</span>
 <span class="n">cn</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
@@ -441,7 +445,7 @@
             </td>
             <td>
             <table>
-                <tr><td>Installed version:</td><td style='text-align:left'>v1.0.0.dev5 (latest stable: v1.0.0-alpha)</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.6.4, PICOS v2.6.0</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CLARABEL, CVXOPT, GLOP, GLPK, GLPK_MI, GUROBI, HIGHS, OSQP, PDLP, PROXQP, SCIP, SCIPY, SCS</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.3</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/Users/pablorodriguezmier/Documents/work/repos/pablormier/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href=https://github.com/saezlab/corneto>https://github.com/saezlab/corneto</a></td></tr>
+                <tr><td>Installed version:</td><td style='text-align:left'>v1.0.0.dev5</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.6.4, PICOS v2.6.0</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CLARABEL, CVXOPT, GLOP, GLPK, GLPK_MI, GUROBI, HIGHS, OSQP, PDLP, PROXQP, SCIP, SCIPY, SCS</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.3</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/Users/pablorodriguezmier/Documents/work/repos/pablormier/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href=https://github.com/saezlab/corneto>https://github.com/saezlab/corneto</a></td></tr>
             </table>
             </td>
         </tr>
@@ -485,10 +489,10 @@
 <div class="cell_output docutils container">
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_flow&#39;: _flow: Variable((3374,), _flow),
  &#39;edge_activates&#39;: edge_activates: Variable((3374, 1), edge_activates, boolean=True),
- &#39;edge_inhibits&#39;: edge_inhibits: Variable((3374, 1), edge_inhibits, boolean=True),
+ &#39;const0x144be068ae3d485b&#39;: const0x144be068ae3d485b: Constant(CONSTANT, NONNEGATIVE, (970, 3374)),
  &#39;_dag_layer&#39;: _dag_layer: Variable((970, 1), _dag_layer),
- &#39;const0xaefcd818f1bf81&#39;: const0xaefcd818f1bf81: Constant(CONSTANT, NONNEGATIVE, (970, 3374)),
- &#39;const0x5a6e23b34aa6630&#39;: const0x5a6e23b34aa6630: Constant(CONSTANT, NONNEGATIVE, (970, 3374)),
+ &#39;edge_inhibits&#39;: edge_inhibits: Variable((3374, 1), edge_inhibits, boolean=True),
+ &#39;const0x4db7440b66998bb&#39;: const0x4db7440b66998bb: Constant(CONSTANT, NONNEGATIVE, (970, 3374)),
  &#39;flow&#39;: _flow: Variable((3374,), _flow),
  &#39;vertex_value&#39;: Expression(AFFINE, UNKNOWN, (970, 1)),
  &#39;vertex_activated&#39;: Expression(AFFINE, NONNEGATIVE, (970, 1)),
@@ -534,10 +538,7 @@ alternative network topologies where different edges might be selected.</p>
     <span class="n">scale</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span>
     <span class="n">rel_opt_tol</span><span class="o">=</span><span class="mf">0.10</span><span class="p">,</span>
     <span class="n">max_samples</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
-    <span class="n">solver_kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-        <span class="n">solver</span><span class="o">=</span><span class="s2">&quot;gurobi&quot;</span><span class="p">,</span>
-        <span class="n">max_seconds</span><span class="o">=</span><span class="mi">300</span>
-    <span class="p">)</span>
+    <span class="n">solver_kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;gurobi&quot;</span><span class="p">,</span> <span class="n">max_seconds</span><span class="o">=</span><span class="mi">300</span><span class="p">),</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -553,7 +554,7 @@ Academic license - for non-commercial use only - expires 2025-12-02
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;edge_value&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="s2">&quot;edge_value&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
 <span class="n">df_sols</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">edges</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">m</span><span class="o">.</span><span class="n">processed_graph</span><span class="o">.</span><span class="n">E</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Generated </span><span class="si">{</span><span class="n">df_sols</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> alternative solutions&quot;</span><span class="p">)</span>
 <span class="n">df_sols</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
@@ -561,7 +562,7 @@ Academic license - for non-commercial use only - expires 2025-12-02
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Generated 30 alternative solutions
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Generated 31 alternative solutions
 </pre></div>
 </div>
 <div class="output text_html"><div>
@@ -594,7 +595,6 @@ Academic license - for non-commercial use only - expires 2025-12-02
       <th>8</th>
       <th>9</th>
       <th>...</th>
-      <th>20</th>
       <th>21</th>
       <th>22</th>
       <th>23</th>
@@ -604,6 +604,7 @@ Academic license - for non-commercial use only - expires 2025-12-02
       <th>27</th>
       <th>28</th>
       <th>29</th>
+      <th>30</th>
     </tr>
   </thead>
   <tbody>
@@ -734,7 +735,7 @@ Academic license - for non-commercial use only - expires 2025-12-02
     </tr>
   </tbody>
 </table>
-<p>5 rows × 30 columns</p>
+<p>5 rows × 31 columns</p>
 </div></div></div>
 </div>
 <div class="cell docutils container">
@@ -776,304 +777,304 @@ Academic license - for non-commercial use only - expires 2025-12-02
   </thead>
   <tbody>
     <tr>
-      <th>(SMAD3)</th>
-      <th>(CEBPB)</th>
-      <td>-0.766667</td>
-      <td>0.430183</td>
+      <th>(MAPK14)</th>
+      <th>(GSK3B)</th>
+      <td>-0.741935</td>
+      <td>0.444803</td>
     </tr>
     <tr>
-      <th>(CDK1)</th>
-      <th>(CDC25A)</th>
-      <td>-0.700000</td>
-      <td>0.466092</td>
+      <th>(PPP2CA)</th>
+      <th>(PRKCD)</th>
+      <td>-0.709677</td>
+      <td>0.461414</td>
     </tr>
     <tr>
       <th>(JUN)</th>
       <th>(SPI1)</th>
-      <td>-0.700000</td>
-      <td>0.466092</td>
+      <td>-0.709677</td>
+      <td>0.461414</td>
     </tr>
     <tr>
-      <th>(MAPK1)</th>
-      <th>(MYC)</th>
-      <td>-0.700000</td>
-      <td>0.466092</td>
+      <th>(GSK3B)</th>
+      <th>(CEBPA)</th>
+      <td>-0.709677</td>
+      <td>0.461414</td>
+    </tr>
+    <tr>
+      <th>(TGFB1)</th>
+      <th>(PPP2R2A)</th>
+      <td>-0.677419</td>
+      <td>0.475191</td>
+    </tr>
+    <tr>
+      <th>(CSNK1D)</th>
+      <th>(WWTR1)</th>
+      <td>-0.677419</td>
+      <td>0.475191</td>
+    </tr>
+    <tr>
+      <th>()</th>
+      <th>(TGFB1)</th>
+      <td>-0.677419</td>
+      <td>0.475191</td>
     </tr>
     <tr>
       <th>(SMAD3)</th>
       <th>(NKX2-1)</th>
-      <td>-0.666667</td>
-      <td>0.479463</td>
-    </tr>
-    <tr>
-      <th>(MAPK8)</th>
-      <th>(STAT1)</th>
-      <td>-0.666667</td>
-      <td>0.479463</td>
-    </tr>
-    <tr>
-      <th>(MAPK14)</th>
-      <th>(GSK3B)</th>
-      <td>-0.633333</td>
-      <td>0.490133</td>
+      <td>-0.645161</td>
+      <td>0.486373</td>
     </tr>
     <tr>
       <th>(PHLPP1)</th>
       <th>(PRKCA)</th>
-      <td>-0.633333</td>
-      <td>0.490133</td>
+      <td>-0.580645</td>
+      <td>0.501610</td>
     </tr>
     <tr>
       <th>(NFKB1_RELA)</th>
       <th>(EGR1)</th>
-      <td>-0.633333</td>
-      <td>0.490133</td>
+      <td>-0.548387</td>
+      <td>0.505879</td>
     </tr>
     <tr>
-      <th>(RARB)</th>
+      <th>(RARG)</th>
       <th>(RXRB)</th>
-      <td>-0.600000</td>
-      <td>0.498273</td>
+      <td>-0.548387</td>
+      <td>0.505879</td>
+    </tr>
+    <tr>
+      <th>(MAPK8)</th>
+      <th>(IRF3)</th>
+      <td>-0.548387</td>
+      <td>0.505879</td>
     </tr>
     <tr>
       <th>(THRA)</th>
-      <th>(RARB)</th>
-      <td>-0.600000</td>
-      <td>0.498273</td>
+      <th>(RARG)</th>
+      <td>-0.548387</td>
+      <td>0.505879</td>
+    </tr>
+    <tr>
+      <th>(CDK1)</th>
+      <th>(CDC25A)</th>
+      <td>-0.548387</td>
+      <td>0.505879</td>
     </tr>
     <tr>
       <th>(PRKCA)</th>
       <th>(NFE2L2)</th>
-      <td>-0.600000</td>
-      <td>0.498273</td>
-    </tr>
-    <tr>
-      <th>(TBK1)</th>
-      <th>(IRF3)</th>
-      <td>-0.433333</td>
-      <td>0.504007</td>
-    </tr>
-    <tr>
-      <th>(HIPK2)</th>
-      <th>(TP53)</th>
-      <td>-0.433333</td>
-      <td>0.504007</td>
-    </tr>
-    <tr>
-      <th>(GSK3B)</th>
-      <th>(NFKB1_RELA)</th>
-      <td>-0.433333</td>
-      <td>0.504007</td>
-    </tr>
-    <tr>
-      <th>(MAPK1)</th>
-      <th>(JUN)</th>
-      <td>-0.400000</td>
-      <td>0.498273</td>
+      <td>-0.516129</td>
+      <td>0.508001</td>
     </tr>
     <tr>
       <th>(PRKCD)</th>
       <th>(NFE2L2)</th>
-      <td>-0.400000</td>
-      <td>0.498273</td>
-    </tr>
-    <tr>
-      <th>(THRA)</th>
-      <th>(RARG)</th>
-      <td>-0.400000</td>
-      <td>0.498273</td>
+      <td>-0.483871</td>
+      <td>0.508001</td>
     </tr>
     <tr>
       <th>(MAPK8)</th>
-      <th>(IRF3)</th>
-      <td>-0.400000</td>
-      <td>0.498273</td>
+      <th>(STAT1)</th>
+      <td>-0.483871</td>
+      <td>0.508001</td>
     </tr>
     <tr>
-      <th>(RARG)</th>
+      <th>(PRKCD)</th>
+      <th>(STAT1)</th>
+      <td>-0.483871</td>
+      <td>0.508001</td>
+    </tr>
+    <tr>
+      <th>(RARB)</th>
       <th>(RXRB)</th>
-      <td>-0.400000</td>
-      <td>0.498273</td>
+      <td>-0.451613</td>
+      <td>0.505879</td>
     </tr>
     <tr>
-      <th>(CSNK1D)</th>
-      <th>(WWTR1)</th>
-      <td>-0.400000</td>
-      <td>0.498273</td>
-    </tr>
-    <tr>
-      <th>(CDK1)</th>
-      <th>(TP53)</th>
-      <td>-0.366667</td>
-      <td>0.490133</td>
+      <th>(THRA)</th>
+      <th>(RARB)</th>
+      <td>-0.451613</td>
+      <td>0.505879</td>
     </tr>
     <tr>
       <th>(RELA)</th>
       <th>(EGR1)</th>
-      <td>-0.366667</td>
-      <td>0.490133</td>
+      <td>-0.451613</td>
+      <td>0.505879</td>
+    </tr>
+    <tr>
+      <th>(TBK1)</th>
+      <th>(IRF3)</th>
+      <td>-0.387097</td>
+      <td>0.495138</td>
+    </tr>
+    <tr>
+      <th>(CDK1)</th>
+      <th>(TP53)</th>
+      <td>-0.354839</td>
+      <td>0.486373</td>
     </tr>
     <tr>
       <th>(WWTR1)</th>
       <th>(NKX2-1)</th>
-      <td>-0.333333</td>
-      <td>0.479463</td>
+      <td>-0.354839</td>
+      <td>0.486373</td>
     </tr>
     <tr>
-      <th>(MAPK3)</th>
-      <th>(GSK3B)</th>
-      <td>-0.333333</td>
-      <td>0.479463</td>
+      <th>(MAPK1)</th>
+      <th>(JUN)</th>
+      <td>-0.322581</td>
+      <td>0.475191</td>
     </tr>
     <tr>
-      <th>(LATS2)</th>
-      <th>(WWTR1)</th>
-      <td>-0.300000</td>
-      <td>0.466092</td>
+      <th>(GATA2)</th>
+      <th>(SPI1)</th>
+      <td>-0.258065</td>
+      <td>0.444803</td>
     </tr>
     <tr>
-      <th>(LATS1)</th>
-      <th>(WWTR1)</th>
-      <td>-0.300000</td>
-      <td>0.466092</td>
+      <th>(PRKCD)</th>
+      <th>(HMGA1)</th>
+      <td>0.258065</td>
+      <td>0.444803</td>
     </tr>
     <tr>
-      <th>(MAPK8)</th>
-      <th>(MYC)</th>
-      <td>-0.300000</td>
-      <td>0.466092</td>
+      <th>(MAP3K7)</th>
+      <th>(MAP2K6)</th>
+      <td>0.290323</td>
+      <td>0.461414</td>
     </tr>
     <tr>
       <th>(MAPK3)</th>
       <th>(PML)</th>
-      <td>0.300000</td>
-      <td>0.466092</td>
+      <td>0.290323</td>
+      <td>0.461414</td>
     </tr>
     <tr>
-      <th>(CDK1)</th>
-      <th>(MAP2K1)</th>
-      <td>0.300000</td>
-      <td>0.466092</td>
-    </tr>
-    <tr>
-      <th>(MAP2K1)</th>
-      <th>(MAPK3)</th>
-      <td>0.300000</td>
-      <td>0.466092</td>
-    </tr>
-    <tr>
-      <th>(SMAD2)</th>
-      <th>(MEF2A)</th>
-      <td>0.333333</td>
-      <td>0.479463</td>
+      <th>(MAP2K6)</th>
+      <th>(MAPK14)</th>
+      <td>0.322581</td>
+      <td>0.475191</td>
     </tr>
     <tr>
       <th>(CDK1)</th>
       <th>(HMGA1)</th>
-      <td>0.333333</td>
-      <td>0.479463</td>
+      <td>0.354839</td>
+      <td>0.486373</td>
     </tr>
     <tr>
-      <th>(PHLPP1)</th>
-      <th>(STK4)</th>
-      <td>0.333333</td>
-      <td>0.479463</td>
-    </tr>
-    <tr>
-      <th>(ABL1)</th>
-      <th>(RB1)</th>
-      <td>0.366667</td>
-      <td>0.490133</td>
-    </tr>
-    <tr>
-      <th>(PML)</th>
-      <th>(SMAD3)</th>
-      <td>0.366667</td>
-      <td>0.490133</td>
-    </tr>
-    <tr>
-      <th>(APC_AXIN1_GSK3B)</th>
-      <th>(CSNK1D)</th>
-      <td>0.400000</td>
-      <td>0.498273</td>
-    </tr>
-    <tr>
-      <th>(MAPK1)</th>
-      <th>(APC_AXIN1_GSK3B)</th>
-      <td>0.400000</td>
-      <td>0.498273</td>
-    </tr>
-    <tr>
-      <th>(GSK3B)</th>
-      <th>(CDKN1A)</th>
-      <td>0.400000</td>
-      <td>0.498273</td>
+      <th>(MAP2K1)</th>
+      <th>(MAPK3)</th>
+      <td>0.387097</td>
+      <td>0.495138</td>
     </tr>
     <tr>
       <th>(MAPK14)</th>
       <th>(CDKN1A)</th>
-      <td>0.400000</td>
-      <td>0.498273</td>
+      <td>0.387097</td>
+      <td>0.495138</td>
     </tr>
     <tr>
-      <th>(CTNNB1)</th>
-      <th>(KLF4)</th>
-      <td>0.400000</td>
-      <td>0.498273</td>
+      <th>(CDK1)</th>
+      <th>(MAP2K1)</th>
+      <td>0.387097</td>
+      <td>0.495138</td>
     </tr>
     <tr>
       <th>(HIPK2)</th>
       <th>(HMGA1)</th>
-      <td>0.500000</td>
-      <td>0.508548</td>
+      <td>0.387097</td>
+      <td>0.495138</td>
     </tr>
     <tr>
-      <th>(MAPK14)</th>
-      <th>(SMAD3)</th>
-      <td>0.533333</td>
-      <td>0.507416</td>
-    </tr>
-    <tr>
-      <th>(MUC1)</th>
+      <th>(CTNNB1)</th>
       <th>(KLF4)</th>
-      <td>0.600000</td>
-      <td>0.498273</td>
+      <td>0.451613</td>
+      <td>0.505879</td>
+    </tr>
+    <tr>
+      <th>(ABL1)</th>
+      <th>(RB1)</th>
+      <td>0.483871</td>
+      <td>0.508001</td>
     </tr>
     <tr>
       <th>(GSK3B)</th>
-      <th>(MUC1)</th>
-      <td>0.600000</td>
-      <td>0.498273</td>
+      <th>(CDKN1A)</th>
+      <td>0.483871</td>
+      <td>0.508001</td>
     </tr>
     <tr>
       <th>(PPP2CA)</th>
       <th>(RB1)</th>
-      <td>0.600000</td>
-      <td>0.498273</td>
+      <td>0.483871</td>
+      <td>0.508001</td>
     </tr>
     <tr>
-      <th>(GSK3B)</th>
-      <th>(PHLPP1)</th>
-      <td>0.633333</td>
-      <td>0.490133</td>
-    </tr>
-    <tr>
-      <th>(CDK1)</th>
-      <th>(PML)</th>
-      <td>0.633333</td>
-      <td>0.490133</td>
+      <th>(SMAD2)</th>
+      <th>(MEF2A)</th>
+      <td>0.483871</td>
+      <td>0.508001</td>
     </tr>
     <tr>
       <th>(MAPK14)</th>
       <th>(MEF2A)</th>
-      <td>0.666667</td>
-      <td>0.479463</td>
+      <td>0.516129</td>
+      <td>0.508001</td>
+    </tr>
+    <tr>
+      <th>(MUC1)</th>
+      <th>(KLF4)</th>
+      <td>0.548387</td>
+      <td>0.505879</td>
+    </tr>
+    <tr>
+      <th>(GSK3B)</th>
+      <th>(MUC1)</th>
+      <td>0.548387</td>
+      <td>0.505879</td>
     </tr>
     <tr>
       <th>(CDC25A)</th>
       <th>(MAPK3)</th>
-      <td>0.700000</td>
-      <td>0.466092</td>
+      <td>0.548387</td>
+      <td>0.505879</td>
+    </tr>
+    <tr>
+      <th>(GSK3B)</th>
+      <th>(PHLPP1)</th>
+      <td>0.580645</td>
+      <td>0.501610</td>
+    </tr>
+    <tr>
+      <th>(CDK1)</th>
+      <th>(PML)</th>
+      <td>0.612903</td>
+      <td>0.495138</td>
+    </tr>
+    <tr>
+      <th>(MAPK1)</th>
+      <th>(APC_AXIN1_GSK3B)</th>
+      <td>0.677419</td>
+      <td>0.475191</td>
+    </tr>
+    <tr>
+      <th>(APC_AXIN1_GSK3B)</th>
+      <th>(CSNK1D)</th>
+      <td>0.677419</td>
+      <td>0.475191</td>
+    </tr>
+    <tr>
+      <th>(PPP2R2A)</th>
+      <th>(PPP2CA)</th>
+      <td>0.677419</td>
+      <td>0.475191</td>
+    </tr>
+    <tr>
+      <th>(SMAD3)</th>
+      <th>(SMAD4)</th>
+      <td>0.741935</td>
+      <td>0.444803</td>
     </tr>
   </tbody>
 </table>
@@ -1097,10 +1098,7 @@ Academic license - for non-commercial use only - expires 2025-12-02
     <span class="n">scale</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span>
     <span class="n">rel_opt_tol</span><span class="o">=</span><span class="mf">0.10</span><span class="p">,</span>
     <span class="n">max_samples</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
-    <span class="n">solver_kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-        <span class="n">solver</span><span class="o">=</span><span class="s2">&quot;gurobi&quot;</span><span class="p">,</span>
-        <span class="n">max_seconds</span><span class="o">=</span><span class="mi">300</span>
-    <span class="p">)</span>
+    <span class="n">solver_kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;gurobi&quot;</span><span class="p">,</span> <span class="n">max_seconds</span><span class="o">=</span><span class="mi">300</span><span class="p">),</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -1119,7 +1117,7 @@ Academic license - for non-commercial use only - expires 2025-12-02
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(970, 30)
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(970, 31)
 </pre></div>
 </div>
 </div>
@@ -1134,7 +1132,7 @@ Academic license - for non-commercial use only - expires 2025-12-02
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Generated 30 alternative solutions
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Generated 31 alternative solutions
 </pre></div>
 </div>
 <div class="output text_html"><div>
@@ -1166,7 +1164,6 @@ Academic license - for non-commercial use only - expires 2025-12-02
       <th>8</th>
       <th>9</th>
       <th>...</th>
-      <th>20</th>
       <th>21</th>
       <th>22</th>
       <th>23</th>
@@ -1176,11 +1173,12 @@ Academic license - for non-commercial use only - expires 2025-12-02
       <th>27</th>
       <th>28</th>
       <th>29</th>
+      <th>30</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <th>P03205_UBE2I</th>
+      <th>FOS</th>
       <td>0</td>
       <td>0</td>
       <td>0</td>
@@ -1204,7 +1202,7 @@ Academic license - for non-commercial use only - expires 2025-12-02
       <td>0</td>
     </tr>
     <tr>
-      <th>ARHGEF11</th>
+      <th>RBL2</th>
       <td>0</td>
       <td>0</td>
       <td>0</td>
@@ -1228,7 +1226,7 @@ Academic license - for non-commercial use only - expires 2025-12-02
       <td>0</td>
     </tr>
     <tr>
-      <th>BDKRB2</th>
+      <th>CAMKK1</th>
       <td>0</td>
       <td>0</td>
       <td>0</td>
@@ -1252,7 +1250,7 @@ Academic license - for non-commercial use only - expires 2025-12-02
       <td>0</td>
     </tr>
     <tr>
-      <th>YY1</th>
+      <th>PCBP2</th>
       <td>0</td>
       <td>0</td>
       <td>0</td>
@@ -1266,7 +1264,7 @@ Academic license - for non-commercial use only - expires 2025-12-02
       <td>...</td>
       <td>0</td>
       <td>0</td>
-      <td>0</td>
+      <td>1</td>
       <td>0</td>
       <td>0</td>
       <td>0</td>
@@ -1276,7 +1274,7 @@ Academic license - for non-commercial use only - expires 2025-12-02
       <td>0</td>
     </tr>
     <tr>
-      <th>TAOK1</th>
+      <th>MAPKAPK2</th>
       <td>0</td>
       <td>0</td>
       <td>0</td>
@@ -1301,15 +1299,13 @@ Academic license - for non-commercial use only - expires 2025-12-02
     </tr>
   </tbody>
 </table>
-<p>5 rows × 30 columns</p>
+<p>5 rows × 31 columns</p>
 </div></div></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Focus on signaling proteins with no measurement data</span>
-<span class="n">df_sig_prot_pred</span> <span class="o">=</span> <span class="n">df_vertex_val</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
-    <span class="n">df_vertex_val</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">pluck_features</span><span class="p">())</span>
-<span class="p">]</span>
+<span class="n">df_sig_prot_pred</span> <span class="o">=</span> <span class="n">df_vertex_val</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df_vertex_val</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">pluck_features</span><span class="p">())]</span>
 <span class="n">df_sig_prot_pred</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -1344,7 +1340,6 @@ Academic license - for non-commercial use only - expires 2025-12-02
       <th>8</th>
       <th>9</th>
       <th>...</th>
-      <th>20</th>
       <th>21</th>
       <th>22</th>
       <th>23</th>
@@ -1354,6 +1349,7 @@ Academic license - for non-commercial use only - expires 2025-12-02
       <th>27</th>
       <th>28</th>
       <th>29</th>
+      <th>30</th>
     </tr>
   </thead>
   <tbody>
@@ -1479,7 +1475,7 @@ Academic license - for non-commercial use only - expires 2025-12-02
     </tr>
   </tbody>
 </table>
-<p>5 rows × 30 columns</p>
+<p>5 rows × 31 columns</p>
 </div></div></div>
 </div>
 <div class="cell docutils container">
@@ -1488,9 +1484,7 @@ Academic license - for non-commercial use only - expires 2025-12-02
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
-<span class="n">df_sig_prot_pred</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">()</span><span class="o">.</span><span class="n">tail</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span>
-    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Variability in Signaling Protein Activity&quot;</span>
-<span class="p">)</span>
+<span class="n">df_sig_prot_pred</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">()</span><span class="o">.</span><span class="n">tail</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Variability in Signaling Protein Activity&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Protein&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Standard Deviation&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
@@ -1499,7 +1493,7 @@ Academic license - for non-commercial use only - expires 2025-12-02
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/2b9ce4d5b9216b09368de4a347fd025e712f47d1cf9563a8c1384c76c631a0da.png" src="../_images/2b9ce4d5b9216b09368de4a347fd025e712f47d1cf9563a8c1384c76c631a0da.png" />
+<img alt="../_images/7a8bd704ff82160afb8aaf3b118cad23721e5861796b2db365035622a358209f.png" src="../_images/7a8bd704ff82160afb8aaf3b118cad23721e5861796b2db365035622a358209f.png" />
 </div>
 </div>
 </section>

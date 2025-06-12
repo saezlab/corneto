@@ -33,7 +33,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=5ec6e6de" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=53e23fa6" />
   
   <!-- So that users can add custom icons -->
   <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
@@ -56,7 +56,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = '/switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.0.0.dev16+81550a6';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.0.0.dev37+91f98a8';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
@@ -472,7 +472,7 @@
             </td>
             <td>
             <table>
-                <tr><td>Installed version:</td><td style='text-align:left'>v1.0.0.dev16+81550a6</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.6.5, PICOS v2.6.1</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CVXOPT, GLPK, GLPK_MI, HIGHS, SCIP, SCIPY</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.3</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href=https://github.com/saezlab/corneto>https://github.com/saezlab/corneto</a></td></tr>
+                <tr><td>Installed version:</td><td style='text-align:left'>v1.0.0.dev37+91f98a8</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.6.5, PICOS v2.6.1</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CVXOPT, GLPK, GLPK_MI, HIGHS, SCIP, SCIPY</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.3</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href=https://github.com/saezlab/corneto>https://github.com/saezlab/corneto</a></td></tr>
             </table>
             </td>
         </tr>
@@ -532,7 +532,6 @@
             <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
             <span class="s2">&quot;mapping&quot;</span><span class="p">:</span> <span class="s2">&quot;vertex&quot;</span><span class="p">,</span>
             <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;output&quot;</span><span class="p">,</span>
-
         <span class="p">},</span>
     <span class="p">},</span>
     <span class="s2">&quot;sample2&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -573,7 +572,7 @@
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Samples are just lists of features</span>
-<span class="n">data</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="s1">&#39;sample1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">features</span>
+<span class="n">data</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="s2">&quot;sample1&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">features</span>
 </pre></div>
 </div>
 </div>
@@ -588,9 +587,7 @@
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We can add a new feature to a sample. These are stored as lists.</span>
-<span class="n">data</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="s1">&#39;sample1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">features</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-    <span class="n">cn</span><span class="o">.</span><span class="n">Feature</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;tf3&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="s2">&quot;vertex&quot;</span><span class="p">,</span> <span class="n">role</span><span class="o">=</span><span class="s2">&quot;output&quot;</span><span class="p">)</span>
-<span class="p">)</span>
+<span class="n">data</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="s2">&quot;sample1&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">features</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cn</span><span class="o">.</span><span class="n">Feature</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;tf3&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="s2">&quot;vertex&quot;</span><span class="p">,</span> <span class="n">role</span><span class="o">=</span><span class="s2">&quot;output&quot;</span><span class="p">))</span>
 <span class="n">data</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -620,9 +617,7 @@
 <p>To inspect or obtain features from a dataset, you can use the <code class="docutils literal notranslate"><span class="pre">query</span></code> method. This method allows you to filter features based on their attributes. For example, you can find all features that are mapped to a specific vertex in the network, or all features that have a specific value.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="s1">&#39;sample1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
-    <span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="n">f</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;tf&quot;</span><span class="p">)</span>
-<span class="p">)</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="s2">&quot;sample1&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="n">f</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;tf&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -635,9 +630,7 @@
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We can get all the unique ids from the samples</span>
-<span class="n">data</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="s1">&#39;sample1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
-    <span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="n">f</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;tf&quot;</span><span class="p">)</span>
-<span class="p">)</span><span class="o">.</span><span class="n">pluck</span><span class="p">()</span>
+<span class="n">data</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="s2">&quot;sample1&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="n">f</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;tf&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">pluck</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -650,7 +643,7 @@
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get features with unique ids</span>
-<span class="n">data</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="s1">&#39;sample1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
+<span class="n">data</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="s2">&quot;sample1&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -667,7 +660,7 @@
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get features with unique roles</span>
-<span class="n">data</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="s1">&#39;sample1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">unique</span><span class="p">([</span><span class="s2">&quot;role&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
+<span class="n">data</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="s2">&quot;sample1&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">unique</span><span class="p">([</span><span class="s2">&quot;role&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -698,9 +691,7 @@
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get features with unique IDs across all samples</span>
-<span class="n">data</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">filter_features</span><span class="p">(</span>
-    <span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="n">f</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;tf&quot;</span><span class="p">)</span>
-<span class="p">)</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">pluck</span><span class="p">()</span>
+<span class="n">data</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">filter_features</span><span class="p">(</span><span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="n">f</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;tf&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">pluck</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -713,9 +704,7 @@
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Filter features across all samples</span>
-<span class="n">dataq</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">filter_features</span><span class="p">(</span>
-    <span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="n">f</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;tf&quot;</span><span class="p">)</span>
-<span class="p">)</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+<span class="n">dataq</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">filter_features</span><span class="p">(</span><span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="n">f</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;tf&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
 
 <span class="n">dataq</span>
 </pre></div>

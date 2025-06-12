@@ -33,7 +33,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=5ec6e6de" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=53e23fa6" />
   
   <!-- So that users can add custom icons -->
   <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
@@ -56,7 +56,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = '/switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.0.0.dev16+81550a6';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.0.0.dev37+91f98a8';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
@@ -448,7 +448,7 @@ matplotlib&gt;=3.5
 </pre></div>
 </div>
 <blockquote>
-<div><p>ℹ️ If your tutorial has no extra dependencies, include an empty file or write:<br />
+<div><p>ℹ️ If your tutorial has no extra dependencies, include an empty file or write:
 <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">No</span> <span class="pre">additional</span> <span class="pre">dependencies</span> <span class="pre">required</span></code></p>
 </div></blockquote>
 </section>
@@ -475,8 +475,17 @@ matplotlib&gt;=3.5
 </pre></div>
 </div>
 </section>
+<section id="set-up-pre-commit-hooks-required">
+<h3>4. Set Up Pre-commit Hooks (Required)<a class="headerlink" href="#set-up-pre-commit-hooks-required" title="Link to this heading">#</a></h3>
+<p>We use pre-commit hooks to ensure code quality and consistency. Install and set up pre-commit before making any commits:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry<span class="w"> </span>install<span class="w">  </span><span class="c1"># If you haven&#39;t installed dependencies yet</span>
+poetry<span class="w"> </span>run<span class="w"> </span>pre-commit<span class="w"> </span>install
+</pre></div>
+</div>
+<p>This will automatically check your code with <code class="docutils literal notranslate"><span class="pre">ruff</span></code> when you commit changes.</p>
+</section>
 <section id="add-your-tutorial-folder">
-<h3>4. Add Your Tutorial Folder<a class="headerlink" href="#add-your-tutorial-folder" title="Link to this heading">#</a></h3>
+<h3>5. Add Your Tutorial Folder<a class="headerlink" href="#add-your-tutorial-folder" title="Link to this heading">#</a></h3>
 <p>Place your folder here:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">corneto</span><span class="o">/</span><span class="n">docs</span><span class="o">/</span><span class="n">tutorials</span><span class="o">/</span><span class="n">contrib</span><span class="o">/</span><span class="n">my_tutorial_name</span><span class="o">/</span>
 </pre></div>
@@ -488,7 +497,7 @@ matplotlib&gt;=3.5
 </ul>
 </section>
 <section id="commit-and-push">
-<h3>5. Commit and Push<a class="headerlink" href="#commit-and-push" title="Link to this heading">#</a></h3>
+<h3>6. Commit and Push<a class="headerlink" href="#commit-and-push" title="Link to this heading">#</a></h3>
 <p>Use <strong><a class="reference external" href="https://www.conventionalcommits.org/">Conventional Commits</a></strong>:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>add<span class="w"> </span>corneto/docs/tutorials/contrib/my_tutorial_name/
 git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;docs(tutorial): add my_tutorial_name example notebook&quot;</span>
@@ -497,7 +506,7 @@ git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </
 </div>
 </section>
 <section id="open-a-pull-request">
-<h3>6. Open a Pull Request<a class="headerlink" href="#open-a-pull-request" title="Link to this heading">#</a></h3>
+<h3>7. Open a Pull Request<a class="headerlink" href="#open-a-pull-request" title="Link to this heading">#</a></h3>
 <p>Open a <strong>PR against <code class="docutils literal notranslate"><span class="pre">dev</span></code></strong> with title:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docs</span><span class="p">(</span><span class="n">tutorial</span><span class="p">):</span> <span class="n">add</span> <span class="n">my_tutorial_name</span> <span class="n">example</span>
 </pre></div>
@@ -588,9 +597,10 @@ git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fork-and-clone-the-repository">1. Fork and Clone the Repository</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#switch-to-the-dev-branch">2. Switch to the <code class="docutils literal notranslate"><span class="pre">dev</span></code> Branch</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-a-new-branch">3. Create a New Branch</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#add-your-tutorial-folder">4. Add Your Tutorial Folder</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#commit-and-push">5. Commit and Push</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#open-a-pull-request">6. Open a Pull Request</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#set-up-pre-commit-hooks-required">4. Set Up Pre-commit Hooks (Required)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#add-your-tutorial-folder">5. Add Your Tutorial Folder</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#commit-and-push">6. Commit and Push</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#open-a-pull-request">7. Open a Pull Request</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tips-for-a-good-tutorial">🧪 Tips for a Good Tutorial</a></li>

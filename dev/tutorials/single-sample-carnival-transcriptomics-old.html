@@ -33,7 +33,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=5ec6e6de" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=53e23fa6" />
   
   <!-- So that users can add custom icons -->
   <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
@@ -56,7 +56,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = '/switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.0.0.dev16+81550a6';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.0.0.dev37+91f98a8';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
@@ -676,9 +676,7 @@
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Process treatment information</span>
-<span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s2">&quot;condition&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;control&quot;</span> <span class="k">if</span> <span class="s2">&quot;-Ctrl&quot;</span> <span class="ow">in</span> <span class="n">sample_id</span> <span class="k">else</span> <span class="s2">&quot;treatment&quot;</span> <span class="k">for</span> <span class="n">sample_id</span> <span class="ow">in</span> <span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="o">.</span><span class="n">index</span>
-<span class="p">]</span>
+<span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s2">&quot;condition&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;control&quot;</span> <span class="k">if</span> <span class="s2">&quot;-Ctrl&quot;</span> <span class="ow">in</span> <span class="n">sample_id</span> <span class="k">else</span> <span class="s2">&quot;treatment&quot;</span> <span class="k">for</span> <span class="n">sample_id</span> <span class="ow">in</span> <span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
 
 <span class="c1"># Process sample information</span>
 <span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s2">&quot;sample_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">sample_id</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">sample_id</span> <span class="ow">in</span> <span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
@@ -749,9 +747,7 @@
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Obtain genes that pass the thresholds</span>
-<span class="n">genes</span> <span class="o">=</span> <span class="n">dc</span><span class="o">.</span><span class="n">filter_by_expr</span><span class="p">(</span>
-    <span class="n">adata</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="s2">&quot;condition&quot;</span><span class="p">,</span> <span class="n">min_count</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">min_total_count</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">large_n</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">min_prop</span><span class="o">=</span><span class="mi">1</span>
-<span class="p">)</span>
+<span class="n">genes</span> <span class="o">=</span> <span class="n">dc</span><span class="o">.</span><span class="n">filter_by_expr</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="s2">&quot;condition&quot;</span><span class="p">,</span> <span class="n">min_count</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">min_total_count</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">large_n</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">min_prop</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
 <span class="c1"># Filter by these genes</span>
 <span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">[:,</span> <span class="n">genes</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -793,9 +789,7 @@
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">stat_res</span> <span class="o">=</span> <span class="n">DeseqStats</span><span class="p">(</span>
-    <span class="n">dds</span><span class="p">,</span> <span class="n">contrast</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;condition&quot;</span><span class="p">,</span> <span class="s2">&quot;treatment&quot;</span><span class="p">,</span> <span class="s2">&quot;control&quot;</span><span class="p">],</span> <span class="n">inference</span><span class="o">=</span><span class="n">inference</span>
-<span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">stat_res</span> <span class="o">=</span> <span class="n">DeseqStats</span><span class="p">(</span><span class="n">dds</span><span class="p">,</span> <span class="n">contrast</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;condition&quot;</span><span class="p">,</span> <span class="s2">&quot;treatment&quot;</span><span class="p">,</span> <span class="s2">&quot;control&quot;</span><span class="p">],</span> <span class="n">inference</span><span class="o">=</span><span class="n">inference</span><span class="p">)</span>
 
 <span class="n">stat_res</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span>
 </pre></div>
@@ -1266,9 +1260,7 @@ MT-TP         0.012217
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dc</span><span class="o">.</span><span class="n">plot_barplot</span><span class="p">(</span>
-    <span class="n">acts</span><span class="o">=</span><span class="n">tf_acts</span><span class="p">,</span> <span class="n">contrast</span><span class="o">=</span><span class="s2">&quot;treatment.vs.control&quot;</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">vertical</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
-<span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dc</span><span class="o">.</span><span class="n">plot_barplot</span><span class="p">(</span><span class="n">acts</span><span class="o">=</span><span class="n">tf_acts</span><span class="p">,</span> <span class="n">contrast</span><span class="o">=</span><span class="s2">&quot;treatment.vs.control&quot;</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">vertical</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
@@ -1280,11 +1272,7 @@ MT-TP         0.012217
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We obtain ligand-receptor interactions from Omnipath, and we keep only the receptors</span>
 <span class="c1"># This is our list of a prior potential receptors from which we will infer the network</span>
-<span class="n">unique_receptors</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
-    <span class="n">op</span><span class="o">.</span><span class="n">interactions</span><span class="o">.</span><span class="n">LigRecExtra</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">genesymbols</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span>
-        <span class="s2">&quot;target_genesymbol&quot;</span>
-    <span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
-<span class="p">)</span>
+<span class="n">unique_receptors</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">interactions</span><span class="o">.</span><span class="n">LigRecExtra</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">genesymbols</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="s2">&quot;target_genesymbol&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
 <span class="nb">len</span><span class="p">(</span><span class="n">unique_receptors</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -1718,9 +1706,7 @@ MT-TP         0.012217
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pkn</span><span class="p">[</span><span class="s2">&quot;interaction&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pkn</span><span class="p">[</span><span class="s2">&quot;is_stimulation&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="o">-</span> <span class="n">pkn</span><span class="p">[</span><span class="s2">&quot;is_inhibition&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
-    <span class="nb">int</span>
-<span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pkn</span><span class="p">[</span><span class="s2">&quot;interaction&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pkn</span><span class="p">[</span><span class="s2">&quot;is_stimulation&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="o">-</span> <span class="n">pkn</span><span class="p">[</span><span class="s2">&quot;is_inhibition&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
 <span class="n">sel_pkn</span> <span class="o">=</span> <span class="n">pkn</span><span class="p">[[</span><span class="s2">&quot;source_genesymbol&quot;</span><span class="p">,</span> <span class="s2">&quot;interaction&quot;</span><span class="p">,</span> <span class="s2">&quot;target_genesymbol&quot;</span><span class="p">]]</span>
 <span class="n">sel_pkn</span>
 </pre></div>
@@ -1825,9 +1811,7 @@ MT-TP         0.012217
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We create the CORNETO graph by importing the edges and interaction</span>
-<span class="n">G</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Graph</span><span class="o">.</span><span class="n">from_sif_tuples</span><span class="p">(</span>
-    <span class="p">[(</span><span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">sel_pkn</span><span class="o">.</span><span class="n">iterrows</span><span class="p">()</span> <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">]</span>
-<span class="p">)</span>
+<span class="n">G</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Graph</span><span class="o">.</span><span class="n">from_sif_tuples</span><span class="p">([(</span><span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">sel_pkn</span><span class="o">.</span><span class="n">iterrows</span><span class="p">()</span> <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">])</span>
 <span class="n">G</span><span class="o">.</span><span class="n">shape</span>
 </pre></div>
 </div>
@@ -1841,11 +1825,7 @@ MT-TP         0.012217
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># As measurements, we take the estimated TFs, we will filter out TFs with p-val &gt; 0.001</span>
-<span class="n">significant_tfs</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="n">tf_acts</span><span class="p">[</span><span class="n">tf_pvals</span> <span class="o">&lt;=</span> <span class="mf">0.001</span><span class="p">]</span>
-    <span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
-    <span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s2">&quot;treatment.vs.control&quot;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="p">)</span>
+<span class="n">significant_tfs</span> <span class="o">=</span> <span class="n">tf_acts</span><span class="p">[</span><span class="n">tf_pvals</span> <span class="o">&lt;=</span> <span class="mf">0.001</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s2">&quot;treatment.vs.control&quot;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">significant_tfs</span>
 </pre></div>
 </div>
@@ -1925,9 +1905,7 @@ MT-TP         0.012217
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We keep only the ones in the PKN graph</span>
-<span class="n">measurements</span> <span class="o">=</span> <span class="n">significant_tfs</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">significant_tfs</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">V</span><span class="p">)]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()[</span>
-    <span class="s2">&quot;treatment.vs.control&quot;</span>
-<span class="p">]</span>
+<span class="n">measurements</span> <span class="o">=</span> <span class="n">significant_tfs</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">significant_tfs</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">V</span><span class="p">)]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()[</span><span class="s2">&quot;treatment.vs.control&quot;</span><span class="p">]</span>
 <span class="n">measurements</span>
 </pre></div>
 </div>
@@ -2088,11 +2066,7 @@ MT-TP         0.012217
 <span class="n">values</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">vertex_values</span><span class="o">.</span><span class="n">value</span>
 <span class="n">vertex_values</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">Gp</span><span class="o">.</span><span class="n">V</span><span class="p">)}</span>
 <span class="n">vertex_sol_values</span> <span class="o">=</span> <span class="p">[</span><span class="n">vertex_values</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">G_sol</span><span class="o">.</span><span class="n">V</span><span class="p">]</span>
-<span class="n">G_sol</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
-    <span class="n">custom_vertex_attr</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">create_graphviz_vertex_attributes</span><span class="p">(</span>
-        <span class="n">G_sol</span><span class="o">.</span><span class="n">V</span><span class="p">,</span> <span class="n">vertex_sol_values</span>
-    <span class="p">)</span>
-<span class="p">)</span>
+<span class="n">G_sol</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">custom_vertex_attr</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">create_graphviz_vertex_attributes</span><span class="p">(</span><span class="n">G_sol</span><span class="o">.</span><span class="n">V</span><span class="p">,</span> <span class="n">vertex_sol_values</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
@@ -2140,11 +2114,7 @@ MT-TP         0.012217
 <span class="n">values</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">vertex_values</span><span class="o">.</span><span class="n">value</span>
 <span class="n">vertex_values</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">Gp</span><span class="o">.</span><span class="n">V</span><span class="p">)}</span>
 <span class="n">vertex_sol_values</span> <span class="o">=</span> <span class="p">[</span><span class="n">vertex_values</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">G_sol</span><span class="o">.</span><span class="n">V</span><span class="p">]</span>
-<span class="n">G_sol</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
-    <span class="n">custom_vertex_attr</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">create_graphviz_vertex_attributes</span><span class="p">(</span>
-        <span class="n">G_sol</span><span class="o">.</span><span class="n">V</span><span class="p">,</span> <span class="n">vertex_sol_values</span>
-    <span class="p">)</span>
-<span class="p">)</span>
+<span class="n">G_sol</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">custom_vertex_attr</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">create_graphviz_vertex_attributes</span><span class="p">(</span><span class="n">G_sol</span><span class="o">.</span><span class="n">V</span><span class="p">,</span> <span class="n">vertex_sol_values</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
@@ -2176,8 +2146,7 @@ MT-TP         0.012217
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_lowly_abundant_genes</span> <span class="o">=</span> <span class="n">results_df</span><span class="p">[</span>
-    <span class="p">(</span><span class="n">results_df</span><span class="o">.</span><span class="n">baseMean</span> <span class="o">&lt;=</span> <span class="n">results_df</span><span class="o">.</span><span class="n">baseMean</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="mf">0.25</span><span class="p">))</span>
-    <span class="o">&amp;</span> <span class="p">(</span><span class="n">results_df</span><span class="o">.</span><span class="n">padj</span> <span class="o">&gt;=</span> <span class="mf">0.05</span><span class="p">)</span>
+    <span class="p">(</span><span class="n">results_df</span><span class="o">.</span><span class="n">baseMean</span> <span class="o">&lt;=</span> <span class="n">results_df</span><span class="o">.</span><span class="n">baseMean</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="mf">0.25</span><span class="p">))</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">results_df</span><span class="o">.</span><span class="n">padj</span> <span class="o">&gt;=</span> <span class="mf">0.05</span><span class="p">)</span>
 <span class="p">]</span>
 <span class="n">df_lowly_abundant_genes</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s2">&quot;padj&quot;</span><span class="p">)</span>
 </pre></div>
@@ -2361,9 +2330,7 @@ MT-TP         0.012217
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Now we will add a penalty to avoid selecting lowly expressed genes</span>
 <span class="n">vertices</span> <span class="o">=</span> <span class="n">Gp</span><span class="o">.</span><span class="n">V</span>
 <span class="n">penalties</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">Gp</span><span class="o">.</span><span class="n">num_vertices</span><span class="p">)</span>
-<span class="n">penalties</span><span class="p">[[</span><span class="n">vertices</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">lowly_abundant_genes</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">vertices</span><span class="p">)]]</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="mf">0.01</span>
-<span class="p">)</span>
+<span class="n">penalties</span><span class="p">[[</span><span class="n">vertices</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">lowly_abundant_genes</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">vertices</span><span class="p">)]]</span> <span class="o">=</span> <span class="mf">0.01</span>
 <span class="n">penalties</span>
 </pre></div>
 </div>
@@ -2493,11 +2460,7 @@ MT-TP         0.012217
 <span class="n">values</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">vertex_values</span><span class="o">.</span><span class="n">value</span>
 <span class="n">vertex_values</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">Gp</span><span class="o">.</span><span class="n">V</span><span class="p">)}</span>
 <span class="n">vertex_sol_values</span> <span class="o">=</span> <span class="p">[</span><span class="n">vertex_values</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">G_sol</span><span class="o">.</span><span class="n">V</span><span class="p">]</span>
-<span class="n">G_sol</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
-    <span class="n">custom_vertex_attr</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">create_graphviz_vertex_attributes</span><span class="p">(</span>
-        <span class="n">G_sol</span><span class="o">.</span><span class="n">V</span><span class="p">,</span> <span class="n">vertex_sol_values</span>
-    <span class="p">)</span>
-<span class="p">)</span>
+<span class="n">G_sol</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">custom_vertex_attr</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">create_graphviz_vertex_attributes</span><span class="p">(</span><span class="n">G_sol</span><span class="o">.</span><span class="n">V</span><span class="p">,</span> <span class="n">vertex_sol_values</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
@@ -2564,11 +2527,7 @@ MT-TP         0.012217
 <span class="n">values</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">vertex_values</span><span class="o">.</span><span class="n">value</span>
 <span class="n">vertex_values</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">Gp</span><span class="o">.</span><span class="n">V</span><span class="p">)}</span>
 <span class="n">vertex_sol_values</span> <span class="o">=</span> <span class="p">[</span><span class="n">vertex_values</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">G_sol</span><span class="o">.</span><span class="n">V</span><span class="p">]</span>
-<span class="n">G_sol</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
-    <span class="n">custom_vertex_attr</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">create_graphviz_vertex_attributes</span><span class="p">(</span>
-        <span class="n">G_sol</span><span class="o">.</span><span class="n">V</span><span class="p">,</span> <span class="n">vertex_sol_values</span>
-    <span class="p">)</span>
-<span class="p">)</span>
+<span class="n">G_sol</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">custom_vertex_attr</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">create_graphviz_vertex_attributes</span><span class="p">(</span><span class="n">G_sol</span><span class="o">.</span><span class="n">V</span><span class="p">,</span> <span class="n">vertex_sol_values</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
@@ -2604,11 +2563,7 @@ MT-TP         0.012217
 <span class="n">values</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">vertex_values</span><span class="o">.</span><span class="n">value</span>
 <span class="n">vertex_values</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">Gp</span><span class="o">.</span><span class="n">V</span><span class="p">)}</span>
 <span class="n">vertex_sol_values</span> <span class="o">=</span> <span class="p">[</span><span class="n">vertex_values</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">G_sol</span><span class="o">.</span><span class="n">V</span><span class="p">]</span>
-<span class="n">G_sol</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
-    <span class="n">custom_vertex_attr</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">create_graphviz_vertex_attributes</span><span class="p">(</span>
-        <span class="n">G_sol</span><span class="o">.</span><span class="n">V</span><span class="p">,</span> <span class="n">vertex_sol_values</span>
-    <span class="p">)</span>
-<span class="p">)</span>
+<span class="n">G_sol</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">custom_vertex_attr</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">create_graphviz_vertex_attributes</span><span class="p">(</span><span class="n">G_sol</span><span class="o">.</span><span class="n">V</span><span class="p">,</span> <span class="n">vertex_sol_values</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
@@ -2654,9 +2609,7 @@ MT-TP         0.012217
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Since the problem minimises error, we change sign. Upregulated genes get negative score</span>
 <span class="c1"># so if they are selected, the error decreases. The opposite for downregulated genes</span>
-<span class="n">df_gene_scores</span> <span class="o">=</span> <span class="o">-</span><span class="n">results_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
-    <span class="n">results_df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">Gp</span><span class="o">.</span><span class="n">V</span><span class="p">)</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">tf_acts</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
-<span class="p">]</span><span class="o">.</span><span class="n">stat</span>
+<span class="n">df_gene_scores</span> <span class="o">=</span> <span class="o">-</span><span class="n">results_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">results_df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">Gp</span><span class="o">.</span><span class="n">V</span><span class="p">)</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">tf_acts</span><span class="o">.</span><span class="n">columns</span><span class="p">)]</span><span class="o">.</span><span class="n">stat</span>
 <span class="n">dict_scores</span> <span class="o">=</span> <span class="n">df_gene_scores</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
 
 <span class="n">df_gene_scores</span><span class="o">.</span><span class="n">sort_values</span><span class="p">()</span>
@@ -2715,11 +2668,7 @@ Name: stat, Length: 627, dtype: float64
 <span class="n">values</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">vertex_values</span><span class="o">.</span><span class="n">value</span>
 <span class="n">vertex_values</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">Gp</span><span class="o">.</span><span class="n">V</span><span class="p">)}</span>
 <span class="n">vertex_sol_values</span> <span class="o">=</span> <span class="p">[</span><span class="n">vertex_values</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">G_sol</span><span class="o">.</span><span class="n">V</span><span class="p">]</span>
-<span class="n">G_sol</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
-    <span class="n">custom_vertex_attr</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">create_graphviz_vertex_attributes</span><span class="p">(</span>
-        <span class="n">G_sol</span><span class="o">.</span><span class="n">V</span><span class="p">,</span> <span class="n">vertex_sol_values</span>
-    <span class="p">)</span>
-<span class="p">)</span>
+<span class="n">G_sol</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">custom_vertex_attr</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">create_graphviz_vertex_attributes</span><span class="p">(</span><span class="n">G_sol</span><span class="o">.</span><span class="n">V</span><span class="p">,</span> <span class="n">vertex_sol_values</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
