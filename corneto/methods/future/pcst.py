@@ -32,6 +32,7 @@ class PrizeCollectingSteinerTree(SteinerTreeFlow):
         in_flow_edge_type: EdgeType = EdgeType.DIRECTED,
         out_flow_edge_type: EdgeType = EdgeType.DIRECTED,
         lambda_reg: float = 0.0,
+        force_flow_through_root: bool = False,
         backend: Optional[Backend] = None,
     ):
         super().__init__(
@@ -45,6 +46,7 @@ class PrizeCollectingSteinerTree(SteinerTreeFlow):
             disable_structured_sparsity=disable_structured_sparsity,
             in_flow_edge_type=in_flow_edge_type,
             out_flow_edge_type=out_flow_edge_type,
+            force_flow_through_root=force_flow_through_root,
             lambda_reg=lambda_reg,
             backend=backend,
         )
@@ -70,6 +72,8 @@ class PrizeCollectingSteinerTree(SteinerTreeFlow):
                 # Only add an edge if the prized node is not the sample's root
                 # and it has not been already assigned a flow edge
                 if prized != sample_root and prized not in self.flow_edges:
+                    # TODO: If node not in the graph, raise an error, otherwise
+                    # this creates an infeasible problem.
                     idx = flow_graph.add_edge(prized, (), type=self.out_flow_edge_type)
                     self.flow_edges[prized] = idx
                     self.prized_flow_edges[prized] = idx

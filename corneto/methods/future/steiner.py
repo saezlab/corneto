@@ -34,6 +34,7 @@ class SteinerTreeFlow(FlowMethod):
         in_flow_edge_type: EdgeType = EdgeType.DIRECTED,
         out_flow_edge_type: EdgeType = EdgeType.DIRECTED,
         lambda_reg: float = 0.0,
+        force_flow_through_root: bool = True,
         backend: Optional[Backend] = None,
     ):
         super().__init__(
@@ -51,6 +52,7 @@ class SteinerTreeFlow(FlowMethod):
         self.in_flow_edge_type = in_flow_edge_type
         self.out_flow_edge_type = out_flow_edge_type
         self.root_selection_strategy = root_selection_strategy
+        self.force_flow_through_root = force_flow_through_root
 
         # Initialize containers and placeholders
         self._terminal_edgeflow_idx = []
@@ -253,7 +255,9 @@ class SteinerTreeFlow(FlowMethod):
             vertices_edgeflow_idx = []
             all_vertices_with_data = sample_data.query.select(lambda f: f.mapping == "vertex").pluck()
             terminals_edgeflow_idx = []
-            terminals = sample_data.query.select(lambda f: f.mapping == "vertex" and not f.value).pluck()
+            terminals = sample_data.query.select(
+                lambda f: f.mapping == "vertex" and f.data.get("role", None) == "terminal"
+            ).pluck()
             # For terminals, if a root is chosen, skip it
             for terminal in terminals:
                 if sample_selected_root is None or terminal != sample_selected_root:
@@ -279,8 +283,13 @@ class SteinerTreeFlow(FlowMethod):
 
             if sample_selected_root is not None:
                 # For samples with a designated root, force injected flow.
-                flow_problem += F[self.flow_edges[sample_selected_root]] == sample_max_flow
+                # TODO: This creates issues with PCST and rooted version when extending it.
+                if self.force_flow_through_root:
+                    flow_problem += F[self.flow_edges[sample_selected_root]] == sample_max_flow
+                else:
+                    flow_problem += F[self.flow_edges[sample_selected_root]] >= 0
                 if terminals_edgeflow_idx:
+                    # TODO: Log info the number of vertices that are terminals
                     flow_problem += F[terminals_edgeflow_idx] >= 1
             else:
                 # For "best" strategy: let optimization select the root.
