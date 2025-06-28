@@ -9,11 +9,11 @@
 ```{toctree}
 :maxdepth: 1
 
-context-specific-metabolic-omics.ipynb
-single-sample-carnival-transcriptomics.ipynb
-network-sampler.ipynb
-network-sampler-example.ipynb
-kpnn-with-sc.ipynb
+fba/context-specific-metabolic-omics.ipynb
+carnival/single-sample-carnival-transcriptomics.ipynb
+carnival/network-sampler.ipynb
+carnival/network-sampler-example.ipynb
+ml/kpnn-with-sc.ipynb
 ```
 
 ## Additional Tutorials

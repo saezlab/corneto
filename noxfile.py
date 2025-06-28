@@ -1,247 +1,311 @@
 # -*- coding: utf-8 -*-
-import glob
+from __future__ import annotations
+
+import fnmatch
 import os
+import re
 import shutil
+from collections import defaultdict
+from pathlib import Path
+from typing import Iterable, Optional, Set
 
 import nox
+
+# -----------------------------------------------------------------------------
+# Global configuration
+# -----------------------------------------------------------------------------
 
 nox.options.reuse_existing_virtualenvs = True
 nox.options.error_on_missing_interpreters = False
 
-TUTORIAL_BASE = os.path.join("docs", "tutorials")
-TUTORIAL_DIRS = sorted(
-    [os.path.basename(path) for path in glob.glob(os.path.join(TUTORIAL_BASE, "*")) if os.path.isdir(path)]
-)
+PYTHON_VERSIONS: tuple[str, ...] = ("3.10", "3.11", "3.12")
+
+# Paths -----------------------------------------------------------------------
+
+PROJECT_ROOT = Path(__file__).parent
+DOCS_SRC = PROJECT_ROOT / "docs"
+DOCS_HTML = DOCS_SRC / "_build" / "html"
+DOCS_LINKCHECK = DOCS_SRC / "_build" / "linkcheck"
+JUPYTER_CACHE = DOCS_SRC / "_jupyter-cache"
+
+TUTORIALS_ROOT = DOCS_SRC / "tutorials"
+
+# Notebook execution ----------------------------------------------------------
+
+SKIP_DIR_KEYWORDS: Set[str] = {".ipynb_checkpoints", "__pycache__", ".git"}
+MANIFEST_FILE = "pixi.toml"
+KERNEL_FMT = "pixi-{stem}"
 
 
-@nox.session(python=["3.10", "3.11", "3.12"])
-def tests(session):
-    """Run the unit tests under multiple Python versions.
-    Installs the package in editable mode with dev and docs extras,
-    then runs pytest against the tests/ directory.
+# -----------------------------------------------------------------------------
+# Helpers
+# -----------------------------------------------------------------------------
+
+
+def _install(session: nox.Session, extras: str | Iterable[str] = "") -> None:
+    extras_str = extras if isinstance(extras, str) else ",".join(extras)
+    target = f".[{extras_str}]" if extras_str else "."
+    session.install("-e", target)
+
+
+def _pixi_available(session: nox.Session) -> bool:
+    try:
+        session.run("pixi", "--version", external=True, silent=True)
+        return True
+    except Exception:
+        return False
+
+
+def _gather_notebooks(base_dir: Path) -> list[Path]:
+    return sorted(nb for nb in base_dir.rglob("*.ipynb") if not SKIP_DIR_KEYWORDS.intersection(nb.parts))
+
+
+def _pixi_run(session: nox.Session, manifest: Path, *cmd: str) -> None:
+    session.run("pixi", "run", "--manifest-path", str(manifest), *cmd, external=True)
+
+
+# -----------------------------------------------------------------------------
+# Notebook filtering
+# -----------------------------------------------------------------------------
+
+
+def _filter_notebooks(notebooks: list[Path], patterns: list[str]) -> list[Path]:
+    if not patterns:
+        return notebooks
+
+    regexes: list[re.Pattern[str]] = []
+    for p in patterns:
+        try:
+            regexes.append(re.compile(p))
+        except re.error:
+            regexes.append(re.compile(fnmatch.translate(p)))
+
+    return [nb for nb in notebooks if any(rx.search(nb.as_posix()) for rx in regexes)]
+
+
+# -----------------------------------------------------------------------------
+# Notebook caching
+# -----------------------------------------------------------------------------
+
+
+@nox.session(name="cache_notebooks_with_pixi")
+def cache_notebooks_with_pixi(session: nox.Session) -> None:
+    """Execute all (or selected) notebooks under *docs/* with per-directory Pixi
+    isolation.
+
+    Pass regex *or* glob patterns after “--”, e.g.:
+
+        nox -s cache_notebooks_with_pixi -- "*metabolic*" "^docs/.*intro.ipynb$"
     """
-    session.install("-e", ".[dev,docs]")
-    session.run("pytest", "tests")
+    _install(session, extras=["dev"])
+    session.install("papermill", "ipykernel")
+
+    use_pixi = _pixi_available(session)
+    if not use_pixi:
+        session.warn("Pixi CLI not found – notebooks will run in the dev environment.")
+
+    # 1 – collect and optionally filter notebooks ---------------------------
+    all_nbs = _gather_notebooks(TUTORIALS_ROOT)
+    notebooks = _filter_notebooks(all_nbs, session.posargs)
+
+    # 2 – group by manifest path (None → dev env) ---------------------------
+    groups: dict[Optional[Path], list[Path]] = defaultdict(list)
+    for nb in notebooks:
+        manifest = nb.parent / MANIFEST_FILE if use_pixi else None
+        print(f"Manifest for {nb}: {manifest}")
+        if manifest and manifest.exists():
+            groups[manifest].append(nb)
+        else:
+            print(f"No manifest for {nb} – running in dev env")
+            groups[None].append(nb)
+
+    # 3 – run notebooks that *don’t* need Pixi first ------------------------
+    for nb in sorted(groups.pop(None, [])):
+        session.log(f"📓 {nb.relative_to(PROJECT_ROOT)}  (dev env)")
+        with session.chdir(nb.parent):
+            session.run("papermill", str(nb.name), str(nb.name), external=True)
+
+    # 4 – run each manifest group exactly once -----------------------------
+    for manifest, nbs in groups.items():
+        _run_directory_notebooks_with_pixi(session, manifest, sorted(nbs))
 
 
-@nox.session(python="3.10")
-def lint(session):
-    """Lint code with ruff (checks only, no auto-fix).
-    Installs dev extras, then runs:
-      ruff check corneto --exclude tests
-    """
-    session.install("-e", ".[dev]")
-    session.run("ruff", "check", "corneto", "--exclude", "tests")
+def _run_directory_notebooks_with_pixi(
+    session: nox.Session,
+    manifest: Path,
+    notebooks: list[Path],
+) -> None:
+    dir_id = manifest.parent.relative_to(PROJECT_ROOT).as_posix().replace("/", "-")
+    kernel = KERNEL_FMT.format(stem=dir_id)
 
-
-@nox.session(python="3.10")
-def format(session):
-    """Auto-fix formatting and linting issues with ruff.
-    Installs dev extras, then runs:
-      ruff check corneto --exclude tests --fix
-      ruff format corneto --exclude tests
-    """
-    session.install("-e", ".[dev]")
-    session.run("ruff", "check", "corneto", "--exclude", "tests", "--fix")
-    session.run("ruff", "format", "corneto", "--exclude", "tests")
-
-
-@nox.session(python="3.10")
-def typing(session):
-    """Run static type checks with mypy.
-    Installs dev extras, then runs:
-      mypy corneto
-    """
-    session.install("-e", ".[dev]")
-    session.run("mypy", "corneto")
-
-
-@nox.session(name="cache_tutorial_notebooks", reuse_venv=True)
-@nox.parametrize("tutorial_name", TUTORIAL_DIRS)
-def cache_tutorial_notebooks(session, tutorial_name):
-    """For each .ipynb under docs/tutorials/<tutorial_name>:
-    1) install project + dev extras,
-    2) install any per-notebook requirements.txt,
-    3) register an ipykernel that points to *this* venv,
-    4) execute the notebook in-place with Papermill using that kernel.
-    """
-    tutorial_path = os.path.join("docs", "tutorials", tutorial_name)
-
-    # 1) Install our project with dev dependencies
-    session.log(f"[{tutorial_name}] Installing project (dev dependencies)…")
-    session.install("-e", ".[dev]")
-
-    # 2) Install Papermill + execution dependencies
-    session.log(f"[{tutorial_name}] Installing papermill + supporting libraries…")
-    session.install("papermill", "nbformat", "jupyter_client", "ipykernel")
-
-    # 3) Ensure this venv owns the 'python3' kernelspec so papermill uses it
-    session.log(f"[{tutorial_name}] Registering ipykernel in this venv…")
-    session.run(
+    # -- resolve env + install tooling --------------------------------------
+    session.run("pixi", "install", "--manifest-path", str(manifest), external=True)
+    _pixi_run(session, manifest, "python", "-m", "pip", "install", "-e", ".[dev]")
+    _pixi_run(session, manifest, "python", "-m", "pip", "install", "ipykernel", "papermill")
+    _pixi_run(session, manifest, "dot", "-c")
+    _pixi_run(
+        session,
+        manifest,
         "python",
         "-m",
         "ipykernel",
         "install",
-        "--sys-prefix",  # write into <venv>/share/jupyter/kernels
+        "--user",
         "--name",
-        "python3",  # shadows any user-level 'python3' spec
-        "--display-name",
-        f"Python (nox-{tutorial_name})",
-        external=True,
+        kernel,
     )
 
-    # 4) Find all notebooks in this tutorial folder
-    notebooks = glob.glob(os.path.join(tutorial_path, "**", "*.ipynb"), recursive=True)
-    if not notebooks:
-        session.log(f"[{tutorial_name}] No .ipynb files found under {tutorial_path}")
-        return
+    # -- run each notebook ---------------------------------------------------
+    for nb in notebooks:
+        session.log(f"📓 {nb.relative_to(PROJECT_ROOT)}")
+        with session.chdir(nb.parent):
+            session.run(
+                "pixi",
+                "run",
+                "--manifest-path",
+                str(manifest),
+                "papermill",
+                str(nb.name),
+                str(nb.name),
+                "-k",
+                kernel,
+                external=True,
+            )
 
-    for nb_path in notebooks:
-        nb_dir = os.path.dirname(nb_path)
-        req_file = os.path.join(nb_dir, "requirements.txt")
-
-        # 4a) Install notebook-specific requirements if present
-        if os.path.isfile(req_file):
-            rel_req = os.path.relpath(req_file, tutorial_path)
-            session.log(f"[{tutorial_name}] Installing requirements: {rel_req}")
-            session.install("-r", req_file)
-
-        # 4b) Execute the notebook in-place with Papermill
-        rel_nb = os.path.relpath(nb_path, tutorial_path)
-        session.log(f"[{tutorial_name}] Executing (via papermill) {rel_nb} …")
-        session.run("papermill", nb_path, nb_path, "--kernel", "python3")
-
-
-# ────────────────────────────────────────────────────────────────────────
-# Documentation sessions (mirroring tox's docs* envs)
-#    Each session installs only the docs extras and runs sphinx-build
-#    with the appropriate flags. Myst_nb caching must be enabled in docs/conf.py:
-#      jupyter_execute_notebooks = "cache"
-#      jupyter_cache_path = os.path.join(os.path.dirname(__file__), "_jupyter-cache")
-# ────────────────────────────────────────────────────────────────────────
-DOCS_SOURCE = "docs"
-DOCS_HTML_BUILD = os.path.join(DOCS_SOURCE, "_build", "html")
-DOCS_LINKCHECK_BUILD = os.path.join(DOCS_SOURCE, "_build", "linkcheck")
-JUPYTER_CACHE_DIR = os.path.join(DOCS_SOURCE, "_jupyter-cache")
+    # -- clean once per directory -------------------------------------------
+    try:
+        session.run(
+            "pixi",
+            "clean",
+            "--manifest-path",
+            str(manifest),
+            external=True,
+            silent=True,
+        )
+    except Exception:
+        session.warn(f"Pixi clean failed for {manifest}")
 
 
-@nox.session(python="3.10")
-def docs(session):
-    """Build documentation (HTML) with myst_nb caching.
-    Equivalent to tox: [testenv:docs]
-    """
-    session.install("-e", ".[docs]")
-    os.makedirs(JUPYTER_CACHE_DIR, exist_ok=True)
-    session.run("sphinx-build", "-b", "html", DOCS_SOURCE, DOCS_HTML_BUILD)
+# -----------------------------------------------------------------------------
+# Quality assurance
+# -----------------------------------------------------------------------------
 
 
-@nox.session(python="3.10")
-def docs_force(session):
-    """Build docs forcing notebook re-execution.
-    Equivalent to tox: [testenv:docs-force]
-    """
-    session.install("-e", ".[docs]")
-    os.makedirs(JUPYTER_CACHE_DIR, exist_ok=True)
-    session.run(
-        "sphinx-build",
-        "-b",
-        "html",
-        "-D",
-        "nb_execution_mode=force",
-        DOCS_SOURCE,
-        DOCS_HTML_BUILD,
-    )
+@nox.session(python=PYTHON_VERSIONS)
+def tests(session: nox.Session) -> None:
+    """Run pytest across supported interpreters."""
+    _install(session, extras=["dev", "docs"])
+    session.run("pytest", "tests", *session.posargs)
 
 
-@nox.session(python="3.10")
-def docs_clean(session):
-    """Clean the docs build directory and rebuild.
-    Equivalent to tox: [testenv:docs-clean]
-    """
-    session.install("-e", ".[docs]")
-    if os.path.isdir(DOCS_HTML_BUILD):
-        shutil.rmtree(DOCS_HTML_BUILD)
-    os.makedirs(JUPYTER_CACHE_DIR, exist_ok=True)
-    session.run("sphinx-build", "-b", "html", DOCS_SOURCE, DOCS_HTML_BUILD)
+@nox.session(python=PYTHON_VERSIONS)
+def lint(session: nox.Session) -> None:
+    """Static analysis with Ruff (no auto‑fix)."""
+    _install(session, extras=["dev"])
+    session.run("ruff", "check", "corneto", "--exclude", "tests", *session.posargs)
 
 
-@nox.session(python="3.10")
-def docs_werror(session):
-    """Build docs, treat warnings as errors.
-    Equivalent to tox: [testenv:docs-werror]
-    """
-    session.install("-e", ".[docs]")
-    os.makedirs(JUPYTER_CACHE_DIR, exist_ok=True)
-    session.run("sphinx-build", "-b", "html", "-W", DOCS_SOURCE, DOCS_HTML_BUILD)
+@nox.session(python=PYTHON_VERSIONS)
+def format(session: nox.Session) -> None:
+    """Apply Ruff auto‑fixes and re‑format code."""
+    _install(session, extras=["dev"])
+    session.run("ruff", "check", "corneto", "--exclude", "tests", "--fix")
+    session.run("ruff", "format", "corneto", "--exclude", "tests")
 
 
-@nox.session(python="3.10")
-def docs_all(session):
-    """Clean + force notebook execution + build + Werror.
-    Equivalent to tox: [testenv:docs-all]
-    """
-    session.install("-e", ".[docs]")
-    if os.path.isdir(DOCS_HTML_BUILD):
-        shutil.rmtree(DOCS_HTML_BUILD)
-    os.makedirs(JUPYTER_CACHE_DIR, exist_ok=True)
-    session.run(
-        "sphinx-build",
-        "-b",
-        "html",
-        "-D",
-        "nb_execution_mode=force",
-        "-W",
-        DOCS_SOURCE,
-        DOCS_HTML_BUILD,
-    )
+@nox.session(python=PYTHON_VERSIONS)
+def typing(session: nox.Session) -> None:
+    """Type‑check with *mypy*."""
+    _install(session, extras=["dev"])
+    session.run("mypy", "corneto", *session.posargs)
 
 
-@nox.session(python="3.10")
-def docs_linkcheck(session):
-    """Check documentation for broken links.
-    Equivalent to tox: [testenv:docs-linkcheck]
-    """
-    session.install("-e", ".[docs]")
-    session.run("sphinx-build", "-b", "linkcheck", DOCS_SOURCE, DOCS_LINKCHECK_BUILD)
+# -----------------------------------------------------------------------------
+# Documentation sessions
+# -----------------------------------------------------------------------------
 
 
-@nox.session(python="3.10")
-def generate_switcher(session):
-    """Generate switcher.json for docs version switching.
-    Equivalent to tox: [testenv:generate-switcher]
-    """
-    session.install("-e", ".[docs]")
+def _sphinx(session: nox.Session, *opts: str) -> None:
+    os.makedirs(JUPYTER_CACHE, exist_ok=True)
+    session.run("sphinx-build", "-b", "html", *opts, str(DOCS_SRC), str(DOCS_HTML))
+
+
+@nox.session(python=PYTHON_VERSIONS)
+def docs(session: nox.Session) -> None:
+    """Build HTML docs with myst‑nb cache (default)."""
+    _install(session, extras=["docs"])
+    _sphinx(session)
+
+
+@nox.session(python=PYTHON_VERSIONS)
+def docs_force(session: nox.Session) -> None:
+    """Force notebook execution, then build HTML docs."""
+    _install(session, extras=["docs"])
+    _sphinx(session, "-D", "nb_execution_mode=force")
+
+
+@nox.session(python=PYTHON_VERSIONS)
+def docs_clean(session: nox.Session) -> None:
+    """Remove previous build and rebuild HTML docs."""
+    _install(session, extras=["docs"])
+    if DOCS_HTML.exists():
+        shutil.rmtree(DOCS_HTML)
+    _sphinx(session)
+
+
+@nox.session(python=PYTHON_VERSIONS)
+def docs_werror(session: nox.Session) -> None:
+    """Build docs but fail on warnings."""
+    _install(session, extras=["docs"])
+    _sphinx(session, "-W")
+
+
+@nox.session(python=PYTHON_VERSIONS)
+def docs_all(session: nox.Session) -> None:
+    """Clean, force notebook execution, and build docs with warnings as errors."""
+    _install(session, extras=["docs"])
+    if DOCS_HTML.exists():
+        shutil.rmtree(DOCS_HTML)
+    _sphinx(session, "-D", "nb_execution_mode=force", "-W")
+
+
+@nox.session(python=PYTHON_VERSIONS)
+def docs_linkcheck(session: nox.Session) -> None:
+    """Verify outbound links."""
+    _install(session, extras=["docs"])
+    session.run("sphinx-build", "-b", "linkcheck", str(DOCS_SRC), str(DOCS_LINKCHECK))
+
+
+@nox.session(python=PYTHON_VERSIONS)
+def generate_switcher(session: nox.Session) -> None:
+    """Generate *switcher.json* used by Read‑the‑Docs version switcher."""
+    _install(session, extras=["docs"])
     session.run("python", "docs/generate_switcher.py")
 
 
-@nox.session(python="3.10")
-def docs_full(session):
-    """Full local docs test: build + generate switcher.
-    Equivalent to tox: [testenv:docs-full]
-    """
-    session.install("-e", ".[docs]")
-    os.makedirs(JUPYTER_CACHE_DIR, exist_ok=True)
-    session.run("sphinx-build", "-b", "html", DOCS_SOURCE, DOCS_HTML_BUILD)
+@nox.session(python=PYTHON_VERSIONS)
+def docs_full(session: nox.Session) -> None:
+    """Full local docs check: build + switcher generation."""
+    _install(session, extras=["docs"])
+    _sphinx(session)
     session.run("python", "docs/generate_switcher.py")
 
 
-@nox.session(python="3.10")
-def docs_serve(session):
-    """Serve the built documentation locally at http://localhost:8000.
-    Equivalent to tox: [testenv:docs-serve]
-    """
-    session.install("-e", ".[docs]")
-    if not os.path.isdir(DOCS_HTML_BUILD):
-        session.log("Docs not found. Building first…")
-        os.makedirs(JUPYTER_CACHE_DIR, exist_ok=True)
-        session.run("sphinx-build", "-b", "html", DOCS_SOURCE, DOCS_HTML_BUILD)
-    session.log("Serving docs at http://localhost:8000 (CTRL-C to quit)")
+@nox.session(python=PYTHON_VERSIONS)
+def docs_serve(session: nox.Session) -> None:
+    """Serve HTML docs at http://localhost:8000."""
+    _install(session, extras=["docs"])
+    if not DOCS_HTML.exists():
+        session.log("Docs not found – building first …")
+        _sphinx(session)
+
+    session.log("Serving docs at http://localhost:8000  (CTRL‑C to quit)")
     session.run(
         "python",
         "-m",
         "http.server",
         "8000",
         "--directory",
-        DOCS_HTML_BUILD,
+        str(DOCS_HTML),
         external=True,
     )

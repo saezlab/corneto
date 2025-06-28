@@ -12,11 +12,30 @@ from corneto.methods.future.method import FlowMethod
 class SteinerTreeFlow(FlowMethod):
     """Basic Steiner Tree optimization method as a flow-based problem.
 
-    This class implements the exact Steiner tree algorithm where, given a graph and a set of
-    terminal nodes, it finds a minimal-weight connected subgraph (tree) that spans all terminals.
-    It now accepts a single value or a list for both max_flow and root_vertex.
-    If a list is provided, its length must equal the number of samples;
-    if a single value is provided, it is used for all samples.
+    This class implements the exact Steiner tree algorithm where, given a graph and a
+    set of terminal nodes, it finds a minimal-weight connected subgraph (tree) that
+    spans all terminals. The method accepts either single values or lists for both
+    max_flow and root_vertex parameters. If lists are provided, their length must
+    equal the number of samples; if single values are provided, they are used for
+    all samples.
+
+    The algorithm uses flow-based formulation to ensure connectivity and can enforce
+    acyclicity constraints. It supports both directed and undirected flow edges and
+    allows for different root selection strategies.
+
+    Attributes:
+        max_flow: Maximum flow value(s) for the optimization.
+        root_vertex: Root vertex/vertices for the tree.
+        default_edge_cost: Default cost assigned to edges without specific costs.
+        flow_name: Name of the flow variable.
+        epsilon: Tolerance for numerical constraints.
+        strict_acyclic: Whether to enforce strict acyclicity constraints.
+        in_flow_edge_type: Edge type for input flow edges.
+        out_flow_edge_type: Edge type for output flow edges.
+        root_selection_strategy: Strategy for selecting root vertices.
+        force_flow_through_root: Whether to force flow through the root vertex.
+        flow_edges: Dictionary mapping vertices to their flow edge indices.
+        terminal_flow_edges: Dictionary of terminal-specific flow edges.
     """
 
     def __init__(
@@ -37,6 +56,41 @@ class SteinerTreeFlow(FlowMethod):
         force_flow_through_root: bool = True,
         backend: Optional[Backend] = None,
     ):
+        """Initialize the SteinerTreeFlow method.
+
+        Args:
+            max_flow: Maximum flow value(s) for the optimization. Can be a single
+                float value used for all samples, or a list of floats with one
+                value per sample. If None, defaults to the number of vertices.
+            default_edge_cost: Default cost assigned to edges without specific
+                costs. Defaults to 1.0.
+            flow_name: Name of the flow variable. Defaults to VAR_FLOW.
+            root_vertex: Root vertex/vertices for the tree. Can be a single
+                vertex used for all samples, or a list with one vertex per sample.
+                If None, uses root_selection_strategy to determine roots.
+            root_selection_strategy: Strategy for selecting root vertices when
+                root_vertex is None. Either "first" (use first terminal) or
+                "best" (let optimization choose). Defaults to "first".
+            epsilon: Tolerance for numerical constraints. Defaults to 1.
+            strict_acyclic: Whether to enforce strict acyclicity constraints.
+                If True, uses acyclicity constraints; if False, uses indicator
+                constraints. Defaults to True.
+            disable_structured_sparsity: Whether to disable structured sparsity.
+                Defaults to False.
+            in_flow_edge_type: Edge type for input flow edges. Defaults to
+                EdgeType.DIRECTED.
+            out_flow_edge_type: Edge type for output flow edges. Defaults to
+                EdgeType.DIRECTED.
+            lambda_reg: Regularization parameter for the optimization.
+                Defaults to 0.0.
+            force_flow_through_root: Whether to force flow through the root
+                vertex when a root is specified. Defaults to True.
+            backend: Optimization backend to use. If None, uses default backend.
+
+        Raises:
+            ValueError: If max_flow or root_vertex lists have incorrect length
+                when provided as lists.
+        """
         super().__init__(
             lambda_reg=lambda_reg,
             disable_structured_sparsity=disable_structured_sparsity,
@@ -83,15 +137,23 @@ class SteinerTreeFlow(FlowMethod):
     def preprocess(self, graph: BaseGraph, data: Data) -> Tuple[BaseGraph, Data]:
         """Preprocess the graph and data for the Steiner tree optimization.
 
-        This method prepares the graph by adding flow edges for the chosen root vertices
-        (if provided) and for all other vertices.
+        This method prepares the graph by adding flow edges for the chosen root
+        vertices (if provided) and for all other vertices. It handles both single
+        and multiple sample scenarios, validates input parameters, and sets up
+        the appropriate edge types based on the root selection strategy.
 
         Args:
-            graph (BaseGraph): The input graph.
-            data (Data): The data containing terminal nodes.
+            graph: The input graph to be preprocessed.
+            data: The data containing terminal nodes and sample information.
 
         Returns:
-            Tuple[BaseGraph, Data]: Preprocessed graph and data.
+            A tuple containing the preprocessed graph with added flow edges and
+            the original data.
+
+        Raises:
+            ValueError: If the length of max_flow or root_vertex lists doesn't
+                match the number of samples, or if an unknown root selection
+                strategy is specified.
         """
         # Reset per-run attributes
         self._terminal_edgeflow_idx = []
@@ -174,16 +236,22 @@ class SteinerTreeFlow(FlowMethod):
     def get_flow_bounds(self, graph: BaseGraph, data: Data) -> Dict[str, Any]:
         """Get the flow bounds for the optimization problem.
 
-        Returns per-edge lower bounds and per-sample upper bounds. If a list of max_flow
-        values was provided, then the bounds are computed for each sample separately;
-        otherwise, a single value is used.
+        Computes per-edge lower bounds and per-sample upper bounds for the flow
+        variables. If a list of max_flow values was provided during initialization,
+        the bounds are computed for each sample separately; otherwise, a single
+        value is used for all samples.
 
         Args:
-            graph (BaseGraph): The input graph.
-            data (Data): The data containing terminal nodes.
+            graph: The input graph containing edge information.
+            data: The data containing sample information.
 
         Returns:
-            Dict[str, Any]: Dictionary with flow bounds configuration.
+            A dictionary containing flow bounds configuration with the following keys:
+                - 'lb': Lower bounds array(s) for flow variables
+                - 'ub': Upper bounds for flow variables
+                - 'n_flows': Number of flow variables (equal to number of samples)
+                - 'shared_bounds': Boolean indicating if bounds are shared across
+                  samples
         """
         if self._max_flow_list is not None:
             # Create a list of lower-bound arrays (one per sample)
@@ -210,18 +278,27 @@ class SteinerTreeFlow(FlowMethod):
             "shared_bounds": False,
         }
 
-    def create_flow_based_problem(self, flow_problem: ProblemDef, graph: BaseGraph, data: Data):
+    def create_flow_based_problem(self, flow_problem: ProblemDef, graph: BaseGraph, data: Data) -> ProblemDef:
         """Create the flow-based Steiner tree optimization problem.
 
-        Sets up the constraints and objectives for the Steiner tree problem.
+        Sets up the constraints and objectives for the Steiner tree problem. This
+        method configures the flow problem with appropriate constraints based on
+        the acyclicity settings, processes each sample individually, and adds
+        sample-specific constraints and objectives.
 
         Args:
-            flow_problem: The base flow problem.
-            graph (BaseGraph): The input graph.
-            data (Data): The data containing terminal nodes.
+            flow_problem: The base flow problem to be configured.
+            graph: The input graph containing edge information.
+            data: The data containing terminal nodes and sample information.
 
         Returns:
             The configured optimization problem ready to be solved.
+
+        Note:
+            This method modifies the input flow_problem by adding constraints
+            and objectives. It handles both strict acyclic and indicator-based
+            formulations, and processes constraints differently based on whether
+            root vertices are specified or determined by optimization.
         """
         flow_edge_ids = list(self.flow_edges.values())
         edge_ids = list(set(range(graph.num_edges)) - set(flow_edge_ids))
