@@ -58,7 +58,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = '/switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.0.0.dev39+1266a7d';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.0.0.dev42+c919b30';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
@@ -67,7 +67,7 @@
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="Reference" href="../../../api/index.html" />
-    <link rel="prev" title="Knowledge-primed Neural Networks (KPNNs) for single cell data" href="../../kpnn-with-sc.html" />
+    <link rel="prev" title="Knowledge-primed Neural Networks (KPNNs) for single cell data" href="../../ml/kpnn-with-sc.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -349,11 +349,11 @@
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../../context-specific-metabolic-omics.html">Context-specific metabolic networks from omics</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../single-sample-carnival-transcriptomics.html">Single sample intracellular signalling network inference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../network-sampler.html">Implementing an alternative network sampler</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../network-sampler-example.html">Exploring alternative solutions with <span class="math notranslate nohighlight">\(\epsilon\)</span>-perturbation sampling</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../kpnn-with-sc.html">Knowledge-primed Neural Networks (KPNNs) for single cell data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../fba/context-specific-metabolic-omics.html">Context-specific metabolic networks from omics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../carnival/single-sample-carnival-transcriptomics.html">Single sample intracellular signalling network inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../carnival/network-sampler.html">Implementing an alternative network sampler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../carnival/network-sampler-example.html">Exploring alternative solutions with <span class="math notranslate nohighlight">\(\epsilon\)</span>-perturbation sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../ml/kpnn-with-sc.html">Knowledge-primed Neural Networks (KPNNs) for single cell data</a></li>
 </ul>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Multi-condition signalling network inference</a></li>
@@ -740,7 +740,7 @@ Name: count, dtype: int64
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Obtain genes that pass the thresholds</span>
-<span class="n">genes1</span> <span class="o">=</span> <span class="n">dc</span><span class="o">.</span><span class="n">filter_by_expr</span><span class="p">(</span>
+<span class="n">dc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">filter_by_expr</span><span class="p">(</span>
     <span class="n">adata1</span><span class="p">,</span>
     <span class="n">group</span><span class="o">=</span><span class="s2">&quot;condition&quot;</span><span class="p">,</span>
     <span class="n">min_count</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
@@ -748,9 +748,6 @@ Name: count, dtype: int64
     <span class="n">large_n</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
     <span class="n">min_prop</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
 <span class="p">)</span>
-
-<span class="c1"># Filter by these genes</span>
-<span class="n">adata1</span> <span class="o">=</span> <span class="n">adata1</span><span class="p">[:,</span> <span class="n">genes1</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 <span class="n">adata1</span>
 </pre></div>
 </div>
@@ -792,33 +789,33 @@ Name: count, dtype: int64
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Log2 fold change &amp; Wald test p-value: condition Leukemic_spontaneous vs Normal
-             baseMean  log2FoldChange     lfcSE       stat        pvalue  \
-ID                                                                         
-Itm2a      319.854773        1.040954  0.173013   6.016633  1.780827e-09   
-Sergef     518.491011        1.165972  0.102389  11.387652  4.818002e-30   
-Fam109a    353.074249        0.270614  0.099378   2.723069  6.467861e-03   
-Dhx9     28622.656109       -0.009588  0.058553  -0.163746  8.699308e-01   
-Ssu72     3007.691599       -0.047053  0.044517  -1.056965  2.905276e-01   
-...               ...             ...       ...        ...           ...   
-Ctsw       204.692803       -1.015983  0.513345  -1.979142  4.780005e-02   
-Ryk         82.285327       -2.689443  0.325347  -8.266384  1.380837e-16   
-Rhd        519.107839       -4.933983  0.449259 -10.982487  4.639733e-28   
-Pxmp4      791.774976       -0.367077  0.068277  -5.376332  7.601849e-08   
-Gm25500      9.166514        0.879435  0.429185   2.049083  4.045397e-02   
+                   baseMean  log2FoldChange     lfcSE      stat        pvalue  \
+ID                                                                              
+1810058I24Rik   2306.834064       -0.520564  0.209899 -2.480062  1.313597e-02   
+Lca5             588.642616       -0.161766  0.133110 -1.215284  2.242579e-01   
+Ndufa10         4117.949269        0.398850  0.069244  5.760057  8.408572e-09   
+Appbp2          2465.170707        0.118539  0.079705  1.487218  1.369574e-01   
+Kifc5b           690.030303       -0.424162  0.099361 -4.268891  1.964470e-05   
+...                     ...             ...       ...       ...           ...   
+Cysltr2          286.562425       -4.825286  0.629909 -7.660289  1.855156e-14   
+4632428C04Rik     56.421523       -2.093111  0.276118 -7.580482  3.442732e-14   
+Rpl3l            139.393115       -2.158983  0.363642 -5.937118  2.900761e-09   
+Zmym5           2503.994249       -0.176314  0.076212 -2.313479  2.069633e-02   
+Calr           31398.387870        0.239688  0.101100  2.370808  1.774925e-02   
 
-                 padj  
-ID                     
-Itm2a    5.850674e-09  
-Sergef   9.569088e-29  
-Fam109a  1.008099e-02  
-Dhx9     8.900444e-01  
-Ssu72    3.376523e-01  
-...               ...  
-Ctsw     6.505999e-02  
-Ryk      8.512167e-16  
-Rhd      7.603230e-27  
-Pxmp4    2.122300e-07  
-Gm25500  5.581062e-02  
+                       padj  
+ID                           
+1810058I24Rik  1.963385e-02  
+Lca5           2.674048e-01  
+Ndufa10        2.596737e-08  
+Appbp2         1.710551e-01  
+Kifc5b         4.193482e-05  
+...                     ...  
+Cysltr2        9.467430e-14  
+4632428C04Rik  1.721366e-13  
+Rpl3l          9.335902e-09  
+Zmym5          3.000957e-02  
+Calr           2.599996e-02  
 
 [13585 rows x 6 columns]
 </pre></div>
@@ -874,45 +871,45 @@ Gm25500  5.581062e-02
       <td>958.998149</td>
       <td>-6.296339</td>
       <td>0.244241</td>
-      <td>-25.779249</td>
-      <td>1.515461e-146</td>
-      <td>1.281368e-142</td>
+      <td>-25.779215</td>
+      <td>1.516794e-146</td>
+      <td>1.279074e-142</td>
     </tr>
     <tr>
       <th>Polm</th>
       <td>2883.081884</td>
       <td>-7.255498</td>
-      <td>0.281540</td>
-      <td>-25.770766</td>
-      <td>1.886446e-146</td>
-      <td>1.281368e-142</td>
+      <td>0.281539</td>
+      <td>-25.770836</td>
+      <td>1.883068e-146</td>
+      <td>1.279074e-142</td>
     </tr>
     <tr>
       <th>Kdm5b</th>
       <td>2202.514358</td>
       <td>-5.510307</td>
-      <td>0.220789</td>
-      <td>-24.957387</td>
-      <td>1.775396e-137</td>
-      <td>8.039587e-134</td>
+      <td>0.220788</td>
+      <td>-24.957441</td>
+      <td>1.772980e-137</td>
+      <td>8.028642e-134</td>
     </tr>
     <tr>
       <th>Milr1</th>
       <td>1647.365126</td>
       <td>1.244237</td>
       <td>0.050208</td>
-      <td>24.781432</td>
-      <td>1.421631e-135</td>
-      <td>4.828216e-132</td>
+      <td>24.781408</td>
+      <td>1.422471e-135</td>
+      <td>4.831069e-132</td>
     </tr>
     <tr>
       <th>Adgre5</th>
       <td>10346.763067</td>
       <td>-3.102891</td>
       <td>0.125360</td>
-      <td>-24.751781</td>
-      <td>2.966356e-135</td>
-      <td>8.059589e-132</td>
+      <td>-24.751915</td>
+      <td>2.956557e-135</td>
+      <td>8.032965e-132</td>
     </tr>
   </tbody>
 </table>
@@ -924,7 +921,7 @@ Gm25500  5.581062e-02
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Obtain genes that pass the thresholds</span>
-<span class="n">genes2</span> <span class="o">=</span> <span class="n">dc</span><span class="o">.</span><span class="n">filter_by_expr</span><span class="p">(</span>
+<span class="n">dc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">filter_by_expr</span><span class="p">(</span>
     <span class="n">adata2</span><span class="p">,</span>
     <span class="n">group</span><span class="o">=</span><span class="s2">&quot;condition&quot;</span><span class="p">,</span>
     <span class="n">min_count</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
@@ -932,9 +929,6 @@ Gm25500  5.581062e-02
     <span class="n">large_n</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
     <span class="n">min_prop</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
 <span class="p">)</span>
-
-<span class="c1"># Filter by these genes</span>
-<span class="n">adata2</span> <span class="o">=</span> <span class="n">adata2</span><span class="p">[:,</span> <span class="n">genes2</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 <span class="n">adata2</span>
 </pre></div>
 </div>
@@ -976,33 +970,33 @@ Gm25500  5.581062e-02
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Log2 fold change &amp; Wald test p-value: condition Leukemic_SB vs Normal
-             baseMean  log2FoldChange     lfcSE       stat        pvalue  \
-ID                                                                         
-Itm2a      336.316323        0.710476  0.224228   3.168537  1.532085e-03   
-Sergef     692.078769        1.218302  0.070644  17.245742  1.204559e-66   
-Fam109a    382.268647        0.329745  0.097073   3.396873  6.816065e-04   
-Dhx9     27794.304719       -0.031645  0.064081  -0.493828  6.214276e-01   
-Ssu72     2994.457694        0.004410  0.061412   0.071816  9.427485e-01   
-...               ...             ...       ...        ...           ...   
-Ctsw       151.303280       -1.150780  0.374313  -3.074381  2.109397e-03   
-Ryk         50.267450       -2.400835  0.309995  -7.744750  9.576982e-15   
-Rhd        259.540718       -4.740190  0.424503 -11.166440  5.951875e-29   
-Pxmp4      783.587183       -0.148554  0.095118  -1.561793  1.183368e-01   
-Gm25500      8.618646        0.386326  0.302098   1.278810  2.009640e-01   
+                   baseMean  log2FoldChange     lfcSE       stat  \
+ID                                                                 
+1810058I24Rik   2064.811388       -0.442806  0.118660  -3.731708   
+Lca5             510.125522       -0.359272  0.149948  -2.395976   
+Ndufa10         4456.508043        0.394199  0.090897   4.336742   
+Appbp2          2462.624276        0.090457  0.064445   1.403626   
+Kifc5b           592.263227       -0.501251  0.082228  -6.095893   
+...                     ...             ...       ...        ...   
+Cysltr2          138.715435       -5.529876  0.471282 -11.733688   
+4632428C04Rik     30.799835       -2.844812  0.312001  -9.117946   
+Rpl3l            105.987870       -1.395339  0.433373  -3.219718   
+Zmym5           2220.329783       -0.312692  0.074025  -4.224160   
+Calr           35244.098802        0.385481  0.089990   4.283597   
 
-                 padj  
-ID                     
-Itm2a    2.906321e-03  
-Sergef   2.409837e-64  
-Fam109a  1.365862e-03  
-Dhx9     6.749000e-01  
-Ssu72    9.529865e-01  
-...               ...  
-Ctsw     3.916116e-03  
-Ryk      6.703387e-14  
-Rhd      1.325231e-27  
-Pxmp4    1.573130e-01  
-Gm25500  2.530504e-01  
+                     pvalue          padj  
+ID                                         
+1810058I24Rik  1.901861e-04  4.137057e-04  
+Lca5           1.657617e-02  2.635358e-02  
+Ndufa10        1.446102e-05  3.691401e-05  
+Appbp2         1.604301e-01  2.067697e-01  
+Kifc5b         1.088284e-09  4.606051e-09  
+...                     ...           ...  
+Cysltr2        8.564356e-32  2.381673e-30  
+4632428C04Rik  7.656182e-20  8.495320e-19  
+Rpl3l          1.283169e-03  2.467662e-03  
+Zmym5          2.398333e-05  5.918124e-05  
+Calr           1.838955e-05  4.627248e-05  
 
 [13404 rows x 6 columns]
 </pre></div>
@@ -1058,36 +1052,36 @@ Gm25500  2.530504e-01
       <td>2252.744179</td>
       <td>-9.412063</td>
       <td>0.308793</td>
-      <td>-30.480194</td>
-      <td>4.769746e-204</td>
-      <td>6.393368e-200</td>
+      <td>-30.480193</td>
+      <td>4.769906e-204</td>
+      <td>6.393582e-200</td>
     </tr>
     <tr>
       <th>Itga2b</th>
       <td>8434.243135</td>
       <td>-11.914356</td>
       <td>0.401437</td>
-      <td>-29.679287</td>
-      <td>1.421232e-193</td>
-      <td>9.525096e-190</td>
+      <td>-29.679285</td>
+      <td>1.421308e-193</td>
+      <td>9.525603e-190</td>
     </tr>
     <tr>
       <th>Adgrl4</th>
       <td>148.349960</td>
       <td>-9.117488</td>
       <td>0.322229</td>
-      <td>-28.295027</td>
-      <td>3.978805e-176</td>
-      <td>1.777730e-172</td>
+      <td>-28.295029</td>
+      <td>3.978579e-176</td>
+      <td>1.777629e-172</td>
     </tr>
     <tr>
       <th>Gp1ba</th>
       <td>2396.209744</td>
       <td>-8.226071</td>
       <td>0.323265</td>
-      <td>-25.446857</td>
-      <td>7.648284e-143</td>
-      <td>2.562940e-139</td>
+      <td>-25.446856</td>
+      <td>7.648486e-143</td>
+      <td>2.563008e-139</td>
     </tr>
     <tr>
       <th>Ppbp</th>
@@ -1109,7 +1103,7 @@ Gm25500  2.530504e-01
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Retrieve CollecTRI gene regulatory network (through Omnipath)</span>
-<span class="n">collectri</span> <span class="o">=</span> <span class="n">dc</span><span class="o">.</span><span class="n">get_collectri</span><span class="p">(</span><span class="n">organism</span><span class="o">=</span><span class="s2">&quot;mouse&quot;</span><span class="p">,</span> <span class="n">split_complexes</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">collectri</span> <span class="o">=</span> <span class="n">dc</span><span class="o">.</span><span class="n">op</span><span class="o">.</span><span class="n">collectri</span><span class="p">(</span><span class="n">organism</span><span class="o">=</span><span class="s2">&quot;mouse&quot;</span><span class="p">)</span>
 <span class="n">collectri</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -1136,7 +1130,9 @@ Gm25500  2.530504e-01
       <th>source</th>
       <th>target</th>
       <th>weight</th>
-      <th>PMID</th>
+      <th>resources</th>
+      <th>references</th>
+      <th>sign_decision</th>
     </tr>
   </thead>
   <tbody>
@@ -1144,36 +1140,46 @@ Gm25500  2.530504e-01
       <th>0</th>
       <td>Myc</td>
       <td>Tert</td>
-      <td>1</td>
+      <td>1.0</td>
+      <td>DoRothEA-A;ExTRI;HTRI;NTNU.Curated;Pavlidis202...</td>
       <td>10022128;10491298;10606235;10637317;10723141;1...</td>
+      <td>PMID</td>
     </tr>
     <tr>
       <th>1</th>
       <td>Spi1</td>
-      <td>Bglap</td>
-      <td>1</td>
+      <td>Bglap3</td>
+      <td>1.0</td>
+      <td>ExTRI</td>
       <td>10022617</td>
+      <td>default activation</td>
     </tr>
     <tr>
       <th>2</th>
       <td>Spi1</td>
-      <td>Bglap3</td>
-      <td>1</td>
+      <td>Bglap</td>
+      <td>1.0</td>
+      <td>ExTRI</td>
       <td>10022617</td>
+      <td>default activation</td>
     </tr>
     <tr>
       <th>3</th>
       <td>Spi1</td>
       <td>Bglap2</td>
-      <td>1</td>
+      <td>1.0</td>
+      <td>ExTRI</td>
       <td>10022617</td>
+      <td>default activation</td>
     </tr>
     <tr>
       <th>4</th>
       <td>Smad3</td>
       <td>Jun</td>
-      <td>1</td>
+      <td>1.0</td>
+      <td>ExTRI;NTNU.Curated;TFactS;TRRUST</td>
       <td>10022869;12374795</td>
+      <td>PMID</td>
     </tr>
   </tbody>
 </table>
@@ -1210,53 +1216,53 @@ Gm25500  2.530504e-01
   <thead>
     <tr style="text-align: right;">
       <th>ID</th>
-      <th>Itm2a</th>
-      <th>Sergef</th>
-      <th>Fam109a</th>
-      <th>Dhx9</th>
-      <th>Ssu72</th>
-      <th>Eif2b2</th>
-      <th>Mks1</th>
-      <th>Vps28</th>
-      <th>Setd6</th>
-      <th>Psma4</th>
+      <th>1810058I24Rik</th>
+      <th>Lca5</th>
+      <th>Ndufa10</th>
+      <th>Appbp2</th>
+      <th>Kifc5b</th>
+      <th>Dusp14</th>
+      <th>Snx13</th>
+      <th>Hdhd3</th>
+      <th>Dnajb14</th>
+      <th>Tesk2</th>
       <th>...</th>
-      <th>Cd37</th>
-      <th>Rag2</th>
-      <th>Itgb1bp2</th>
-      <th>Sec23ip</th>
-      <th>Gosr1</th>
-      <th>Ctsw</th>
-      <th>Ryk</th>
-      <th>Rhd</th>
-      <th>Pxmp4</th>
-      <th>Gm25500</th>
+      <th>Emc7</th>
+      <th>B3galt5</th>
+      <th>Tmprss4</th>
+      <th>Kif4</th>
+      <th>Alpk2</th>
+      <th>Cysltr2</th>
+      <th>4632428C04Rik</th>
+      <th>Rpl3l</th>
+      <th>Zmym5</th>
+      <th>Calr</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <th>Leukemic_spontaneous.vs.Normal</th>
-      <td>6.016633</td>
-      <td>11.387652</td>
-      <td>2.723069</td>
-      <td>-0.163746</td>
-      <td>-1.056965</td>
-      <td>7.738037</td>
-      <td>3.636643</td>
-      <td>2.671034</td>
-      <td>6.008164</td>
-      <td>3.939368</td>
+      <td>-2.480062</td>
+      <td>-1.215284</td>
+      <td>5.760057</td>
+      <td>1.487218</td>
+      <td>-4.268891</td>
+      <td>-4.893978</td>
+      <td>-0.736225</td>
+      <td>3.792193</td>
+      <td>-2.018379</td>
+      <td>-9.098806</td>
       <td>...</td>
-      <td>3.891251</td>
-      <td>-2.875219</td>
-      <td>-0.371611</td>
-      <td>-11.321478</td>
-      <td>2.340759</td>
-      <td>-1.979142</td>
-      <td>-8.266384</td>
-      <td>-10.982487</td>
-      <td>-5.376332</td>
-      <td>2.049083</td>
+      <td>1.907317</td>
+      <td>2.085353</td>
+      <td>9.76056</td>
+      <td>-10.189153</td>
+      <td>-1.853138</td>
+      <td>-7.660289</td>
+      <td>-7.580482</td>
+      <td>-5.937118</td>
+      <td>-2.313479</td>
+      <td>2.370808</td>
     </tr>
   </tbody>
 </table>
@@ -1265,15 +1271,12 @@ Gm25500  2.530504e-01
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tf_acts1</span><span class="p">,</span> <span class="n">tf_pvals1</span> <span class="o">=</span> <span class="n">dc</span><span class="o">.</span><span class="n">run_ulm</span><span class="p">(</span><span class="n">mat</span><span class="o">=</span><span class="n">mat1</span><span class="p">,</span> <span class="n">net</span><span class="o">=</span><span class="n">collectri</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tf_acts1</span><span class="p">,</span> <span class="n">tf_pvals1</span> <span class="o">=</span> <span class="n">dc</span><span class="o">.</span><span class="n">mt</span><span class="o">.</span><span class="n">ulm</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">mat1</span><span class="p">,</span> <span class="n">net</span><span class="o">=</span><span class="n">collectri</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">tf_acts1</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Running ulm on mat with 1 samples and 13585 targets for 582 sources.
-</pre></div>
-</div>
 <div class="output text_html"><div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
@@ -1298,67 +1301,66 @@ Gm25500  2.530504e-01
       <th>Apex1</th>
       <th>Ar</th>
       <th>Arid1a</th>
+      <th>Arid1b</th>
       <th>Arid3a</th>
       <th>Arid3b</th>
       <th>Arid4a</th>
-      <th>Arid4b</th>
       <th>...</th>
+      <th>Zfpm1</th>
+      <th>Zfpm2</th>
+      <th>Zglp1</th>
+      <th>Zgpat</th>
+      <th>Zhx2</th>
       <th>Zic1</th>
       <th>Zic2</th>
+      <th>Zkscan3</th>
+      <th>Zkscan4</th>
       <th>Zkscan7</th>
-      <th>Znf143</th>
-      <th>Znf148</th>
-      <th>Znf263</th>
-      <th>Znf354c</th>
-      <th>Znf382</th>
-      <th>Znf436</th>
-      <th>Znf76</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <th>Leukemic_spontaneous.vs.Normal</th>
-      <td>1.045655</td>
-      <td>0.315712</td>
-      <td>-2.055446</td>
-      <td>0.340905</td>
-      <td>-1.094879</td>
-      <td>-0.176577</td>
-      <td>-1.167034</td>
-      <td>-1.821818</td>
-      <td>0.263631</td>
-      <td>2.369551</td>
+      <td>1.452444</td>
+      <td>-0.115657</td>
+      <td>-2.245577</td>
+      <td>0.882836</td>
+      <td>-0.298509</td>
+      <td>-0.176434</td>
+      <td>-0.632351</td>
+      <td>-0.453507</td>
+      <td>-1.821614</td>
+      <td>0.260513</td>
       <td>...</td>
-      <td>0.530625</td>
-      <td>-0.030327</td>
-      <td>1.025575</td>
-      <td>-0.545273</td>
-      <td>-1.862967</td>
-      <td>-0.883297</td>
-      <td>0.466678</td>
-      <td>-1.014019</td>
-      <td>-1.812489</td>
-      <td>-0.305558</td>
+      <td>-1.43915</td>
+      <td>0.110719</td>
+      <td>-1.527694</td>
+      <td>-0.947716</td>
+      <td>1.092937</td>
+      <td>0.530854</td>
+      <td>-0.030247</td>
+      <td>1.945875</td>
+      <td>1.945875</td>
+      <td>1.025677</td>
     </tr>
   </tbody>
 </table>
-<p>1 rows × 582 columns</p>
+<p>1 rows × 640 columns</p>
 </div></div></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dc</span><span class="o">.</span><span class="n">plot_barplot</span><span class="p">(</span>
-    <span class="n">acts</span><span class="o">=</span><span class="n">tf_acts1</span><span class="p">,</span>
-    <span class="n">contrast</span><span class="o">=</span><span class="s2">&quot;Leukemic_spontaneous.vs.Normal&quot;</span><span class="p">,</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">barplot</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">tf_acts1</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Leukemic_spontaneous.vs.Normal&quot;</span><span class="p">,</span>
     <span class="n">top</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span>
-    <span class="n">vertical</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/68d972b0bdb7053bbd25ff9e3cee5141cb35bfe8ff6164d922569cf2835bf7e9.png" src="../../../_images/68d972b0bdb7053bbd25ff9e3cee5141cb35bfe8ff6164d922569cf2835bf7e9.png" />
+<img alt="../../../_images/4cf7a52e8790862ab093e6edfe75123711ac1fb9c7f64a22865dfc769abb74bf.png" src="../../../_images/4cf7a52e8790862ab093e6edfe75123711ac1fb9c7f64a22865dfc769abb74bf.png" />
 </div>
 </div>
 </section>
@@ -1390,53 +1392,53 @@ Gm25500  2.530504e-01
   <thead>
     <tr style="text-align: right;">
       <th>ID</th>
-      <th>Itm2a</th>
-      <th>Sergef</th>
-      <th>Fam109a</th>
-      <th>Dhx9</th>
-      <th>Ssu72</th>
-      <th>Eif2b2</th>
-      <th>Mks1</th>
-      <th>Vps28</th>
-      <th>Setd6</th>
-      <th>Psma4</th>
+      <th>1810058I24Rik</th>
+      <th>Lca5</th>
+      <th>Ndufa10</th>
+      <th>Appbp2</th>
+      <th>Kifc5b</th>
+      <th>Snx13</th>
+      <th>Hdhd3</th>
+      <th>Dnajb14</th>
+      <th>Tesk2</th>
+      <th>Adnp</th>
       <th>...</th>
-      <th>Cd37</th>
-      <th>Rag2</th>
-      <th>Itgb1bp2</th>
-      <th>Sec23ip</th>
-      <th>Gosr1</th>
-      <th>Ctsw</th>
-      <th>Ryk</th>
-      <th>Rhd</th>
-      <th>Pxmp4</th>
-      <th>Gm25500</th>
+      <th>Emc7</th>
+      <th>B3galt5</th>
+      <th>Tmprss4</th>
+      <th>Kif4</th>
+      <th>Alpk2</th>
+      <th>Cysltr2</th>
+      <th>4632428C04Rik</th>
+      <th>Rpl3l</th>
+      <th>Zmym5</th>
+      <th>Calr</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <th>Leukemic_SB.vs.Normal</th>
-      <td>3.168537</td>
-      <td>17.245742</td>
-      <td>3.396873</td>
-      <td>-0.493828</td>
-      <td>0.071816</td>
-      <td>6.81284</td>
-      <td>6.314823</td>
-      <td>3.452622</td>
-      <td>5.558161</td>
-      <td>5.259825</td>
+      <td>-3.731708</td>
+      <td>-2.395976</td>
+      <td>4.336742</td>
+      <td>1.403626</td>
+      <td>-6.095893</td>
+      <td>-0.045633</td>
+      <td>6.58726</td>
+      <td>1.804979</td>
+      <td>-4.887532</td>
+      <td>1.097428</td>
       <td>...</td>
-      <td>1.184029</td>
-      <td>-2.941684</td>
-      <td>-2.355502</td>
-      <td>-7.619793</td>
-      <td>2.099912</td>
-      <td>-3.074381</td>
-      <td>-7.74475</td>
-      <td>-11.16644</td>
-      <td>-1.561793</td>
-      <td>1.27881</td>
+      <td>2.795666</td>
+      <td>3.052277</td>
+      <td>6.874866</td>
+      <td>-9.738949</td>
+      <td>1.052295</td>
+      <td>-11.733688</td>
+      <td>-9.117946</td>
+      <td>-3.219718</td>
+      <td>-4.22416</td>
+      <td>4.283597</td>
     </tr>
   </tbody>
 </table>
@@ -1445,15 +1447,12 @@ Gm25500  2.530504e-01
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tf_acts2</span><span class="p">,</span> <span class="n">tf_pvals2</span> <span class="o">=</span> <span class="n">dc</span><span class="o">.</span><span class="n">run_ulm</span><span class="p">(</span><span class="n">mat</span><span class="o">=</span><span class="n">mat2</span><span class="p">,</span> <span class="n">net</span><span class="o">=</span><span class="n">collectri</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tf_acts2</span><span class="p">,</span> <span class="n">tf_pvals2</span> <span class="o">=</span> <span class="n">dc</span><span class="o">.</span><span class="n">mt</span><span class="o">.</span><span class="n">ulm</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">mat2</span><span class="p">,</span> <span class="n">net</span><span class="o">=</span><span class="n">collectri</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">tf_acts2</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Running ulm on mat with 1 samples and 13404 targets for 571 sources.
-</pre></div>
-</div>
 <div class="output text_html"><div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
@@ -1478,67 +1477,66 @@ Gm25500  2.530504e-01
       <th>Apex1</th>
       <th>Ar</th>
       <th>Arid1a</th>
+      <th>Arid1b</th>
       <th>Arid3a</th>
       <th>Arid3b</th>
       <th>Arid4a</th>
-      <th>Arid4b</th>
       <th>...</th>
+      <th>Zfpm1</th>
+      <th>Zfpm2</th>
+      <th>Zglp1</th>
+      <th>Zgpat</th>
+      <th>Zhx2</th>
       <th>Zic1</th>
       <th>Zic2</th>
+      <th>Zkscan3</th>
+      <th>Zkscan4</th>
       <th>Zkscan7</th>
-      <th>Znf143</th>
-      <th>Znf148</th>
-      <th>Znf263</th>
-      <th>Znf354c</th>
-      <th>Znf382</th>
-      <th>Znf436</th>
-      <th>Znf76</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <th>Leukemic_SB.vs.Normal</th>
-      <td>1.053067</td>
-      <td>0.998199</td>
-      <td>-0.641643</td>
-      <td>0.976317</td>
-      <td>-0.111084</td>
-      <td>0.676713</td>
-      <td>-0.908069</td>
-      <td>-1.489229</td>
-      <td>0.929773</td>
-      <td>2.253084</td>
+      <td>1.198683</td>
+      <td>0.664987</td>
+      <td>-0.932035</td>
+      <td>1.417199</td>
+      <td>0.441126</td>
+      <td>0.676737</td>
+      <td>-1.148896</td>
+      <td>-0.229277</td>
+      <td>-1.489196</td>
+      <td>0.92969</td>
       <td>...</td>
-      <td>0.658906</td>
-      <td>-0.049635</td>
-      <td>1.316132</td>
-      <td>-0.616619</td>
-      <td>-1.524429</td>
-      <td>-0.361584</td>
-      <td>1.869067</td>
-      <td>-1.975475</td>
-      <td>-1.940144</td>
-      <td>0.405888</td>
+      <td>-1.618176</td>
+      <td>-0.165154</td>
+      <td>-0.623824</td>
+      <td>-1.382751</td>
+      <td>1.35549</td>
+      <td>0.659029</td>
+      <td>-0.049623</td>
+      <td>1.390877</td>
+      <td>1.390877</td>
+      <td>1.316184</td>
     </tr>
   </tbody>
 </table>
-<p>1 rows × 571 columns</p>
+<p>1 rows × 625 columns</p>
 </div></div></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dc</span><span class="o">.</span><span class="n">plot_barplot</span><span class="p">(</span>
-    <span class="n">acts</span><span class="o">=</span><span class="n">tf_acts2</span><span class="p">,</span>
-    <span class="n">contrast</span><span class="o">=</span><span class="s2">&quot;Leukemic_SB.vs.Normal&quot;</span><span class="p">,</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">barplot</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">tf_acts2</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Leukemic_SB.vs.Normal&quot;</span><span class="p">,</span>
     <span class="n">top</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span>
-    <span class="n">vertical</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/d2c825bfedd2dd1cc756f26c836b912d21b093ab11a8ade41b4df0f727a271a8.png" src="../../../_images/d2c825bfedd2dd1cc756f26c836b912d21b093ab11a8ade41b4df0f727a271a8.png" />
+<img alt="../../../_images/3075bd0f60ae454e55b96d069288afd925e0d3a04bb6c34d19f354b5eadc1180.png" src="../../../_images/3075bd0f60ae454e55b96d069288afd925e0d3a04bb6c34d19f354b5eadc1180.png" />
 </div>
 </div>
 </section>
@@ -1621,46 +1619,46 @@ Gm25500  2.530504e-01
       <th>Mrc1</th>
       <td>314.324326</td>
       <td>3.312083</td>
-      <td>0.179665</td>
-      <td>18.434750</td>
-      <td>6.913703e-76</td>
-      <td>2.935083e-73</td>
+      <td>0.179667</td>
+      <td>18.434602</td>
+      <td>6.932705e-76</td>
+      <td>2.943150e-73</td>
     </tr>
     <tr>
       <th>St14</th>
       <td>1073.819725</td>
       <td>1.904158</td>
       <td>0.116095</td>
-      <td>16.401768</td>
-      <td>1.857530e-60</td>
-      <td>3.077383e-58</td>
+      <td>16.401736</td>
+      <td>1.858495e-60</td>
+      <td>3.078982e-58</td>
     </tr>
     <tr>
       <th>Cd48</th>
       <td>5533.470898</td>
       <td>0.664655</td>
       <td>0.054604</td>
-      <td>12.172257</td>
-      <td>4.368342e-34</td>
-      <td>1.216064e-32</td>
+      <td>12.172306</td>
+      <td>4.365699e-34</td>
+      <td>1.215328e-32</td>
     </tr>
     <tr>
       <th>Ifngr1</th>
       <td>6551.268902</td>
       <td>1.418280</td>
       <td>0.120961</td>
-      <td>11.725091</td>
-      <td>9.479917e-32</td>
-      <td>2.182791e-30</td>
+      <td>11.725146</td>
+      <td>9.473804e-32</td>
+      <td>2.181384e-30</td>
     </tr>
     <tr>
       <th>Lrrc4c</th>
       <td>82.859784</td>
       <td>10.019258</td>
-      <td>0.895645</td>
-      <td>11.186639</td>
-      <td>4.740624e-29</td>
-      <td>8.575416e-28</td>
+      <td>0.895652</td>
+      <td>11.186547</td>
+      <td>4.745541e-29</td>
+      <td>8.584311e-28</td>
     </tr>
   </tbody>
 </table>
@@ -1728,17 +1726,17 @@ Gm25500  2.530504e-01
       <td>4.360408</td>
       <td>0.346097</td>
       <td>12.598814</td>
-      <td>2.143428e-36</td>
-      <td>8.425371e-35</td>
+      <td>2.143445e-36</td>
+      <td>8.425435e-35</td>
     </tr>
     <tr>
       <th>Ptprs</th>
       <td>5164.424536</td>
       <td>1.303309</td>
       <td>0.109463</td>
-      <td>11.906392</td>
-      <td>1.096190e-32</td>
-      <td>3.250738e-31</td>
+      <td>11.906393</td>
+      <td>1.096177e-32</td>
+      <td>3.257906e-31</td>
     </tr>
     <tr>
       <th>Nlgn2</th>
@@ -1746,8 +1744,8 @@ Gm25500  2.530504e-01
       <td>1.950302</td>
       <td>0.165263</td>
       <td>11.801208</td>
-      <td>3.847485e-32</td>
-      <td>1.104319e-30</td>
+      <td>3.847470e-32</td>
+      <td>1.106684e-30</td>
     </tr>
     <tr>
       <th>Cd244</th>
@@ -1755,17 +1753,17 @@ Gm25500  2.530504e-01
       <td>2.992844</td>
       <td>0.255033</td>
       <td>11.735143</td>
-      <td>8.418360e-32</td>
-      <td>2.341073e-30</td>
+      <td>8.418380e-32</td>
+      <td>2.345945e-30</td>
     </tr>
     <tr>
       <th>Lrrc4c</th>
       <td>267.125842</td>
       <td>10.650499</td>
       <td>0.916744</td>
-      <td>11.617744</td>
-      <td>3.348637e-31</td>
-      <td>8.783783e-30</td>
+      <td>11.617743</td>
+      <td>3.348651e-31</td>
+      <td>8.783820e-30</td>
     </tr>
   </tbody>
 </table>
@@ -1790,7 +1788,7 @@ Gm25500  2.530504e-01
             </td>
             <td>
             <table>
-                <tr><td>Installed version:</td><td style='text-align:left'>v1.0.0.dev37+db611743</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.6.5</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>GUROBI, HIGHS, SCIP, SCIPY</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.3</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/Users/pablorodriguezmier/Documents/work/repos/pablormier/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href=https://github.com/saezlab/corneto>https://github.com/saezlab/corneto</a></td></tr>
+                <tr><td>Installed version:</td><td style='text-align:left'>v1.0.0.dev43+3455818f</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.6.6</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CLARABEL, GUROBI, OSQP, SCIPY, SCS</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.21</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/Users/pablorodriguezmier/Documents/work/repos/pablormier/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href=https://github.com/saezlab/corneto>https://github.com/saezlab/corneto</a></td></tr>
             </table>
             </td>
         </tr>
@@ -2087,23 +2085,23 @@ Gm25500  2.530504e-01
   <tbody>
     <tr>
       <th>Myc</th>
-      <td>5.768653</td>
+      <td>5.923504</td>
     </tr>
     <tr>
-      <th>Ubtf</th>
-      <td>3.480495</td>
+      <th>Nr3c1</th>
+      <td>-3.811319</td>
     </tr>
     <tr>
-      <th>Mtf2</th>
-      <td>2.688996</td>
+      <th>Klf1</th>
+      <td>-3.827703</td>
     </tr>
     <tr>
-      <th>Runx3</th>
-      <td>-2.588453</td>
+      <th>Pax2</th>
+      <td>-3.833334</td>
     </tr>
     <tr>
-      <th>Elf3</th>
-      <td>-2.588482</td>
+      <th>Pknox1</th>
+      <td>-3.854036</td>
     </tr>
   </tbody>
 </table>
@@ -2120,54 +2118,20 @@ Gm25500  2.530504e-01
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;Myc&#39;: 5.768653392791748,
- &#39;Ubtf&#39;: 3.4804954528808594,
- &#39;Runx3&#39;: -2.5884528160095215,
- &#39;Elf3&#39;: -2.58848237991333,
- &#39;Mecom&#39;: -2.608494997024536,
- &#39;Cebpa&#39;: -2.615208387374878,
- &#39;Nkx3-1&#39;: -2.6257927417755127,
- &#39;Esr2&#39;: -2.6459813117980957,
- &#39;Pax2&#39;: -2.677741527557373,
- &#39;Maf&#39;: -2.685983419418335,
- &#39;Mef2d&#39;: -2.7207248210906982,
- &#39;Phox2a&#39;: -2.782597303390503,
- &#39;Jun&#39;: -2.8008198738098145,
- &#39;Egr1&#39;: -2.8238978385925293,
- &#39;Pgr&#39;: -2.8435566425323486,
- &#39;Hmga1&#39;: -2.887751817703247,
- &#39;Yy1&#39;: -2.9141457080841064,
- &#39;Tcf3&#39;: -2.942206621170044,
- &#39;Ppara&#39;: -2.94732928276062,
- &#39;Mef2a&#39;: -2.970165491104126,
- &#39;Smad3&#39;: -2.971665382385254,
- &#39;Myod1&#39;: -2.983170986175537,
- &#39;Smad2&#39;: -3.014216899871826,
- &#39;Nfic&#39;: -3.015226125717163,
- &#39;Plag1&#39;: -3.0289695262908936,
- &#39;Foxo1&#39;: -3.139951229095459,
- &#39;Cebpg&#39;: -3.163689374923706,
- &#39;Ppard&#39;: -3.187347412109375,
- &#39;Rara&#39;: -3.2031116485595703,
- &#39;Fos&#39;: -3.221236228942871,
- &#39;Esr1&#39;: -3.246117115020752,
- &#39;Spi1&#39;: -3.3310794830322266,
- &#39;Nr3c1&#39;: -3.350456953048706,
- &#39;Pax6&#39;: -3.3512790203094482,
- &#39;Nfatc1&#39;: -3.4140117168426514,
- &#39;Vdr&#39;: -3.468764066696167,
- &#39;Pax3&#39;: -3.476954936981201,
- &#39;Srf&#39;: -3.7604994773864746,
- &#39;Pknox1&#39;: -3.8543660640716553,
- &#39;Cebpb&#39;: -4.067713737487793,
- &#39;Ets1&#39;: -4.081283092498779,
- &#39;Foxo3&#39;: -4.1075849533081055,
- &#39;Fli1&#39;: -4.756601810455322,
- &#39;Stat6&#39;: -4.842164516448975,
- &#39;Sp3&#39;: -5.319258689880371,
- &#39;Sp1&#39;: -5.941048622131348,
- &#39;Runx1&#39;: -5.983950138092041,
- &#39;Gata1&#39;: -6.134815216064453}
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;Myc&#39;: 5.9235035317894855,
+ &#39;Nr3c1&#39;: -3.8113193546675745,
+ &#39;Pax2&#39;: -3.833334174850489,
+ &#39;Pknox1&#39;: -3.8540363164880644,
+ &#39;Spi1&#39;: -3.8784486226011565,
+ &#39;Cebpb&#39;: -4.040106259374742,
+ &#39;Srf&#39;: -4.189355333236107,
+ &#39;Ets1&#39;: -4.531331302590852,
+ &#39;Stat6&#39;: -4.773632881709543,
+ &#39;Fli1&#39;: -5.33776968520547,
+ &#39;Sp3&#39;: -5.344046528477468,
+ &#39;Runx1&#39;: -5.974558044625292,
+ &#39;Gata1&#39;: -6.145310061493243,
+ &#39;Sp1&#39;: -6.183198826931179}
 </pre></div>
 </div>
 </div>
@@ -2208,23 +2172,23 @@ Gm25500  2.530504e-01
   <tbody>
     <tr>
       <th>Myc</th>
-      <td>5.395146</td>
+      <td>5.455686</td>
     </tr>
     <tr>
-      <th>Asxl1</th>
-      <td>3.256416</td>
+      <th>Phox2a</th>
+      <td>-4.102661</td>
     </tr>
     <tr>
-      <th>Bcor</th>
-      <td>2.956437</td>
+      <th>Runx1</th>
+      <td>-5.481558</td>
     </tr>
     <tr>
-      <th>Srebf2</th>
-      <td>2.764174</td>
+      <th>Klf1</th>
+      <td>-5.749639</td>
     </tr>
     <tr>
-      <th>Ubtf</th>
-      <td>2.616793</td>
+      <th>Pknox1</th>
+      <td>-5.823607</td>
     </tr>
   </tbody>
 </table>
@@ -2239,29 +2203,12 @@ Gm25500  2.530504e-01
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;Myc&#39;: 5.395146369934082,
- &#39;Asxl1&#39;: 3.256416082382202,
- &#39;Bcor&#39;: 2.9564368724823,
- &#39;Srebf2&#39;: 2.764174461364746,
- &#39;Ubtf&#39;: 2.616792917251587,
- &#39;Hoxa9&#39;: -2.6575746536254883,
- &#39;Pax5&#39;: -2.813767671585083,
- &#39;Sp3&#39;: -2.854238510131836,
- &#39;Foxo3&#39;: -2.857527256011963,
- &#39;Mecom&#39;: -2.883071184158325,
- &#39;Cebpb&#39;: -2.8957369327545166,
- &#39;Ets1&#39;: -3.012101888656616,
- &#39;Dot1l&#39;: -3.0354621410369873,
- &#39;Irf9&#39;: -3.061843156814575,
- &#39;Pax2&#39;: -3.125239133834839,
- &#39;Pax6&#39;: -3.176431655883789,
- &#39;Nkx3-1&#39;: -3.185379981994629,
- &#39;Stat6&#39;: -3.2588818073272705,
- &#39;Phox2a&#39;: -4.103046894073486,
- &#39;Runx1&#39;: -5.518087387084961,
- &#39;Pknox1&#39;: -5.823720455169678,
- &#39;Fli1&#39;: -6.548583507537842,
- &#39;Gata1&#39;: -8.030933380126953}
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;Myc&#39;: 5.4556864114528985,
+ &#39;Phox2a&#39;: -4.102661149717304,
+ &#39;Runx1&#39;: -5.481558125441376,
+ &#39;Pknox1&#39;: -5.823606769114178,
+ &#39;Fli1&#39;: -7.269739674233043,
+ &#39;Gata1&#39;: -8.17854383650117}
 </pre></div>
 </div>
 </div>
@@ -2278,16 +2225,17 @@ Gm25500  2.530504e-01
     <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">small</span><span class="p">)</span>
     <span class="c1"># Take the n keys from large with the largest abs(values)</span>
     <span class="n">top_large_items</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">large</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">kv</span><span class="p">:</span> <span class="nb">abs</span><span class="p">(</span><span class="n">kv</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)[:</span><span class="n">n</span><span class="p">]</span>
-    
+
     <span class="c1"># Prepare output dicts</span>
     <span class="n">small_balanced</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">small</span><span class="p">)</span>  <span class="c1"># already of size n</span>
     <span class="n">large_balanced</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">top_large_items</span><span class="p">)</span>
-    
+
     <span class="k">if</span> <span class="n">discretize</span><span class="p">:</span>
         <span class="n">small_balanced</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">small_balanced</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
         <span class="n">large_balanced</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">large_balanced</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
-    
+
     <span class="k">return</span> <span class="n">small_balanced</span><span class="p">,</span> <span class="n">large_balanced</span>
+
 
 <span class="c1"># Discretize not needed, but simplifies multi-cond analysis since both conditions have the same cost</span>
 <span class="n">d_measurements1</span><span class="p">,</span> <span class="n">d_measurements2</span> <span class="o">=</span> <span class="n">balance_dicts_by_top_abs</span><span class="p">(</span><span class="n">measurements1</span><span class="p">,</span> <span class="n">measurements2</span><span class="p">,</span> <span class="n">discretize</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -2296,29 +2244,12 @@ Gm25500  2.530504e-01
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;Myc&#39;: 1.0,
- &#39;Asxl1&#39;: 1.0,
- &#39;Bcor&#39;: 1.0,
- &#39;Srebf2&#39;: 1.0,
- &#39;Ubtf&#39;: 1.0,
- &#39;Hoxa9&#39;: -1.0,
- &#39;Pax5&#39;: -1.0,
- &#39;Sp3&#39;: -1.0,
- &#39;Foxo3&#39;: -1.0,
- &#39;Mecom&#39;: -1.0,
- &#39;Cebpb&#39;: -1.0,
- &#39;Ets1&#39;: -1.0,
- &#39;Dot1l&#39;: -1.0,
- &#39;Irf9&#39;: -1.0,
- &#39;Pax2&#39;: -1.0,
- &#39;Pax6&#39;: -1.0,
- &#39;Nkx3-1&#39;: -1.0,
- &#39;Stat6&#39;: -1.0,
- &#39;Phox2a&#39;: -1.0,
- &#39;Runx1&#39;: -1.0,
- &#39;Pknox1&#39;: -1.0,
- &#39;Fli1&#39;: -1.0,
- &#39;Gata1&#39;: -1.0}
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;Myc&#39;: np.float64(1.0),
+ &#39;Phox2a&#39;: np.float64(-1.0),
+ &#39;Runx1&#39;: np.float64(-1.0),
+ &#39;Pknox1&#39;: np.float64(-1.0),
+ &#39;Fli1&#39;: np.float64(-1.0),
+ &#39;Gata1&#39;: np.float64(-1.0)}
 </pre></div>
 </div>
 </div>
@@ -2330,29 +2261,12 @@ Gm25500  2.530504e-01
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;Gata1&#39;: -1.0,
- &#39;Runx1&#39;: -1.0,
- &#39;Sp1&#39;: -1.0,
- &#39;Myc&#39;: 1.0,
- &#39;Sp3&#39;: -1.0,
- &#39;Stat6&#39;: -1.0,
- &#39;Fli1&#39;: -1.0,
- &#39;Foxo3&#39;: -1.0,
- &#39;Ets1&#39;: -1.0,
- &#39;Cebpb&#39;: -1.0,
- &#39;Pknox1&#39;: -1.0,
- &#39;Srf&#39;: -1.0,
- &#39;Ubtf&#39;: 1.0,
- &#39;Pax3&#39;: -1.0,
- &#39;Vdr&#39;: -1.0,
- &#39;Nfatc1&#39;: -1.0,
- &#39;Pax6&#39;: -1.0,
- &#39;Nr3c1&#39;: -1.0,
- &#39;Spi1&#39;: -1.0,
- &#39;Esr1&#39;: -1.0,
- &#39;Fos&#39;: -1.0,
- &#39;Rara&#39;: -1.0,
- &#39;Ppard&#39;: -1.0}
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;Sp1&#39;: np.float64(-1.0),
+ &#39;Gata1&#39;: np.float64(-1.0),
+ &#39;Runx1&#39;: np.float64(-1.0),
+ &#39;Myc&#39;: np.float64(1.0),
+ &#39;Sp3&#39;: np.float64(-1.0),
+ &#39;Fli1&#39;: np.float64(-1.0)}
 </pre></div>
 </div>
 </div>
@@ -2405,7 +2319,7 @@ Gm25500  2.530504e-01
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Data(n_samples=1, n_feats=[38])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Data(n_samples=1, n_feats=[21])
 </pre></div>
 </div>
 </div>
@@ -2454,7 +2368,7 @@ Gm25500  2.530504e-01
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Data(n_samples=1, n_feats=[37])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Data(n_samples=1, n_feats=[20])
 </pre></div>
 </div>
 </div>
@@ -2471,7 +2385,7 @@ Gm25500  2.530504e-01
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Data(n_samples=2, n_feats=[38 37])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Data(n_samples=2, n_feats=[21 20])
 </pre></div>
 </div>
 </div>
@@ -2508,7 +2422,7 @@ Gurobi is correctly installed and working.
     <span class="n">tot_out</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">Gs</span><span class="o">.</span><span class="n">V</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Inputs: (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">tot_inp</span><span class="p">)</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">inp</span><span class="p">)</span><span class="si">}</span><span class="s2">), Outputs: (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">tot_out</span><span class="p">)</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">Gs</span>
-    
+
 
 <span class="n">Gs1</span> <span class="o">=</span> <span class="n">subgraph</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">df_top_receptors1</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <span class="nb">list</span><span class="p">(</span><span class="n">d_measurements1</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
 <span class="n">Gs2</span> <span class="o">=</span> <span class="n">subgraph</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">df_top_receptors2</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <span class="nb">list</span><span class="p">(</span><span class="n">d_measurements2</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
@@ -2516,11 +2430,8 @@ Gurobi is correctly installed and working.
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Inputs: (7/30), Outputs: (19/23)
-Inputs: (4/30), Outputs: (22/23)
-</pre></div>
-</div>
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;corneto.graph._graph.Graph at 0x31cfdfd90&gt;
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Inputs: (7/30), Outputs: (5/6)
+Inputs: (4/30), Outputs: (6/6)
 </pre></div>
 </div>
 </div>
@@ -2533,8 +2444,8 @@ Inputs: (4/30), Outputs: (22/23)
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Unreachable vertices for sample: 25
-Unreachable vertices for sample: 14
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Unreachable vertices for sample: 12
+Unreachable vertices for sample: 7
 </pre></div>
 </div>
 </div>
@@ -2546,7 +2457,7 @@ Unreachable vertices for sample: 14
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>19
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>5
 </pre></div>
 </div>
 </div>
@@ -2558,7 +2469,7 @@ Unreachable vertices for sample: 14
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>22
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>6
 </pre></div>
 </div>
 </div>
@@ -2575,16 +2486,9 @@ Unreachable vertices for sample: 14
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Gata1 -1.0 -1.0
-Foxo3 -1.0 -1.0
-Sp3 -1.0 -1.0
-Myc 1.0 1.0
-Runx1 -1.0 -1.0
 Fli1 -1.0 -1.0
-Cebpb -1.0 -1.0
-Stat6 -1.0 -1.0
-Pax6 -1.0 -1.0
-Ets1 -1.0 -1.0
-Ubtf 1.0 1.0
+Runx1 -1.0 -1.0
+Myc 1.0 1.0
 </pre></div>
 </div>
 </div>
@@ -2628,35 +2532,14 @@ We define 3 metrics to choose <span class="math notranslate nohighlight">\(\lamb
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>lambda:  0
-Unreachable vertices for sample: 25
-Unreachable vertices for sample: 14
+Unreachable vertices for sample: 12
+Unreachable vertices for sample: 7
 Set parameter Username
 Set parameter LicenseID to value 2593994
 Academic license - for non-commercial use only - expires 2025-12-02
 lambda:  0.01
-Unreachable vertices for sample: 25
-Unreachable vertices for sample: 14
-lambda:  0.1
-Unreachable vertices for sample: 25
-Unreachable vertices for sample: 14
-lambda:  0.2
-Unreachable vertices for sample: 25
-Unreachable vertices for sample: 14
-lambda:  0.3
-Unreachable vertices for sample: 25
-Unreachable vertices for sample: 14
-lambda:  0.5
-Unreachable vertices for sample: 25
-Unreachable vertices for sample: 14
-lambda:  0.7
-Unreachable vertices for sample: 25
-Unreachable vertices for sample: 14
-lambda:  0.9
-Unreachable vertices for sample: 25
-Unreachable vertices for sample: 14
-lambda:  0.95
-Unreachable vertices for sample: 25
-Unreachable vertices for sample: 14
+Unreachable vertices for sample: 12
+Unreachable vertices for sample: 7
 </pre></div>
 </div>
 </div>
@@ -2789,142 +2672,15 @@ Unreachable vertices for sample: 14
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<img alt="../../../_images/3072a818f9fa19a67a381114749a071902af04700a0b8bbb3570b53c55d6ec87.png" src="../../../_images/3072a818f9fa19a67a381114749a071902af04700a0b8bbb3570b53c55d6ec87.png" />
-</div>
 </div>
 <p>We choose the lambda value basing on the Overall agreement metric. In this case a reasonable value of <span class="math notranslate nohighlight">\(\lambda\)</span> is 2</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">c</span> <span class="o">=</span> <span class="n">CarnivalFlow</span><span class="p">(</span><span class="n">lambda_reg</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span><span class="n">indirect_rule_penalty</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">c</span> <span class="o">=</span> <span class="n">CarnivalFlow</span><span class="p">(</span><span class="n">lambda_reg</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">indirect_rule_penalty</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">P</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
 
 <span class="c1"># Optimal solutions are found when Gap is close to 0</span>
 <span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;GUROBI&quot;</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Unreachable vertices for sample: 25
-Unreachable vertices for sample: 14
-===============================================================================
-                                     CVXPY                                     
-                                     v1.6.5                                    
-===============================================================================
-(CVXPY) Jun 06 04:25:39 PM: Your problem has 16902 variables, 47640 constraints, and 1 parameters.
-(CVXPY) Jun 06 04:25:39 PM: It is compliant with the following grammars: DCP, DQCP
-(CVXPY) Jun 06 04:25:39 PM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
-(CVXPY) Jun 06 04:25:39 PM: Your problem is compiled with the CPP canonicalization backend.
--------------------------------------------------------------------------------
-                                  Compilation                                  
--------------------------------------------------------------------------------
-(CVXPY) Jun 06 04:25:39 PM: Compiling problem (target solver=GUROBI).
-(CVXPY) Jun 06 04:25:39 PM: Reduction chain: CvxAttr2Constr -&gt; Qp2SymbolicQp -&gt; QpMatrixStuffing -&gt; GUROBI
-(CVXPY) Jun 06 04:25:39 PM: Applying reduction CvxAttr2Constr
-(CVXPY) Jun 06 04:25:39 PM: Applying reduction Qp2SymbolicQp
-(CVXPY) Jun 06 04:25:39 PM: Applying reduction QpMatrixStuffing
-(CVXPY) Jun 06 04:25:39 PM: Applying reduction GUROBI
-(CVXPY) Jun 06 04:25:39 PM: Finished problem compilation (took 7.523e-02 seconds).
-(CVXPY) Jun 06 04:25:39 PM: (Subsequent compilations of this problem, using the same arguments, should take less time.)
--------------------------------------------------------------------------------
-                                Numerical solver                               
--------------------------------------------------------------------------------
-(CVXPY) Jun 06 04:25:39 PM: Invoking solver GUROBI  to obtain a solution.
-Set parameter OutputFlag to value 1
-Set parameter QCPDual to value 1
-Gurobi Optimizer version 12.0.2 build v12.0.2rc0 (mac64[arm] - Darwin 24.5.0 24F74)
-
-CPU model: Apple M4 Pro
-Thread count: 12 physical cores, 12 logical processors, using up to 12 threads
-
-Non-default parameters:
-QCPDual  1
-
-Optimize a model with 47640 rows, 16902 columns and 169821 nonzeros
-Model fingerprint: 0x5a0a2a3f
-Variable types: 4062 continuous, 12840 integer (12840 binary)
-Coefficient statistics:
-  Matrix range     [5e-01, 7e+02]
-  Objective range  [5e-01, 2e+00]
-  Bounds range     [1e+00, 1e+00]
-  RHS range        [1e+00, 1e+03]
-Found heuristic solution: objective 0.0000000
-Presolve removed 23196 rows and 1817 columns
-Presolve time: 0.36s
-Presolved: 24444 rows, 15085 columns, 140655 nonzeros
-Variable types: 3564 continuous, 11521 integer (11505 binary)
-Deterministic concurrent LP optimizer: primal and dual simplex
-Showing primal log only...
-
-Concurrent spin time: 0.00s
-
-Solved with dual simplex
-
-Root relaxation: objective -1.056250e+01, 2374 iterations, 0.11 seconds (0.28 work units)
-
-    Nodes    |    Current Node    |     Objective Bounds      |     Work
- Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
-
-     0     0  -10.56250    0   73    0.00000  -10.56250      -     -    0s
-     0     0  -10.56250    0   73    0.00000  -10.56250      -     -    0s
-     0     0   -9.82812    0  140    0.00000   -9.82812      -     -    0s
-     0     0   -9.75000    0   49    0.00000   -9.75000      -     -    0s
-     0     0   -9.35547    0  165    0.00000   -9.35547      -     -    0s
-     0     0   -9.33594    0  161    0.00000   -9.33594      -     -    0s
-     0     0   -9.17204    0  178    0.00000   -9.17204      -     -    0s
-     0     0   -9.12500    0  109    0.00000   -9.12500      -     -    1s
-     0     0   -9.12500    0   97    0.00000   -9.12500      -     -    1s
-     0     0   -9.12500    0   98    0.00000   -9.12500      -     -    1s
-H    0     0                      -0.5000000   -9.12500  1725%     -    1s
-     0     0   -9.12500    0   98   -0.50000   -9.12500  1725%     -    1s
-     0     0   -9.00000    0   62   -0.50000   -9.00000  1700%     -    1s
-     0     0   -9.00000    0   79   -0.50000   -9.00000  1700%     -    1s
-     0     0   -9.00000    0  110   -0.50000   -9.00000  1700%     -    1s
-     0     0   -9.00000    0  110   -0.50000   -9.00000  1700%     -    1s
-     0     0   -9.00000    0   13   -0.50000   -9.00000  1700%     -    1s
-     0     0   -9.00000    0   13   -0.50000   -9.00000  1700%     -    1s
-     0     0   -9.00000    0   13   -0.50000   -9.00000  1700%     -    1s
-     0     0   -9.00000    0   13   -0.50000   -9.00000  1700%     -    2s
-     0     0   -9.00000    0   64   -0.50000   -9.00000  1700%     -    2s
-     0     0   -9.00000    0   64   -0.50000   -9.00000  1700%     -    2s
-     0     0   -9.00000    0   13   -0.50000   -9.00000  1700%     -    2s
-     0     0   -9.00000    0   13   -0.50000   -9.00000  1700%     -    2s
-     0     2   -8.93817    0   12   -0.50000   -8.93817  1688%     -    2s
-H  231   239                      -5.0000000   -8.93817  78.8%   248    3s
-H  271   273                      -5.5000000   -8.93817  62.5%   234    3s
-H  408   381                      -6.0000000   -8.93817  49.0%   199    4s
-H  805   676                      -8.0000000   -8.93817  11.7%   156    4s
-  1229   609   -8.50000   10   12   -8.00000   -8.93817  11.7%   127    5s
-
-Cutting planes:
-  Gomory: 17
-  Cover: 105
-  Implied bound: 57
-  Clique: 42
-  MIR: 64
-  Inf proof: 4
-  Zero half: 13
-  RLT: 11
-  Relax-and-lift: 10
-
-Explored 3276 nodes (288205 simplex iterations) in 6.08 seconds (14.72 work units)
-Thread count was 12 (of 12 available processors)
-
-Solution count 6: -8 -6 -5.5 ... 0
-No other solutions better than -8
-
-Optimal solution found (tolerance 1.00e-04)
-Best objective -8.000000000000e+00, best bound -8.000000000000e+00, gap 0.0000%
--------------------------------------------------------------------------------
-                                    Summary                                    
--------------------------------------------------------------------------------
-(CVXPY) Jun 06 04:25:45 PM: Problem status: optimal
-(CVXPY) Jun 06 04:25:45 PM: Optimal value: 3.300e+01
-(CVXPY) Jun 06 04:25:45 PM: Compilation took 7.523e-02 seconds
-(CVXPY) Jun 06 04:25:45 PM: Solver (including time spent in interface) took 6.276e+00 seconds
-</pre></div>
-</div>
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Problem(Minimize(Expression(AFFINE, UNKNOWN, (1,))), [Inequality(Constant(CONSTANT, ZERO, (2568,))), Inequality(Variable((2568,), _flow)), Inequality(Constant(CONSTANT, ZERO, (747, 2))), Inequality(Variable((747, 2), _dag_layer)), Equality(Expression(AFFINE, UNKNOWN, (747,)), Constant(CONSTANT, ZERO, ())), Inequality(Expression(AFFINE, NONNEGATIVE, (2568, 2))), Equality(Expression(AFFINE, UNKNOWN, (25,)), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, NONNEGATIVE, (25,)), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, NONNEGATIVE, (25,)), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, NONNEGATIVE, (14,)), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, NONNEGATIVE, (14,)), Constant(CONSTANT, ZERO, ())), Inequality(Expression(AFFINE, NONNEGATIVE, (747, 2))), Inequality(Expression(AFFINE, UNKNOWN, (2531,))), Inequality(Expression(AFFINE, UNKNOWN, (2531,))), Inequality(Constant(CONSTANT, NONNEGATIVE, (688,))), Inequality(Expression(AFFINE, UNKNOWN, (2531,))), Inequality(Expression(AFFINE, UNKNOWN, (2531,))), Inequality(Constant(CONSTANT, NONNEGATIVE, (688,))), Inequality(Expression(AFFINE, NONNEGATIVE, (2568, 2))), Inequality(Expression(AFFINE, NONNEGATIVE, (2561, 2))), Inequality(Expression(AFFINE, NONNEGATIVE, (2561, 2))), Equality(Expression(AFFINE, NONNEGATIVE, (3,)), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, NONNEGATIVE, (3,)), Constant(CONSTANT, ZERO, ())), Inequality(Expression(AFFINE, NONNEGATIVE, (2568,))), Inequality(Variable((2568,), edge_has_signal_OR, boolean=True))])
 </pre></div>
 </div>
 </div>
@@ -2934,15 +2690,6 @@ Best objective -8.000000000000e+00, best bound -8.000000000000e+00, gap 0.0000%
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># optimization metrics</span>
 <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">P</span><span class="o">.</span><span class="n">objectives</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">o</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>error_sample1_0 9.0
-penalty_indirect_rules_0 [0.]
-error_sample2_1 10.0
-penalty_indirect_rules_1 [0.]
-regularization_edge_has_signal_OR 28.0
 </pre></div>
 </div>
 </div>
@@ -2958,64 +2705,6 @@ regularization_edge_has_signal_OR 28.0
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output text_html"><div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th></th>
-      <th>edge_activity1</th>
-      <th>edge_activity2</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>(Mapk14)</th>
-      <th>(Mapkapk2)</th>
-      <td>0.0</td>
-      <td>0.0</td>
-    </tr>
-    <tr>
-      <th>(Map2k3)</th>
-      <th>(Dyrk1b)</th>
-      <td>0.0</td>
-      <td>0.0</td>
-    </tr>
-    <tr>
-      <th>(Akt1)</th>
-      <th>(Chuk)</th>
-      <td>0.0</td>
-      <td>0.0</td>
-    </tr>
-    <tr>
-      <th>(Cdkn1a)</th>
-      <th>(Cdk1)</th>
-      <td>0.0</td>
-      <td>0.0</td>
-    </tr>
-    <tr>
-      <th>(Mdc1)</th>
-      <th>(Rnf8)</th>
-      <td>0.0</td>
-      <td>0.0</td>
-    </tr>
-  </tbody>
-</table>
-</div></div></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -3028,58 +2717,6 @@ regularization_edge_has_signal_OR 28.0
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output text_html"><div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>vertex_activity1</th>
-      <th>vertex_activity2</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>Ulk1</th>
-      <td>0.0</td>
-      <td>0.0</td>
-    </tr>
-    <tr>
-      <th>Siah1a</th>
-      <td>0.0</td>
-      <td>0.0</td>
-    </tr>
-    <tr>
-      <th>Sp1</th>
-      <td>0.0</td>
-      <td>-1.0</td>
-    </tr>
-    <tr>
-      <th>Hck</th>
-      <td>0.0</td>
-      <td>0.0</td>
-    </tr>
-    <tr>
-      <th>Ghr</th>
-      <td>0.0</td>
-      <td>0.0</td>
-    </tr>
-  </tbody>
-</table>
-</div></div></div>
 </div>
 <section id="inferred-network-for-contrast-1-leukemic-spontaneous-vs-normal">
 <h3>Inferred network for contrast 1: Leukemic_spontaneous vs Normal<a class="headerlink" href="#inferred-network-for-contrast-1-leukemic-spontaneous-vs-normal" title="Link to this heading">#</a></h3>
@@ -3093,9 +2730,6 @@ regularization_edge_has_signal_OR 28.0
 <span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="cell_output docutils container">
-<img alt="../../../_images/f46c4c596d790444564eda9a85329e968dac94d3ff99368d5f487ac428489860.svg" src="../../../_images/f46c4c596d790444564eda9a85329e968dac94d3ff99368d5f487ac428489860.svg" />
 </div>
 </div>
 </section>
@@ -3111,9 +2745,6 @@ regularization_edge_has_signal_OR 28.0
 <span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="cell_output docutils container">
-<img alt="../../../_images/bac9d77d0452be602088078503e115db4d55242df1064f3b8a97bd57940563a8.svg" src="../../../_images/bac9d77d0452be602088078503e115db4d55242df1064f3b8a97bd57940563a8.svg" />
 </div>
 </div>
 </section>
@@ -3131,7 +2762,7 @@ regularization_edge_has_signal_OR 28.0
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../../kpnn-with-sc.html"
+       href="../../ml/kpnn-with-sc.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
