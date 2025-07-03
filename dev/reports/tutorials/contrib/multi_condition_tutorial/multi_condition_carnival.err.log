@@ -56,16 +56,29 @@ cn.info()
 ----- stderr -----
 /home/runner/.cache/pypoetry/virtualenvs/corneto-lU1q7eKj-py3.11/lib/python3.11/site-packages/tqdm/auto.py:21: TqdmWarning: IProgress not found. Please update jupyter and ipywidgets. See https://ipywidgets.readthedocs.io/en/stable/user_install.html
   from .autonotebook import tqdm as notebook_tqdm
+----- stderr -----
+2025-07-03 12:15:33 | [INFO] Downloading data from `https://omnipathdb.org/queries/enzsub?format=json`
+----- stderr -----
+2025-07-03 12:15:34 | [INFO] Downloading data from `https://omnipathdb.org/queries/interactions?format=json`
+----- stderr -----
+2025-07-03 12:15:38 | [INFO] Downloading data from `https://omnipathdb.org/queries/complexes?format=json`
+----- stderr -----
+2025-07-03 12:15:39 | [INFO] Downloading data from `https://omnipathdb.org/queries/annotations?format=json`
+----- stderr -----
+2025-07-03 12:15:40 | [INFO] Downloading data from `https://omnipathdb.org/queries/intercell?format=json`
+----- stderr -----
+2025-07-03 12:15:40 | [INFO] Downloading data from `https://omnipathdb.org/about?format=text`
 ------------------
 
 [0;31m---------------------------------------------------------------------------[0m
 [0;31mModuleNotFoundError[0m                       Traceback (most recent call last)
-Cell [0;32mIn[1], line 13[0m
-[1;32m     10[0m [38;5;28;01mimport[39;00m[38;5;250m [39m[38;5;21;01mnumpy[39;00m[38;5;250m [39m[38;5;28;01mas[39;00m[38;5;250m [39m[38;5;21;01mnp[39;00m
-[1;32m     12[0m [38;5;66;03m# https://omnipathdb.org/[39;00m
-[0;32m---> 13[0m [38;5;28;01mimport[39;00m[38;5;250m [39m[38;5;21;01momnipath[39;00m[38;5;250m [39m[38;5;28;01mas[39;00m[38;5;250m [39m[38;5;21;01mop[39;00m
-[1;32m     15[0m [38;5;66;03m# Additional packages[39;00m
+Cell [0;32mIn[1], line 20[0m
 [1;32m     16[0m [38;5;28;01mimport[39;00m[38;5;250m [39m[38;5;21;01mpandas[39;00m[38;5;250m [39m[38;5;28;01mas[39;00m[38;5;250m [39m[38;5;21;01mpd[39;00m
+[1;32m     18[0m [38;5;66;03m# --- Additional libs ---[39;00m
+[1;32m     19[0m [38;5;66;03m# Pydeseq for differential expression analysis[39;00m
+[0;32m---> 20[0m [38;5;28;01mfrom[39;00m[38;5;250m [39m[38;5;21;01mpydeseq2[39;00m[38;5;21;01m.[39;00m[38;5;21;01mdds[39;00m[38;5;250m [39m[38;5;28;01mimport[39;00m DefaultInference, DeseqDataSet
+[1;32m     21[0m [38;5;28;01mfrom[39;00m[38;5;250m [39m[38;5;21;01mpydeseq2[39;00m[38;5;21;01m.[39;00m[38;5;21;01mds[39;00m[38;5;250m [39m[38;5;28;01mimport[39;00m DeseqStats
+[1;32m     23[0m [38;5;66;03m# https://saezlab.github.io/[39;00m
 
-[0;31mModuleNotFoundError[0m: No module named 'omnipath'
+[0;31mModuleNotFoundError[0m: No module named 'pydeseq2'
 
