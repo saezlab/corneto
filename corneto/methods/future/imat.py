@@ -227,7 +227,7 @@ class MultiSampleIMAT(MultiSampleFBA):
 
         # Now add iMAT-specific components
         # Get the flow variables created by parent class
-        F = flow_problem.expr._flow
+        F = flow_problem.expr.flow
 
         # Add non-zero indicators for the iMAT-specific logic with custom tolerance
         # NOTE: This adds a new variable "_flow_ineg" and "_flow_ipos" to the problem

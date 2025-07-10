@@ -208,7 +208,7 @@ class MultiSampleFBA(FlowMethod):
         F = flow_problem.expr.flow
         flow_problem += self.backend.Indicator(F, name=self.flux_indicator_name)
 
-        for i, sample_data in enumerate(data.samples.values()):
+        for i, (sample_name, sample_data) in enumerate(data.samples.items()):
             rxn_objectives = []
             rxn_weights = []
             lb_rxn = []
@@ -233,6 +233,8 @@ class MultiSampleFBA(FlowMethod):
             # for rxn_id, metadata in sample_data.features.items():
             for feature in sample_data.features:
                 rxn_id = feature.id
+                if not list(graph.get_edges_by_attr("id", rxn_id)):
+                    continue
                 lower_bound = feature.data.get("lower_bound", None)
                 upper_bound = feature.data.get("upper_bound", None)
                 rid = next(iter(graph.get_edges_by_attr("id", rxn_id)))
@@ -260,9 +262,10 @@ class MultiSampleFBA(FlowMethod):
 
             # Add objectives for this sample
             if rxn_objectives:
+                ids_str = "_".join([str(o) for o in rxn_objectives])
                 flow_problem.add_objective(
                     sample_flux[rxn_objectives].multiply(np.array(rxn_weights)).sum(),
-                    name=f"objective_{rxn_id}",
+                    name=f"objective_{sample_name}__{ids_str}",
                 )
 
             # Add regularization term for sparsity if requested
