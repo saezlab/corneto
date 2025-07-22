@@ -8,7 +8,7 @@
     "# COBRApy: Constraint-based metabolic modeling in Python\n",
     "\n",
     "<center>\n",
-    "<img src=\"/_static/cobrapy-logo.png\" alt=\"COBRApy logo\" style=\"width: 500px; margin: 20px;\"\n",
+    "<img src=\"../../_static/cobrapy-logo.png\" alt=\"COBRApy logo\" style=\"width: 500px; margin: 20px;\"\n",
     "     onerror=\"this.onerror=null; this.src='https://opencobra.github.io/cobrapy/media/logo.png';\"/>\n",
     "</center>\n",
     "\n",
@@ -23,6 +23,14 @@
    "outputs": [
     {
      "data": {
+      "text/html": [],
+      "text/plain": []
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "data": {
       "text/html": [
        "\n",
        "        <table style='background-color:rgba(0, 0, 0, 0);'>\n",
@@ -32,7 +40,7 @@
        "            </td>\n",
        "            <td>\n",
        "            <table>\n",
-       "                <tr><td>Installed version:</td><td style='text-align:left'>v0.9.2-beta.1 (latest: v0.9.1-alpha.3)</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.3.2, PICOS v2.4.17</td></tr><tr><td>Default backend (corneto.K):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CBC, CLARABEL, COPT, CPLEX, CVXOPT, DIFFCP, ECOS, ECOS_BB, GLPK, GLPK_MI, GUROBI, MOSEK, OSQP, PROXQP, SCIP, SCIPY, SCS</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.1</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href=https://github.com/saezlab/corneto>https://github.com/saezlab/corneto</a></td></tr>\n",
+       "                <tr><td>Installed version:</td><td style='text-align:left'>v1.0.0.dev5 (latest stable: v1.0.0-alpha)</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.6.4, PICOS v2.6.0</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CLARABEL, CVXOPT, GLOP, GLPK, GLPK_MI, GUROBI, HIGHS, OSQP, PDLP, PROXQP, SCIP, SCIPY, SCS</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.3</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/Users/pablorodriguezmier/Documents/work/repos/pablormier/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href=https://github.com/saezlab/corneto>https://github.com/saezlab/corneto</a></td></tr>\n",
        "            </table>\n",
        "            </td>\n",
        "        </tr>\n",
@@ -71,7 +79,8 @@
      "output_type": "stream",
      "text": [
       "Set parameter Username\n",
-      "Academic license - for non-commercial use only - expires 2023-11-09\n"
+      "Set parameter LicenseID to value 2593994\n",
+      "Academic license - for non-commercial use only - expires 2025-12-02\n"
      ]
     },
     {
@@ -110,13 +119,15 @@
     }
    ],
    "source": [
-    "G = cn.Graph.from_cobra_model(model)\n",
+    "from corneto.io import cobra_model_to_graph\n",
+    "\n",
+    "G = cobra_model_to_graph(model)\n",
     "G.shape"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 7,
+   "execution_count": 4,
    "id": "8807da24",
    "metadata": {},
    "outputs": [
@@ -134,7 +145,93 @@
        "   'h_c': {'__value': 1.0},\n",
        "   'nadh_c': {'__value': 1.0}},\n",
        "  'default_lb': -1000.0,\n",
-       "  'default_ub': 1000.0})"
+       "  'default_ub': 1000.0,\n",
+       "  'GPR': 'b0351 or b1241'})"
+      ]
+     },
+     "execution_count": 4,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "G.get_edge(0), G.get_attr_edge(0)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a38b11c1-6d07-4fb2-9469-3867f918d2a6",
+   "metadata": {},
+   "source": [
+    "## Flux Balance Analysis with COBRA and CORNETO\n",
+    "\n",
+    "### Using CORNETO\n",
+    "\n",
+    "CORNETO has the same type of interface for all methods, and FBA can be seen as a special type of network inference method, where we calculate obtain metabolic fluxes for edges. In its basic form, we need to indicate which reaction we want to optimize (maximize its flux) subject to metabolic constraints. For simplicity, here we maximize the biomass reaction of the textbook model from `cobrapy` without modifying any default constraint in the network"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "8d75900a-fa7b-450e-bebf-8663aa01a6f8",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "[12]"
+      ]
+     },
+     "execution_count": 5,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# This is the id of the biomass reaction\n",
+    "list(G.get_edges_by_attr(\"id\", \"Biomass_Ecoli_core\"))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "id": "376aa0ef-2eaf-4eb5-b0b4-7ce9c452ca1d",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "{'_flow': _flow: Variable((95,), _flow),\n",
+       " 'edge_has_flux': edge_has_flux: Variable((95,), edge_has_flux, boolean=True),\n",
+       " 'flow': _flow: Variable((95,), _flow)}"
+      ]
+     },
+     "execution_count": 6,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "from corneto.methods.future.fba import MultiSampleFBA\n",
+    "\n",
+    "d = cn.Data.from_cdict({\"fba_example\": {\"Biomass_Ecoli_core\": {\"role\": \"objective\"}}})\n",
+    "m = MultiSampleFBA()\n",
+    "P = m.build(G, d)\n",
+    "\n",
+    "# Variables created.\n",
+    "P.expr"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "id": "c4b42d04-52e8-4a04-b4d1-4fa91e8b045b",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "0.8739215069684303"
       ]
      },
      "execution_count": 7,
@@ -143,7 +240,253 @@
     }
    ],
    "source": [
-    "G.get_edge(0), G.get_attr_edge(0)"
+    "P.solve(solver=\"scipy\")\n",
+    "P.expr.flow[12].value"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "id": "c16d984c-365e-45f2-92b4-7305be871612",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>fluxes</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>ACALD</th>\n",
+       "      <td>-0.000000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>ACALDt</th>\n",
+       "      <td>0.000000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>ACKr</th>\n",
+       "      <td>0.000000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>ACONTa</th>\n",
+       "      <td>6.007250</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>ACONTb</th>\n",
+       "      <td>6.007250</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>...</th>\n",
+       "      <td>...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>TALA</th>\n",
+       "      <td>1.496984</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>THD2</th>\n",
+       "      <td>0.000000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>TKT1</th>\n",
+       "      <td>1.496984</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>TKT2</th>\n",
+       "      <td>1.181498</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>TPI</th>\n",
+       "      <td>7.477382</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "<p>95 rows × 1 columns</p>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "          fluxes\n",
+       "ACALD  -0.000000\n",
+       "ACALDt  0.000000\n",
+       "ACKr    0.000000\n",
+       "ACONTa  6.007250\n",
+       "ACONTb  6.007250\n",
+       "...          ...\n",
+       "TALA    1.496984\n",
+       "THD2    0.000000\n",
+       "TKT1    1.496984\n",
+       "TKT2    1.181498\n",
+       "TPI     7.477382\n",
+       "\n",
+       "[95 rows x 1 columns]"
+      ]
+     },
+     "execution_count": 8,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "import pandas as pd\n",
+    "\n",
+    "pd.DataFrame(P.expr.flow.value, index=G.get_attr_from_edges(\"id\"), columns=[\"fluxes\"])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "3a009242-a610-4365-a703-a2346cda8713",
+   "metadata": {},
+   "source": [
+    "### Using COBRA"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "id": "5bc8b371-2f8f-430d-8056-95aadf751070",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<strong><em>Optimal</em> solution with objective value 0.874</strong><br><div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>fluxes</th>\n",
+       "      <th>reduced_costs</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>ACALD</th>\n",
+       "      <td>0.000000</td>\n",
+       "      <td>8.673617e-19</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>ACALDt</th>\n",
+       "      <td>0.000000</td>\n",
+       "      <td>0.000000e+00</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>ACKr</th>\n",
+       "      <td>0.000000</td>\n",
+       "      <td>-1.734723e-18</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>ACONTa</th>\n",
+       "      <td>6.007250</td>\n",
+       "      <td>0.000000e+00</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>ACONTb</th>\n",
+       "      <td>6.007250</td>\n",
+       "      <td>0.000000e+00</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>...</th>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>TALA</th>\n",
+       "      <td>1.496984</td>\n",
+       "      <td>0.000000e+00</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>THD2</th>\n",
+       "      <td>0.000000</td>\n",
+       "      <td>-2.546243e-03</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>TKT1</th>\n",
+       "      <td>1.496984</td>\n",
+       "      <td>0.000000e+00</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>TKT2</th>\n",
+       "      <td>1.181498</td>\n",
+       "      <td>2.775558e-17</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>TPI</th>\n",
+       "      <td>7.477382</td>\n",
+       "      <td>0.000000e+00</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "<p>95 rows × 2 columns</p>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "<Solution 0.874 at 0x3345c78f0>"
+      ]
+     },
+     "execution_count": 9,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "result = model.optimize()\n",
+    "result"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "id": "08dba9eb-b69e-4de1-9864-e8e9a48b5022",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "fluxes           8.739215e-01\n",
+       "reduced_costs    2.843873e-16\n",
+       "Name: Biomass_Ecoli_core, dtype: float64"
+      ]
+     },
+     "execution_count": 10,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "result.to_frame().iloc[12, :]"
    ]
   }
  ],
@@ -163,20 +506,7 @@
    "name": "python",
    "nbconvert_exporter": "python",
    "pygments_lexer": "ipython3",
-   "version": "3.10.10"
-  },
-  "toc": {
-   "base_numbering": 1,
-   "nav_menu": {},
-   "number_sections": true,
-   "sideBar": true,
-   "skip_h1_title": false,
-   "title_cell": "Table of Contents",
-   "title_sidebar": "Contents",
-   "toc_cell": false,
-   "toc_position": {},
-   "toc_section_display": true,
-   "toc_window_display": false
+   "version": "3.12.9"
   }
  },
  "nbformat": 4,

@@ -1,0 +1,1174 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>corneto.data.Data &#8212; CORNETO  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=53e23fa6" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-Z263GN2PKK"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-Z263GN2PKK');
+            </script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/generated/corneto.data.Data';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = '/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.0.0.dev54+4db02e04';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="canonical" href="https://saezlab.github.io/corneto/api/generated/corneto.data.Data.html" />
+    <link rel="icon" href="../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="corneto.data.Sample" href="corneto.data.Sample.html" />
+    <link rel="prev" title="Handling data (corneto.data)" href="../corneto.data.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="../../_static/logo.png" class="logo__image only-light" alt="CORNETO  documentation - Home"/>
+    <img src="../../_static/logo.png" class="logo__image only-dark pst-js-only" alt="CORNETO  documentation - Home"/>
+  
+  
+</a></div>
+    
+      <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install.html">
+    Install
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../guide/index.html">
+    Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    Reference
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-external" href="https://github.com/saezlab/corneto">
+    GitHub
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install.html">
+    Install
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../guide/index.html">
+    Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/saezlab/corneto">
+    GitHub
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Packages:</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../corneto.backend.html">Optimization backend (<code class="xref py py-mod docutils literal notranslate"><span class="pre">corneto.backend</span></code>)</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../corneto.data.html">Handling data (<code class="xref py py-mod docutils literal notranslate"><span class="pre">corneto.data</span></code>)</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">corneto.data.Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="corneto.data.Sample.html">corneto.data.Sample</a></li>
+<li class="toctree-l2"><a class="reference internal" href="corneto.data.util.html">corneto.data.util</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../corneto.io.html">Input and Output (<code class="xref py py-mod docutils literal notranslate"><span class="pre">corneto.io</span></code>)</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="corneto.io.load_graph_from_sif.html">corneto.io.load_graph_from_sif</a></li>
+<li class="toctree-l2"><a class="reference internal" href="corneto.io.load_graph_from_sif_tuples.html">corneto.io.load_graph_from_sif_tuples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="corneto.io.parse_cobra_model.html">corneto.io.parse_cobra_model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="corneto.io.cobra_model_to_graph.html">corneto.io.cobra_model_to_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="corneto.io.import_cobra_model.html">corneto.io.import_cobra_model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="corneto.io.import_miom_model.html">corneto.io.import_miom_model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="corneto.io.load_graph_from_sif.html">corneto.io.load_graph_from_sif</a></li>
+<li class="toctree-l2"><a class="reference internal" href="corneto.io.load_graph_from_sif_tuples.html">corneto.io.load_graph_from_sif_tuples</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../corneto.graph.html">Graph module (<code class="xref py py-mod docutils literal notranslate"><span class="pre">corneto.graph</span></code>)</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="corneto.graph.BaseGraph.html">corneto.graph.BaseGraph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="corneto.graph.Graph.html">corneto.graph.Graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="corneto.graph.EdgeType.html">corneto.graph.EdgeType</a></li>
+<li class="toctree-l2"><a class="reference internal" href="corneto.graph.duplication_divergence_network.html">corneto.graph.duplication_divergence_network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="corneto.graph.preferential_attachment_network.html">corneto.graph.preferential_attachment_network</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../corneto.methods.html">Network inference (<code class="xref py py-mod docutils literal notranslate"><span class="pre">corneto.methods.future</span></code>)</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="corneto.methods.future.CarnivalFlow.html">corneto.methods.future.CarnivalFlow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="corneto.methods.future.CarnivalILP.html">corneto.methods.future.CarnivalILP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="corneto.methods.future.MultiSampleFBA.html">corneto.methods.future.MultiSampleFBA</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Reference</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../corneto.data.html" class="nav-link">Handling data (<code class="xref py py-mod docutils literal notranslate"><span class="pre">corneto.data</span></code>)</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">corneto.data.Data</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="corneto-data-data">
+<h1>corneto.data.Data<a class="headerlink" href="#corneto-data-data" title="Link to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="corneto.data.Data">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">corneto.data.</span></span><span class="sig-name descname"><span class="pre">Data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.data.Data" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/collections.html#collections.UserDict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UserDict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Any</span></code></a>, <a class="reference internal" href="corneto.data.Sample.html#corneto.data.Sample" title="corneto.data._base.Sample"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sample</span></code></a>]</p>
+<p>A dataset container that maps sample IDs to Sample objects.</p>
+<p>This class provides methods to add, update, delete, and manipulate samples
+and their associated features. It supports conversions from and to various
+data formats such as dictionaries and tight formats.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="corneto.data.Data.data">
+<span class="sig-name descname"><span class="pre">data</span></span><a class="headerlink" href="#corneto.data.Data.data" title="Link to this definition">#</a></dt>
+<dd><p>A mapping from sample identifiers to Sample objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dict[Any, <a class="reference internal" href="corneto.data.Sample.html#corneto.data.Sample" title="corneto.data.Sample">Sample</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Examples</p>
+<p>Create a new dataset and add a sample with features:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dataset</span> <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dataset</span><span class="o">.</span><span class="n">add_sample</span><span class="p">(</span><span class="s2">&quot;cell1&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;TP53&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;BRCA1&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+<span class="go">Dataset(num_samples=1)</span>
+</pre></div>
+</div>
+<p>Create a dataset from a dictionary:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">raw</span> <span class="o">=</span> <span class="p">{</span>
+<span class="gp">... </span>    <span class="s2">&quot;cell1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;TP53&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;BRCA1&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">},</span>
+<span class="gp">... </span>    <span class="s2">&quot;cell2&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;TP53&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;BRCA1&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">},</span>
+<span class="gp">... </span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dataset</span> <span class="o">=</span> <span class="n">Data</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+<span class="go">Dataset(num_samples=2)</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.data.Data.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.data.Data.__init__" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<p class="rubric">Methods</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#corneto.data.Data.__init__" title="corneto.data.Data.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([dict])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#corneto.data.Data.add_sample" title="corneto.data.Data.add_sample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_sample</span></code></a>(sample_id[, features])</p></td>
+<td><p>Add a new sample with the given features to the dataset.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">clear</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#corneto.data.Data.collect_features" title="corneto.data.Data.collect_features"><code class="xref py py-obj docutils literal notranslate"><span class="pre">collect_features</span></code></a>(metadata_key, metadata_value, *)</p></td>
+<td><p>Collect feature names or values across samples that have a specific metadata key-value pair.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#corneto.data.Data.copy" title="corneto.data.Data.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code></a>()</p></td>
+<td><p>Create a shallow copy of the dataset.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#corneto.data.Data.delete_sample" title="corneto.data.Data.delete_sample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delete_sample</span></code></a>(sample_id)</p></td>
+<td><p>Delete a sample from the dataset by its ID.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#corneto.data.Data.filter" title="corneto.data.Data.filter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter</span></code></a>(predicate)</p></td>
+<td><p>Filter features across all samples based on a predicate function.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#corneto.data.Data.filter_by" title="corneto.data.Data.filter_by"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_by</span></code></a>(key, value)</p></td>
+<td><p>Filter features across all samples that have metadata matching the given key and value.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#corneto.data.Data.filter_samples" title="corneto.data.Data.filter_samples"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_samples</span></code></a>(predicate)</p></td>
+<td><p>Filter samples based on a predicate function.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#corneto.data.Data.from_dict" title="corneto.data.Data.from_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_dict</span></code></a>(raw_data)</p></td>
+<td><p>Create a Data instance from a nested dictionary.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#corneto.data.Data.from_sample_value_dict" title="corneto.data.Data.from_sample_value_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_sample_value_dict</span></code></a>(condition_dict[, ...])</p></td>
+<td><p>Create a Data instance from a nested dictionary of sample IDs to feature dictionaries.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#corneto.data.Data.from_tight_format" title="corneto.data.Data.from_tight_format"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_tight_format</span></code></a>(tight_data)</p></td>
+<td><p>Create a Data instance from a tight format dictionary.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">fromkeys</span></code>(iterable[, value])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get</span></code>(k[,d])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#corneto.data.Data.get_feature_across_samples" title="corneto.data.Data.get_feature_across_samples"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_feature_across_samples</span></code></a>(feature_name)</p></td>
+<td><p>Retrieve a specific feature from all samples that contain it.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">items</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">keys</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#corneto.data.Data.merge" title="corneto.data.Data.merge"><code class="xref py py-obj docutils literal notranslate"><span class="pre">merge</span></code></a>(other)</p></td>
+<td><p>Merge another Data instance into this one.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">pop</span></code>(k[,d])</p></td>
+<td><p>If key is not found, d is returned if given, otherwise KeyError is raised.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">popitem</span></code>()</p></td>
+<td><p>as a 2-tuple; but raise KeyError if D is empty.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">setdefault</span></code>(k[,d])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#corneto.data.Data.subset_features" title="corneto.data.Data.subset_features"><code class="xref py py-obj docutils literal notranslate"><span class="pre">subset_features</span></code></a>(feature_list)</p></td>
+<td><p>Create a new Data instance containing only the specified features.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#corneto.data.Data.to_sample_value_dict" title="corneto.data.Data.to_sample_value_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_sample_value_dict</span></code></a>([value_key])</p></td>
+<td><p>Convert the dataset to a nested dictionary of sample IDs mapping to feature dictionaries, where each feature is represented as a dictionary that includes a value and optional metadata.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#corneto.data.Data.to_tight_format" title="corneto.data.Data.to_tight_format"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_tight_format</span></code></a>()</p></td>
+<td><p>Convert the dataset to a &quot;tight&quot; format, which is a dictionary with lists for samples, features, values, and metadata.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code>([E, ]**F)</p></td>
+<td><p>If E present and has a .keys() method, does:     for k in E: D[k] = E[k] If E present and lacks .keys() method, does:     for (k, v) in E: D[k] = v In either case, this is followed by: for k, v in F.items(): D[k] = v</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#corneto.data.Data.update_sample" title="corneto.data.Data.update_sample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_sample</span></code></a>(sample_id, features)</p></td>
+<td><p>Update the features of an existing sample or add a new sample if it does not exist.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">values</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.data.Data.add_sample">
+<span class="sig-name descname"><span class="pre">add_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.data.Data.add_sample" title="Link to this definition">#</a></dt>
+<dd><p>Add a new sample with the given features to the dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sample_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Unique identifier for the sample.</p></li>
+<li><p><strong>features</strong> (<em>Optional</em><em>[</em><em>Dict</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>Any</em><em>]</em><em>]</em>) – A dictionary of feature names and their values.
+Defaults to None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If a sample with the given ID already exists.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dataset</span> <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dataset</span><span class="o">.</span><span class="n">add_sample</span><span class="p">(</span><span class="s2">&quot;cell1&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;TP53&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s2">&quot;cell1&quot;</span> <span class="ow">in</span> <span class="n">dataset</span><span class="o">.</span><span class="n">data</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.data.Data.from_dict">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.data.Data.from_dict" title="Link to this definition">#</a></dt>
+<dd><p>Create a Data instance from a nested dictionary.</p>
+<p>Each key in <cite>raw_data</cite> is interpreted as a sample ID, and its value is a dictionary
+mapping feature names to feature data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>raw_data</strong> (<em>Dict</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>Dict</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>Any</em><em>]</em><em>]</em>) – Raw data dictionary.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new instance of Data containing the samples and features.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#corneto.data.Data" title="corneto.data.Data">Data</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">raw</span> <span class="o">=</span> <span class="p">{</span>
+<span class="gp">... </span>    <span class="s2">&quot;cell1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;TP53&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;BRCA1&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">},</span>
+<span class="gp">... </span>    <span class="s2">&quot;cell2&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;TP53&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+<span class="gp">... </span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dataset</span> <span class="o">=</span> <span class="n">Data</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+<span class="go">Dataset(num_samples=2)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.data.Data.filter">
+<span class="sig-name descname"><span class="pre">filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predicate</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.data.Data.filter" title="Link to this definition">#</a></dt>
+<dd><p>Filter features across all samples based on a predicate function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>predicate</strong> (<em>Callable</em><em>[</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>Any</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>]</em>) – A function that takes a sample ID,
+feature name, and feature value, returning True if the feature should be included.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>A new Data instance containing only the features that satisfy the predicate,</dt><dd><p>with empty samples excluded.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#corneto.data.Data" title="corneto.data.Data">Data</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dataset</span> <span class="o">=</span> <span class="n">Data</span><span class="o">.</span><span class="n">from_dict</span><span class="p">({</span>
+<span class="gp">... </span>    <span class="s2">&quot;cell1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;TP53&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;BRCA1&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">},</span>
+<span class="gp">... </span>    <span class="s2">&quot;cell2&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;TP53&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;EGFR&quot;</span><span class="p">:</span> <span class="mf">1.2</span><span class="p">},</span>
+<span class="gp">... </span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">filtered</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">sid</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">fvalue</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fvalue</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span> <span class="ow">and</span> <span class="n">fvalue</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">filtered</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;cell1&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">features</span>
+<span class="go">{&#39;BRCA1&#39;: 0.5}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">filtered</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;cell2&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">features</span>
+<span class="go">{&#39;EGFR&#39;: 1.2}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.data.Data.filter_by">
+<span class="sig-name descname"><span class="pre">filter_by</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.data.Data.filter_by" title="Link to this definition">#</a></dt>
+<dd><p>Filter features across all samples that have metadata matching the given key and value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The metadata key to filter by.</p></li>
+<li><p><strong>value</strong> (<em>Any</em>) – The value that the metadata key should match.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>A new Data instance containing only the features with matching metadata,</dt><dd><p>with empty samples excluded.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#corneto.data.Data" title="corneto.data.Data">Data</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dataset</span> <span class="o">=</span> <span class="n">Data</span><span class="o">.</span><span class="n">from_dict</span><span class="p">({</span>
+<span class="gp">... </span>    <span class="s2">&quot;cell1&quot;</span><span class="p">:</span> <span class="p">{</span>
+<span class="gp">... </span>        <span class="s2">&quot;TP53&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;tumor_suppressor&quot;</span><span class="p">},</span>
+<span class="gp">... </span>        <span class="s2">&quot;EGFR&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;oncogene&quot;</span><span class="p">}</span>
+<span class="gp">... </span>    <span class="p">},</span>
+<span class="gp">... </span>    <span class="s2">&quot;cell2&quot;</span><span class="p">:</span> <span class="p">{</span>
+<span class="gp">... </span>        <span class="s2">&quot;KRAS&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mf">1.2</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;oncogene&quot;</span><span class="p">},</span>
+<span class="gp">... </span>        <span class="s2">&quot;BRCA1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;tumor_suppressor&quot;</span><span class="p">}</span>
+<span class="gp">... </span>    <span class="p">}</span>
+<span class="gp">... </span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">filtered</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="s2">&quot;oncogene&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">filtered</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;cell1&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">features</span>
+<span class="go">{&#39;EGFR&#39;: {&#39;value&#39;: 0.8, &#39;type&#39;: &#39;oncogene&#39;}}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">filtered</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;cell2&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">features</span>
+<span class="go">{&#39;KRAS&#39;: {&#39;value&#39;: 1.2, &#39;type&#39;: &#39;oncogene&#39;}}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.data.Data.subset_features">
+<span class="sig-name descname"><span class="pre">subset_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature_list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.data.Data.subset_features" title="Link to this definition">#</a></dt>
+<dd><p>Create a new Data instance containing only the specified features.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>feature_list</strong> (<em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>]</em>) – List of feature names to retain in the subset.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new dataset instance with samples containing only the allowed features.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#corneto.data.Data" title="corneto.data.Data">Data</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dataset</span> <span class="o">=</span> <span class="n">Data</span><span class="o">.</span><span class="n">from_dict</span><span class="p">({</span>
+<span class="gp">... </span>    <span class="s2">&quot;cell1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;TP53&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;BRCA1&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">&quot;EGFR&quot;</span><span class="p">:</span> <span class="mf">1.2</span><span class="p">},</span>
+<span class="gp">... </span>    <span class="s2">&quot;cell2&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;TP53&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;BRCA1&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">,</span> <span class="s2">&quot;KRAS&quot;</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">}</span>
+<span class="gp">... </span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">subset_features</span><span class="p">([</span><span class="s2">&quot;TP53&quot;</span><span class="p">,</span> <span class="s2">&quot;KRAS&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subset</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;cell1&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">features</span>
+<span class="go">{&#39;TP53&#39;: -1}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.data.Data.to_tight_format">
+<span class="sig-name descname"><span class="pre">to_tight_format</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#corneto.data.Data.to_tight_format" title="Link to this definition">#</a></dt>
+<dd><p>Convert the dataset to a “tight” format, which is a dictionary with lists for samples,
+features, values, and metadata.</p>
+<p>The tight format organizes data in parallel lists where each index corresponds to a
+particular feature of a sample.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A dictionary with keys “sample”, “feature”, “value”, and “metadata”.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dict[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a>, List[Any]]</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dataset</span> <span class="o">=</span> <span class="n">Data</span><span class="o">.</span><span class="n">from_dict</span><span class="p">({</span>
+<span class="gp">... </span>    <span class="s2">&quot;cell1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;TP53&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;confidence&quot;</span><span class="p">:</span> <span class="mf">0.9</span><span class="p">},</span> <span class="s2">&quot;BRCA1&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">}</span>
+<span class="gp">... </span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tight</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">to_tight_format</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tight</span><span class="p">[</span><span class="s2">&quot;sample&quot;</span><span class="p">]</span>
+<span class="go">[&#39;cell1&#39;, &#39;cell1&#39;]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.data.Data.from_tight_format">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_tight_format</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tight_data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.data.Data.from_tight_format" title="Link to this definition">#</a></dt>
+<dd><p>Create a Data instance from a tight format dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tight_data</strong> (<em>Dict</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>List</em><em>[</em><em>Any</em><em>]</em><em>]</em>) – A dictionary with keys “sample”, “feature”,
+“value”, and “metadata” that contains parallel lists.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new Data instance constructed from the tight format data.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#corneto.data.Data" title="corneto.data.Data">Data</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tight</span> <span class="o">=</span> <span class="p">{</span>
+<span class="gp">... </span>    <span class="s2">&quot;sample&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;cell1&quot;</span><span class="p">,</span> <span class="s2">&quot;cell1&quot;</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="s2">&quot;feature&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;TP53&quot;</span><span class="p">,</span> <span class="s2">&quot;BRCA1&quot;</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;confidence&quot;</span><span class="p">:</span> <span class="mf">0.9</span><span class="p">},</span> <span class="kc">None</span><span class="p">]</span>
+<span class="gp">... </span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dataset</span> <span class="o">=</span> <span class="n">Data</span><span class="o">.</span><span class="n">from_tight_format</span><span class="p">(</span><span class="n">tight</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dataset</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;cell1&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">features</span><span class="p">[</span><span class="s2">&quot;TP53&quot;</span><span class="p">]</span>
+<span class="go">{&#39;value&#39;: -1, &#39;confidence&#39;: 0.9}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.data.Data.to_sample_value_dict">
+<span class="sig-name descname"><span class="pre">to_sample_value_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'value'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.data.Data.to_sample_value_dict" title="Link to this definition">#</a></dt>
+<dd><p>Convert the dataset to a nested dictionary of sample IDs mapping to feature dictionaries,
+where each feature is represented as a dictionary that includes a value and optional metadata.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value_key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – The key to use for feature values. Defaults to “value”.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>A nested dictionary mapping sample IDs to features and their</dt><dd><p>associated dictionaries.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dict[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a>, Dict[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a>]]</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dataset</span> <span class="o">=</span> <span class="n">Data</span><span class="o">.</span><span class="n">from_dict</span><span class="p">({</span>
+<span class="gp">... </span>    <span class="s2">&quot;cell1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;TP53&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;confidence&quot;</span><span class="p">:</span> <span class="mf">0.9</span><span class="p">},</span> <span class="s2">&quot;BRCA1&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">}</span>
+<span class="gp">... </span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sv_dict</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">to_sample_value_dict</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sv_dict</span><span class="p">[</span><span class="s2">&quot;cell1&quot;</span><span class="p">][</span><span class="s2">&quot;TP53&quot;</span><span class="p">]</span>
+<span class="go">{&#39;value&#39;: -1, &#39;confidence&#39;: 0.9}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.data.Data.from_sample_value_dict">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_sample_value_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">condition_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'value'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.data.Data.from_sample_value_dict" title="Link to this definition">#</a></dt>
+<dd><p>Create a Data instance from a nested dictionary of sample IDs to feature dictionaries.</p>
+<p>Each feature dictionary must contain the specified <cite>value_key</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>condition_dict</strong> (<em>Dict</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>Dict</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a><em>]</em><em>]</em>) – A nested dictionary where each key is a sample ID,
+and each value is a dictionary mapping feature names to feature dictionaries.</p></li>
+<li><p><strong>value_key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – The key that must be present in each feature dictionary.
+Defaults to “value”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new Data instance populated with the provided features.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#corneto.data.Data" title="corneto.data.Data">Data</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If a feature in a sample is missing the <cite>value_key</cite>.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">condition</span> <span class="o">=</span> <span class="p">{</span>
+<span class="gp">... </span>    <span class="s2">&quot;cell1&quot;</span><span class="p">:</span> <span class="p">{</span>
+<span class="gp">... </span>        <span class="s2">&quot;TP53&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;confidence&quot;</span><span class="p">:</span> <span class="mf">0.9</span><span class="p">},</span>
+<span class="gp">... </span>        <span class="s2">&quot;BRCA1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">}</span>
+<span class="gp">... </span>    <span class="p">}</span>
+<span class="gp">... </span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dataset</span> <span class="o">=</span> <span class="n">Data</span><span class="o">.</span><span class="n">from_sample_value_dict</span><span class="p">(</span><span class="n">condition</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dataset</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;cell1&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">features</span><span class="p">[</span><span class="s2">&quot;TP53&quot;</span><span class="p">]</span>
+<span class="go">{&#39;value&#39;: -1, &#39;confidence&#39;: 0.9}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.data.Data.delete_sample">
+<span class="sig-name descname"><span class="pre">delete_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.data.Data.delete_sample" title="Link to this definition">#</a></dt>
+<dd><p>Delete a sample from the dataset by its ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>sample_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The ID of the sample to delete.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#KeyError" title="(in Python v3.13)"><strong>KeyError</strong></a> – If the sample with the given ID does not exist.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dataset</span> <span class="o">=</span> <span class="n">Data</span><span class="o">.</span><span class="n">from_dict</span><span class="p">({</span><span class="s2">&quot;cell1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;TP53&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">}})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dataset</span><span class="o">.</span><span class="n">delete_sample</span><span class="p">(</span><span class="s2">&quot;cell1&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s2">&quot;cell1&quot;</span> <span class="ow">in</span> <span class="n">dataset</span><span class="o">.</span><span class="n">data</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.data.Data.update_sample">
+<span class="sig-name descname"><span class="pre">update_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">features</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.data.Data.update_sample" title="Link to this definition">#</a></dt>
+<dd><p>Update the features of an existing sample or add a new sample if it does not exist.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sample_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The ID of the sample to update.</p></li>
+<li><p><strong>features</strong> (<em>Dict</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>Any</em><em>]</em>) – A dictionary of features to update or add.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dataset</span> <span class="o">=</span> <span class="n">Data</span><span class="o">.</span><span class="n">from_dict</span><span class="p">({</span><span class="s2">&quot;cell1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;TP53&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">}})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dataset</span><span class="o">.</span><span class="n">update_sample</span><span class="p">(</span><span class="s2">&quot;cell1&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;BRCA1&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dataset</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;cell1&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">features</span>
+<span class="go">{&#39;TP53&#39;: -1, &#39;BRCA1&#39;: 0.5}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.data.Data.get_feature_across_samples">
+<span class="sig-name descname"><span class="pre">get_feature_across_samples</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.data.Data.get_feature_across_samples" title="Link to this definition">#</a></dt>
+<dd><p>Retrieve a specific feature from all samples that contain it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>feature_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The name of the feature to retrieve.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary mapping sample IDs to the value of the specified feature.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dict[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a>, Any]</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dataset</span> <span class="o">=</span> <span class="n">Data</span><span class="o">.</span><span class="n">from_dict</span><span class="p">({</span>
+<span class="gp">... </span>    <span class="s2">&quot;cell1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;TP53&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">},</span>
+<span class="gp">... </span>    <span class="s2">&quot;cell2&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;TP53&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;BRCA1&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">}</span>
+<span class="gp">... </span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">get_feature_across_samples</span><span class="p">(</span><span class="s2">&quot;TP53&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span>
+<span class="go">{&#39;cell1&#39;: -1, &#39;cell2&#39;: 0}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.data.Data.merge">
+<span class="sig-name descname"><span class="pre">merge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.data.Data.merge" title="Link to this definition">#</a></dt>
+<dd><p>Merge another Data instance into this one.</p>
+<p>For samples that exist in both datasets, update the features with those from the other dataset.
+For new samples, simply add them to the current dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#corneto.data.Data" title="corneto.data.Data"><em>Data</em></a>) – Another Data instance to merge into this one.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ds1</span> <span class="o">=</span> <span class="n">Data</span><span class="o">.</span><span class="n">from_dict</span><span class="p">({</span><span class="s2">&quot;cell1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;TP53&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">}})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ds2</span> <span class="o">=</span> <span class="n">Data</span><span class="o">.</span><span class="n">from_dict</span><span class="p">({</span><span class="s2">&quot;cell1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;BRCA1&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">},</span> <span class="s2">&quot;cell2&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;TP53&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ds1</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">ds2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ds1</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;cell1&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">features</span>
+<span class="go">{&#39;TP53&#39;: -1, &#39;BRCA1&#39;: 0.5}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.data.Data.filter_samples">
+<span class="sig-name descname"><span class="pre">filter_samples</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predicate</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.data.Data.filter_samples" title="Link to this definition">#</a></dt>
+<dd><p>Filter samples based on a predicate function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>predicate</strong> (<em>Callable</em><em>[</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><a class="reference internal" href="corneto.data.Sample.html#corneto.data.Sample" title="corneto.data.Sample"><em>Sample</em></a><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>]</em>) – A function that takes a sample ID and Sample,
+returning True if the sample should be included.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new Data instance containing only the samples that satisfy the predicate.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#corneto.data.Data" title="corneto.data.Data">Data</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dataset</span> <span class="o">=</span> <span class="n">Data</span><span class="o">.</span><span class="n">from_dict</span><span class="p">({</span>
+<span class="gp">... </span>    <span class="s2">&quot;cell1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;TP53&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">},</span>
+<span class="gp">... </span>    <span class="s2">&quot;cell2&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;TP53&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+<span class="gp">... </span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">filtered</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">filter_samples</span><span class="p">(</span><span class="k">lambda</span> <span class="n">sid</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">features</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TP53&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">filtered</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+<span class="go">[&#39;cell1&#39;]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.data.Data.collect_features">
+<span class="sig-name descname"><span class="pre">collect_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metadata_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata_value</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">value_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'value'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">by_sample</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_values</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.data.Data.collect_features" title="Link to this definition">#</a></dt>
+<dd><p>Collect feature names or values across samples that have a specific metadata key-value pair.</p>
+<p>This method checks each sample for features where the metadata specified by <cite>metadata_key</cite>
+equals <cite>metadata_value</cite>. It can return a flattened set or a dictionary keyed by sample ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>metadata_key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The metadata key to filter features.</p></li>
+<li><p><strong>metadata_value</strong> (<em>Any</em>) – The metadata value to match.</p></li>
+<li><p><strong>value_key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – The key used to extract feature values. Defaults to “value”.</p></li>
+<li><p><strong>by_sample</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – If True, returns a dict mapping sample IDs to sets of features.
+If False, returns a flattened set of features across all samples. Defaults to False.</p></li>
+<li><p><strong>return_values</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – If True, collects the feature values; otherwise collects feature names.
+Defaults to False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Either a set of collected features or a dictionary mapping
+sample IDs to sets of features, depending on the <cite>by_sample</cite> flag.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Union[Set[Any], Dict[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a>, Set[Any]]]</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dataset</span> <span class="o">=</span> <span class="n">Data</span><span class="o">.</span><span class="n">from_dict</span><span class="p">({</span>
+<span class="gp">... </span>    <span class="s2">&quot;cell1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;TP53&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;tumor_suppressor&quot;</span><span class="p">}},</span>
+<span class="gp">... </span>    <span class="s2">&quot;cell2&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;KRAS&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;oncogene&quot;</span><span class="p">}},</span>
+<span class="gp">... </span>    <span class="s2">&quot;cell3&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;BRCA1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;tumor_suppressor&quot;</span><span class="p">}}</span>
+<span class="gp">... </span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">collected</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">collect_features</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="s2">&quot;tumor_suppressor&quot;</span><span class="p">,</span> <span class="n">return_values</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">isinstance</span><span class="p">(</span><span class="n">collected</span><span class="p">,</span> <span class="nb">set</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.data.Data.copy">
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#corneto.data.Data.copy" title="Link to this definition">#</a></dt>
+<dd><p>Create a shallow copy of the dataset.</p>
+<p>Each sample’s features are shallow-copied; if deep copies are needed, modify accordingly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A new instance of Data with copied samples.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#corneto.data.Data" title="corneto.data.Data">Data</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dataset</span> <span class="o">=</span> <span class="n">Data</span><span class="o">.</span><span class="n">from_dict</span><span class="p">({</span><span class="s2">&quot;cell1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;TP53&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">}})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">new_dataset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">new_dataset</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;cell1&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">features</span> <span class="o">==</span> <span class="n">dataset</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;cell1&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">features</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../corneto.data.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Handling data (<code class="xref py py-mod docutils literal notranslate"><span class="pre">corneto.data</span></code>)</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="corneto.data.Sample.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">corneto.data.Sample</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.data.Data"><code class="docutils literal notranslate"><span class="pre">Data</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.data.Data.data"><code class="docutils literal notranslate"><span class="pre">Data.data</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.data.Data.__init__"><code class="docutils literal notranslate"><span class="pre">Data.__init__</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.data.Data.add_sample"><code class="docutils literal notranslate"><span class="pre">Data.add_sample</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.data.Data.from_dict"><code class="docutils literal notranslate"><span class="pre">Data.from_dict</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.data.Data.filter"><code class="docutils literal notranslate"><span class="pre">Data.filter</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.data.Data.filter_by"><code class="docutils literal notranslate"><span class="pre">Data.filter_by</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.data.Data.subset_features"><code class="docutils literal notranslate"><span class="pre">Data.subset_features</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.data.Data.to_tight_format"><code class="docutils literal notranslate"><span class="pre">Data.to_tight_format</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.data.Data.from_tight_format"><code class="docutils literal notranslate"><span class="pre">Data.from_tight_format</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.data.Data.to_sample_value_dict"><code class="docutils literal notranslate"><span class="pre">Data.to_sample_value_dict</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.data.Data.from_sample_value_dict"><code class="docutils literal notranslate"><span class="pre">Data.from_sample_value_dict</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.data.Data.delete_sample"><code class="docutils literal notranslate"><span class="pre">Data.delete_sample</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.data.Data.update_sample"><code class="docutils literal notranslate"><span class="pre">Data.update_sample</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.data.Data.get_feature_across_samples"><code class="docutils literal notranslate"><span class="pre">Data.get_feature_across_samples</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.data.Data.merge"><code class="docutils literal notranslate"><span class="pre">Data.merge</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.data.Data.filter_samples"><code class="docutils literal notranslate"><span class="pre">Data.filter_samples</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.data.Data.collect_features"><code class="docutils literal notranslate"><span class="pre">Data.collect_features</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.data.Data.copy"><code class="docutils literal notranslate"><span class="pre">Data.copy</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2023-2025, Saez-Rodriguez lab. (EMBL-EBI, Heidelberg University).
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

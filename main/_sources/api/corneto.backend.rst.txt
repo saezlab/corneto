@@ -1,10 +1,6 @@
-corneto.backend package
-=======================
-
-Module contents
----------------
+Optimization backend (:mod:`corneto.backend`)
+=============================================
+.. currentmodule:: corneto.backend
 
 .. automodule:: corneto.backend
-   :members:
-   :undoc-members:
-   :show-inheritance:
+    :members:

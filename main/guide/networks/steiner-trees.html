@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Steiner Trees (STs) &#8212; CORNETO  documentation</title>
+    <title>Steiner trees &#8212; CORNETO  documentation</title>
   
   
   
@@ -16,60 +16,59 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
   </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-  
-  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
-
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
-    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster.custom.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster.bundle.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster-sideTip-shadow.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster-sideTip-punk.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster-sideTip-noir.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster-sideTip-light.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/tooltipster-sideTip-borderless.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/micromodal.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=e238a3f6" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=53e23fa6" />
   
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
-  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/jquery.js?v=5d32c60e"></script>
-    <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
     <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../../_static/js/hoverxref.js"></script>
-    <script src="../../_static/js/tooltipster.bundle.min.js"></script>
-    <script src="../../_static/js/micromodal.min.js"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
-    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-Z263GN2PKK"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-Z263GN2PKK');
+            </script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'guide/networks/steiner-trees';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.15.4';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://saezlab.github.io/corneto/dev/_static/switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.0.0a0';
-        DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = '/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.0.0.dev54+4db02e04';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
         </script>
+    <link rel="canonical" href="https://saezlab.github.io/corneto/guide/networks/steiner-trees.html" />
+    <link rel="icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Prize-Collecting Steiner Trees (PCSTs)" href="pcst.html" />
-    <link rel="prev" title="Shortest paths" href="shortest-paths.html" />
+    <link rel="next" title="Prize-Collecting Steiner Trees (PCST)" href="pcst.html" />
+    <link rel="prev" title="Acyclic Flows" href="acyclic-flows.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -85,19 +84,8 @@
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="../../search.html"
       method="get">
@@ -105,7 +93,6 @@
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search the docs ..."
          aria-label="Search the docs ..."
          autocomplete="off"
@@ -113,8 +100,8 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -128,7 +115,7 @@
   </button>
   
   
-  <div class="col-lg-3 navbar-header-items__start">
+  <div class=" navbar-header-items__start">
     
       <div class="navbar-item">
 
@@ -146,38 +133,34 @@
     
     
     <img src="../../_static/logo.png" class="logo__image only-light" alt="CORNETO  documentation - Home"/>
-    <script>document.write(`<img src="../../_static/logo.png" class="logo__image only-dark" alt="CORNETO  documentation - Home"/>`);</script>
+    <img src="../../_static/logo.png" class="logo__image only-dark pst-js-only" alt="CORNETO  documentation - Home"/>
   
   
 </a></div>
     
       <div class="navbar-item">
-<script>
-document.write(`
-  <div class="version-switcher__container dropdown">
-    <button id="pst-version-switcher-button-2"
-      type="button"
-      class="version-switcher__button btn btn-sm dropdown-toggle"
-      data-bs-toggle="dropdown"
-      aria-haspopup="listbox"
-      aria-controls="pst-version-switcher-list-2"
-      aria-label="Version switcher list"
-    >
-      Choose version  <!-- this text may get changed later by javascript -->
-      <span class="caret"></span>
-    </button>
-    <div id="pst-version-switcher-list-2"
-      class="version-switcher__menu dropdown-menu list-group-flush py-0"
-      role="listbox" aria-labelledby="pst-version-switcher-button-2">
-      <!-- dropdown will be populated by javascript on page load -->
-    </div>
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
   </div>
-`);
-</script></div>
+</div></div>
     
   </div>
   
-  <div class="col-lg-9 navbar-header-items">
+  <div class=" navbar-header-items">
     
     <div class="me-auto navbar-header-items__center">
       
@@ -185,9 +168,16 @@ document.write(`
 <nav>
   <ul class="bd-navbar-elements navbar-nav">
     
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install.html">
+    Install
+  </a>
+</li>
+
+
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="../index.html">
-    User guide
+    Guide
   </a>
 </li>
 
@@ -201,17 +191,27 @@ document.write(`
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../api/index.html">
-    API Reference
+    Reference
   </a>
 </li>
 
-
-<li class="nav-item ">
-  <a class="nav-link nav-external" href="https://github.com/saezlab/corneto">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-external" href="https://github.com/saezlab/corneto">
     GitHub
   </a>
 </li>
 
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
       
@@ -223,29 +223,21 @@ document.write(`
         <div class="navbar-item navbar-persistent--container">
           
 
- <script>
- document.write(`
-   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
         </div>
       
       
         <div class="navbar-item">
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script></div>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
       
     </div>
     
@@ -254,15 +246,11 @@ document.write(`
   
     <div class="navbar-persistent--mobile">
 
- <script>
- document.write(`
-   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
     </div>
   
 
@@ -281,7 +269,8 @@ document.write(`
       
       
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -296,9 +285,16 @@ document.write(`
 <nav>
   <ul class="bd-navbar-elements navbar-nav">
     
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install.html">
+    Install
+  </a>
+</li>
+
+
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="../index.html">
-    User guide
+    Guide
   </a>
 </li>
 
@@ -312,7 +308,7 @@ document.write(`
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../api/index.html">
-    API Reference
+    Reference
   </a>
 </li>
 
@@ -335,15 +331,11 @@ document.write(`
         
           <div class="navbar-item">
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script></div>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
         
       </div>
     
@@ -357,20 +349,23 @@ document.write(`
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../intro/index.html">Getting started</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../intro/prior-knowledge.html">Prior Knowledge and Graphs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/data.html">Working with data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/plotting.html">Plotting</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../intro/constrained-optimization.html">Constrained Optimization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../intro/multi-commodity-network-flows.html">Multi-commodity Network Flows</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../intro/acyclic-flows.html">Acyclic Flows</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Network methods</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="shortest-paths.html">Shortest paths</a></li>
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">Steiner Trees (STs)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pcst.html">Prize-Collecting Steiner Trees (PCSTs)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multi-sample-shortest-paths.html">Multi-sample shortest paths</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multi-commodity-network-flows.html">Multi-commodity Network Flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="acyclic-flows.html">Acyclic Flows</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Steiner trees</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pcst.html">Prize-Collecting Steiner Trees (PCST)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multi-pcst-grb.html">Multi-sample PCST</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../metabolism/index.html">Metabolism</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../metabolism/flux-balance-analysis.html">Flux Balance Analysis (FBA)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../metabolism/sparse-fba.html">Sparse FBA</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../metabolism/multicondition-sfba.html">Multi-condition sparse FBA</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../metabolism/imat.html">Context-specific models (iMAT)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../metabolism/multicondition-imat.html">Multi-condition iMAT</a></li>
@@ -378,10 +373,10 @@ document.write(`
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../signaling/index.html">Signaling</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../signaling/carnival.html">CARNIVAL</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../signaling/multicondition-carnival.html">Multi-condition CARNIVAL</a></li>
-</ul>
-</details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../interactomics/index.html">Interactomics</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
+<li class="toctree-l2"><a class="reference internal" href="../signaling/multisample-carnival.html">Multi-sample CARNIVAL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../signaling/cellnopt_ILP.html">Acyclic boolean models of cell signaling (experimental)</a></li>
+
+
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../interoperability/index.html">Interoperability</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -401,9 +396,14 @@ document.write(`
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -421,8 +421,6 @@ document.write(`
       
         <div class="header-article-item">
 
-
-
 <nav aria-label="Breadcrumb" class="d-print-none">
   <ul class="bd-breadcrumbs">
     
@@ -432,12 +430,12 @@ document.write(`
       </a>
     </li>
     
-    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">User guide</a></li>
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Guide</a></li>
     
     
     <li class="breadcrumb-item"><a href="index.html" class="nav-link">Network methods</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">Steiner Trees (STs)</li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Steiner trees</span></li>
   </ul>
 </nav>
 </div>
@@ -454,79 +452,52 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="steiner-trees-sts">
-<h1>Steiner Trees (STs)<a class="headerlink" href="#steiner-trees-sts" title="Link to this heading">#</a></h1>
-<p>A Steiner tree is a concept stemming from combinatorial optimization that seeks to connect a given set of vertices (or nodes) in the shortest possible total distance, but with the added provision that additional nodes not in the original set can be included if they reduce the overall connecting distance.</p>
-<p>Given a weighted graph <span class="math notranslate nohighlight">\( G = (V, E) \)</span> and a subset <span class="math notranslate nohighlight">\( T \subseteq V \)</span> of terminal vertices, the goal of the Steiner Tree problem is to find a tree of minimum weight in <span class="math notranslate nohighlight">\( G \)</span> that spans all vertices in <span class="math notranslate nohighlight">\( T \)</span>. This tree can include vertices not in <span class="math notranslate nohighlight">\( T \)</span>, and these additional vertices are called Steiner vertices. The objective is to connect all the terminals using the shortest possible total edge weight.</p>
-<p>One notable application of Steiner trees is in the analysis and modeling of biological networks. By using Steiner trees, researchers can identify minimal subnetworks that connect a given set of proteins or genes, potentially pinpointing previously unobserved or unknown elements (analogous to the Steiner points) that play crucial roles in these networks. Such insights can help in understanding disease mechanisms, drug targets, and the fundamental underpinnings of biological processes.</p>
-<p>The Steiner tree problem, like many other combinatorial challenges, is an NP-hard optimization problem. This implies that finding optimal solutions for large instances of the problem can be computationally hard. To tackle this, numerous heuristic methods have been developed which offer reasonably good solutions within an acceptable timeframe. However, many of these methods are typically tailored for specific cases, for example undirected graphs. Certain assumptions inherent in these methods can make them difficult to modify or adapt for different problem scenarios.</p>
-<p>CORNETO stands as a robust tool in this realm, offering flexible modeling capabilities for Steiner trees. By modelling steiner tree problems as Integer Linear Programming problems, CORNETO offers a more advanced and flexible approach to modeling Steiner trees. This allows users to model and solve Steiner tree problems in a variety of ways, including:</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="steiner-trees">
+<h1>Steiner trees<a class="headerlink" href="#steiner-trees" title="Link to this heading">#</a></h1>
+<section id="what-are-steiner-trees">
+<h2>What are Steiner Trees?<a class="headerlink" href="#what-are-steiner-trees" title="Link to this heading">#</a></h2>
+<p>Steiner trees are a fundamental concept in network optimization. Given a graph with weighted edges and a subset of vertices called terminals, a Steiner tree is the minimum-cost tree that connects all the terminal nodes. Unlike a minimum spanning tree which must include all vertices in the graph, a Steiner tree may include additional non-terminal vertices (called Steiner points) to minimize the overall cost.</p>
+<p>Steiner tree problems are widely used for the analysis of biological networks, such as protein-protein interaction networks.</p>
+</section>
+<section id="how-corneto-solves-steiner-tree-problems">
+<h2>How CORNETO Solves Steiner Tree Problems<a class="headerlink" href="#how-corneto-solves-steiner-tree-problems" title="Link to this heading">#</a></h2>
+<p>CORNETO provides powerful capabilities for exactly solving Steiner tree problems through its <code class="docutils literal notranslate"><span class="pre">SteinerTreeFlow</span></code> method. Unlike approximation algorithms, CORNETO offers exact solutions using mathematical programming formulations.</p>
+<section id="key-features">
+<h3>Key Features:<a class="headerlink" href="#key-features" title="Link to this heading">#</a></h3>
+<ol class="arabic simple">
+<li><p><strong>Graph Flexibility</strong>: CORNETO supports various graph types:</p>
 <ul class="simple">
-<li><p><strong>Directed/undirected edge support</strong>: Unlike many tools that restrict you to either directed or undirected edges, CORNETO supports both simultaneously. This is particularly useful when modeling systems where interactions can be both reciprocal (undirected) and one-way (directed), which is often the case in biological networks.</p></li>
-<li><p><strong>Solution flexibility</strong>: With CORNETO, users can decide how strict they want to be with their Steiner tree solutions.</p>
-<ul>
-<li><p>For cases where only Steiner tree solutions are acceptable, CORNETO can enforce infeasibility for non-Steiner trees. This means every solution provided, even if not the best possible, will always be a valid Steiner tree.</p></li>
-<li><p>Alternatively, if users prefer to explore a broader range of solutions before arriving at an optimal Steiner tree, CORNETO permits non-Steiner tree solutions. Only the optimal solution, once identified, is guaranteed to be a true Steiner tree.</p></li>
+<li><p><strong>Undirected graphs</strong>: Find the optimal tree connecting terminals with bidirectional edges</p></li>
+<li><p><strong>Directed graphs</strong>: Connect terminals respecting edge directions, with optimal root selection</p></li>
+<li><p><strong>Mixed graphs</strong>: Combine directed and undirected edges in the same problem</p></li>
 </ul>
 </li>
-<li><p><strong>Problem extensions</strong>: By transparently modeling the Steiner tree problem as an Integer Linear Programming task in CORNETO, users gain the flexibility to introduce additional constraints or modify the objective function as they wish. For instance, they can set a limit on the number of Steiner points included in the solution or define a maximum distance between any two nodes within that solution. This adaptability enables users to customize the problem according to their unique requirements.</p></li>
+<li><p><strong>Root Selection Strategies</strong>:</p>
+<ul class="simple">
+<li><p>Automatically find the optimal root node</p></li>
+<li><p>Specify a particular node as the root</p></li>
 </ul>
-<p>In this tutorial, we will demonstrate how to model and solve undirected Steiner tree problems using CORNETO. We will use a small example network to illustrate the process, and we will compare the solutions with those obtained with the very well known <code class="docutils literal notranslate"><span class="pre">networkx</span></code> graph library.</p>
-<section id="heuristic-steiner-tree-from-networkx">
-<h2>Heuristic steiner tree from NetworkX<a class="headerlink" href="#heuristic-steiner-tree-from-networkx" title="Link to this heading">#</a></h2>
-<p>First, we will create a random undirected graph with random weights between 1 an 10. Then we will run the heuristic steiner tree algorithm from NetworkX to see which solution it finds.</p>
+</li>
+<li><p><strong>Customization Options</strong>:</p>
+<ul class="simple">
+<li><p>Edge costs can be specified individually</p></li>
+<li><p>Regularization to control tree complexity</p></li>
+<li><p>Strict acyclic constraint enforcement</p></li>
+<li><p>Optimize multiple samples simultaneously with structured sparsity regularization</p></li>
+</ul>
+</li>
+<li><p><strong>Solver Flexibility</strong>: Compatible with many MILP mathematical programming solvers (SCIP, HIGHS, GUROBI, etc.)</p></li>
+</ol>
+<p>This notebook demonstrates how to use CORNETO to solve Steiner tree problems on both undirected and directed graphs, comparing the results with NetworkX’s approximation algorithms.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">networkx.algorithms.approximation</span> <span class="kn">import</span> <span class="n">steiner_tree</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
 
-<span class="c1"># Generate a random graph with networkx</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">networkx</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nx</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">networkx.algorithms.approximation</span><span class="w"> </span><span class="kn">import</span> <span class="n">steiner_tree</span>
 
-
-<span class="k">def</span> <span class="nf">create_random_graph</span><span class="p">(</span><span class="n">n_nodes</span><span class="p">,</span> <span class="n">prob</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
-    <span class="n">random_graph</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">erdos_renyi_graph</span><span class="p">(</span><span class="n">n_nodes</span><span class="p">,</span> <span class="n">prob</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
-    <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">random_graph</span><span class="o">.</span><span class="n">edges</span><span class="p">))</span>
-    <span class="n">edges_r</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">random_graph</span><span class="o">.</span><span class="n">edges</span><span class="p">())</span>
-    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">weight</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">weights</span><span class="p">):</span>
-        <span class="n">edge</span> <span class="o">=</span> <span class="n">edges_r</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-        <span class="n">random_graph</span><span class="p">[</span><span class="n">edge</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="n">edge</span><span class="p">[</span><span class="mi">1</span><span class="p">]][</span><span class="s2">&quot;weight&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">weight</span>
-    <span class="k">return</span> <span class="n">random_graph</span>
-
-
-<span class="n">random_graph</span> <span class="o">=</span> <span class="n">create_random_graph</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Select 10 random vertices from the networkx graph as terminal nodes:</span>
-
-<span class="n">terminals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">random_graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="n">stree</span> <span class="o">=</span> <span class="n">steiner_tree</span><span class="p">(</span><span class="n">random_graph</span><span class="p">,</span> <span class="n">terminals</span><span class="p">)</span>
-<span class="n">total_weight</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">random_graph</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">v</span><span class="p">][</span><span class="s2">&quot;weight&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">stree</span><span class="o">.</span><span class="n">edges</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cost:&quot;</span><span class="p">,</span> <span class="n">total_weight</span><span class="p">)</span>
-<span class="n">nx</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">stree</span><span class="p">,</span> <span class="n">with_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Cost: 45
-</pre></div>
-</div>
-<img alt="../../_images/e055927ec90fc8aba8b9cb00474277bc47e10a172486f1223670e3944bda126b.png" src="../../_images/e055927ec90fc8aba8b9cb00474277bc47e10a172486f1223670e3944bda126b.png" />
-</div>
-</div>
-<p>We need to check if the solution is the optimal one or not. <strong>Since we’ve used an heuristic (but fast) method, we don’t have any proof about optimality</strong>. We will see now how CORNETO can be used to get a better solution (which is also the optimal). Due to CORNETO’s exact modeling of the problem, and the use of advanced mathematical solvers, we can not only achieve a solution superior to that of NetworkX, but also have the guarantees that the solution is optimal and no better network exists.</p>
-</section>
-<section id="exact-steiner-trees-with-corneto">
-<h2>Exact Steiner Trees with CORNETO<a class="headerlink" href="#exact-steiner-trees-with-corneto" title="Link to this heading">#</a></h2>
-<p>Now, we will do the same using CORNETO to convert the random graph to a corneto graph and then we will create an ILP steiner tree problem, which is exact, and we will solve it using the SCIP solver (open source).</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">corneto</span> <span class="k">as</span> <span class="nn">cn</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">corneto</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cn</span>
 
 <span class="n">cn</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
 </pre></div>
@@ -541,168 +512,473 @@ document.write(`
             </td>
             <td>
             <table>
-                <tr><td>Installed version:</td><td style='text-align:left'>v1.0.0a0 (latest: v1.0.0-alpha)</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.5.3, PICOS v2.4.17</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CLARABEL, CVXOPT, ECOS, ECOS_BB, GLPK, GLPK_MI, OSQP, SCIP, SCIPY, SCS</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.3</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href=https://github.com/saezlab/corneto>https://github.com/saezlab/corneto</a></td></tr>
+                <tr><td>Installed version:</td><td style='text-align:left'>v1.0.0.dev54+4db02e04</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.6.6, PICOS v2.6.1</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CVXOPT, GLPK, GLPK_MI, HIGHS, SCIP, SCIPY</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.3</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href=https://github.com/saezlab/corneto>https://github.com/saezlab/corneto</a></td></tr>
             </table>
             </td>
         </tr>
         </table></div></div>
 </div>
-<p>We need some code to convert the <code class="docutils literal notranslate"><span class="pre">networkx</span></code> graph into a <code class="docutils literal notranslate"><span class="pre">corneto</span></code> Graph:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">corneto._graph</span> <span class="kn">import</span> <span class="n">EdgeType</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">generate_random_graph</span><span class="p">(</span><span class="n">num_nodes</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">probability</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">num_terminals</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generates a random weighted graph using the Erdős-Rényi model</span>
+<span class="sd">    and randomly selects terminal nodes.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        G: The generated graph with weighted edges.</span>
+<span class="sd">        terminals: A list of terminal nodes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">erdos_renyi_graph</span><span class="p">(</span><span class="n">num_nodes</span><span class="p">,</span> <span class="n">probability</span><span class="p">)</span>
+    <span class="c1"># Assign random weights to each edge</span>
+    <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">():</span>
+        <span class="n">G</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">v</span><span class="p">][</span><span class="s2">&quot;value&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+
+    <span class="c1"># Select terminal nodes ensuring not to exceed the available nodes</span>
+    <span class="n">terminals</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">()),</span> <span class="nb">min</span><span class="p">(</span><span class="n">num_terminals</span><span class="p">,</span> <span class="n">G</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">()))</span>
+    <span class="c1"># Set node attribute &quot;terminal&quot;</span>
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">():</span>
+        <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">node</span><span class="p">][</span><span class="s2">&quot;terminal&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">terminals</span>
+    <span class="k">return</span> <span class="n">G</span><span class="p">,</span> <span class="n">terminals</span>
 
 
-<span class="k">def</span> <span class="nf">to_graph</span><span class="p">(</span><span class="n">nx_graph</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">directed</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="n">G</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
-    <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">weights</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">nx_graph</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">)]</span>
-    <span class="k">for</span> <span class="n">e</span><span class="p">,</span> <span class="n">w</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">nx_graph</span><span class="o">.</span><span class="n">edges</span><span class="p">,</span> <span class="n">weights</span><span class="p">):</span>
-        <span class="n">etype</span> <span class="o">=</span> <span class="n">EdgeType</span><span class="o">.</span><span class="n">DIRECTED</span> <span class="k">if</span> <span class="n">directed</span> <span class="k">else</span> <span class="n">EdgeType</span><span class="o">.</span><span class="n">UNDIRECTED</span>
-        <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">weight</span><span class="o">=</span><span class="n">w</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">etype</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">G</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">calculate_cost</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">T</span><span class="p">):</span>
+    <span class="n">total_cost</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">T</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">total_cost</span>
 
 
-<span class="n">G</span> <span class="o">=</span> <span class="n">to_graph</span><span class="p">(</span><span class="n">random_graph</span><span class="p">)</span>
-<span class="n">G</span><span class="o">.</span><span class="n">shape</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_steiner_tree_cost</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">terminals</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Computes the Steiner tree approximation on graph G for given terminal nodes</span>
+<span class="sd">    and returns the tree along with its total cost (sum of edge weights).</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        G: A weighted networkx graph.</span>
+<span class="sd">        terminals: A list of terminal nodes for the Steiner tree.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        T: The Steiner tree as a subgraph of G.</span>
+<span class="sd">        total_cost: Sum of the weights of the edges in T.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">steiner_tree</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">terminals</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;value&quot;</span><span class="p">)</span>
+    <span class="c1"># Calculate the total cost by summing up the weights of each edge in the tree</span>
+    <span class="k">return</span> <span class="n">T</span><span class="p">,</span> <span class="n">calculate_cost</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span>
+
+
+<span class="n">num_nodes</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">probability</span> <span class="o">=</span> <span class="mf">0.1</span>
+<span class="n">num_terminals</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">G</span><span class="p">,</span> <span class="n">terminals</span> <span class="o">=</span> <span class="n">generate_random_graph</span><span class="p">(</span><span class="n">num_nodes</span><span class="p">,</span> <span class="n">probability</span><span class="p">,</span> <span class="n">num_terminals</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Terminal nodes: </span><span class="si">{</span><span class="n">terminals</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Compute the Steiner tree and its cost</span>
+<span class="n">T</span><span class="p">,</span> <span class="n">cost</span> <span class="o">=</span> <span class="n">compute_steiner_tree_cost</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">terminals</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Computed Steiner tree has </span><span class="si">{</span><span class="n">T</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">()</span><span class="si">}</span><span class="s2"> nodes and </span><span class="si">{</span><span class="n">T</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">()</span><span class="si">}</span><span class="s2"> edges.&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total cost of the Steiner tree: </span><span class="si">{</span><span class="n">cost</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(50, 145)
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Terminal nodes: [58, 14, 68, 62, 95, 41, 23, 39, 64, 13]
+Computed Steiner tree has 19 nodes and 18 edges.
+Total cost of the Steiner tree: 46.7653
 </pre></div>
 </div>
 </div>
 </div>
-<p>We will use the <code class="docutils literal notranslate"><span class="pre">exact_steiner_tree</span></code> method. This method converts the original graph into a network flow problem equivalent to the steiner tree problem. The method returns the optimization problem and a new graph, which is an augmented version of the original graph, containing few extra edges required for the network flow problem</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">corneto.methods.steiner</span> <span class="kn">import</span> <span class="n">exact_steiner_tree</span>
-
-<span class="n">P</span><span class="p">,</span> <span class="n">G_steiner</span> <span class="o">=</span> <span class="n">exact_steiner_tree</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">terminals</span><span class="p">)</span>
-
-<span class="c1"># The problem contains two vector variables, _flow and _flow_i.</span>
-<span class="c1"># _flow is the normal _flow variable to define a network flow problem on the graph.</span>
-<span class="c1"># _flow_i is an indicator binary vector. If _flow_i[i] = 1, then _flow[i] = 0.</span>
-<span class="c1"># The _flow_i variable contains the edges that are selected in the Steiner tree.</span>
-<span class="n">P</span><span class="o">.</span><span class="n">symbols</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_flow&#39;: Variable((155,), _flow),
- &#39;_flow_i&#39;: Variable((155,), _flow_i, boolean=True)}
+<img alt="../../_images/d1029c3dca327b4e950abed5905e901b03de726c65525354322723d3f476f9fa.png" src="../../_images/d1029c3dca327b4e950abed5905e901b03de726c65525354322723d3f476f9fa.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">T</span><span class="o">.</span><span class="n">edges</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>EdgeView([(64, 41), (64, 68), (64, 83), (64, 94), (68, 8), (68, 28), (8, 14), (8, 73), (73, 95), (12, 33), (12, 62), (13, 43), (83, 58), (23, 33), (28, 39), (30, 43), (30, 95), (94, 33)])
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="importing-data-to-corneto">
+<h2>Importing data to CORNETO<a class="headerlink" href="#importing-data-to-corneto" title="Link to this heading">#</a></h2>
+<p>CORNETO offers a simple way to import networkx graphs as CORNETO graphs. We will convert first the networkx G, and then we will extract the values to create a <code class="docutils literal notranslate"><span class="pre">Data</span></code> object to use the CORNETO Steiner Tree method. Note that, even though CORNETO supports graph attributes, we typically distinguish between prior knowledge data (this is embedded in the graphs as attributes) and our experimental data (e.g., deregulated proteins that we want to connect using information in G).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.contrib.networkx</span><span class="w"> </span><span class="kn">import</span> <span class="n">networkx_to_corneto_graph</span>
+
+<span class="n">Gc</span> <span class="o">=</span> <span class="n">networkx_to_corneto_graph</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+<span class="n">Gc</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(100, 511)
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;SCIPY&quot;</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">G_steiner</span><span class="o">.</span><span class="n">edge_subgraph</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">symbols</span><span class="p">[</span><span class="s2">&quot;_flow_i&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
-    <span class="n">orphan_edges</span><span class="o">=</span><span class="kc">False</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto._data</span><span class="w"> </span><span class="kn">import</span> <span class="n">Data</span>
+
+<span class="n">features</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="c1"># We create a list of features, where each feature contains</span>
+<span class="c1"># id: the id of the edge.</span>
+<span class="c1"># mapping: if the feature maps to edges/nodes of the graph,</span>
+<span class="c1">#          in this case, each feature is the cost of the edge</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">attr</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">Gc</span><span class="o">.</span><span class="n">get_attr_edges</span><span class="p">()):</span>
+    <span class="n">features</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="s2">&quot;edge&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">attr</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
+
+<span class="c1"># We also add information about which of the vertices from the</span>
+<span class="c1"># graph are the terminals to connect with a steiner tree</span>
+<span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">Gc</span><span class="o">.</span><span class="n">V</span><span class="p">:</span>
+    <span class="n">attr</span> <span class="o">=</span> <span class="n">Gc</span><span class="o">.</span><span class="n">get_attr_vertex</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">attr</span><span class="p">[</span><span class="s2">&quot;terminal&quot;</span><span class="p">]:</span>
+        <span class="n">features</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">v</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="s2">&quot;vertex&quot;</span><span class="p">,</span> <span class="n">role</span><span class="o">=</span><span class="s2">&quot;terminal&quot;</span><span class="p">))</span>
+
+<span class="n">features</span><span class="p">[:</span><span class="mi">5</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[{&#39;id&#39;: 0, &#39;mapping&#39;: &#39;edge&#39;, &#39;value&#39;: 6.846636018985803},
+ {&#39;id&#39;: 1, &#39;mapping&#39;: &#39;edge&#39;, &#39;value&#39;: 3.6607884661297745},
+ {&#39;id&#39;: 2, &#39;mapping&#39;: &#39;edge&#39;, &#39;value&#39;: 4.92734092175005},
+ {&#39;id&#39;: 3, &#39;mapping&#39;: &#39;edge&#39;, &#39;value&#39;: 4.0719471869531425},
+ {&#39;id&#39;: 4, &#39;mapping&#39;: &#39;edge&#39;, &#39;value&#39;: 6.894624813053817}]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We create the data object, we only have 1 sample (1 steiner tree to recover)</span>
+<span class="n">D</span> <span class="o">=</span> <span class="n">Data</span><span class="o">.</span><span class="n">from_dict</span><span class="p">({</span><span class="s2">&quot;s1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;features&quot;</span><span class="p">:</span> <span class="n">features</span><span class="p">}})</span>
+<span class="n">D</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Data(n_samples=1, n_feats=[521])
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="solving-the-problem-with-the-exact-steiner-tree">
+<h2>Solving the problem with the exact steiner tree<a class="headerlink" href="#solving-the-problem-with-the-exact-steiner-tree" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods.future.steiner</span><span class="w"> </span><span class="kn">import</span> <span class="n">SteinerTreeFlow</span>
+
+<span class="c1"># We create a SteinerTreeFlow problem. If edges do not have data, we</span>
+<span class="c1"># assume the cost is 1 (in this case, every edge in our data object has</span>
+<span class="c1"># a cost, so this is ignored</span>
+<span class="n">m</span> <span class="o">=</span> <span class="n">SteinerTreeFlow</span><span class="p">(</span><span class="n">lambda_reg</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">strict_acyclic</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default_edge_cost</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">P</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">Gc</span><span class="p">,</span> <span class="n">D</span><span class="p">)</span>
+<span class="n">P</span><span class="o">.</span><span class="n">expr</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_flow&#39;: _flow: Variable((521,), _flow),
+ &#39;_flow_ineg&#39;: _flow_ineg: Variable((521,), _flow_ineg, boolean=True),
+ &#39;_flow_ipos&#39;: _flow_ipos: Variable((521,), _flow_ipos, boolean=True),
+ &#39;_dag_layer&#39;: _dag_layer: Variable((100, 1), _dag_layer),
+ &#39;flow&#39;: _flow: Variable((521,), _flow),
+ &#39;with_flow&#39;: Expression(AFFINE, NONNEGATIVE, (521,))}
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># For larger problems, use a solver like GUROBI.</span>
+<span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;scipy&quot;</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">P</span><span class="o">.</span><span class="n">objectives</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>35.85180933414298
+28.0
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="extracting-the-tree-and-plotting">
+<h2>Extracting the tree and plotting<a class="headerlink" href="#extracting-the-tree-and-plotting" title="Link to this heading">#</a></h2>
+<p>Once solved, we can access the variable <code class="docutils literal notranslate"><span class="pre">with_flow</span></code> to see which edges were selected by the method</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sol</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">processed_graph</span><span class="o">.</span><span class="n">edge_subgraph</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">with_flow</span><span class="o">.</span><span class="n">value</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">))</span>
+<span class="n">sol</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">orphan_edges</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">layout</span><span class="o">=</span><span class="s2">&quot;neato&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/0224a837a52ae24de75cf31795b296cc76402ca3830d9e2a7491a2a52e0cb7b5.svg" src="../../_images/0224a837a52ae24de75cf31795b296cc76402ca3830d9e2a7491a2a52e0cb7b5.svg" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># This is the total cost of the steiner tree</span>
+<span class="nb">sum</span><span class="p">([</span><span class="n">attr</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">sol</span><span class="o">.</span><span class="n">get_attr_edges</span><span class="p">()])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>35.85180933414298
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We can check that the cost is correct using the original networkx data</span>
+<span class="n">sel_edges</span> <span class="o">=</span> <span class="p">[(</span><span class="nb">list</span><span class="p">(</span><span class="n">s</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">list</span><span class="p">(</span><span class="n">t</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">sol</span><span class="o">.</span><span class="n">E</span> <span class="k">if</span> <span class="n">s</span> <span class="ow">and</span> <span class="n">t</span><span class="p">]</span>
+<span class="n">T_corneto</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">edge_subgraph</span><span class="p">(</span><span class="n">sel_edges</span><span class="p">)</span>
+<span class="n">calculate_cost</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">T_corneto</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>35.85180933414298
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We check that all terminals are contained in the solution</span>
+<span class="nb">set</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">V</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">terminals</span><span class="p">)</span> <span class="o">==</span> <span class="nb">set</span><span class="p">(</span><span class="n">terminals</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>True
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">nx</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/85909592488fe7d690218d77e32c21cf69d02dbc0324691d92aff7da5e7df63e.png" src="../../_images/85909592488fe7d690218d77e32c21cf69d02dbc0324691d92aff7da5e7df63e.png" />
+</div>
+</div>
+</section>
+<section id="directed-graphs">
+<h2>Directed graphs<a class="headerlink" href="#directed-graphs" title="Link to this heading">#</a></h2>
+<p>CORNETO supports also directed steiner trees (and even a mixed set of directed or undirected edges). In the directed case, the selection of a root node is important, since not every vertex is reachable in a tree, depending on the directions. CORNETO can also find the best root possible, so it explores the entire space of potential trees, starting from different roots.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We create a directed version of the graph</span>
+<span class="n">G_dir</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">to_directed</span><span class="p">()</span>
+<span class="n">Gc</span> <span class="o">=</span> <span class="n">networkx_to_corneto_graph</span><span class="p">(</span><span class="n">G_dir</span><span class="p">)</span>
+
+<span class="n">features</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">attr</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">Gc</span><span class="o">.</span><span class="n">get_attr_edges</span><span class="p">()):</span>
+    <span class="n">features</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="s2">&quot;edge&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">attr</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">Gc</span><span class="o">.</span><span class="n">V</span><span class="p">:</span>
+    <span class="n">attr</span> <span class="o">=</span> <span class="n">Gc</span><span class="o">.</span><span class="n">get_attr_vertex</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">attr</span><span class="p">[</span><span class="s2">&quot;terminal&quot;</span><span class="p">]:</span>
+        <span class="n">features</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">v</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="s2">&quot;vertex&quot;</span><span class="p">,</span> <span class="n">role</span><span class="o">=</span><span class="s2">&quot;terminal&quot;</span><span class="p">))</span>
+
+<span class="n">D</span> <span class="o">=</span> <span class="n">Data</span><span class="o">.</span><span class="n">from_dict</span><span class="p">({</span><span class="s2">&quot;s1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;features&quot;</span><span class="p">:</span> <span class="n">features</span><span class="p">}})</span>
+<span class="n">D</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Data(n_samples=1, n_feats=[1032])
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We find the best root, but we can provide one</span>
+<span class="n">m</span> <span class="o">=</span> <span class="n">SteinerTreeFlow</span><span class="p">(</span><span class="n">lambda_reg</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">strict_acyclic</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">root_selection_strategy</span><span class="o">=</span><span class="s2">&quot;best&quot;</span><span class="p">)</span>
+<span class="n">P</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">Gc</span><span class="p">,</span> <span class="n">D</span><span class="p">)</span>
+<span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;scipy&quot;</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">P</span><span class="o">.</span><span class="n">objectives</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>35.85180933414293
+27.999999999999986
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sol</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">processed_graph</span><span class="o">.</span><span class="n">edge_subgraph</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">with_flow</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">))</span>
+<span class="n">sol</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">orphan_edges</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/5f496eb7891903297d02126fa68fb22530db46a5c86b48a43eaf7933f6ab053b.svg" src="../../_images/5f496eb7891903297d02126fa68fb22530db46a5c86b48a43eaf7933f6ab053b.svg" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">set</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">V</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">terminals</span><span class="p">)</span> <span class="o">==</span> <span class="nb">set</span><span class="p">(</span><span class="n">terminals</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>True
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">sum</span><span class="p">([</span><span class="n">attr</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">sol</span><span class="o">.</span><span class="n">get_attr_edges</span><span class="p">()])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>35.85180933414298
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sel_edges</span> <span class="o">=</span> <span class="p">[(</span><span class="nb">list</span><span class="p">(</span><span class="n">s</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">list</span><span class="p">(</span><span class="n">t</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">sol</span><span class="o">.</span><span class="n">E</span> <span class="k">if</span> <span class="n">s</span> <span class="ow">and</span> <span class="n">t</span><span class="p">]</span>
+<span class="n">calculate_cost</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">G</span><span class="o">.</span><span class="n">edge_subgraph</span><span class="p">(</span><span class="n">sel_edges</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>35.85180933414298
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="mixed-graphs">
+<h2>Mixed graphs<a class="headerlink" href="#mixed-graphs" title="Link to this heading">#</a></h2>
+<p>Mixed graphs (graphs with directed edges, undirected edges, multiple edges) are naturally supported by CORNETO. Here we see the different steiner trees that we can obtain from a mixed graph, depending on the direction of the edges</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">G_mixed</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+<span class="n">G_mixed</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">EdgeType</span><span class="o">.</span><span class="n">DIRECTED</span><span class="p">)</span>
+<span class="n">G_mixed</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">EdgeType</span><span class="o">.</span><span class="n">UNDIRECTED</span><span class="p">)</span>
+<span class="n">G_mixed</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">EdgeType</span><span class="o">.</span><span class="n">UNDIRECTED</span><span class="p">)</span>
+<span class="n">G_mixed</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">EdgeType</span><span class="o">.</span><span class="n">UNDIRECTED</span><span class="p">)</span>
+<span class="n">G_mixed</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">EdgeType</span><span class="o">.</span><span class="n">UNDIRECTED</span><span class="p">)</span>
+<span class="n">G_mixed</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">EdgeType</span><span class="o">.</span><span class="n">DIRECTED</span><span class="p">)</span>  <span class="c1"># UNDIR</span>
+<span class="n">G_mixed</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">EdgeType</span><span class="o">.</span><span class="n">DIRECTED</span><span class="p">)</span>
+<span class="n">G_mixed</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">EdgeType</span><span class="o">.</span><span class="n">UNDIRECTED</span><span class="p">)</span>
+<span class="n">G_mixed</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">EdgeType</span><span class="o">.</span><span class="n">UNDIRECTED</span><span class="p">)</span>
+<span class="n">G_mixed</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">EdgeType</span><span class="o">.</span><span class="n">UNDIRECTED</span><span class="p">)</span>
+<span class="n">G_mixed</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/e19c37cb3bf371c8df76cd0e7a7326f3e39a583e86cdcf5727d304904b20626b.svg" src="../../_images/e19c37cb3bf371c8df76cd0e7a7326f3e39a583e86cdcf5727d304904b20626b.svg" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">D</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Data</span><span class="o">.</span><span class="n">from_cdict</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;steiner&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="mi">0</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;mapping&quot;</span><span class="p">:</span> <span class="s2">&quot;vertex&quot;</span><span class="p">,</span> <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;terminal&quot;</span><span class="p">},</span>
+            <span class="mi">5</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;mapping&quot;</span><span class="p">:</span> <span class="s2">&quot;vertex&quot;</span><span class="p">,</span> <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;terminal&quot;</span><span class="p">},</span>
+            <span class="mi">6</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;mapping&quot;</span><span class="p">:</span> <span class="s2">&quot;vertex&quot;</span><span class="p">,</span> <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;terminal&quot;</span><span class="p">},</span>
+            <span class="mi">4</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;mapping&quot;</span><span class="p">:</span> <span class="s2">&quot;vertex&quot;</span><span class="p">,</span> <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;terminal&quot;</span><span class="p">},</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
 <span class="p">)</span>
+
+<span class="n">m</span> <span class="o">=</span> <span class="n">SteinerTreeFlow</span><span class="p">(</span><span class="n">root_selection_strategy</span><span class="o">=</span><span class="s2">&quot;best&quot;</span><span class="p">)</span>
+<span class="n">P</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">G_mixed</span><span class="p">,</span> <span class="n">D</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>===============================================================================
-                                     CVXPY                                     
-                                     v1.5.3                                    
-===============================================================================
-(CVXPY) May 18 06:05:00 PM: Your problem has 310 variables, 680 constraints, and 0 parameters.
-(CVXPY) May 18 06:05:00 PM: It is compliant with the following grammars: DCP, DQCP
-(CVXPY) May 18 06:05:00 PM: (If you need to solve this problem multiple times, but with different data, consider using parameters.)
-(CVXPY) May 18 06:05:00 PM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
-(CVXPY) May 18 06:05:00 PM: Your problem is compiled with the CPP canonicalization backend.
--------------------------------------------------------------------------------
-                                  Compilation                                  
--------------------------------------------------------------------------------
-(CVXPY) May 18 06:05:00 PM: Compiling problem (target solver=SCIPY).
-(CVXPY) May 18 06:05:00 PM: Reduction chain: Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; SCIPY
-(CVXPY) May 18 06:05:00 PM: Applying reduction Dcp2Cone
-(CVXPY) May 18 06:05:00 PM: Applying reduction CvxAttr2Constr
-(CVXPY) May 18 06:05:00 PM: Applying reduction ConeMatrixStuffing
-(CVXPY) May 18 06:05:00 PM: Applying reduction SCIPY
-(CVXPY) May 18 06:05:00 PM: Finished problem compilation (took 1.417e-02 seconds).
--------------------------------------------------------------------------------
-                                Numerical solver                               
--------------------------------------------------------------------------------
-(CVXPY) May 18 06:05:00 PM: Invoking solver SCIPY  to obtain a solution.
-Solver terminated with message: Optimization terminated successfully. (HiGHS Status 7: Optimal)
--------------------------------------------------------------------------------
-                                    Summary                                    
--------------------------------------------------------------------------------
-(CVXPY) May 18 06:05:35 PM: Problem status: optimal
-(CVXPY) May 18 06:05:35 PM: Optimal value: 4.100e+01
-(CVXPY) May 18 06:05:35 PM: Compilation took 1.417e-02 seconds
-(CVXPY) May 18 06:05:35 PM: Solver (including time spent in interface) took 3.444e+01 seconds
-</pre></div>
-</div>
-<img alt="../../_images/7ac2b48505a5381dce8da60f48407c921ef447f293d58fdfa4eacc5f29a7aca2.svg" src="../../_images/7ac2b48505a5381dce8da60f48407c921ef447f293d58fdfa4eacc5f29a7aca2.svg" />
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># The cost is lower than the solution we obtained with networkx</span>
-<span class="n">P</span><span class="o">.</span><span class="n">objectives</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">m</span><span class="o">.</span><span class="n">processed_graph</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>40.999999999999986
-</pre></div>
+<img alt="../../_images/fc24a50d0737ae905fd1d91a22b7a29d10fbedb3c0bc3351fda4f7e0a96be7cc.svg" src="../../_images/fc24a50d0737ae905fd1d91a22b7a29d10fbedb3c0bc3351fda4f7e0a96be7cc.svg" />
 </div>
 </div>
-</div>
-<p>The Steiner problem is only guaranteed to yield a Steiner tree when we allow the solver to run until optimality is proven. However, we can enforce the tree structure more strictly by setting <code class="docutils literal notranslate"><span class="pre">strict_acyclic=True</span></code>. In this scenario, instead of using a standard network flow problem, it employs an acyclic network flow. While this approach introduces more variables, it also adds more constraints. These additional constraints exclude many structures that aren’t trees from the feasible space, potentially aiding solvers in finding the optimal solution more quickly. Moreover, we can stop the solver early, even before optimality is confirmed, and still obtain a valid Steiner tree.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">P</span><span class="p">,</span> <span class="n">G_steiner</span> <span class="o">=</span> <span class="n">exact_steiner_tree</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">terminals</span><span class="p">,</span> <span class="n">strict_acyclic</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;SCIPY&quot;</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Optimal value:&quot;</span><span class="p">,</span> <span class="n">P</span><span class="o">.</span><span class="n">objectives</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
-<span class="n">G_steiner</span><span class="o">.</span><span class="n">edge_subgraph</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">symbols</span><span class="p">[</span><span class="s2">&quot;_flow_i&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
-    <span class="n">orphan_edges</span><span class="o">=</span><span class="kc">False</span>
-<span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;scipy&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sol</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">processed_graph</span><span class="o">.</span><span class="n">edge_subgraph</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">with_flow</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">))</span>
+<span class="n">sol</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">orphan_edges</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>===============================================================================
-                                     CVXPY                                     
-                                     v1.5.3                                    
-===============================================================================
-(CVXPY) May 18 06:05:35 PM: Your problem has 670 variables, 1980 constraints, and 0 parameters.
-(CVXPY) May 18 06:05:35 PM: It is compliant with the following grammars: DCP, DQCP
-(CVXPY) May 18 06:05:35 PM: (If you need to solve this problem multiple times, but with different data, consider using parameters.)
-(CVXPY) May 18 06:05:35 PM: CVXPY will first compile your problem; then, it will invoke a numerical solver to obtain a solution.
-(CVXPY) May 18 06:05:35 PM: Your problem is compiled with the CPP canonicalization backend.
--------------------------------------------------------------------------------
-                                  Compilation                                  
--------------------------------------------------------------------------------
-(CVXPY) May 18 06:05:35 PM: Compiling problem (target solver=SCIPY).
-(CVXPY) May 18 06:05:35 PM: Reduction chain: Dcp2Cone -&gt; CvxAttr2Constr -&gt; ConeMatrixStuffing -&gt; SCIPY
-(CVXPY) May 18 06:05:35 PM: Applying reduction Dcp2Cone
-(CVXPY) May 18 06:05:35 PM: Applying reduction CvxAttr2Constr
-(CVXPY) May 18 06:05:35 PM: Applying reduction ConeMatrixStuffing
-(CVXPY) May 18 06:05:35 PM: Applying reduction SCIPY
-(CVXPY) May 18 06:05:35 PM: Finished problem compilation (took 2.574e-02 seconds).
--------------------------------------------------------------------------------
-                                Numerical solver                               
--------------------------------------------------------------------------------
-(CVXPY) May 18 06:05:35 PM: Invoking solver SCIPY  to obtain a solution.
-Solver terminated with message: Optimization terminated successfully. (HiGHS Status 7: Optimal)
--------------------------------------------------------------------------------
-                                    Summary                                    
--------------------------------------------------------------------------------
-(CVXPY) May 18 06:05:52 PM: Problem status: optimal
-(CVXPY) May 18 06:05:52 PM: Optimal value: 4.100e+01
-(CVXPY) May 18 06:05:52 PM: Compilation took 2.574e-02 seconds
-(CVXPY) May 18 06:05:52 PM: Solver (including time spent in interface) took 1.743e+01 seconds
-Optimal value: 41.0
+<img alt="../../_images/f7b0fefda8639e4d73c1379567eb41ce91056ec177dd640bb2ba55f4d1f4dfda.svg" src="../../_images/f7b0fefda8639e4d73c1379567eb41ce91056ec177dd640bb2ba55f4d1f4dfda.svg" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">G_mixed</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">EdgeType</span><span class="o">.</span><span class="n">UNDIRECTED</span><span class="p">)</span>
+<span class="n">G_mixed</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>
-<img alt="../../_images/d9f3fbc5c1912fae590b6c3207df8e8b1ee177abe296007df1cbc796e2723e79.svg" src="../../_images/d9f3fbc5c1912fae590b6c3207df8e8b1ee177abe296007df1cbc796e2723e79.svg" />
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/623b24ff42196f02fbee613caa10e12d490ec744860c03f37ba59667d6cdcd47.svg" src="../../_images/623b24ff42196f02fbee613caa10e12d490ec744860c03f37ba59667d6cdcd47.svg" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">m</span> <span class="o">=</span> <span class="n">SteinerTreeFlow</span><span class="p">(</span><span class="n">root_selection_strategy</span><span class="o">=</span><span class="s2">&quot;best&quot;</span><span class="p">)</span>
+<span class="n">P</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">G_mixed</span><span class="p">,</span> <span class="n">D</span><span class="p">)</span>
+<span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;scipy&quot;</span><span class="p">)</span>
+
+<span class="n">sol</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">processed_graph</span><span class="o">.</span><span class="n">edge_subgraph</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">with_flow</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">))</span>
+<span class="n">sol</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">orphan_edges</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/8853df7875c64821c36cd7e7f21ba652613f91c7092e6167bf68a42c75983bb3.svg" src="../../_images/8853df7875c64821c36cd7e7f21ba652613f91c7092e6167bf68a42c75983bb3.svg" />
 </div>
 </div>
 </section>
@@ -719,12 +995,12 @@ Optimal value: 41.0
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="shortest-paths.html"
+       href="acyclic-flows.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Shortest paths</p>
+        <p class="prev-next-title">Acyclic Flows</p>
       </div>
     </a>
     <a class="right-next"
@@ -732,7 +1008,7 @@ Optimal value: 41.0
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Prize-Collecting Steiner Trees (PCSTs)</p>
+        <p class="prev-next-title">Prize-Collecting Steiner Trees (PCST)</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -743,7 +1019,8 @@ Optimal value: 41.0
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
   <div class="sidebar-secondary-item">
@@ -754,19 +1031,18 @@ Optimal value: 41.0
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#heuristic-steiner-tree-from-networkx">Heuristic steiner tree from NetworkX</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exact-steiner-trees-with-corneto">Exact Steiner Trees with CORNETO</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-are-steiner-trees">What are Steiner Trees?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-corneto-solves-steiner-tree-problems">How CORNETO Solves Steiner Tree Problems</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#key-features">Key Features:</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#importing-data-to-corneto">Importing data to CORNETO</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#solving-the-problem-with-the-exact-steiner-tree">Solving the problem with the exact steiner tree</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#extracting-the-tree-and-plotting">Extracting the tree and plotting</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#directed-graphs">Directed graphs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mixed-graphs">Mixed graphs</a></li>
 </ul>
   </nav></div>
-
-  <div class="sidebar-secondary-item">
-
-  <div class="tocsection sourcelink">
-    <a href="../../_sources/guide/networks/steiner-trees.ipynb.txt">
-      <i class="fa-solid fa-file-lines"></i> Show Source
-    </a>
-  </div>
-</div>
 
 </div></div>
               
@@ -781,8 +1057,8 @@ Optimal value: 41.0
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
-<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -793,7 +1069,7 @@ Optimal value: 41.0
 
   <p class="copyright">
     
-      © Copyright 2023, Saez-Rodriguez group.
+      © Copyright 2023-2025, Saez-Rodriguez lab. (EMBL-EBI, Heidelberg University).
       <br/>
     
   </p>
@@ -807,7 +1083,8 @@ Optimal value: 41.0
       
         <div class="footer-item">
 <p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
 </p></div>
       
     </div>

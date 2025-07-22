@@ -16,7 +16,7 @@
     "Gene expression data is first discretized, classifying genes into 'High', 'Medium', or 'Low' expression categories based on specific criteria, often grounded on dataset-specific quantiles. Following this classification, the association of genes to metabolic reactions is accomplished using gene-protein-reaction (GPR) associations. In essence, every metabolic reaction, based on the enzymes that catalyze it, is linked to one or more genes. Using GPR associations, each reaction receives a propensity score reflecting its likelihood to be active, based on the expression state of its associated genes.\n",
     "\n",
     "<center style=\"margin:25px\">\n",
-    "    <img src=\"https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fnbt.1487/MediaObjects/41587_2008_Article_BFnbt1487_Fig1_HTML.jpg?as=webp\" alt=\"iMAT toy example\" style=\"width: 100%; max-width:600px; margin-bottom:10px;\">\n",
+    "    <img src=\"../../_static/imat-example.jpg\" alt=\"iMAT toy example\" style=\"width: 100%; max-width:600px; margin-bottom:10px;\">\n",
     "    <br>\n",
     "    <font size=\"-1\">\n",
     "        <b>Figure 1:</b> Shlomi, Tomer, et al. \"Network-based prediction of human tissue-specific metabolism.\" <a href=\"https://www.nature.com/articles/nbt.1487/figures/1\">Nature biotechnology 26.9 (2008): 1003-1010 </a>.\n",
@@ -303,13 +303,9 @@
    ],
    "source": [
     "Gem = cn.Graph()\n",
-    "Gem.add_edge(\n",
-    "    {\"M1\", \"M2\"}, {\"M5\", \"M6\"}, genes=[\"E6\"], weight=-1, default_lb=0, default_ub=100\n",
-    ")\n",
+    "Gem.add_edge({\"M1\", \"M2\"}, {\"M5\", \"M6\"}, genes=[\"E6\"], weight=-1, default_lb=0, default_ub=100)\n",
     "Gem.add_edge(\"M1\", \"M4\", genes=[], default_lb=-100, default_ub=100)\n",
-    "Gem.add_edge(\n",
-    "    {\"M3\", \"M4\"}, {\"M7\", \"M8\"}, genes=[\"E3\"], weight=1, default_lb=0, default_ub=100\n",
-    ")\n",
+    "Gem.add_edge({\"M3\", \"M4\"}, {\"M7\", \"M8\"}, genes=[\"E3\"], weight=1, default_lb=0, default_ub=100)\n",
     "Gem.add_edge(\"M6\", \"M9\", genes=[\"E7\"], weight=1, default_lb=0, default_ub=100)\n",
     "Gem.add_edge((), \"M1\", genes=[\"E1\", \"E2\"], weight=1, default_lb=-100, default_ub=100)\n",
     "Gem.add_edge((), \"M2\", genes=[\"E5\"], weight=-1, default_lb=-100, default_ub=100)\n",
@@ -339,9 +335,7 @@
     }
    ],
    "source": [
-    "weights = np.array(\n",
-    "    [Gem.get_attr_edge(i).get(\"weight\", 0) for i in range(Gem.num_edges)]\n",
-    ")\n",
+    "weights = np.array([Gem.get_attr_edge(i).get(\"weight\", 0) for i in range(Gem.num_edges)])\n",
     "weights"
    ]
   },
@@ -754,9 +748,7 @@
     }
    ],
    "source": [
-    "Gem.plot(\n",
-    "    custom_edge_attr=cn.pl.flow_style(P), graph_attr={\"rankdir\": \"LR\", \"center\": \"1\"}\n",
-    ")"
+    "Gem.plot(custom_edge_attr=cn.pl.flow_style(P), graph_attr={\"rankdir\": \"LR\", \"center\": \"1\"})"
    ]
   }
  ],
@@ -776,7 +768,7 @@
    "name": "python",
    "nbconvert_exporter": "python",
    "pygments_lexer": "ipython3",
-   "version": "3.10.10"
+   "version": "3.12.9"
   },
   "toc": {
    "base_numbering": 1,
