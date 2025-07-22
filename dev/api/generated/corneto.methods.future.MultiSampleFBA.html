@@ -31,7 +31,7 @@
 <link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=53e23fa6" />
   
@@ -56,7 +56,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = '/switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.0.0.dev44+bd2931d';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.0.0.dev49+03dd98b';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
@@ -446,7 +446,7 @@
 <h1>corneto.methods.future.MultiSampleFBA<a class="headerlink" href="#corneto-methods-future-multisamplefba" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="corneto.methods.future.MultiSampleFBA">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">corneto.methods.future.</span></span><span class="sig-name descname"><span class="pre">MultiSampleFBA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lambda_reg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta_reg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flux_indicator_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'edge_has_flux'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disable_structured_sparsity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.future.MultiSampleFBA" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">corneto.methods.future.</span></span><span class="sig-name descname"><span class="pre">MultiSampleFBA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lambda_reg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta_reg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flux_indicator_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'edge_has_flux'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disable_structured_sparsity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_flow_upper_bound</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_flow_lower_bound</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.future.MultiSampleFBA" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FlowMethod</span></code></p>
 <p>Flux Balance Analysis (FBA) method for multiple samples.</p>
 <p>This class implements Flux Balance Analysis for metabolic networks across multiple samples.
@@ -468,6 +468,8 @@ conditions simultaneously, which allows for comparative metabolic studies.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>flux_indicator_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>)</p></li>
 <li><p><strong>disable_structured_sparsity</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>)</p></li>
+<li><p><strong>default_flow_upper_bound</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>default_flow_lower_bound</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em> | </em><em>None</em>)</p></li>
 <li><p><strong>backend</strong> (<a class="reference internal" href="../corneto.backend.html#corneto.backend.Backend" title="corneto.backend._base.Backend"><em>Backend</em></a><em> | </em><em>None</em>)</p></li>
 </ul>
 </dd>
@@ -606,7 +608,7 @@ individually for each sample.</p>
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="corneto.methods.future.MultiSampleFBA.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lambda_reg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta_reg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flux_indicator_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'edge_has_flux'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disable_structured_sparsity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.future.MultiSampleFBA.__init__" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lambda_reg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta_reg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flux_indicator_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'edge_has_flux'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disable_structured_sparsity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_flow_upper_bound</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_flow_lower_bound</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.future.MultiSampleFBA.__init__" title="Link to this definition">#</a></dt>
 <dd><p>Initialize a MultiSampleFBA instance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -622,6 +624,8 @@ is disabled. Structured sparsity can improve solution quality but increases
 computation time. Defaults to False.</p></li>
 <li><p><strong>backend</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="../corneto.backend.html#corneto.backend.Backend" title="corneto.backend.Backend"><em>Backend</em></a><em>]</em><em>, </em><em>optional</em>) – The optimization backend to use.
 If None, the default backend is used. Defaults to None.</p></li>
+<li><p><strong>default_flow_upper_bound</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>default_flow_lower_bound</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em> | </em><em>None</em>)</p></li>
 </ul>
 </dd>
 </dl>
@@ -649,7 +653,7 @@ If None, the default backend is used. Defaults to None.</p></li>
 <td><p>Returns a description of the method.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#corneto.methods.future.MultiSampleFBA.get_flow_bounds" title="corneto.methods.future.MultiSampleFBA.get_flow_bounds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_flow_bounds</span></code></a>(graph, data)</p></td>
-<td><p>Get the flow bounds for the optimization problem.</p></td>
+<td><p>Get the flow bounds and parameters for creating a flow problem.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">name</span></code>()</p></td>
 <td><p>Returns the name of the method.</p></td>
@@ -703,27 +707,27 @@ such as removing blocked reactions or dead-end metabolites.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="corneto.methods.future.MultiSampleFBA.get_flow_bounds">
 <span class="sig-name descname"><span class="pre">get_flow_bounds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.future.MultiSampleFBA.get_flow_bounds" title="Link to this definition">#</a></dt>
-<dd><p>Get the flow bounds for the optimization problem.</p>
-<p>This method extracts the default lower and upper bounds for each reaction
-in the metabolic network and sets up the problem dimensions based on the
-number of samples.</p>
+<dd><p>Get the flow bounds and parameters for creating a flow problem.</p>
+<p>This method can be overridden by subclasses to provide custom flow bounds
+based on the graph or data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>graph</strong> (<a class="reference internal" href="corneto.graph.BaseGraph.html#corneto.graph.BaseGraph" title="corneto.graph.BaseGraph"><em>BaseGraph</em></a>) – The metabolic network graph.</p></li>
-<li><p><strong>data</strong> (<a class="reference internal" href="corneto.data.Data.html#corneto.data.Data" title="corneto.data.Data"><em>Data</em></a>) – The experimental data containing sample information.</p></li>
+<li><p><strong>graph</strong> (<em>BaseGraph</em>) – The preprocessed network graph.</p></li>
+<li><p><strong>data</strong> (<em>Data</em>) – The preprocessed dataset.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>Dictionary containing flow bounds information including</dt><dd><p>lower bounds, upper bounds, number of flows (samples), and whether
-bounds are shared across samples.</p>
-</dd>
-</dl>
+<dd class="field-even"><p><ul class="simple">
+<li><p>‘lb’: Lower bounds for flows (float, array, or None)</p></li>
+<li><p>’ub’: Upper bounds for flows (float, array, or None)</p></li>
+<li><p>’n_flows’: Number of flows (int)</p></li>
+<li><p>’shared_bounds’: Whether bounds are shared across flows (bool)</p></li>
+</ul>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Dict[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a>, Any]</p>
+<dd class="field-odd"><p>A dictionary containing flow configuration parameters</p>
 </dd>
 </dl>
 </dd></dl>
@@ -732,12 +736,6 @@ bounds are shared across samples.</p>
 <dt class="sig sig-object py" id="corneto.methods.future.MultiSampleFBA.create_flow_based_problem">
 <span class="sig-name descname"><span class="pre">create_flow_based_problem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flow_problem</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.future.MultiSampleFBA.create_flow_based_problem" title="Link to this definition">#</a></dt>
 <dd><p>Create the flow-based optimization problem.</p>
-<p>This method sets up the constraints and objectives for the FBA optimization
-problem by:
-1. Creating indicator variables for flux activity
-2. Setting reaction-specific bounds for each sample
-3. Adding objective functions for each sample
-4. Adding regularization terms if requested</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
