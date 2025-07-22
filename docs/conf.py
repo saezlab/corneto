@@ -161,7 +161,7 @@ html_theme_options = {
         # The switcher.json file is now available at the root.
         # "json_url": f"{html_baseurl}/switcher.json",
         "json_url": "/switcher.json",
-        "version_match": corneto.__version__,
+        "version_match": os.environ.get("SPHINX_VERSION_MATCH", corneto.__version__),
     },
     "navbar_start": ["navbar-logo", "version-switcher"],
     "analytics": {

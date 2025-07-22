@@ -1,3 +1,12 @@
+#!/usr/bin/env python3
+"""DEPRECATED: This script is deprecated in favor of docs/switcher.py
+
+The new switcher.py provides a simplified approach that better aligns with
+the deployment folder structure and reduces complexity.
+
+Use docs/switcher.py instead.
+"""
+
 import json
 import os
 import re

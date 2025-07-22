@@ -55,30 +55,37 @@ jobs:
           poetry run python -c "import corneto; print(f'Imported __version__: {corneto.__version__}')"
 
       - name: Build Docs
+        env:
+          SPHINX_VERSION_MATCH: ${{ steps.set_version.outputs.doc_version }}
         run: |
           set -e
           poetry run sphinx-build -b html docs docs/_build/html
 
-      - name: Determine doc version
+      - name: Determine doc version and deployment targets
         id: set_version
         run: |
           set -e
           case "${GITHUB_REF}" in
             refs/tags/*)
               version="${GITHUB_REF#refs/tags/}"
+              deploy_to_main="true"
               ;;
             refs/heads/main)
               version="main"
+              deploy_to_main="false"
               ;;
             refs/heads/dev)
               version="dev"
+              deploy_to_main="false"
               ;;
             *)
               echo "Unexpected branch/ref: ${GITHUB_REF}"
               version="dev"
+              deploy_to_main="false"
               ;;
           esac
           echo "doc_version=${version}" >> $GITHUB_OUTPUT
+          echo "deploy_to_main=${deploy_to_main}" >> $GITHUB_OUTPUT
 
       - name: Get GitHub Pages URL via GH CLI
         id: pages
@@ -109,25 +116,7 @@ jobs:
       - name: Generate switcher.json
         run: |
           set -e
-          poetry run python docs/generate_switcher.py
-
-      - name: Patch theme switcher version match
-        run: |
-          set -e
-          version="${{ steps.set_version.outputs.doc_version }}"
-          echo "Patching theme_switcher_version_match → $version"
-          find docs/_build/html -name '*.html' -print0 | while IFS= read -r -d '' file; do
-            echo
-            echo "=== $file ==="
-            echo "- before:"
-            grep -H "theme_switcher_version_match" "$file" || echo "  (no match)"
-            # do the in‑place replace
-            sed -i "s/theme_switcher_version_match = '[^']*'/theme_switcher_version_match = '$version'/g" "$file"
-            echo "+ after:"
-            grep -H "theme_switcher_version_match" "$file" || echo "  (still no match)"
-          done
-          echo
-          echo "Patching completed successfully"
+          poetry run python docs/switcher.py
 
 
       - name: Create root redirect to latest
@@ -161,13 +150,13 @@ jobs:
           destination_dir: ${{ steps.set_version.outputs.doc_version }}
           keep_files: true
 
-      - name: Deploy latest docs to root
-        if: ${{ steps.set_version.outputs.doc_version == 'latest' }}
+      - name: Deploy tagged version to main folder
+        if: ${{ steps.set_version.outputs.deploy_to_main == 'true' }}
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs/_build/html
-          destination_dir: ./
+          destination_dir: main
           keep_files: true
 
       - name: Clean up temporary files
