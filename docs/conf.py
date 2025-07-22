@@ -56,8 +56,9 @@ myst_enable_extensions = [
 ]
 
 # Substitutions to be used in MyST documents.
+# Note: Uses same SPHINX_VERSION_MATCH override as switcher for consistency
 myst_substitutions = {
-    "version": corneto.__version__,
+    "version": os.environ.get("SPHINX_VERSION_MATCH", corneto.__version__),
 }
 
 # File types and their corresponding parsers.
@@ -160,6 +161,10 @@ html_theme_options = {
     "switcher": {
         # The switcher.json file is now available at the project root.
         "json_url": f"{html_baseurl}/switcher.json",
+        # SPHINX_VERSION_MATCH: Environment variable to override version matching
+        # - In CI: Set to deployment folder name (e.g., "main", "dev", "v1.0.0")
+        # - Locally: Defaults to corneto.__version__ for development
+        # Usage: SPHINX_VERSION_MATCH=main sphinx-build -b html docs docs/_build/html
         "version_match": os.environ.get("SPHINX_VERSION_MATCH", corneto.__version__),
     },
     "navbar_start": ["navbar-logo", "version-switcher"],
