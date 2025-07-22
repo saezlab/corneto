@@ -151,11 +151,13 @@ class CvxpyBackend(Backend):
         # and add the required ones.
         extras = []
         # Get variables
+        # TODO: Check what happens if lb/ub are matrices
         for v in p.symbols.values():
             if v._provided_lb is not None:
                 extras.append(v >= v.lb)
             if v._provided_ub is not None:
                 extras.append(v <= v.ub)
+
         cstr = [c.e for c in extras + p.constraints]
         cvxpy_problem = cp.Problem(o, cstr)
         s = solver

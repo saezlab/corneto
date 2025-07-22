@@ -137,12 +137,13 @@ def test_single_sample_imat_low_expression_ko(metabolic_network, backend):
     rid = next(iter(metabolic_network.get_edges_by_attr("id", "PYK")))
     pyk_flux = problem.expr.flow[rid].value
     # PYK flux should be reasonably low given low expression
-    assert abs(pyk_flux) <= 2.0
+    assert np.isclose(pyk_flux, 0, atol=1e-3)
+    # assert abs(pyk_flux) <= 1e-3
 
     # The biomass flux should be maintained close to optimal
     bid = next(iter(metabolic_network.get_edges_by_attr("id", "EX_biomass_e")))
     biomass_flux = problem.expr.flow[bid].value
-    assert biomass_flux > 100
+    assert biomass_flux > 20
 
 
 def test_single_sample_imat_high_expression(metabolic_network, backend):

@@ -55,6 +55,8 @@ class MultiSampleIMAT(MultiSampleFBA):
         scale: bool = False,
         use_bigm_constraints: bool = True,
         gpr_field: str = "GPR",
+        default_flux_lower_bound: Optional[float] = None,
+        default_flux_upper_bound: Optional[float] = None,
         high_expression_threshold: Optional[float] = None,
         low_expression_threshold: Optional[float] = None,
         use_mean_for_missing_reactions: bool = False,
@@ -65,6 +67,8 @@ class MultiSampleIMAT(MultiSampleFBA):
             lambda_reg=lambda_reg,  # Use lambda_reg for structured sparsity
             beta_reg=beta_reg,
             flux_indicator_name="edge_has_flux",
+            default_flow_lower_bound=default_flux_lower_bound,
+            default_flow_upper_bound=default_flux_upper_bound,
             backend=backend,
         )
         self.eps = eps
@@ -195,11 +199,14 @@ class MultiSampleIMAT(MultiSampleFBA):
             # Add reaction features to the result data
             if rxn_scores:
                 for rxn_id, score in rxn_scores.items():
+                    # TODO: Before adding, check if there is already
+                    # a feature for that edge, if so, update the
+                    # value and warn.
                     result_data.samples[sample_name].add(
                         Feature(
                             id=rxn_id,
                             value=score,
-                            mapping="edge",  # Explicitly set mapping to edge
+                            mapping="edge",
                         )
                     )
 
