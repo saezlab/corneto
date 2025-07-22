@@ -17,9 +17,9 @@ sys.path.insert(0, str(Path(".").resolve()))
 # Import the project module to retrieve version information.
 import corneto
 
-# Derive GitHub username (set in GitHub Actions; use a default for local builds)
+# Derive GitHub username and repo (set in GitHub Actions; use a default for local builds)
 repo = os.environ.get("GITHUB_REPOSITORY", "username/corneto")
-username = repo.split("/")[0]
+username, repo_name = repo.split("/", 1)
 
 # -- Project information -----------------------------------------------------
 project = "CORNETO"
@@ -128,7 +128,7 @@ todo_include_todos = False
 
 # -- Options for HTML output --
 # html_baseurl = 'https://saezlab.github.io/corneto'
-html_baseurl = f"https://{username}.github.io/corneto"
+html_baseurl = f"https://{username}.github.io/{repo_name}"
 html_favicon = "_static/favicon.ico"
 html_show_sourcelink = False
 add_function_parentheses = False
