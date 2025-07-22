@@ -1,0 +1,679 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>NetworkX: Network Analysis in Python &#8212; CORNETO  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=53e23fa6" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-Z263GN2PKK"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-Z263GN2PKK');
+            </script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'guide/interoperability/networkx';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = '/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.0.0b0';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="canonical" href="https://saezlab.github.io/corneto/guide/interoperability/networkx.html" />
+    <link rel="icon" href="../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="CVXPY: Convex optimization, for everyone" href="cvxpy.html" />
+    <link rel="prev" title="Omnipath: intra- &amp; intercellular signaling knowledge" href="omnipath.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="../../_static/logo.png" class="logo__image only-light" alt="CORNETO  documentation - Home"/>
+    <img src="../../_static/logo.png" class="logo__image only-dark pst-js-only" alt="CORNETO  documentation - Home"/>
+  
+  
+</a></div>
+    
+      <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install.html">
+    Install
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api/index.html">
+    Reference
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-external" href="https://github.com/saezlab/corneto">
+    GitHub
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install.html">
+    Install
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api/index.html">
+    Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/saezlab/corneto">
+    GitHub
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../intro/index.html">Getting started</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../intro/prior-knowledge.html">Prior Knowledge and Graphs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/data.html">Working with data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/plotting.html">Plotting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/constrained-optimization.html">Constrained Optimization</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../networks/index.html">Network methods</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../networks/shortest-paths.html">Shortest paths</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../networks/multi-sample-shortest-paths.html">Multi-sample shortest paths</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../networks/multi-commodity-network-flows.html">Multi-commodity Network Flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../networks/acyclic-flows.html">Acyclic Flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../networks/steiner-trees.html">Steiner trees</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../networks/pcst.html">Prize-Collecting Steiner Trees (PCST)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../networks/multi-pcst-grb.html">Multi-sample PCST</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../metabolism/index.html">Metabolism</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../metabolism/flux-balance-analysis.html">Flux Balance Analysis (FBA)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metabolism/multicondition-sfba.html">Multi-condition sparse FBA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metabolism/imat.html">Context-specific models (iMAT)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metabolism/multicondition-imat.html">Multi-condition iMAT</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../signaling/index.html">Signaling</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../signaling/carnival.html">CARNIVAL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../signaling/multisample-carnival.html">Multi-sample CARNIVAL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../signaling/cellnopt_ILP.html">Acyclic boolean models of cell signaling (experimental)</a></li>
+
+
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Interoperability</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="cobrapy.html">COBRApy: Constraint-based metabolic modeling in Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liana.html">LIANA+: An all-in-one cell-cell communication framework</a></li>
+<li class="toctree-l2"><a class="reference internal" href="decoupler.html">Decoupler: Ensemble of methods to infer biological activities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="omnipath.html">Omnipath: intra- &amp; intercellular signaling knowledge</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">NetworkX: Network Analysis in Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cvxpy.html">CVXPY: Convex optimization, for everyone</a></li>
+<li class="toctree-l2"><a class="reference internal" href="picos.html">PICOS: A Python interface to conic optimization solvers</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Guide</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Interoperability</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">NetworkX: Network Analysis in Python</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="networkx-network-analysis-in-python">
+<h1>NetworkX: Network Analysis in Python<a class="headerlink" href="#networkx-network-analysis-in-python" title="Link to this heading">#</a></h1>
+<center>
+<img src="../../_static/networkx-logo.svg" alt="networkx logo" style="width: 500px; margin: 20px;"
+     onerror="this.onerror=null; this.src='https://networkx.org/_static/networkx_logo.svg';"/>
+</center>
+<p><a class="reference external" href="https://networkx.org/"><strong>NetworkX</strong></a> is an open-source Python library designed for creating, manipulating, and analyzing networks made up of nodes and edges. It provides an extensive array of tools and algorithms for general graph operations, catering to both directed and undirected graphs. Beyond basic graph creation and visualization, NetworkX supports a multitude of graph algorithms, ranging from shortest path computations to more complex structural evaluations, making it a versatile toolkit for researchers, developers, and data scientists working in the domain of network analysis.</p>
+<p>On the other hand, CORNETO’s <code class="docutils literal notranslate"><span class="pre">graph</span></code> class has a specialized focus. While NetworkX is geared towards using standard graph methods, CORNETO is all about building optimization problems using graphs. The <code class="docutils literal notranslate"><span class="pre">Graph</span></code> class implemented in CORNETO is more flexible, and supports directed, undirected edges, parallel edges, hyperedges, and all mixed in the same graph.</p>
+<p>Despite the differences in their primary uses, CORNETO and NetworkX can work together. Here, we will see an example of this interoperability between CORNETO and NetworkX.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a networkx graph</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">networkx</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nx</span>
+
+<span class="c1"># Create a graph object</span>
+<span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+
+<span class="c1"># Add nodes</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_nodes_from</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+
+<span class="c1"># Add edges with weights</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+<span class="c1"># Compute shortest paths from node 1 to all other nodes</span>
+<span class="n">shortest_paths</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">single_source_dijkstra_path</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">shortest_path_lengths</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">single_source_dijkstra_path_length</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># Print the paths and their lengths</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Shortest paths from node 1:&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">target</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">shortest_paths</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Node 1 to node </span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s2">: Path: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2"> with total weight: </span><span class="si">{</span><span class="n">shortest_path_lengths</span><span class="p">[</span><span class="n">target</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Shortest paths from node 1:
+Node 1 to node 1: Path: [1] with total weight: 0
+Node 1 to node 2: Path: [1, 2] with total weight: 1
+Node 1 to node 3: Path: [1, 2, 3] with total weight: 3
+Node 1 to node 5: Path: [1, 2, 3, 4, 5] with total weight: 7
+Node 1 to node 4: Path: [1, 2, 3, 4] with total weight: 4
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a corneto graph</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">corneto</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cn</span>
+
+<span class="n">Gc</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+<span class="n">Gc</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">Gc</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">Gc</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">Gc</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">Gc</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">Gc</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+<span class="n">Gc</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">Gc</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(5, 7)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.contrib.networkx</span><span class="w"> </span><span class="kn">import</span> <span class="n">corneto_graph_to_networkx</span>
+
+<span class="n">Gcn</span> <span class="o">=</span> <span class="n">corneto_graph_to_networkx</span><span class="p">(</span><span class="n">Gc</span><span class="p">)</span>
+<span class="n">Gcn</span><span class="o">.</span><span class="n">nodes</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>NodeView((1, 2, 3, 4, 5))
+</pre></div>
+</div>
+</div>
+</div>
+<p>Corneto automatically transforms the graph to a networkx graph when using the networkx API</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.contrib.networkx</span><span class="w"> </span><span class="kn">import</span> <span class="n">networkx</span> <span class="k">as</span> <span class="n">nxc</span>
+
+<span class="c1"># NOTE: everytime a corneto graph is passed to a networkx function, it is converted to a networkx graph</span>
+<span class="c1"># Think about converting first the graph to a networkx graph and then using networkx functions for better performance</span>
+<span class="n">shortest_paths</span> <span class="o">=</span> <span class="n">nxc</span><span class="o">.</span><span class="n">single_source_dijkstra_path</span><span class="p">(</span><span class="n">Gc</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">shortest_path_lengths</span> <span class="o">=</span> <span class="n">nxc</span><span class="o">.</span><span class="n">single_source_dijkstra_path_length</span><span class="p">(</span><span class="n">Gc</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># Print the paths and their lengths</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Shortest paths from node 1:&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">target</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">shortest_paths</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Node 1 to node </span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s2">: Path: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2"> with total weight: </span><span class="si">{</span><span class="n">shortest_path_lengths</span><span class="p">[</span><span class="n">target</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Shortest paths from node 1:
+Node 1 to node 1: Path: [1] with total weight: 0
+Node 1 to node 2: Path: [1, 2] with total weight: 1
+Node 1 to node 3: Path: [1, 2, 3] with total weight: 3
+Node 1 to node 5: Path: [1, 2, 3, 4, 5] with total weight: 7
+Node 1 to node 4: Path: [1, 2, 3, 4] with total weight: 4
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">G</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">((),</span> <span class="s2">&quot;A&quot;</span><span class="p">)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="p">())</span>
+<span class="n">G</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/25dad3b2c5be1f1cff7e8ab23198a801ebaa30df366d4d32ff39bd56236ab5af.svg" src="../../_images/25dad3b2c5be1f1cff7e8ab23198a801ebaa30df366d4d32ff39bd56236ab5af.svg" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">G_nx</span> <span class="o">=</span> <span class="n">corneto_graph_to_networkx</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">skip_unsupported_edges</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">G_nx</span><span class="o">.</span><span class="n">nodes</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>NodeView((&#39;A&#39;, &#39;B&#39;))
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="omnipath.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Omnipath: intra- &amp; intercellular signaling knowledge</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="cvxpy.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">CVXPY: Convex optimization, for everyone</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2023-2025, Saez-Rodriguez lab. (EMBL-EBI, Heidelberg University).
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
