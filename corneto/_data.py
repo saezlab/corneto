@@ -228,6 +228,9 @@ class Data:
             features_str = " ".join(map(str, sample_features))
         return f"Data(n_samples={len(self._samples)}, n_feats=[{features_str}])"
 
+    def copy(self) -> "Data":
+        return Data.from_dict(self.to_dict())
+
     # --- Queryable API for Samples ---
     @property
     def query(self) -> "DataQuery":

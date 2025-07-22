@@ -120,6 +120,8 @@ class MultiSampleFBA(FlowMethod):
         beta_reg=0.0,
         flux_indicator_name: str = "edge_has_flux",
         disable_structured_sparsity: bool = False,
+        default_flow_upper_bound: Optional[float] = None,
+        default_flow_lower_bound: Optional[float] = None,
         backend: Optional[Backend] = None,
     ):
         """Initialize a MultiSampleFBA instance.
@@ -146,6 +148,8 @@ class MultiSampleFBA(FlowMethod):
         )
         self.flux_indicator_name = flux_indicator_name
         self.beta_reg = self.backend.Parameter(name="beta_reg_param", value=beta_reg)
+        self.default_flow_upper_bound = default_flow_upper_bound
+        self.default_flow_lower_bound = default_flow_lower_bound
 
     def preprocess(self, graph: BaseGraph, data: Data) -> Tuple[BaseGraph, Data]:
         """Preprocess the graph and data before solving.
@@ -160,41 +164,57 @@ class MultiSampleFBA(FlowMethod):
         Returns:
             Tuple[BaseGraph, Data]: The preprocessed graph and data.
         """
-        # No preprocess needed, although flux-consistent techniques could be implemented
         return graph, data
 
     def get_flow_bounds(self, graph: BaseGraph, data: Data) -> Dict[str, Any]:
-        """Get the flow bounds for the optimization problem.
+        n_edges = graph.num_edges
+        n_samples = len(data.samples)
 
-        This method extracts the default lower and upper bounds for each reaction
-        in the metabolic network and sets up the problem dimensions based on the
-        number of samples.
+        lb = (
+            np.full(n_edges, self.default_flow_lower_bound, dtype=float)
+            if self.default_flow_lower_bound is not None
+            else np.asarray(graph.get_attr_from_edges("default_lb"), dtype=float)
+        )
 
-        Args:
-            graph (BaseGraph): The metabolic network graph.
-            data (Data): The experimental data containing sample information.
+        ub = (
+            np.full(n_edges, self.default_flow_upper_bound, dtype=float)
+            if self.default_flow_upper_bound is not None
+            else np.asarray(graph.get_attr_from_edges("default_ub"), dtype=float)
+        )
 
-        Returns:
-            Dict[str, Any]: Dictionary containing flow bounds information including
-                lower bounds, upper bounds, number of flows (samples), and whether
-                bounds are shared across samples.
-        """
+        # broadcast to (n_edges, n_samples)
+        lb = np.tile(lb[:, None], (1, n_samples))
+        ub = np.tile(ub[:, None], (1, n_samples))
+
+        # edge-id -> row mapping
+        edge_ids = graph.get_attr_from_edges("id")
+        row_of = {eid: idx for idx, eid in enumerate(edge_ids)}
+
+        # TODO: Seems that different bounds for a Variable (cvxpy, picos)
+        # is problematic? not supported?
+        for col, sample in enumerate(data.samples.values()):
+            for feature in sample.features:
+                row = row_of.get(feature.id)
+                if row is None:
+                    continue
+                # if (lb_val := feature.data.get("lower_bound")) is not None:
+                #    lb[row, col] = lb_val
+                # if (ub_val := feature.data.get("upper_bound")) is not None:
+                #    ub[row, col] = ub_val
+
+        # squeeze back to 1-D for single-sample cases
+        if n_samples == 1:
+            lb, ub = lb.squeeze(1), ub.squeeze(1)
+
         return {
-            "lb": np.array(graph.get_attr_from_edges("default_lb")),
-            "ub": np.array(graph.get_attr_from_edges("default_ub")),
-            "n_flows": len(data.samples),
+            "lb": lb,
+            "ub": ub,
+            "n_flows": n_samples,
             "shared_bounds": False,
         }
 
     def create_flow_based_problem(self, flow_problem, graph: BaseGraph, data: Data):
         """Create the flow-based optimization problem.
-
-        This method sets up the constraints and objectives for the FBA optimization
-        problem by:
-        1. Creating indicator variables for flux activity
-        2. Setting reaction-specific bounds for each sample
-        3. Adding objective functions for each sample
-        4. Adding regularization terms if requested
 
         Args:
             flow_problem: The optimization problem object.
@@ -208,7 +228,7 @@ class MultiSampleFBA(FlowMethod):
         F = flow_problem.expr.flow
         flow_problem += self.backend.Indicator(F, name=self.flux_indicator_name)
 
-        for i, sample_data in enumerate(data.samples.values()):
+        for i, (sample_name, sample_data) in enumerate(data.samples.items()):
             rxn_objectives = []
             rxn_weights = []
             lb_rxn = []
@@ -229,10 +249,16 @@ class MultiSampleFBA(FlowMethod):
                 rxn_objectives.append(rxn_obj)
                 rxn_weights.append(value)
 
+            # TODO: the flow problem is already instantiated at this point with
+            # explicit bounds, so adding new bounds here might not work, unless
+            # all bounds of the flow problem are lb=-inf and ub=+inf.
+
             # Process reaction-specific bounds
             # for rxn_id, metadata in sample_data.features.items():
             for feature in sample_data.features:
                 rxn_id = feature.id
+                if not list(graph.get_edges_by_attr("id", rxn_id)):
+                    continue
                 lower_bound = feature.data.get("lower_bound", None)
                 upper_bound = feature.data.get("upper_bound", None)
                 rid = next(iter(graph.get_edges_by_attr("id", rxn_id)))
@@ -260,9 +286,10 @@ class MultiSampleFBA(FlowMethod):
 
             # Add objectives for this sample
             if rxn_objectives:
+                ids_str = "_".join([str(o) for o in rxn_objectives])
                 flow_problem.add_objective(
                     sample_flux[rxn_objectives].multiply(np.array(rxn_weights)).sum(),
-                    name=f"objective_{rxn_id}",
+                    name=f"objective_{sample_name}__{ids_str}",
                 )
 
             # Add regularization term for sparsity if requested

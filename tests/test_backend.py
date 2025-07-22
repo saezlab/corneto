@@ -898,3 +898,48 @@ def test_l2_norm(backend):
     P.add_objectives(n)
     P.solve(solver="cvxopt")
     assert np.isclose(n.value, expected_result, rtol=1e-5)
+
+
+def test_variable_matrix_bounds(backend):
+    """Test that Variables with matrix bounds (lb/ub with 2 columns) work correctly.
+
+    Creates a Variable with different bounds for each column and verifies that
+    constraints are properly applied, forcing different values in each column.
+    """
+    # Create a 3x2 variable with matrix bounds
+    n_rows = 3
+    n_cols = 2
+
+    # Set up different bounds for each column
+    # Column 0: lower bound = -5, upper bound = 5
+    # Column 1: lower bound = 0, upper bound = 0 (fixed at 0)
+    lb = np.array([[-5] * n_rows, [0] * n_rows]).T  # Shape: (3, 2)
+    ub = np.array([[5] * n_rows, [0] * n_rows]).T  # Shape: (3, 2)
+
+    # Create variable with matrix bounds
+    v = backend.Variable("v", shape=(n_rows, n_cols), lb=lb, ub=ub)
+
+    # Create optimization problem
+    P = backend.Problem()
+
+    # Objective: maximize values in column 0 (should reach upper bound of 5)
+    P.add_objectives(-v[:, 0].sum())  # Negative sign for maximization
+
+    # Solve the problem
+    P.solve()
+
+    # Verify results
+    assert v.value is not None, "Solution should exist"
+
+    # Column 0 should be at upper bound (5) for all rows
+    col0_msg = f"Column 0 should be 5, got {v.value[:, 0]}"
+    assert np.allclose(v.value[:, 0], 5.0, atol=1e-6), col0_msg
+
+    # Column 1 should be exactly 0 (both lower and upper bound are 0)
+    col1_msg = f"Column 1 should be 0, got {v.value[:, 1]}"
+    assert np.allclose(v.value[:, 1], 0.0, atol=1e-6), col1_msg
+
+    # Verify that values in column 0 are different from values in column 1
+    for i in range(n_rows):
+        diff_msg = f"v[{i}, 0] = {v.value[i, 0]} should differ from v[{i}, 1] = {v.value[i, 1]}"
+        assert not np.isclose(v.value[i, 0], v.value[i, 1]), diff_msg

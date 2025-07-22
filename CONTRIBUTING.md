@@ -6,7 +6,11 @@ We value community input and look forward to opening up for contributions once w
 
 ## Setup environment
 
-We use [Poetry](https://python-poetry.org) for dependency management. Please follow the instructions to install `poetry` on your system: https://python-poetry.org/docs/#installing-with-pipx. We recommend to install poetry using `pipx`. Once installed, clone the repository and install it with poetry. This will create a virtual environment ready for development:
+We use [Poetry](https://python-poetry.org) for dependency management and [Nox](https://nox.thea.codes/) for task automation. Please follow the instructions to install `poetry` on your system: https://python-poetry.org/docs/#installing-with-pipx. We recommend to install poetry using `pipx`.
+
+For notebook execution in tutorials, we also support [Pixi](https://pixi.sh/) environments for isolated execution per tutorial directory.
+
+Once installed, clone the repository and install it with poetry. This will create a virtual environment ready for development:
 
 ```bash
 git clone git+https://github.com/saezlab/corneto.git@dev
@@ -131,12 +135,17 @@ We use `pytest` for running our automated tests. You can run tests in several wa
 poetry run pytest
 ```
 
-### Using Tox (recommended):
+### Using Nox (recommended):
+```bash
+nox -s tests
+```
+
+### Using Tox (legacy):
 ```bash
 tox -e py
 ```
 
-The tox approach is recommended as it creates an isolated environment and ensures consistent testing across different setups.
+The nox approach is recommended as it creates an isolated environment and ensures consistent testing across different setups. Nox is our primary task runner that provides standardized environments for testing, linting, formatting, and documentation building.
 
 This command will run all test files in your project that follow the `test_*.py` naming convention, as recognized by `pytest`.
 
@@ -154,44 +163,56 @@ def test_calculate_division():
         calculate_division(5, 0)
 ```
 
-## Code Quality and Testing with Tox
+## Code Quality and Testing with Nox
 
-We use [tox](https://tox.wiki/) to standardize testing, linting, and documentation building across different environments. Tox provides isolated virtual environments for running different tasks.
+We use [Nox](https://nox.thea.codes/) to standardize testing, linting, and documentation building across different environments. Nox provides isolated virtual environments for running different tasks and supports multiple Python versions.
 
-### Available Tox Environments
+### Available Nox Sessions
 
-- **Testing**: Run unit tests (automatically detects your Python version)
+- **Testing**: Run unit tests across supported Python versions (3.10, 3.11, 3.12)
   ```bash
-  tox -e py  # Uses your current Python version
+  nox -s tests  # Uses your current Python version
   # Or specify a version if you have multiple:
-  tox -e py310  # Python 3.10
-  tox -e py311  # Python 3.11
-  tox -e py312  # Python 3.12
+  nox -s "tests-3.10"  # Python 3.10
+  nox -s "tests-3.11"  # Python 3.11
+  nox -s "tests-3.12"  # Python 3.12
   ```
 
 - **Linting**: Check code style and quality with ruff
   ```bash
-  tox -e lint
+  nox -s lint
   ```
 
 - **Formatting**: Auto-fix code formatting issues
   ```bash
-  tox -e format
+  nox -s format
   ```
 
 - **Type Checking**: Run static type analysis with mypy
   ```bash
-  tox -e typing
+  nox -s typing
   ```
 
 - **Documentation**: Build HTML documentation
   ```bash
-  tox -e docs
+  nox -s docs
+  ```
+
+- **Notebook Caching**: Execute notebooks with Pixi isolation (for tutorials)
+  ```bash
+  nox -s cache_notebooks_with_pixi
   ```
 
 ### Running All Quality Checks
 
 To run all quality checks (linting, formatting, typing, and tests) at once:
+```bash
+nox -s lint format typing tests
+```
+
+### Legacy Tox Support
+
+We still maintain tox configuration for backwards compatibility:
 ```bash
 tox -e lint,format,typing,py
 ```
@@ -202,61 +223,90 @@ This project uses Sphinx along with the PyData Sphinx theme to generate HTML doc
 
 ### Documentation for the current version
 
-To generate the HTML documentation for the current version of the project using tox:
+To generate the HTML documentation for the current version of the project using nox:
 
 ```bash
-tox -e docs
+nox -s docs
 ```
 
 This command will build the documentation in the `docs/_build/html` directory, which you can open in a browser to view.
 
 ### Additional Documentation Options
 
-We provide several tox environments for different documentation needs:
+We provide several nox sessions for different documentation needs:
 
 - **Clean build**: Remove previous builds and rebuild documentation
   ```bash
-  tox -e docs-clean
+  nox -s docs_clean
   ```
 
 - **Force notebook execution**: Build docs with forced notebook execution
   ```bash
-  tox -e docs-force
+  nox -s docs_force
   ```
 
 - **Strict mode**: Build docs treating warnings as errors
   ```bash
-  tox -e docs-werror
+  nox -s docs_werror
+  ```
+
+- **Complete build**: Clean, force notebook execution, and build with warnings as errors
+  ```bash
+  nox -s docs_all
   ```
 
 - **Link checking**: Verify all external links in documentation
   ```bash
-  tox -e docs-linkcheck
+  nox -s docs_linkcheck
   ```
 
 - **Serve locally**: Build and serve documentation at http://localhost:8000
   ```bash
-  tox -e docs-serve
+  nox -s docs_serve
   ```
+
+- **Generate switcher**: Generate version switcher JSON for Read-the-Docs
+  ```bash
+  nox -s generate_switcher
+  ```
+
+- **Full local check**: Build docs and generate switcher
+  ```bash
+  nox -s docs_full
+  ```
+
+### Legacy Tox Support
+
+You can still use tox for documentation tasks:
+```bash
+tox -e docs
+tox -e docs-clean
+tox -e docs-force
+tox -e docs-werror
+tox -e docs-linkcheck
+tox -e docs-serve
+```
+
+### Notebook Execution with Pixi
+
+For tutorial notebooks, we support per-directory Pixi environments that provide isolated execution contexts. This is particularly useful when different tutorials require different dependencies or solver configurations.
+
+To execute notebooks with Pixi isolation:
+```bash
+nox -s cache_notebooks_with_pixi
+```
+
+You can also filter specific notebooks using patterns:
+```bash
+nox -s cache_notebooks_with_pixi -- "*metabolic*" "^docs/.*intro.ipynb$"
+```
 
 ### Additional notes
 
-- **Tox environments**: All documentation and testing tasks are standardized through tox environments defined in `tox.ini`.
+- **Task automation**: All documentation, testing, and quality assurance tasks are standardized through nox sessions defined in `noxfile.py`.
+- **Legacy support**: Tox environments are still maintained in `tox.ini` for backwards compatibility.
 - **`myst-nb`**: We use `myst-nb` to handle the conversion of Jupyter notebooks (`.ipynb` files) into HTML. If your contribution involves notebooks, make sure they render correctly in the generated documentation.
-  tox -e docs-werror
-  ```
+- **Pixi integration**: Tutorial notebooks can use individual `pixi.toml` files for isolated execution environments with specific dependencies.
+- **Poetry and PEP 621**: The project uses both Poetry (legacy) and modern PEP 621 project configuration in `pyproject.toml`.
 
-- **Link checking**: Verify all external links in documentation
-  ```bash
-  tox -e docs-linkcheck
-  ```
-
-- **Serve locally**: Build and serve documentation at http://localhost:8000
-  ```bash
-  tox -e docs-serve
-  ```
-
-### Additional notes
-
-- **Tox environments**: All documentation and testing tasks are standardized through tox environments defined in `tox.ini`.
-- **`myst-nb`**: We use `myst-nb` to handle the conversion of Jupyter notebooks (`.ipynb` files) into HTML. If your contribution involves notebooks, make sure they render correctly in the generated documentation. Please see [contributing with tutorials](https://github.com/saezlab/corneto/blob/dev/docs/tutorials/README.md) for more information on how to contribute tutorials.
+Please see [contributing with tutorials](https://github.com/saezlab/corneto/blob/dev/docs/tutorials/README.md) for more information on how to contribute tutorials.
