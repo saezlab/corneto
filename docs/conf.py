@@ -158,9 +158,8 @@ html_theme_options = {
     "show_toc_level": 1,
     "navbar_align": "left",
     "switcher": {
-        # The switcher.json file is now available at the root.
-        # "json_url": f"{html_baseurl}/switcher.json",
-        "json_url": "/switcher.json",
+        # The switcher.json file is now available at the project root.
+        "json_url": f"{html_baseurl}/switcher.json",
         "version_match": os.environ.get("SPHINX_VERSION_MATCH", corneto.__version__),
     },
     "navbar_start": ["navbar-logo", "version-switcher"],

@@ -1,22 +1,23 @@
-name: Build and Deploy Docs
+name: Manual Deploy Docs
 
 on:
-  push:
-    branches:
-      - main
-      - dev
-    tags:
-      - '*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to deploy (e.g., v1.0.0)'
+        required: true
+        type: string
 
 jobs:
-  build-and-deploy:
+  manual-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
+      - name: Checkout Code at specified tag
         uses: actions/checkout@v4
         with:
+          ref: ${{ inputs.tag }}
           fetch-depth: 0
-          fetch-tags: true # for dynamic versioning
+          fetch-tags: true
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -40,7 +41,6 @@ jobs:
 
       - name: Install Dependencies
         env:
-          # enable version injection
           POETRY_DYNAMIC_VERSIONING_COMMANDS: install,build
         run: |
           set -e
@@ -52,8 +52,7 @@ jobs:
         run: |
           echo "=== Git State Debug ==="
           echo "Current commit: $(git rev-parse HEAD)"
-          echo "Current ref: $GITHUB_REF"
-          echo "Current ref name: $GITHUB_REF_NAME"
+          echo "Current ref: ${{ inputs.tag }}"
           echo "Tag at HEAD: $(git describe --tags --exact-match HEAD 2>/dev/null || echo 'No exact tag match')"
           echo "Latest tag: $(git describe --tags --abbrev=0 2>/dev/null || echo 'No tags found')"
           echo "=== Version Debug ==="
@@ -62,36 +61,10 @@ jobs:
 
       - name: Build Docs
         env:
-          SPHINX_VERSION_MATCH: ${{ steps.set_version.outputs.doc_version }}
+          SPHINX_VERSION_MATCH: ${{ inputs.tag }}
         run: |
           set -e
           poetry run sphinx-build -b html docs docs/_build/html
-
-      - name: Determine doc version and deployment targets
-        id: set_version
-        run: |
-          set -e
-          case "${GITHUB_REF}" in
-            refs/tags/*)
-              version="${GITHUB_REF#refs/tags/}"
-              deploy_to_main="true"
-              ;;
-            refs/heads/main)
-              version="main"
-              deploy_to_main="false"
-              ;;
-            refs/heads/dev)
-              version="dev"
-              deploy_to_main="false"
-              ;;
-            *)
-              echo "Unexpected branch/ref: ${GITHUB_REF}"
-              version="dev"
-              deploy_to_main="false"
-              ;;
-          esac
-          echo "doc_version=${version}" >> $GITHUB_OUTPUT
-          echo "deploy_to_main=${deploy_to_main}" >> $GITHUB_OUTPUT
 
       - name: Get GitHub Pages URL via GH CLI
         id: pages
@@ -101,7 +74,6 @@ jobs:
           echo "GH CLI version: $(gh --version)"
           echo "Fetching Pages URL for ${{ github.repository }}…"
 
-          # Try to get the Pages URL, but handle the case where Pages isn't set up yet
           if page_url=$(gh api \
             -H "Accept: application/vnd.github.v3+json" \
             /repos/${{ github.repository }}/pages \
@@ -111,8 +83,6 @@ jobs:
             echo "Exported PAGE_URL=${page_url}"
           else
             echo "GitHub Pages not found or not yet activated for this repository."
-            echo "This is normal for the first deployment. Pages will be available after this workflow completes."
-            # Set a default URL that will be correct once Pages is activated
             default_url="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}"
             echo "Using default URL: $default_url"
             echo "PAGE_URL=${default_url}" >> $GITHUB_ENV
@@ -123,7 +93,6 @@ jobs:
         run: |
           set -e
           poetry run python docs/switcher.py
-
 
       - name: Create root redirect to latest
         run: |
@@ -140,6 +109,44 @@ jobs:
             cp docs/default-index.html temp_root/index.html
           fi
 
+      - name: Remove existing version folders
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          echo "Removing existing folders for tag: ${{ inputs.tag }}"
+
+          # Clone gh-pages branch
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git clone --single-branch --branch gh-pages https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git gh-pages-temp
+
+          cd gh-pages-temp
+
+          # Remove the specific tag folder
+          if [ -d "${{ inputs.tag }}" ]; then
+            echo "Removing existing ${{ inputs.tag }} folder"
+            rm -rf "${{ inputs.tag }}"
+          fi
+
+          # If this is a tag, also remove the main folder (since tags deploy to both)
+          if [ -d "main" ]; then
+            echo "Removing existing main folder (will be replaced by tag)"
+            rm -rf "main"
+          fi
+
+          # Commit the removal
+          git add -A
+          if git diff --staged --quiet; then
+            echo "No folders to remove"
+          else
+            git commit -m "Remove existing docs for ${{ inputs.tag }} rebuild"
+            git push
+          fi
+
+          cd ..
+          rm -rf gh-pages-temp
+
       - name: Deploy content to root
         uses: peaceiris/actions-gh-pages@v4
         with:
@@ -153,11 +160,10 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs/_build/html
-          destination_dir: ${{ steps.set_version.outputs.doc_version }}
+          destination_dir: ${{ inputs.tag }}
           keep_files: true
 
       - name: Deploy tagged version to main folder
-        if: ${{ steps.set_version.outputs.deploy_to_main == 'true' }}
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
