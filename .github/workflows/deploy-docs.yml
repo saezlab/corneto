@@ -111,6 +111,25 @@ jobs:
           set -e
           poetry run python docs/generate_switcher.py
 
+      - name: Patch theme switcher version match
+        run: |
+          set -e
+          version="${{ steps.set_version.outputs.doc_version }}"
+          echo "Patching theme_switcher_version_match → $version"
+          find docs/_build/html -name '*.html' -print0 | while IFS= read -r -d '' file; do
+            echo
+            echo "=== $file ==="
+            echo "- before:"
+            grep -H "theme_switcher_version_match" "$file" || echo "  (no match)"
+            # do the in‑place replace
+            sed -i "s/theme_switcher_version_match = '[^']*'/theme_switcher_version_match = '$version'/g" "$file"
+            echo "+ after:"
+            grep -H "theme_switcher_version_match" "$file" || echo "  (still no match)"
+          done
+          echo
+          echo "Patching completed successfully"
+
+
       - name: Create root redirect to latest
         run: |
           set -e
