@@ -310,3 +310,54 @@ nox -s cache_notebooks_with_pixi -- "*metabolic*" "^docs/.*intro.ipynb$"
 - **Poetry and PEP 621**: The project uses both Poetry (legacy) and modern PEP 621 project configuration in `pyproject.toml`.
 
 Please see [contributing with tutorials](https://github.com/saezlab/corneto/blob/dev/docs/tutorials/README.md) for more information on how to contribute tutorials.
+
+## Releases
+
+CORNETO uses an automated tag-based release process powered by Poetry Dynamic Versioning and GitHub Actions. Git tags serve as the single source of truth for versioning - no manual version bumping in files is required.
+
+### Release Workflow
+
+To create a new release:
+
+1. **Create and push a Git tag** following semantic versioning:
+   ```bash
+   git tag v1.2.3
+   git push origin v1.2.3
+   ```
+
+2. **Automatic pipeline execution**:
+   - GitHub Actions detects the new tag
+   - Builds the package using Poetry
+   - Publishes to PyPI via OIDC trusted publishing
+   - Deploys versioned documentation to GitHub Pages
+
+3. **Version resolution**:
+   - Poetry Dynamic Versioning automatically extracts the version from the Git tag
+   - The package version in `pyproject.toml` remains at `0.0.0` (placeholder)
+   - Built packages use the actual tag version (e.g., `1.2.3`)
+
+### Example Release Process
+
+```bash
+# Ensure you're on the main branch and up to date
+git checkout main
+git pull origin main
+
+# Create a release tag (use semantic versioning)
+git tag v0.2.0
+
+# Push the tag to trigger the release pipeline
+git push origin v0.2.0
+```
+
+The release pipeline (`.github/workflows/build-and-publish.yml`) will automatically:
+- Build source and wheel distributions
+- Publish to PyPI using trusted publishing
+- Deploy documentation with version switcher
+
+### Version Numbering
+
+Follow [Semantic Versioning](https://semver.org/):
+- `MAJOR.MINOR.PATCH` (e.g., `v1.2.3`)
+- Use `v` prefix for tags (e.g., `v1.0.0`, not `1.0.0`)
+- Pre-releases: `v1.0.0-alpha.0`, `v1.0.0-beta.0`, `v1.0.0-rc.0`
