@@ -27,7 +27,7 @@ CORNETO is a Python framework for inferring biological networks from omics data 
 | Feature | Why it matters |
 |---|---|
 | 🧩 **Unified optimisation core** | Express causal signaling, FBA, PCSF & more with the same primitives. |
-| 🎯 **Exact, solver-backed answers** | LP/MILP formulations guarantee optimality—no more heuristic guesswork. |
+| 🎯 **Exact, solver-backed answers** | LP/MILP formulations guarantee optimality |
 | 📊 **Multi-sample power** | Borrow strength across conditions for cleaner, comparable subnetworks. |
 | 🔧 **Modular & extensible** | Plug-in new constraints, priors, or scoring functions in a few lines of code. |
 | ⚡ **Blazing-fast** | Supports CVXPY and PICOS backends with dozens of solvers. |
@@ -36,27 +36,40 @@ CORNETO is a Python framework for inferring biological networks from omics data 
 
 ## 🚀 Installation
 
-The standard installation for CORNETO is via pip:
+### Recommended Installation
+
+For most users, we recommend creating a conda environment and installing the research flavor:
+
+```bash
+conda create -n corneto python>=3.10
+conda activate corneto
+conda install python-graphviz
+pip install corneto[research]
+```
+
+This installs CORNETO with all research dependencies including Gurobi, PICOS, and visualization libraries.
+
+### Standard Installation
+
+The minimal installation via pip provides core functionalities:
 
 ```bash
 pip install corneto
 ```
 
-This provides the core functionalities of the package. For visualization, some users might need to install `graphviz`. For `conda` users, we recommend installing it via:
-
-```bash
-conda install python-graphviz
-```
-
 ### Optional dependencies
 
-For more advanced use cases, CORNETO provides optional dependencies that can be installed as extras. For example, to install the dependencies for research, which includes the Gurobi solver, you can run:
+CORNETO provides several optional dependency groups:
 
+- **`research`**: Full research stack with Gurobi, PICOS, visualization, and network tools
+- **`os`**: Open-source solvers (SCIP, HiGHS) with visualization and network tools
+- **`ml`**: Machine learning dependencies (JAX, Keras, scikit-learn)
+- **`vanilla`**: Minimal dependencies (same as base installation)
+
+Install any combination with:
 ```bash
-pip install corneto[research]
+pip install corneto[research,ml]  # Multiple extras
 ```
-
-Please refer to the documentation for a complete list of available extras and their descriptions.
 
 ### Gurobi Installation
 
@@ -88,16 +101,13 @@ Notebooks with the experiments presented in the manuscript are available here: h
 ## 🎓 How to cite
 
 ```
-@article {Rodriguez-Mier2024,
+@article{Rodriguez-Mier2025,
 	author = {Rodriguez-Mier, Pablo and Garrido-Rodriguez, Martin and Gabor, Attila and Saez-Rodriguez, Julio},
-	title = {Unified knowledge-driven network inference from omics data},
-	elocation-id = {2024.10.26.620390},
-	year = {2024},
-	doi = {10.1101/2024.10.26.620390},
-	publisher = {Cold Spring Harbor Laboratory},
-	URL = {https://www.biorxiv.org/content/early/2024/10/29/2024.10.26.620390},
-	eprint = {https://www.biorxiv.org/content/early/2024/10/29/2024.10.26.620390.full.pdf},
-	journal = {bioRxiv}
+	title = {Unifying multi-sample network inference from prior knowledge and omics data with CORNETO},
+	journal = {Nature Machine Intelligence},
+	year = {2025},
+	doi = {10.1038/s42256-025-01069-9},
+	url = {https://www.nature.com/articles/s42256-025-01069-9}
 }
 ```
 
