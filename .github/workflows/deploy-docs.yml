@@ -73,15 +73,9 @@ jobs:
           case "${GITHUB_REF}" in
             refs/tags/*)
               version="${GITHUB_REF#refs/tags/}"
-              # Check if this is an annotated tag
-              if git cat-file -t "${version}" | grep -q "tag"; then
-                echo "Annotated tag detected: ${version}"
-                deploy_to_stable="true"
-                is_release="true"
-              else
-                echo "Lightweight tag detected: ${version}, skipping deployment"
-                exit 0
-              fi
+              echo "Tag detected: ${version}"
+              deploy_to_stable="true"
+              is_release="true"
               ;;
             refs/heads/dev)
               version="latest"

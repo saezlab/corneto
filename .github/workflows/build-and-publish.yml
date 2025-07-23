@@ -47,10 +47,31 @@ jobs:
       - name: Install dependencies
         run: poetry install --no-interaction --no-root
 
-      # 6. Build source & wheel
+      # 6. Validate tag and determine if should publish
+      - name: Validate tag for publishing
+        id: validate_tag
+        run: |
+          set -e
+          case "${GITHUB_REF}" in
+            refs/tags/v*)
+              version="${GITHUB_REF#refs/tags/}"
+              echo "Valid release tag detected: ${version}"
+              echo "should_publish=true" >> $GITHUB_OUTPUT
+              echo "version=${version}" >> $GITHUB_OUTPUT
+              ;;
+            *)
+              echo "Not a v* tag: ${GITHUB_REF}, skipping publishing"
+              echo "should_publish=false" >> $GITHUB_OUTPUT
+              exit 0
+              ;;
+          esac
+
+      # 7. Build source & wheel (only if should publish)
       - name: Build package
+        if: steps.validate_tag.outputs.should_publish == 'true'
         run: poetry build
 
-      # 7. Publish via PyPI OIDC trusted publishing
+      # 8. Publish via PyPI OIDC trusted publishing (only if should publish)
       - name: Publish to PyPI
+        if: steps.validate_tag.outputs.should_publish == 'true'
         uses: pypa/gh-action-pypi-publish@release/v1
