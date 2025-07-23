@@ -140,11 +140,6 @@ poetry run pytest
 nox -s tests
 ```
 
-### Using Tox (legacy):
-```bash
-tox -e py
-```
-
 The nox approach is recommended as it creates an isolated environment and ensures consistent testing across different setups. Nox is our primary task runner that provides standardized environments for testing, linting, formatting, and documentation building.
 
 This command will run all test files in your project that follow the `test_*.py` naming convention, as recognized by `pytest`.
@@ -210,13 +205,6 @@ To run all quality checks (linting, formatting, typing, and tests) at once:
 nox -s lint format typing tests
 ```
 
-### Legacy Tox Support
-
-We still maintain tox configuration for backwards compatibility:
-```bash
-tox -e lint,format,typing,py
-```
-
 ## Generating the documentation
 
 This project uses Sphinx along with the PyData Sphinx theme to generate HTML documentation. We also use `myst-nb` to convert Jupyter notebooks into HTML pages.
@@ -275,18 +263,6 @@ We provide several nox sessions for different documentation needs:
   nox -s docs_full
   ```
 
-### Legacy Tox Support
-
-You can still use tox for documentation tasks:
-```bash
-tox -e docs
-tox -e docs-clean
-tox -e docs-force
-tox -e docs-werror
-tox -e docs-linkcheck
-tox -e docs-serve
-```
-
 ### Notebook Execution with Pixi
 
 For tutorial notebooks, we support per-directory Pixi environments that provide isolated execution contexts. This is particularly useful when different tutorials require different dependencies or solver configurations.
@@ -304,7 +280,6 @@ nox -s cache_notebooks_with_pixi -- "*metabolic*" "^docs/.*intro.ipynb$"
 ### Additional notes
 
 - **Task automation**: All documentation, testing, and quality assurance tasks are standardized through nox sessions defined in `noxfile.py`.
-- **Legacy support**: Tox environments are still maintained in `tox.ini` for backwards compatibility.
 - **`myst-nb`**: We use `myst-nb` to handle the conversion of Jupyter notebooks (`.ipynb` files) into HTML. If your contribution involves notebooks, make sure they render correctly in the generated documentation.
 - **Pixi integration**: Tutorial notebooks can use individual `pixi.toml` files for isolated execution environments with specific dependencies.
 - **Poetry and PEP 621**: The project uses both Poetry (legacy) and modern PEP 621 project configuration in `pyproject.toml`.
