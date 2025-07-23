@@ -55,10 +55,44 @@ myst_enable_extensions = [
     "substitution",
 ]
 
+
 # Substitutions to be used in MyST documents.
-# Note: Uses same SPHINX_VERSION_MATCH override as switcher for consistency
+# Always use the actual package version for content, not the switcher version
+def _format_version_for_display(version_str):
+    """Format version string for user-friendly display in documentation."""
+    # For development versions like "1.0.0b0.post15.dev0+4db02e04"
+    # Show as "1.0.0b0 (development build 15, commit 4db02e04)"
+    if ".dev" in version_str:
+        # Extract base version before .post or .dev
+        base_version = version_str.split(".post")[0].split(".dev")[0]
+
+        # Extract post number (commits since last tag)
+        post_number = ""
+        if ".post" in version_str:
+            post_part = version_str.split(".post")[1].split(".dev")[0]
+            post_number = f"build {post_part}"
+
+        # Extract commit hash
+        commit_hash = ""
+        if "+" in version_str:
+            commit_hash = version_str.split("+")[1][:8]  # First 8 chars
+            commit_hash = f"commit {commit_hash}"
+
+        # Combine parts
+        dev_info = []
+        if post_number:
+            dev_info.append(post_number)
+        if commit_hash:
+            dev_info.append(commit_hash)
+
+        dev_details = ", ".join(dev_info) if dev_info else "latest"
+        return f"{base_version} (development: {dev_details})"
+
+    return version_str
+
+
 myst_substitutions = {
-    "version": os.environ.get("SPHINX_VERSION_MATCH", corneto.__version__),
+    "version": _format_version_for_display(corneto.__version__),
 }
 
 # File types and their corresponding parsers.
