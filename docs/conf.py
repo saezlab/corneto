@@ -149,8 +149,8 @@ html_show_sourcelink = False
 autosectionlabel_prefix_document = True
 
 
-# Make sure switcher.json (located in docs/) is copied to the build root
-html_extra_path = ["switcher.json"]
+# Note: switcher.json is now served from external URL, no need to copy locally
+# html_extra_path = ["switcher.json"]
 
 # Theme-specific options.
 html_theme_options = {
@@ -159,12 +159,12 @@ html_theme_options = {
     "show_toc_level": 1,
     "navbar_align": "left",
     "switcher": {
-        # The switcher.json file is now available at the project root.
-        "json_url": f"{html_baseurl}/switcher.json",
+        # Use external static switcher.json from corneto-data repository
+        "json_url": "https://raw.githubusercontent.com/saezlab/corneto-data/refs/heads/main/assets/docs/switcher.json",
         # SPHINX_VERSION_MATCH: Environment variable to override version matching
-        # - In CI: Set to deployment folder name (e.g., "main", "dev", "v1.0.0")
+        # - In CI: Set to deployment folder name (e.g., "stable", "latest", "v1.0.0")
         # - Locally: Defaults to corneto.__version__ for development
-        # Usage: SPHINX_VERSION_MATCH=main sphinx-build -b html docs docs/_build/html
+        # Usage: SPHINX_VERSION_MATCH=stable sphinx-build -b html docs docs/_build/html
         "version_match": os.environ.get("SPHINX_VERSION_MATCH", corneto.__version__),
     },
     "navbar_start": ["navbar-logo", "version-switcher"],

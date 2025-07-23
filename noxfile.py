@@ -277,18 +277,10 @@ def docs_linkcheck(session: nox.Session) -> None:
 
 
 @nox.session(python=PYTHON_VERSIONS)
-def generate_switcher(session: nox.Session) -> None:
-    """Generate *switcher.json* used by Read‑the‑Docs version switcher."""
-    _install(session, extras=["docs"])
-    session.run("python", "docs/generate_switcher.py")
-
-
-@nox.session(python=PYTHON_VERSIONS)
 def docs_full(session: nox.Session) -> None:
-    """Full local docs check: build + switcher generation."""
+    """Full local docs check: build documentation."""
     _install(session, extras=["docs"])
     _sphinx(session)
-    session.run("python", "docs/generate_switcher.py")
 
 
 @nox.session(python=PYTHON_VERSIONS)

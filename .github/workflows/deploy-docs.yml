@@ -3,7 +3,6 @@ name: Build and Deploy Docs
 on:
   push:
     branches:
-      - main
       - dev
     tags:
       - '*'
@@ -74,24 +73,29 @@ jobs:
           case "${GITHUB_REF}" in
             refs/tags/*)
               version="${GITHUB_REF#refs/tags/}"
-              deploy_to_main="true"
-              ;;
-            refs/heads/main)
-              version="main"
-              deploy_to_main="false"
+              # Check if this is an annotated tag
+              if git cat-file -t "${version}" | grep -q "tag"; then
+                echo "Annotated tag detected: ${version}"
+                deploy_to_stable="true"
+                is_release="true"
+              else
+                echo "Lightweight tag detected: ${version}, skipping deployment"
+                exit 0
+              fi
               ;;
             refs/heads/dev)
-              version="dev"
-              deploy_to_main="false"
+              version="latest"
+              deploy_to_stable="false"
+              is_release="false"
               ;;
             *)
-              echo "Unexpected branch/ref: ${GITHUB_REF}"
-              version="dev"
-              deploy_to_main="false"
+              echo "Unexpected branch/ref: ${GITHUB_REF}, skipping deployment"
+              exit 0
               ;;
           esac
           echo "doc_version=${version}" >> $GITHUB_OUTPUT
-          echo "deploy_to_main=${deploy_to_main}" >> $GITHUB_OUTPUT
+          echo "deploy_to_stable=${deploy_to_stable}" >> $GITHUB_OUTPUT
+          echo "is_release=${is_release}" >> $GITHUB_OUTPUT
 
       - name: Get GitHub Pages URL via GH CLI
         id: pages
@@ -119,17 +123,11 @@ jobs:
             echo "Exported PAGE_URL=${default_url}"
           fi
 
-      - name: Generate switcher.json
-        run: |
-          set -e
-          poetry run python docs/switcher.py
-
 
       - name: Create root redirect to latest
         run: |
           set -e
           mkdir -p temp_root
-          cp docs/switcher.json temp_root/switcher.json
           touch temp_root/.nojekyll
 
           if [ -f docs/custom-index.html ]; then
@@ -156,13 +154,13 @@ jobs:
           destination_dir: ${{ steps.set_version.outputs.doc_version }}
           keep_files: true
 
-      - name: Deploy tagged version to main folder
-        if: ${{ steps.set_version.outputs.deploy_to_main == 'true' }}
+      - name: Deploy tagged version to stable folder
+        if: ${{ steps.set_version.outputs.deploy_to_stable == 'true' }}
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs/_build/html
-          destination_dir: main
+          destination_dir: stable
           keep_files: true
 
       - name: Clean up temporary files
