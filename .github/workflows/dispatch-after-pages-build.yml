@@ -1,16 +1,18 @@
-name: Trigger switcher.json in corneto-data
+# .github/workflows/dispatch-after-pages-build.yml
+name: Dispatch switcher after Pages build
 
+# Fires when GitHub Pages has finished building/deploying your site
 on:
-  push:
-    branches:
-      - main
-      - dev
+  page_build:
+
+permissions:
+  repository_dispatch: write
 
 jobs:
   dispatch:
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger switcher update
+      - name: Trigger corneto-data update
         uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.SWITCHER_PAT }}
