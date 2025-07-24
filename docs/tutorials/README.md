@@ -160,6 +160,28 @@ Merged tutorials will:
 
 ---
 
+## 🔧 For Developers: Automated Testing
+
+The `run_notebooks.py` script allows automated execution of tutorials for testing purposes:
+
+```bash
+# Run all tutorials
+python docs/tutorials/run_notebooks.py
+
+# Run a specific tutorial by name
+python docs/tutorials/run_notebooks.py carnival
+
+# Run a tutorial by path
+python docs/tutorials/run_notebooks.py path/to/tutorial
+```
+
+This script:
+- Installs the pixi environment for each tutorial
+- Executes notebooks using papermill
+- Saves outputs to a `build/` directory within each tutorial folder
+
+---
+
 ## 🧰 Questions?
 
 Open a GitHub issue or start a discussion. We’re happy to help!

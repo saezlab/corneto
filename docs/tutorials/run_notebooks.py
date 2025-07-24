@@ -1,58 +1,82 @@
 #!/usr/bin/env python3
-"""
-docs/tutorials/run_notebooks.py
+"""docs/tutorials/run_notebooks.py
 
-For each tutorial dir (with pixi.toml + .ipynb):
-  1) pixi config set --local run-post-link-scripts insecure
-  2) pixi install
-  3) pixi run python -m pip install --upgrade ipykernel papermill nbclient
-  4) pixi run python -m papermill <notebook> build/<notebook>
+Usage:
+  # Run ALL tutorials
+  python run_notebooks.py
+
+  # Run a single tutorial by name (folder under this dir)
+  python run_notebooks.py carnival
+
+  # Run a single tutorial by full or relative path
+  python run_notebooks.py ../other/path/to/tutorial
 """
+
+import argparse
 import subprocess
 import sys
 from pathlib import Path
 
-def run(cmd, cwd):
+
+def run(cmd, cwd: Path):
+    """Run a command list in cwd, exiting on failure."""
     print(f"> {' '.join(cmd)}  (cwd={cwd.name})")
     subprocess.run(cmd, cwd=str(cwd), check=True)
 
+
+def process_tutorial(proj: Path):
+    """Install env, bootstrap tools, and execute notebooks in proj."""
+    print(f"\n=== Processing tutorial: {proj.name} ===")
+    # 1) Allow post-link scripts (Graphviz etc.)
+    run(["pixi", "config", "set", "--local", "run-post-link-scripts", "insecure"], cwd=proj)
+    # 2) Build/update env from pixi.toml
+    run(["pixi", "install"], cwd=proj)
+    # 3) Bootstrap kernel & notebook tools
+    run(["pixi", "run", "python", "-m", "pip", "install", "--upgrade", "ipykernel", "papermill", "nbclient"], cwd=proj)
+    # 4) Execute each notebook via papermill
+    build_dir = proj / "build"
+    build_dir.mkdir(exist_ok=True)
+    for nb in sorted(proj.glob("*.ipynb")):
+        out = build_dir / nb.name
+        run(["pixi", "run", "python", "-m", "papermill", str(nb), str(out)], cwd=proj)
+
+
 def main():
-    tutorials = Path(__file__).parent.resolve()
-    for proj in sorted(tutorials.iterdir()):
-        if not (proj / "pixi.toml").is_file():
-            continue
-        notebooks = list(proj.glob("*.ipynb"))
-        if not notebooks:
-            continue
+    # Directory containing this script
+    tutorials_dir = Path(__file__).parent.resolve()
 
-        print(f"\n=== {proj.name} ===")
+    # Parse optional tutorial argument
+    parser = argparse.ArgumentParser(description="Install and run tutorials via their Pixi envs")
+    parser.add_argument("tutorial", nargs="?", help="Tutorial folder name under 'docs/tutorials' or path to it")
+    args = parser.parse_args()
 
-        # 1) Allow post-link scripts (so graphviz plugins are registered)
-        run([
-            "pixi", "config", "set", "--local",
-            "run-post-link-scripts", "insecure"
-        ], cwd=proj)
+    # Build list of projects to process
+    if args.tutorial:
+        cand = Path(args.tutorial)
+        # If user passed a bare name, look under tutorials_dir
+        if not cand.exists():
+            cand = tutorials_dir / args.tutorial
+        if not (cand.exists() and (cand / "pixi.toml").is_file()):
+            print(f"Error: tutorial '{args.tutorial}' not found at '{cand}'.", file=sys.stderr)
+            sys.exit(1)
+        projects = [cand.resolve()]
+    else:
+        # no arg: process all subdirs with pixi.toml
+        projects = [
+            p.resolve()
+            for p in sorted(tutorials_dir.iterdir())
+            if (p / "pixi.toml").is_file() and any(p.glob("*.ipynb"))
+        ]
 
-        # 2) Build or update the env from pixi.toml
-        run(["pixi", "install"], cwd=proj)
+    if not projects:
+        print("No tutorials found to process.", file=sys.stderr)
+        sys.exit(1)
 
-        # 3) Bootstrap kernel & notebook tools
-        run([
-            "pixi", "run", "python", "-m", "pip", "install", "--upgrade",
-            "ipykernel", "papermill", "nbclient"
-        ], cwd=proj)
+    for proj in projects:
+        process_tutorial(proj)
 
-        # 4) Execute each notebook via papermill
-        build = proj / "build"
-        build.mkdir(exist_ok=True)
-        for nb in notebooks:
-            out = build / nb.name
-            run([
-                "pixi", "run", "python", "-m", "papermill",
-                str(nb), str(out)
-            ], cwd=proj)
+    print("\n✅ Done.")
 
-    print("\n✅ All tutorials processed.")
 
 if __name__ == "__main__":
     main()
