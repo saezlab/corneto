@@ -143,20 +143,3 @@ jobs:
 
       - name: Clean up temporary files
         run: rm -rf temp_root
-        
-  dispatch-switcher:
-      name: Trigger corneto-data update
-      needs: build-and-deploy
-      runs-on: ubuntu-latest
-      steps:
-        - name: Notify switcher repo
-          uses: peter-evans/repository-dispatch@v3
-          with:
-            token: ${{ secrets.SWITCHER_PAT }}
-            repository: saezlab/corneto-data
-            event-type: corneto_updated
-            client-payload: |
-              {
-                "ref": "${{ github.ref }}",
-                "sha": "${{ github.sha }}"
-              }
