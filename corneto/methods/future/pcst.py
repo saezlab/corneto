@@ -143,9 +143,6 @@ class PrizeCollectingSteinerTree(SteinerTreeFlow):
                     flow_problem.register(f"selected_prized_flow_edges_{i}", selected_prized_flow_edges)
 
                     # Add an objective term (with negative weight) to maximize prizes.
-                    flow_problem.add_objectives(
-                        prizes @ selected_prized_flow_edges,
-                        weights=-1,
-                    )
+                    flow_problem.add_objective(prizes @ selected_prized_flow_edges, weight=-1, name="prizes")
 
         return flow_problem
