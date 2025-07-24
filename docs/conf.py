@@ -6,6 +6,7 @@ https://www.sphinx-doc.org/en/master/usage/configuration.html
 """
 
 import os
+import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -54,6 +55,33 @@ myst_enable_extensions = [
     "html_admonition",
     "substitution",
 ]
+
+
+def _get_switcher_url():
+    # Try to grab the current HEAD SHA of the corneto-data submodule (or clone),
+    # then point raw.githubusercontent.com at that SHA.
+    try:
+        sha = (
+            subprocess.check_output(
+                [
+                    "git",
+                    "ls-remote",
+                    "https://github.com/saezlab/corneto-data.git",
+                    "HEAD",
+                ]
+            )
+            .decode("utf-8")
+            .split()[0]
+        )
+        return f"https://raw.githubusercontent.com/saezlab/corneto-data/{sha}/assets/docs/switcher.json"
+    except Exception:
+        return "https://raw.githubusercontent.com/saezlab/corneto-data/refs/heads/main/assets/docs/switcher.json"
+
+
+def _switcher_url_with_ts():
+    base = "https://raw.githubusercontent.com/saezlab/corneto-data/refs/heads/main/assets/docs/switcher.json"
+    ts = int(datetime.utcnow().timestamp())
+    return f"{base}?ts={ts}"
 
 
 # Substitutions to be used in MyST documents.
@@ -193,12 +221,12 @@ html_theme_options = {
     "show_toc_level": 1,
     "navbar_align": "left",
     "switcher": {
-        # Use external static switcher.json from corneto-data repository
-        "json_url": "https://raw.githubusercontent.com/saezlab/corneto-data/refs/heads/main/assets/docs/switcher.json",
+        "json_url": _switcher_url_with_ts(),
         # SPHINX_VERSION_MATCH: Environment variable to override version matching
         # - In CI: Set to deployment folder name (e.g., "stable", "latest", "v1.0.0")
         # - Locally: Defaults to corneto.__version__ for development
         # Usage: SPHINX_VERSION_MATCH=stable sphinx-build -b html docs docs/_build/html
+        # This injects the variable in every web page of the docs
         "version_match": os.environ.get("SPHINX_VERSION_MATCH", corneto.__version__),
     },
     "navbar_start": ["navbar-logo", "version-switcher"],
