@@ -1,0 +1,23 @@
+name: Trigger switcher.json in corneto-data
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger switcher update
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.SWITCHER_PAT }}
+          repository: saezlab/corneto-data
+          event-type: corneto_updated
+          client-payload: |
+            {
+              "ref": "${{ github.ref }}",
+              "sha": "${{ github.sha }}"
+            }
