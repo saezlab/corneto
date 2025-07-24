@@ -15,7 +15,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          fetch-tags: true # for dynamic versioning
+          fetch-tags: true
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -39,7 +39,6 @@ jobs:
 
       - name: Install Dependencies
         env:
-          # enable version injection
           POETRY_DYNAMIC_VERSIONING_COMMANDS: install,build
         run: |
           set -e
@@ -98,37 +97,24 @@ jobs:
         run: |
           echo "GH CLI version: $(gh --version)"
           echo "Fetching Pages URL for ${{ github.repository }}…"
-
-          # Try to get the Pages URL, but handle the case where Pages isn't set up yet
           if page_url=$(gh api \
             -H "Accept: application/vnd.github.v3+json" \
             /repos/${{ github.repository }}/pages \
             --jq .html_url 2>/dev/null); then
-            echo "Retrieved page_url: $page_url"
             echo "PAGE_URL=${page_url}" >> $GITHUB_ENV
-            echo "Exported PAGE_URL=${page_url}"
           else
-            echo "GitHub Pages not found or not yet activated for this repository."
-            echo "This is normal for the first deployment. Pages will be available after this workflow completes."
-            # Set a default URL that will be correct once Pages is activated
             default_url="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}"
-            echo "Using default URL: $default_url"
             echo "PAGE_URL=${default_url}" >> $GITHUB_ENV
-            echo "Exported PAGE_URL=${default_url}"
           fi
-
 
       - name: Create root redirect to latest
         run: |
           set -e
           mkdir -p temp_root
           touch temp_root/.nojekyll
-
           if [ -f docs/custom-index.html ]; then
-            echo "Found custom-index.html, using it…"
             cp docs/custom-index.html temp_root/index.html
           else
-            echo "No custom-index.html, copying default-index.html…"
             cp docs/default-index.html temp_root/index.html
           fi
 
@@ -146,7 +132,6 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs/_build/html
           destination_dir: ${{ steps.set_version.outputs.doc_version }}
-          keep_files: true
 
       - name: Deploy tagged version to stable folder
         if: ${{ steps.set_version.outputs.deploy_to_stable == 'true' }}
@@ -155,7 +140,6 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs/_build/html
           destination_dir: stable
-          keep_files: true
 
       - name: Clean up temporary files
         run: rm -rf temp_root
