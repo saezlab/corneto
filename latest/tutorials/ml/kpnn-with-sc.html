@@ -1,0 +1,2535 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Knowledge-primed Neural Networks (KPNNs) for single cell data &#8212; CORNETO  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=53e23fa6" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-Z263GN2PKK"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-Z263GN2PKK');
+            </script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/ml/kpnn-with-sc';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/saezlab/corneto-data/refs/heads/main/assets/docs/switcher.json?ts=1753462585';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="canonical" href="https://saezlab.github.io/corneto/tutorials/ml/kpnn-with-sc.html" />
+    <link rel="icon" href="../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Multi-condition signalling network inference" href="../contrib/multi_condition_tutorial/multi_condition_carnival.html" />
+    <link rel="prev" title="Exploring alternative solutions with \(\epsilon\)-perturbation sampling" href="../carnival/network-sampler-example.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="../../_static/logo.png" class="logo__image only-light" alt="CORNETO  documentation - Home"/>
+    <img src="../../_static/logo.png" class="logo__image only-dark pst-js-only" alt="CORNETO  documentation - Home"/>
+  
+  
+</a></div>
+    
+      <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install.html">
+    Install
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../guide/index.html">
+    Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api/index.html">
+    Reference
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-external" href="https://github.com/saezlab/corneto">
+    GitHub
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install.html">
+    Install
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../guide/index.html">
+    Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api/index.html">
+    Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/saezlab/corneto">
+    GitHub
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../fba/context-specific-metabolic-omics.html">Context-specific metabolic networks from omics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../carnival/single-sample-carnival-transcriptomics.html">Single sample intracellular signalling network inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../carnival/network-sampler.html">Implementing an alternative network sampler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../carnival/network-sampler-example.html">Exploring alternative solutions with <span class="math notranslate nohighlight">\(\epsilon\)</span>-perturbation sampling</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Knowledge-primed Neural Networks (KPNNs) for single cell data</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../contrib/multi_condition_tutorial/multi_condition_carnival.html">Multi-condition signalling network inference</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Tutorials</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Knowledge-primed Neural Networks (KPNNs) for single cell data</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="knowledge-primed-neural-networks-kpnns-for-single-cell-data">
+<h1>Knowledge-primed Neural Networks (KPNNs) for single cell data<a class="headerlink" href="#knowledge-primed-neural-networks-kpnns-for-single-cell-data" title="Link to this heading">#</a></h1>
+<p>In this tutorial we will show how CORNETO can be used to build custom neural network architectures informed by prior knowledge. We will see how to implement a knowledge-primed neural network<sup>1</sup>. We will use the single cell data from the publication “Knowledge-primed neural networks enable biologically interpretable deep learning on single-cell sequencing data”, from Nikolaus Fortelny &amp; Christoph Bock, where they used a single-cell RNA-seq dataset they previously generated<sup>2</sup>, which measures cellular responses to T cell receptor (TCR) stimulation in a standardized in vitro model. The dataset was chosen due to the TCR signaling pathway’s complexity and its well-characterized role in orchestrating transcriptional responses to antigen detection in T cells.</p>
+<section id="why-corneto">
+<h2>Why CORNETO?<a class="headerlink" href="#why-corneto" title="Link to this heading">#</a></h2>
+<p>In the original publication, authors built a KPNN by searching on databases, building a Direct Acyclic Graph (DAG) by running shortest paths from TCR receptor to genes. However, this approach is not optimal. CORNETO, thanks to its advanced capabilities for modeling and optimization on networks, provides methods to automatically find DAG architectures in an optimal way.</p>
+<p>In addition to this, CORNETO provides methods to build DAG NN architectures with ease using Keras +3, making KPNN implementation very flexible and interoperable with backends like Pytorch, Tensorflow and JAX.</p>
+</section>
+<section id="how-does-it-work">
+<h2>How does it work?<a class="headerlink" href="#how-does-it-work" title="Link to this heading">#</a></h2>
+<p>Thanks to CORNETO’s building blocks for optimization over networks, we can easily model optimization problems to find DAG architectures from a Prior Knowledge Network. After we have the backbone, we can convert it to a neural network using the utility functions included in CORNETO.</p>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p>Fortelny, N., &amp; Bock, C. (2020). Knowledge-primed neural networks enable biologically interpretable deep learning on single-cell sequencing data. Genome biology, 21, 1-36.</p></li>
+<li><p>Datlinger, P., Rendeiro, A. F., Schmidl, C., Krausgruber, T., Traxler, P., Klughammer, J., … &amp; Bock, C. (2017). Pooled CRISPR screening with single-cell transcriptome readout. Nature methods, 14(3), 297-301.</p></li>
+</ol>
+</section>
+<section id="download-and-import-the-single-cell-dataset">
+<h2>Download and import the single cell dataset<a class="headerlink" href="#download-and-import-the-single-cell-dataset" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">urllib.parse</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">urllib.request</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scanpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sc</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">corneto</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cn</span>
+
+<span class="k">with</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="s2">&quot;http://kpnn.computational-epigenetics.org/&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
+    <span class="n">web_input</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">geturl</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Effective URL:&quot;</span><span class="p">,</span> <span class="n">web_input</span><span class="p">)</span>
+
+<span class="n">files</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;TCR_Edgelist.csv&quot;</span><span class="p">,</span> <span class="s2">&quot;TCR_ClassLabels.csv&quot;</span><span class="p">,</span> <span class="s2">&quot;TCR_Data.h5&quot;</span><span class="p">]</span>
+
+<span class="n">temp_dir</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">()</span>
+
+<span class="c1"># Download files</span>
+<span class="n">file_paths</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urljoin</span><span class="p">(</span><span class="n">web_input</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
+    <span class="n">output_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Downloading </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">url</span><span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_path</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+        <span class="n">file_paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to download </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Downloaded files:&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">file_paths</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Effective URL: https://medical-epigenomics.org/papers/fortelny2019/
+Downloading https://medical-epigenomics.org/papers/fortelny2019/TCR_Edgelist.csv to /var/folders/b4/gwkwsdb93sv11rtztqbm3l040000gn/T/tmp5w2c_81g/TCR_Edgelist.csv
+Downloading https://medical-epigenomics.org/papers/fortelny2019/TCR_ClassLabels.csv to /var/folders/b4/gwkwsdb93sv11rtztqbm3l040000gn/T/tmp5w2c_81g/TCR_ClassLabels.csv
+Downloading https://medical-epigenomics.org/papers/fortelny2019/TCR_Data.h5 to /var/folders/b4/gwkwsdb93sv11rtztqbm3l040000gn/T/tmp5w2c_81g/TCR_Data.h5
+Downloaded files:
+/var/folders/b4/gwkwsdb93sv11rtztqbm3l040000gn/T/tmp5w2c_81g/TCR_Edgelist.csv
+/var/folders/b4/gwkwsdb93sv11rtztqbm3l040000gn/T/tmp5w2c_81g/TCR_ClassLabels.csv
+/var/folders/b4/gwkwsdb93sv11rtztqbm3l040000gn/T/tmp5w2c_81g/TCR_Data.h5
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># The data contains also the original network they built with shortest paths.</span>
+<span class="c1"># We will use it to replicate the study</span>
+<span class="n">df_edges</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file_paths</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">df_labels</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file_paths</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="c1"># Import the 10x data with Scanpy</span>
+<span class="n">adata</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">read_10x_h5</span><span class="p">(</span><span class="n">file_paths</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_labels</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>barcode</th>
+      <th>TCR</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>AAACCTGCACACATGT-1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>AAACCTGCACGTCTCT-1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>AAACCTGTCAATACCG-1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>AAACCTGTCGTGGTCG-1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>AAACGGGTCTGAGTGT-1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>1730</th>
+      <td>TTTCCTCGTCATGCCG-2</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1731</th>
+      <td>TTTGCGCGTAGCCTCG-2</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1732</th>
+      <td>TTTGGTTAGATACACA-2</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1733</th>
+      <td>TTTGGTTGTATGAATG-2</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1734</th>
+      <td>TTTGGTTTCCAAGTAC-2</td>
+      <td>1</td>
+    </tr>
+  </tbody>
+</table>
+<p>1735 rows × 2 columns</p>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_edges</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>parent</th>
+      <th>child</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>TCR</td>
+      <td>ZAP70</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>ZAP70</td>
+      <td>MAPK14</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>MAPK14</td>
+      <td>FOXO3</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>MAPK14</td>
+      <td>STAT1</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>MAPK14</td>
+      <td>STAT3</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>27574</th>
+      <td>HMGA1</td>
+      <td>MTRNR2L9_gene</td>
+    </tr>
+    <tr>
+      <th>27575</th>
+      <td>MYB</td>
+      <td>C12orf50_gene</td>
+    </tr>
+    <tr>
+      <th>27576</th>
+      <td>MYB</td>
+      <td>TRPC5OS_gene</td>
+    </tr>
+    <tr>
+      <th>27577</th>
+      <td>SOX2</td>
+      <td>TRPC5OS_gene</td>
+    </tr>
+    <tr>
+      <th>27578</th>
+      <td>CRTC1</td>
+      <td>MTRNR2L9_gene</td>
+    </tr>
+  </tbody>
+</table>
+<p>27579 rows × 2 columns</p>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata</span><span class="o">.</span><span class="n">var</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>gene_ids</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>DDX11L1</th>
+      <td>ENSG00000223972</td>
+    </tr>
+    <tr>
+      <th>WASH7P</th>
+      <td>ENSG00000227232</td>
+    </tr>
+    <tr>
+      <th>MIR6859-2</th>
+      <td>ENSG00000278267</td>
+    </tr>
+    <tr>
+      <th>MIR1302-10</th>
+      <td>ENSG00000243485</td>
+    </tr>
+    <tr>
+      <th>MIR1302-11</th>
+      <td>ENSG00000274890</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>Tcrlibrary_RUNX2_3_gene</th>
+      <td>Tcrlibrary_RUNX2_3_gene</td>
+    </tr>
+    <tr>
+      <th>Tcrlibrary_ZAP70_1_gene</th>
+      <td>Tcrlibrary_ZAP70_1_gene</td>
+    </tr>
+    <tr>
+      <th>Tcrlibrary_ZAP70_2_gene</th>
+      <td>Tcrlibrary_ZAP70_2_gene</td>
+    </tr>
+    <tr>
+      <th>Tcrlibrary_ZAP70_3_gene</th>
+      <td>Tcrlibrary_ZAP70_3_gene</td>
+    </tr>
+    <tr>
+      <th>Cas9_blast_gene</th>
+      <td>Cas9_blast_gene</td>
+    </tr>
+  </tbody>
+</table>
+<p>64370 rows × 1 columns</p>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We can normalize the data, however, it is better to avoid</span>
+<span class="c1"># preprocessing the whole dataset before splitting in training and test</span>
+<span class="c1"># to avoid data leakage.</span>
+<span class="c1"># NOTE: Normalization can be done inside the cross-val loop</span>
+<span class="c1"># sc.pp.normalize_total(adata, target_sum=1e6)</span>
+
+<span class="c1"># Log-transform the data does not leak data as it does not estimate anything</span>
+<span class="n">sc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">log1p</span><span class="p">(</span><span class="n">adata</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata</span><span class="o">.</span><span class="n">obs</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>AAACCTGAGAAACCAT-1</th>
+    </tr>
+    <tr>
+      <th>AAACCTGAGAAACCGC-1</th>
+    </tr>
+    <tr>
+      <th>AAACCTGAGAAACCTA-1</th>
+    </tr>
+    <tr>
+      <th>AAACCTGAGAAACGAG-1</th>
+    </tr>
+    <tr>
+      <th>AAACCTGAGAAACGCC-1</th>
+    </tr>
+    <tr>
+      <th>...</th>
+    </tr>
+    <tr>
+      <th>TTTGTCATCTTTACAC-2</th>
+    </tr>
+    <tr>
+      <th>TTTGTCATCTTTACGT-2</th>
+    </tr>
+    <tr>
+      <th>TTTGTCATCTTTAGGG-2</th>
+    </tr>
+    <tr>
+      <th>TTTGTCATCTTTAGTC-2</th>
+    </tr>
+    <tr>
+      <th>TTTGTCATCTTTCCTC-2</th>
+    </tr>
+  </tbody>
+</table>
+<p>1474560 rows × 0 columns</p>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">barcodes</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">obs_names</span>
+<span class="n">barcodes</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Index([&#39;AAACCTGAGAAACCAT-1&#39;, &#39;AAACCTGAGAAACCGC-1&#39;, &#39;AAACCTGAGAAACCTA-1&#39;,
+       &#39;AAACCTGAGAAACGAG-1&#39;, &#39;AAACCTGAGAAACGCC-1&#39;, &#39;AAACCTGAGAAAGTGG-1&#39;,
+       &#39;AAACCTGAGAACAACT-1&#39;, &#39;AAACCTGAGAACAATC-1&#39;, &#39;AAACCTGAGAACTCGG-1&#39;,
+       &#39;AAACCTGAGAACTGTA-1&#39;,
+       ...
+       &#39;TTTGTCATCTTGGGTA-2&#39;, &#39;TTTGTCATCTTGTACT-2&#39;, &#39;TTTGTCATCTTGTATC-2&#39;,
+       &#39;TTTGTCATCTTGTCAT-2&#39;, &#39;TTTGTCATCTTGTTTG-2&#39;, &#39;TTTGTCATCTTTACAC-2&#39;,
+       &#39;TTTGTCATCTTTACGT-2&#39;, &#39;TTTGTCATCTTTAGGG-2&#39;, &#39;TTTGTCATCTTTAGTC-2&#39;,
+       &#39;TTTGTCATCTTTCCTC-2&#39;],
+      dtype=&#39;object&#39;, length=1474560)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gene_names</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">var</span><span class="o">.</span><span class="n">index</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">gene_names</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Index([&#39;DDX11L1&#39;, &#39;WASH7P&#39;, &#39;MIR6859-2&#39;, &#39;MIR1302-10&#39;, &#39;MIR1302-11&#39;, &#39;FAM138A&#39;,
+       &#39;OR4G4P&#39;, &#39;OR4G11P&#39;, &#39;OR4F5&#39;, &#39;RP11-34P13.7&#39;,
+       ...
+       &#39;Tcrlibrary_RUNX1_1_gene&#39;, &#39;Tcrlibrary_RUNX1_2_gene&#39;,
+       &#39;Tcrlibrary_RUNX1_3_gene&#39;, &#39;Tcrlibrary_RUNX2_1_gene&#39;,
+       &#39;Tcrlibrary_RUNX2_2_gene&#39;, &#39;Tcrlibrary_RUNX2_3_gene&#39;,
+       &#39;Tcrlibrary_ZAP70_1_gene&#39;, &#39;Tcrlibrary_ZAP70_2_gene&#39;,
+       &#39;Tcrlibrary_ZAP70_3_gene&#39;, &#39;Cas9_blast_gene&#39;],
+      dtype=&#39;object&#39;, length=64370)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">df_labels</span><span class="o">.</span><span class="n">barcode</span><span class="o">.</span><span class="n">tolist</span><span class="p">()))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1735
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">barcodes</span><span class="o">.</span><span class="n">tolist</span><span class="p">()))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1474560
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">matched_barcodes</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">barcodes</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">df_labels</span><span class="o">.</span><span class="n">barcode</span><span class="o">.</span><span class="n">tolist</span><span class="p">()))</span>
+<span class="nb">len</span><span class="p">(</span><span class="n">matched_barcodes</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1735
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># This is the InPathsY data in the original code of KPNNs</span>
+<span class="n">df_labels</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>barcode</th>
+      <th>TCR</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>AAACCTGCACACATGT-1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>AAACCTGCACGTCTCT-1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>AAACCTGTCAATACCG-1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>AAACCTGTCGTGGTCG-1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>AAACGGGTCTGAGTGT-1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>1730</th>
+      <td>TTTCCTCGTCATGCCG-2</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1731</th>
+      <td>TTTGCGCGTAGCCTCG-2</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1732</th>
+      <td>TTTGGTTAGATACACA-2</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1733</th>
+      <td>TTTGGTTGTATGAATG-2</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1734</th>
+      <td>TTTGGTTTCCAAGTAC-2</td>
+      <td>1</td>
+    </tr>
+  </tbody>
+</table>
+<p>1735 rows × 2 columns</p>
+</div></div></div>
+</div>
+</section>
+<section id="import-pkn-with-corneto">
+<h2>Import PKN with CORNETO<a class="headerlink" href="#import-pkn-with-corneto" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cn</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"></div><div class="output text_html">
+        <table style='background-color:rgba(0, 0, 0, 0);'>
+        <tr>
+            <td style="min-width:85px">
+                <img src="data:image/jpeg;base64,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" style="width: 100%; max-width:100px;" />
+            </td>
+            <td>
+            <table>
+                <tr><td>Installed version:</td><td style='text-align:left'>v1.0.0.dev43+3455818f</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.6.6</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CLARABEL, HIGHS, OSQP, SCIPY, SCS</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.21</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/Users/pablorodriguezmier/Documents/work/repos/pablormier/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href=https://github.com/saezlab/corneto>https://github.com/saezlab/corneto</a></td></tr>
+            </table>
+            </td>
+        </tr>
+        </table></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">outputs_pkn</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">df_edges</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">df_edges</span><span class="o">.</span><span class="n">child</span><span class="o">.</span><span class="n">tolist</span><span class="p">()))</span>
+<span class="n">inputs_pkn</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">df_edges</span><span class="o">.</span><span class="n">child</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">df_edges</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+<span class="n">input_pkn_genes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">inputs_pkn</span><span class="p">))</span>
+<span class="nb">len</span><span class="p">(</span><span class="n">inputs_pkn</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">outputs_pkn</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(13121, 1)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tuples</span> <span class="o">=</span> <span class="p">[(</span><span class="n">r</span><span class="o">.</span><span class="n">child</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">r</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">df_edges</span><span class="o">.</span><span class="n">iterrows</span><span class="p">()]</span>
+<span class="n">G</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Graph</span><span class="o">.</span><span class="n">from_sif_tuples</span><span class="p">(</span><span class="n">tuples</span><span class="p">)</span>
+<span class="n">G</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">prune</span><span class="p">(</span><span class="n">inputs_pkn</span><span class="p">,</span> <span class="n">outputs_pkn</span><span class="p">)</span>
+
+<span class="c1"># Size of the original PKN provided by the authors</span>
+<span class="n">G</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(13439, 27579)
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="select-the-single-cell-data-for-training">
+<h2>Select the single cell data for training<a class="headerlink" href="#select-the-single-cell-data-for-training" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata_matched</span> <span class="o">=</span> <span class="n">adata</span><span class="p">[</span><span class="n">adata</span><span class="o">.</span><span class="n">obs_names</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">matched_barcodes</span><span class="p">),</span> <span class="n">adata</span><span class="o">.</span><span class="n">var_names</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">input_pkn_genes</span><span class="p">)]</span>
+<span class="n">adata_matched</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(1735, 14229)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">non_zero_genes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">adata_matched</span><span class="o">.</span><span class="n">to_df</span><span class="p">()</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="n">adata_matched</span><span class="o">.</span><span class="n">to_df</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mf">1e-6</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+<span class="nb">len</span><span class="p">(</span><span class="n">non_zero_genes</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>12459
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">len</span><span class="p">(</span><span class="n">non_zero_genes</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">adata_matched</span><span class="o">.</span><span class="n">var_names</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>12459
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata_matched</span> <span class="o">=</span> <span class="n">adata_matched</span><span class="p">[:,</span> <span class="n">adata_matched</span><span class="o">.</span><span class="n">var_names</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">non_zero_genes</span><span class="p">)]</span>
+<span class="c1"># Many duplicates still 0 counts</span>
+<span class="n">adata_matched</span> <span class="o">=</span> <span class="n">adata_matched</span><span class="p">[:,</span> <span class="n">adata_matched</span><span class="o">.</span><span class="n">to_df</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">]</span>
+<span class="n">adata_matched</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(1735, 12487)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_expr</span> <span class="o">=</span> <span class="n">adata_matched</span><span class="o">.</span><span class="n">to_df</span><span class="p">()</span>
+<span class="n">df_expr</span> <span class="o">=</span> <span class="n">df_expr</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">df_expr</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+<span class="n">df_expr</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>A1BG</th>
+      <th>A2ML1</th>
+      <th>AAAS</th>
+      <th>AACS</th>
+      <th>AADAT</th>
+      <th>AAED1</th>
+      <th>AAGAB</th>
+      <th>AAK1</th>
+      <th>AAMDC</th>
+      <th>AAMP</th>
+      <th>...</th>
+      <th>ZSWIM8</th>
+      <th>ZUFSP</th>
+      <th>ZW10</th>
+      <th>ZWILCH</th>
+      <th>ZXDC</th>
+      <th>ZYG11A</th>
+      <th>ZYG11B</th>
+      <th>ZYX</th>
+      <th>ZZEF1</th>
+      <th>ZZZ3</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>AAACCTGCACACATGT-1</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.693147</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>1.098612</td>
+      <td>...</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>AAACCTGCACGTCTCT-1</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.693147</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.693147</td>
+      <td>...</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>AAACCTGTCAATACCG-1</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.693147</td>
+      <td>...</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>AAACCTGTCGTGGTCG-1</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.098612</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>1.098612</td>
+      <td>...</td>
+      <td>0.000000</td>
+      <td>0.693147</td>
+      <td>0.000000</td>
+      <td>0.693147</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>AAACGGGTCTGAGTGT-1</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.693147</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>...</td>
+      <td>0.693147</td>
+      <td>0.000000</td>
+      <td>0.693147</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>TTTCCTCGTCATGCCG-2</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.693147</td>
+      <td>0.0</td>
+      <td>0.693147</td>
+      <td>...</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>TTTGCGCGTAGCCTCG-2</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.098612</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>1.386294</td>
+      <td>...</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>TTTGGTTAGATACACA-2</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.098612</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>1.098612</td>
+      <td>0.0</td>
+      <td>0.693147</td>
+      <td>...</td>
+      <td>0.693147</td>
+      <td>0.000000</td>
+      <td>0.693147</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.693147</td>
+      <td>0.693147</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>TTTGGTTGTATGAATG-2</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.693147</td>
+      <td>1.098612</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.693147</td>
+      <td>...</td>
+      <td>0.000000</td>
+      <td>0.693147</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.693147</td>
+    </tr>
+    <tr>
+      <th>TTTGGTTTCCAAGTAC-2</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.693147</td>
+      <td>...</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.098612</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+    </tr>
+  </tbody>
+</table>
+<p>1735 rows × 12459 columns</p>
+</div></div></div>
+</div>
+</section>
+<section id="building-and-training-the-kpnn">
+<h2>Building and training the KPNN<a class="headerlink" href="#building-and-training-the-kpnn" title="Link to this heading">#</a></h2>
+<p>Now we will use the provided PKN by the authors and the utility functions in CORNETO to build a KPNN similar to the one used in the original manuscript</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;KERAS_BACKEND&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;jax&quot;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">keras</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">keras.callbacks</span><span class="w"> </span><span class="kn">import</span> <span class="n">EarlyStopping</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">accuracy_score</span><span class="p">,</span>
+    <span class="n">f1_score</span><span class="p">,</span>
+    <span class="n">precision_score</span><span class="p">,</span>
+    <span class="n">recall_score</span><span class="p">,</span>
+    <span class="n">roc_auc_score</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.model_selection</span><span class="w"> </span><span class="kn">import</span> <span class="n">StratifiedKFold</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Use the data from the experiment</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">df_expr</span><span class="o">.</span><span class="n">values</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">df_labels</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;barcode&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df_expr</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="s2">&quot;TCR&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+<span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>((1735, 12459), (1735,))
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We can prefilter on top N genes to make this faster</span>
+<span class="n">top_n</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="c1"># From the given PKN</span>
+<span class="n">outputs_pkn</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">df_edges</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">df_edges</span><span class="o">.</span><span class="n">child</span><span class="o">.</span><span class="n">tolist</span><span class="p">()))</span>
+<span class="n">inputs_pkn</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">df_edges</span><span class="o">.</span><span class="n">child</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">df_edges</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+<span class="n">input_pkn_genes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">inputs_pkn</span><span class="p">))</span>
+
+<span class="k">if</span> <span class="n">top_n</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">top_n</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="n">input_pkn_genes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+        <span class="nb">set</span><span class="p">(</span><span class="n">input_pkn_genes</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">df_expr</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="n">top_n</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">inputs_pkn</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">g</span> <span class="o">+</span> <span class="s2">&quot;_gene&quot;</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">input_pkn_genes</span><span class="p">)</span>
+
+<span class="nb">len</span><span class="p">(</span><span class="n">inputs_pkn</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">outputs_pkn</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(13121, 1)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">input_nn_genes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">input_pkn_genes</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">df_expr</span><span class="o">.</span><span class="n">columns</span><span class="p">))</span>
+<span class="n">input_nn</span> <span class="o">=</span> <span class="p">[</span><span class="n">g</span> <span class="o">+</span> <span class="s2">&quot;_gene&quot;</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">input_nn_genes</span><span class="p">]</span>
+<span class="nb">len</span><span class="p">(</span><span class="n">input_nn</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>12459
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Build corneto graph</span>
+<span class="n">tuples</span> <span class="o">=</span> <span class="p">[(</span><span class="n">r</span><span class="o">.</span><span class="n">child</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">r</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">df_edges</span><span class="o">.</span><span class="n">iterrows</span><span class="p">()]</span>
+<span class="n">G</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Graph</span><span class="o">.</span><span class="n">from_sif_tuples</span><span class="p">(</span><span class="n">tuples</span><span class="p">)</span>
+<span class="n">G</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">prune</span><span class="p">(</span><span class="n">input_nn</span><span class="p">,</span> <span class="n">outputs_pkn</span><span class="p">)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(12767, 25928)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">len</span><span class="p">(</span><span class="n">input_nn</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">input_nn_genes</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(12459, 12459)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">input_nn</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">V</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>12459
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">X</span> <span class="o">=</span> <span class="n">df_expr</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">input_nn_genes</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">df_labels</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;barcode&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df_expr</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="s2">&quot;TCR&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+<span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>((1735, 12459), (1735,))
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto._ml</span><span class="w"> </span><span class="kn">import</span> <span class="n">build_dagnn</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">stratified_kfold</span><span class="p">(</span>
+    <span class="n">G</span><span class="p">,</span>
+    <span class="n">inputs</span><span class="p">,</span>
+    <span class="n">outputs</span><span class="p">,</span>
+    <span class="n">n_splits</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span>
+    <span class="n">lr</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span>
+    <span class="n">patience</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">file_weights</span><span class="o">=</span><span class="s2">&quot;weights&quot;</span><span class="p">,</span>
+    <span class="n">dagnn_config</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+        <span class="n">batch_norm_input</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">batch_norm_center</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">batch_norm_scale</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">bias_reg_l1</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span>
+        <span class="n">bias_reg_l2</span><span class="o">=</span><span class="mf">1e-2</span><span class="p">,</span>
+        <span class="n">dropout</span><span class="o">=</span><span class="mf">0.20</span><span class="p">,</span>
+        <span class="n">default_hidden_activation</span><span class="o">=</span><span class="s2">&quot;sigmoid&quot;</span><span class="p">,</span>
+        <span class="n">default_output_activation</span><span class="o">=</span><span class="s2">&quot;sigmoid&quot;</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">),</span>
+<span class="p">):</span>
+    <span class="n">kfold</span> <span class="o">=</span> <span class="n">StratifiedKFold</span><span class="p">(</span><span class="n">n_splits</span><span class="o">=</span><span class="n">n_splits</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="n">shuffle</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">)</span>
+    <span class="n">models</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">metrics</span> <span class="o">=</span> <span class="p">{</span><span class="n">m</span><span class="p">:</span> <span class="p">[]</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;accuracy&quot;</span><span class="p">,</span> <span class="s2">&quot;precision&quot;</span><span class="p">,</span> <span class="s2">&quot;recall&quot;</span><span class="p">,</span> <span class="s2">&quot;f1&quot;</span><span class="p">,</span> <span class="s2">&quot;roc_auc&quot;</span><span class="p">]}</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">train_idx</span><span class="p">,</span> <span class="n">val_idx</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">kfold</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)):</span>
+        <span class="n">X_train</span><span class="p">,</span> <span class="n">X_val</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">train_idx</span><span class="p">],</span> <span class="n">X</span><span class="p">[</span><span class="n">val_idx</span><span class="p">]</span>
+        <span class="n">y_train</span><span class="p">,</span> <span class="n">y_val</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">train_idx</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="n">val_idx</span><span class="p">]</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Building DAG NN model with CORNETO using Keras with JAX...&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; &gt; N. inputs: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">input_nn</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; &gt; N. outputs: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">outputs_pkn</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">build_dagnn</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">input_nn</span><span class="p">,</span> <span class="n">outputs_pkn</span><span class="p">,</span> <span class="o">**</span><span class="n">dagnn_config</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; &gt; N. parameters: </span><span class="si">{</span><span class="n">model</span><span class="o">.</span><span class="n">count_params</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Train the model with Adam</span>
+        <span class="n">opt</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">optimizers</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">learning_rate</span><span class="o">=</span><span class="n">lr</span><span class="p">)</span>
+        <span class="n">early_stopping</span> <span class="o">=</span> <span class="n">EarlyStopping</span><span class="p">(</span><span class="n">monitor</span><span class="o">=</span><span class="s2">&quot;val_loss&quot;</span><span class="p">,</span> <span class="n">patience</span><span class="o">=</span><span class="n">patience</span><span class="p">,</span> <span class="n">restore_best_weights</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Compiling...&quot;</span><span class="p">)</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">optimizer</span><span class="o">=</span><span class="n">opt</span><span class="p">,</span> <span class="n">loss</span><span class="o">=</span><span class="s2">&quot;binary_crossentropy&quot;</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;accuracy&quot;</span><span class="p">])</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Fitting...&quot;</span><span class="p">)</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+            <span class="n">X_train</span><span class="p">,</span>
+            <span class="n">y_train</span><span class="p">,</span>
+            <span class="n">validation_data</span><span class="o">=</span><span class="p">(</span><span class="n">X_val</span><span class="p">,</span> <span class="n">y_val</span><span class="p">),</span>
+            <span class="n">epochs</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
+            <span class="n">batch_size</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span><span class="n">early_stopping</span><span class="p">],</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">file_weights</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file_weights</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">.keras&quot;</span>
+            <span class="n">model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Weights saved to </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Predictions and metrics calculation</span>
+        <span class="n">y_pred_proba</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_val</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+        <span class="n">y_pred</span> <span class="o">=</span> <span class="p">(</span><span class="n">y_pred_proba</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+        <span class="n">acc</span> <span class="o">=</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_val</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+        <span class="n">precision</span> <span class="o">=</span> <span class="n">precision_score</span><span class="p">(</span><span class="n">y_val</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+        <span class="n">recall</span> <span class="o">=</span> <span class="n">recall_score</span><span class="p">(</span><span class="n">y_val</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+        <span class="n">f1</span> <span class="o">=</span> <span class="n">f1_score</span><span class="p">(</span><span class="n">y_val</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+        <span class="n">roc_auc</span> <span class="o">=</span> <span class="n">roc_auc_score</span><span class="p">(</span><span class="n">y_val</span><span class="p">,</span> <span class="n">y_pred_proba</span><span class="p">)</span>
+        <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;accuracy&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">acc</span><span class="p">)</span>
+        <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;precision&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">precision</span><span class="p">)</span>
+        <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;recall&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">recall</span><span class="p">)</span>
+        <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;f1&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f1</span><span class="p">)</span>
+        <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;roc_auc&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">roc_auc</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; &gt; Fold </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2"> validation ROC-AUC=</span><span class="si">{</span><span class="n">roc_auc</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">models</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">models</span><span class="p">,</span> <span class="n">metrics</span>
+
+
+<span class="n">temp_weights</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">()</span>
+<span class="n">models</span><span class="p">,</span> <span class="n">metrics</span> <span class="o">=</span> <span class="n">stratified_kfold</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">input_nn</span><span class="p">,</span> <span class="n">outputs_pkn</span><span class="p">,</span> <span class="n">file_weights</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">temp_weights</span><span class="p">,</span> <span class="s2">&quot;weights&quot;</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Validation metrics:&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">metrics</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; - </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Building DAG NN model with CORNETO using Keras with JAX...
+ &gt; N. inputs: 12459
+ &gt; N. outputs: 1
+ &gt; N. parameters: 26236
+Compiling...
+Fitting...
+Weights saved to /var/folders/b4/gwkwsdb93sv11rtztqbm3l040000gn/T/tmp044vf9e8/weights_0.keras
+
+<span class=" -Color -Color-Bold"> 1/11</span> <span class=" -Color -Color-Green">━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">29s</span> 3s/step
+
+<span class=" -Color -Color-Bold"> 2/11</span> <span class=" -Color -Color-Green">━━━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">17s</span> 2s/step
+
+<span class=" -Color -Color-Bold">11/11</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">0s</span> 412ms/step
+
+<span class=" -Color -Color-Bold">11/11</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">7s</span> 412ms/step
+ &gt; Fold 0 validation ROC-AUC=0.991
+Building DAG NN model with CORNETO using Keras with JAX...
+ &gt; N. inputs: 12459
+ &gt; N. outputs: 1
+ &gt; N. parameters: 26236
+Compiling...
+Fitting...
+Weights saved to /var/folders/b4/gwkwsdb93sv11rtztqbm3l040000gn/T/tmp044vf9e8/weights_1.keras
+
+<span class=" -Color -Color-Bold"> 1/11</span> <span class=" -Color -Color-Green">━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">16s</span> 2s/step
+
+<span class=" -Color -Color-Bold"> 2/11</span> <span class=" -Color -Color-Green">━━━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">12s</span> 1s/step
+
+<span class=" -Color -Color-Bold">11/11</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">0s</span> 308ms/step
+
+<span class=" -Color -Color-Bold">11/11</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">5s</span> 308ms/step
+ &gt; Fold 1 validation ROC-AUC=0.979
+Building DAG NN model with CORNETO using Keras with JAX...
+ &gt; N. inputs: 12459
+ &gt; N. outputs: 1
+ &gt; N. parameters: 26236
+Compiling...
+Fitting...
+Weights saved to /var/folders/b4/gwkwsdb93sv11rtztqbm3l040000gn/T/tmp044vf9e8/weights_2.keras
+
+<span class=" -Color -Color-Bold"> 1/11</span> <span class=" -Color -Color-Green">━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">11s</span> 1s/step
+
+<span class=" -Color -Color-Bold"> 2/11</span> <span class=" -Color -Color-Green">━━━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">8s</span> 942ms/step
+
+<span class=" -Color -Color-Bold">10/11</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━</span><span class=" -Color -Color-White">━━</span> <span class=" -Color -Color-Bold">0s</span> 123ms/step
+
+<span class=" -Color -Color-Bold">11/11</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">0s</span> 208ms/step
+
+<span class=" -Color -Color-Bold">11/11</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">3s</span> 208ms/step
+ &gt; Fold 2 validation ROC-AUC=0.982
+Building DAG NN model with CORNETO using Keras with JAX...
+ &gt; N. inputs: 12459
+ &gt; N. outputs: 1
+ &gt; N. parameters: 26236
+Compiling...
+Fitting...
+Weights saved to /var/folders/b4/gwkwsdb93sv11rtztqbm3l040000gn/T/tmp044vf9e8/weights_3.keras
+
+<span class=" -Color -Color-Bold"> 1/11</span> <span class=" -Color -Color-Green">━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">11s</span> 1s/step
+
+<span class=" -Color -Color-Bold"> 2/11</span> <span class=" -Color -Color-Green">━━━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">7s</span> 886ms/step
+
+<span class=" -Color -Color-Bold">10/11</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━</span><span class=" -Color -Color-White">━━</span> <span class=" -Color -Color-Bold">0s</span> 116ms/step
+
+<span class=" -Color -Color-Bold">11/11</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">0s</span> 202ms/step
+
+<span class=" -Color -Color-Bold">11/11</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">3s</span> 202ms/step
+ &gt; Fold 3 validation ROC-AUC=0.994
+Building DAG NN model with CORNETO using Keras with JAX...
+ &gt; N. inputs: 12459
+ &gt; N. outputs: 1
+ &gt; N. parameters: 26236
+Compiling...
+Fitting...
+Weights saved to /var/folders/b4/gwkwsdb93sv11rtztqbm3l040000gn/T/tmp044vf9e8/weights_4.keras
+
+<span class=" -Color -Color-Bold"> 1/11</span> <span class=" -Color -Color-Green">━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">11s</span> 1s/step
+
+<span class=" -Color -Color-Bold"> 2/11</span> <span class=" -Color -Color-Green">━━━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">9s</span> 1s/step
+
+<span class=" -Color -Color-Bold">10/11</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━</span><span class=" -Color -Color-White">━━</span> <span class=" -Color -Color-Bold">0s</span> 132ms/step
+
+<span class=" -Color -Color-Bold">11/11</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">0s</span> 220ms/step
+
+<span class=" -Color -Color-Bold">11/11</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">3s</span> 220ms/step
+ &gt; Fold 4 validation ROC-AUC=0.992
+Validation metrics:
+ - accuracy: 0.964
+ - precision: 0.969
+ - recall: 0.958
+ - f1: 0.963
+ - roc_auc: 0.988
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now, we will analyze the learned biases for each of the nodes in the graph. Note that authors in the KPNN paper explain a way to extract weights for the nodes, based on the learned interactions and accounting for biases in the structure of the NN. Here we just show the learned biases of the nodes of the NN across 5 folds. Please be careful interpreting these weights.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We collect the weights obtained in each fold</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">load_biases</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="s2">&quot;weights&quot;</span><span class="p">,</span> <span class="n">folds</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+    <span class="n">biases</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">mean_inputs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">load_model</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">.keras&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">layers</span><span class="p">:</span>
+            <span class="n">weights</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">get_weights</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">weights</span><span class="p">:</span>
+                <span class="n">biases</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">i</span><span class="p">,</span> <span class="n">layer</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">weights</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]))</span>
+                <span class="n">mean_inputs</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">i</span><span class="p">,</span> <span class="n">layer</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">weights</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()))</span>
+    <span class="n">df_biases</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">biases</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;fold&quot;</span><span class="p">,</span> <span class="s2">&quot;gene&quot;</span><span class="p">,</span> <span class="s2">&quot;bias&quot;</span><span class="p">])</span>
+    <span class="n">df_biases</span><span class="p">[</span><span class="s2">&quot;abs_bias&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_biases</span><span class="o">.</span><span class="n">bias</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span>
+    <span class="n">df_biases</span><span class="p">[</span><span class="s2">&quot;pow2_bias&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_biases</span><span class="o">.</span><span class="n">bias</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">df_biases</span> <span class="o">=</span> <span class="n">df_biases</span><span class="o">.</span><span class="n">set_index</span><span class="p">([</span><span class="s2">&quot;fold&quot;</span><span class="p">,</span> <span class="s2">&quot;gene&quot;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">df_biases</span>
+
+
+<span class="n">df_biases</span> <span class="o">=</span> <span class="n">load_biases</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">temp_weights</span><span class="p">,</span> <span class="s2">&quot;weights&quot;</span><span class="p">),</span> <span class="n">folds</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">df_biases</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s2">&quot;abs_bias&quot;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th></th>
+      <th>bias</th>
+      <th>abs_bias</th>
+      <th>pow2_bias</th>
+    </tr>
+    <tr>
+      <th>fold</th>
+      <th>gene</th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>3</th>
+      <th>SUZ12.EZH2</th>
+      <td>-2.768535</td>
+      <td>2.768535</td>
+      <td>7.664784</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <th>PRKCD</th>
+      <td>-2.499154</td>
+      <td>2.499154</td>
+      <td>6.245770</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <th>ZAP70</th>
+      <td>-2.205527</td>
+      <td>2.205527</td>
+      <td>4.864350</td>
+    </tr>
+    <tr>
+      <th rowspan="2" valign="top">3</th>
+      <th>DUSP3</th>
+      <td>-2.144189</td>
+      <td>2.144189</td>
+      <td>4.597546</td>
+    </tr>
+    <tr>
+      <th>TCR</th>
+      <td>-2.033000</td>
+      <td>2.033000</td>
+      <td>4.133087</td>
+    </tr>
+    <tr>
+      <th rowspan="2" valign="top">4</th>
+      <th>LCK</th>
+      <td>-2.014710</td>
+      <td>2.014710</td>
+      <td>4.059057</td>
+    </tr>
+    <tr>
+      <th>TCR</th>
+      <td>1.960717</td>
+      <td>1.960717</td>
+      <td>3.844413</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <th>PRKCD</th>
+      <td>-1.850238</td>
+      <td>1.850238</td>
+      <td>3.423379</td>
+    </tr>
+    <tr>
+      <th rowspan="2" valign="top">0</th>
+      <th>TCR</th>
+      <td>-1.836677</td>
+      <td>1.836677</td>
+      <td>3.373384</td>
+    </tr>
+    <tr>
+      <th>PRKCD</th>
+      <td>1.777246</td>
+      <td>1.777246</td>
+      <td>3.158603</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_biases_full</span> <span class="o">=</span> <span class="n">df_biases</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+<span class="n">gene_biases_score</span> <span class="o">=</span> <span class="n">df_biases_full</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;gene&quot;</span><span class="p">)[</span><span class="s2">&quot;pow2_bias&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">gene_biases_score</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>gene
+TCR             3.427786
+PRKCD           3.129591
+SUZ12.EZH2      2.498496
+LCK             1.725973
+p38             1.404157
+                  ...   
+MLL2.complex    0.000493
+HMT             0.000109
+HSF2            0.000087
+GATA3           0.000080
+REST            0.000022
+Name: pow2_bias, Length: 308, dtype: float32
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gene_biases_score</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">bar</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Axes: xlabel=&#39;gene&#39;&gt;
+</pre></div>
+</div>
+<img alt="../../_images/bdce21ef392c9bc0e719fafa057daf02435bcf07217c2bc5eb525c31f15d19ce.png" src="../../_images/bdce21ef392c9bc0e719fafa057daf02435bcf07217c2bc5eb525c31f15d19ce.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
+
+<span class="c1"># Get the top genes sorted by mean bias</span>
+<span class="n">top_genes</span> <span class="o">=</span> <span class="n">gene_biases_score</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span><span class="o">.</span><span class="n">index</span>
+
+<span class="c1"># Filter the DataFrame to include only rows with these top genes</span>
+<span class="n">filtered_df</span> <span class="o">=</span> <span class="n">df_biases_full</span><span class="p">[</span><span class="n">df_biases_full</span><span class="p">[</span><span class="s2">&quot;gene&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">top_genes</span><span class="p">)]</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">violinplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">filtered_df</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;gene&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;bias&quot;</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">top_genes</span><span class="p">,</span> <span class="n">dodge</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">stripplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">filtered_df</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;gene&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;bias&quot;</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">top_genes</span><span class="p">,</span> <span class="n">dodge</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">rotation</span><span class="o">=</span><span class="mi">90</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Biases of the trained neurons&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Gene&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Bias&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/3eb465cddf5a80bcb80c6135bc1db8b1a9183ca2ae42ea6f174483428f63ca0f.png" src="../../_images/3eb465cddf5a80bcb80c6135bc1db8b1a9183ca2ae42ea6f174483428f63ca0f.png" />
+</div>
+</div>
+</section>
+<section id="use-corneto-for-nn-pruning">
+<h2>Use CORNETO for NN pruning<a class="headerlink" href="#use-corneto-for-nn-pruning" title="Link to this heading">#</a></h2>
+<p>Now we will show how CORNETO can be used to extract a smaller, yet complete DAG from the original PKN provided by the authors. We will add input edges to each input node and an output edge through TCR to indicate which nodes are the inputs and which one the output. We will use then Acyclic Flow to find the smallest DAG comprising these nodes</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">G_dag</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">new_edges</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">input_nn</span><span class="p">:</span>
+    <span class="n">new_edges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">G_dag</span><span class="o">.</span><span class="n">add_edge</span><span class="p">((),</span> <span class="n">g</span><span class="p">))</span>
+<span class="n">new_edges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">G_dag</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;TCR&quot;</span><span class="p">,</span> <span class="p">()))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">G_dag</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+<span class="c1"># Find small DAG. We use Acyclic Flow to find over the space of DAGs</span>
+<span class="n">P</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">opt</span><span class="o">.</span><span class="n">AcyclicFlow</span><span class="p">(</span><span class="n">G_dag</span><span class="p">)</span>
+<span class="c1"># We enforce that the input genes and the output gene are part of the solution</span>
+<span class="n">P</span> <span class="o">+=</span> <span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">with_flow</span><span class="p">[</span><span class="n">new_edges</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span>
+<span class="c1"># Minimize the number of active edges</span>
+<span class="n">P</span><span class="o">.</span><span class="n">add_objectives</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">with_flow</span><span class="p">),</span> <span class="n">weights</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;SCIP&quot;</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_seconds</span><span class="o">=</span><span class="mi">300</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(12767, 38388)
+===============================================================================
+                                     CVXPY                                     
+                                     v1.6.6                                    
+===============================================================================
+-------------------------------------------------------------------------------
+                                  Compilation                                  
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+                                Numerical solver                               
+-------------------------------------------------------------------------------
+Running HiGHS 1.8.0 (git hash: 222cce7): Copyright (c) 2024 HiGHS under MIT licence terms
+Coefficient ranges:
+  Matrix [1e-04, 1e+04]
+  Cost   [1e+00, 1e+00]
+  Bound  [1e+00, 1e+00]
+  RHS    [1e+00, 1e+04]
+Presolving model
+83375 rows, 57447 cols, 205995 nonzeros  0s
+40079 rows, 41245 cols, 128297 nonzeros  0s
+39352 rows, 38165 cols, 131120 nonzeros  0s
+Objective function is integral with scale 1
+
+Solving MIP model with:
+   39352 rows
+   38165 cols (18825 binary, 0 integer, 0 implied int., 19340 continuous)
+   131120 nonzeros
+MIP-Timing:        0.54 - starting analytic centre calculation
+
+Src: B =&gt; Branching; C =&gt; Central rounding; F =&gt; Feasibility pump; H =&gt; Heuristic; L =&gt; Sub-MIP;
+     P =&gt; Empty MIP; R =&gt; Randomized rounding; S =&gt; Solve LP; T =&gt; Evaluate node; U =&gt; Unbounded;
+     z =&gt; Trivial zero; l =&gt; Trivial lower; u =&gt; Trivial upper; p =&gt; Trivial point
+
+        Nodes      |    B&amp;B Tree     |            Objective Bounds              |  Dynamic Constraints |       Work      
+Src  Proc. InQueue |  Leaves   Expl. | BestBound       BestSol              Gap |   Cuts   InLp Confl. | LpIters     Time
+
+         0       0         0   0.00%   19693           inf                  inf        0      0      0         0     0.5s
+         0       0         0   0.00%   19693           inf                  inf        0      0      1     19806     1.8s
+         0       0         0   0.00%   22669.402362    inf                  inf     5152   3535    132     39839     7.3s
+ L       0       0         0   0.00%   22669.405102    25088              9.64%     5152   3535    258     39839    19.3s
+
+0.2% inactive integer columns, restarting
+Model after restart has 39282 rows, 38128 cols (18793 bin., 0 int., 0 impl., 19335 cont.), and 130976 nonzeros
+
+         0       0         0   0.00%   22669.405102    25088              9.64%     3297      0      0     92375    19.6s
+         0       0         0   0.00%   22669.405102    25088              9.64%     3297   3175      4    136853    33.4s
+         0       0         0   0.00%   22995.391228    25088              8.34%     4679   3772      4    146501    38.4s
+
+Symmetry detection completed in 3.9s
+Found 2264 generator(s)
+        55       0         1   0.00%   22996.391797    25088              8.34%     6285   3695    172    303808   149.4s
+       220     217         2   0.00%   23067.071606    25088              8.06%     6286   3695    481    316586   205.1s
+       250     216         3   0.00%   23067.071606    25088              8.06%     6394   3737    528    407997   278.4s
+       280     274         4   0.00%   23067.071606    25088              8.06%     6395   3737    613    413452   300.0s
+       280     274         4   0.00%   23067.071606    25088              8.06%     6395   3737    613    413452   300.0s
+
+Solving report
+  Status            Time limit reached
+  Primal bound      25088
+  Dual bound        23068
+  Gap               8.05% (tolerance: 0.01%)
+  P-D integral      23.3781609893
+  Solution status   feasible
+                    25088 (objective)
+                    0 (bound viol.)
+                    0 (int. viol.)
+                    0 (row viol.)
+  Timing            300.04 (total)
+                    0.00 (presolve)
+                    0.00 (solve)
+                    0.00 (postsolve)
+  Max sub-MIP depth 8
+  Nodes             280
+  Repair LPs        0 (0 feasible; 0 iterations)
+  LP iterations     413452 (total)
+                    176391 (strong br.)
+                    35258 (separation)
+                    52536 (heuristics)
+Solver terminated with message: Time limit reached. (HiGHS Status 13: Time limit reached)
+-------------------------------------------------------------------------------
+                                    Summary                                    
+-------------------------------------------------------------------------------
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">G_subdag</span> <span class="o">=</span> <span class="n">G_dag</span><span class="o">.</span><span class="n">edge_subgraph</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">with_flow</span><span class="o">.</span><span class="n">value</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">)</span>
+<span class="n">G_dag</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">G_subdag</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>((12767, 38388), (12629, 25088))
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rel_dag_compression</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">G_subdag</span><span class="o">.</span><span class="n">num_edges</span> <span class="o">/</span> <span class="n">G_dag</span><span class="o">.</span><span class="n">num_edges</span><span class="p">))</span> <span class="o">*</span> <span class="mi">100</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;KPNN edge compression (0-100%): </span><span class="si">{</span><span class="n">rel_dag_compression</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>KPNN edge compression (0-100%): 34.65%
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pruned_models</span><span class="p">,</span> <span class="n">pruned_metrics</span> <span class="o">=</span> <span class="n">stratified_kfold</span><span class="p">(</span>
+    <span class="n">G_subdag</span><span class="p">,</span>
+    <span class="n">input_nn</span><span class="p">,</span>
+    <span class="n">outputs_pkn</span><span class="p">,</span>
+    <span class="n">file_weights</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">temp_weights</span><span class="p">,</span> <span class="s2">&quot;pruned_weights&quot;</span><span class="p">),</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Validation metrics:&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">pruned_metrics</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; - </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Building DAG NN model with CORNETO using Keras with JAX...
+ &gt; N. inputs: 12459
+ &gt; N. outputs: 1
+ &gt; N. parameters: 12798
+Compiling...
+Fitting...
+Weights saved to /var/folders/b4/gwkwsdb93sv11rtztqbm3l040000gn/T/tmp044vf9e8/pruned_weights_0.keras
+
+<span class=" -Color -Color-Bold"> 1/11</span> <span class=" -Color -Color-Green">━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">5s</span> 583ms/step
+
+<span class=" -Color -Color-Bold"> 2/11</span> <span class=" -Color -Color-Green">━━━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">4s</span> 517ms/step
+
+<span class=" -Color -Color-Bold">10/11</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━</span><span class=" -Color -Color-White">━━</span> <span class=" -Color -Color-Bold">0s</span> 68ms/step
+
+<span class=" -Color -Color-Bold">11/11</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">0s</span> 111ms/step
+
+<span class=" -Color -Color-Bold">11/11</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">2s</span> 111ms/step
+ &gt; Fold 0 validation ROC-AUC=0.994
+Building DAG NN model with CORNETO using Keras with JAX...
+ &gt; N. inputs: 12459
+ &gt; N. outputs: 1
+ &gt; N. parameters: 12798
+Compiling...
+Fitting...
+Weights saved to /var/folders/b4/gwkwsdb93sv11rtztqbm3l040000gn/T/tmp044vf9e8/pruned_weights_1.keras
+
+<span class=" -Color -Color-Bold"> 1/11</span> <span class=" -Color -Color-Green">━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">6s</span> 666ms/step
+
+<span class=" -Color -Color-Bold"> 2/11</span> <span class=" -Color -Color-Green">━━━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">4s</span> 476ms/step
+
+<span class=" -Color -Color-Bold">10/11</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━</span><span class=" -Color -Color-White">━━</span> <span class=" -Color -Color-Bold">0s</span> 64ms/step
+
+<span class=" -Color -Color-Bold">11/11</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">0s</span> 108ms/step
+
+<span class=" -Color -Color-Bold">11/11</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">2s</span> 108ms/step
+ &gt; Fold 1 validation ROC-AUC=0.977
+Building DAG NN model with CORNETO using Keras with JAX...
+ &gt; N. inputs: 12459
+ &gt; N. outputs: 1
+ &gt; N. parameters: 12798
+Compiling...
+Fitting...
+Weights saved to /var/folders/b4/gwkwsdb93sv11rtztqbm3l040000gn/T/tmp044vf9e8/pruned_weights_2.keras
+
+<span class=" -Color -Color-Bold"> 1/11</span> <span class=" -Color -Color-Green">━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">6s</span> 649ms/step
+
+<span class=" -Color -Color-Bold"> 2/11</span> <span class=" -Color -Color-Green">━━━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">5s</span> 556ms/step
+
+<span class=" -Color -Color-Bold">10/11</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━</span><span class=" -Color -Color-White">━━</span> <span class=" -Color -Color-Bold">0s</span> 72ms/step
+
+<span class=" -Color -Color-Bold">11/11</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">0s</span> 121ms/step
+
+<span class=" -Color -Color-Bold">11/11</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">2s</span> 121ms/step
+ &gt; Fold 2 validation ROC-AUC=0.986
+Building DAG NN model with CORNETO using Keras with JAX...
+ &gt; N. inputs: 12459
+ &gt; N. outputs: 1
+ &gt; N. parameters: 12798
+Compiling...
+Fitting...
+Weights saved to /var/folders/b4/gwkwsdb93sv11rtztqbm3l040000gn/T/tmp044vf9e8/pruned_weights_3.keras
+
+<span class=" -Color -Color-Bold"> 1/11</span> <span class=" -Color -Color-Green">━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">6s</span> 622ms/step
+
+<span class=" -Color -Color-Bold"> 2/11</span> <span class=" -Color -Color-Green">━━━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">4s</span> 480ms/step
+
+<span class=" -Color -Color-Bold">10/11</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━</span><span class=" -Color -Color-White">━━</span> <span class=" -Color -Color-Bold">0s</span> 63ms/step
+
+<span class=" -Color -Color-Bold">11/11</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">0s</span> 106ms/step
+
+<span class=" -Color -Color-Bold">11/11</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">2s</span> 106ms/step
+ &gt; Fold 3 validation ROC-AUC=0.995
+Building DAG NN model with CORNETO using Keras with JAX...
+ &gt; N. inputs: 12459
+ &gt; N. outputs: 1
+ &gt; N. parameters: 12798
+Compiling...
+Fitting...
+Weights saved to /var/folders/b4/gwkwsdb93sv11rtztqbm3l040000gn/T/tmp044vf9e8/pruned_weights_4.keras
+
+<span class=" -Color -Color-Bold"> 1/11</span> <span class=" -Color -Color-Green">━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">5s</span> 566ms/step
+
+<span class=" -Color -Color-Bold"> 2/11</span> <span class=" -Color -Color-Green">━━━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">4s</span> 489ms/step
+
+<span class=" -Color -Color-Bold">10/11</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━</span><span class=" -Color -Color-White">━━</span> <span class=" -Color -Color-Bold">0s</span> 64ms/step
+
+<span class=" -Color -Color-Bold">11/11</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">0s</span> 107ms/step
+
+<span class=" -Color -Color-Bold">11/11</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">2s</span> 107ms/step
+ &gt; Fold 4 validation ROC-AUC=0.995
+Validation metrics:
+ - accuracy: 0.964
+ - precision: 0.969
+ - recall: 0.958
+ - f1: 0.963
+ - roc_auc: 0.989
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_biases_pruned</span> <span class="o">=</span> <span class="n">load_biases</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">temp_weights</span><span class="p">,</span> <span class="s2">&quot;pruned_weights&quot;</span><span class="p">),</span> <span class="n">folds</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">df_biases_pruned</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s2">&quot;abs_bias&quot;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th></th>
+      <th>bias</th>
+      <th>abs_bias</th>
+      <th>pow2_bias</th>
+    </tr>
+    <tr>
+      <th>fold</th>
+      <th>gene</th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th rowspan="2" valign="top">4</th>
+      <th>RUNX1</th>
+      <td>-2.475160</td>
+      <td>2.475160</td>
+      <td>6.126415</td>
+    </tr>
+    <tr>
+      <th>SUZ12.EZH2</th>
+      <td>-2.461908</td>
+      <td>2.461908</td>
+      <td>6.060989</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <th>SUZ12.EZH2</th>
+      <td>-2.451049</td>
+      <td>2.451049</td>
+      <td>6.007642</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <th>SUZ12.EZH2</th>
+      <td>-2.388376</td>
+      <td>2.388376</td>
+      <td>5.704338</td>
+    </tr>
+    <tr>
+      <th rowspan="3" valign="top">3</th>
+      <th>PRKCD</th>
+      <td>-2.239764</td>
+      <td>2.239764</td>
+      <td>5.016545</td>
+    </tr>
+    <tr>
+      <th>RUNX1</th>
+      <td>2.021947</td>
+      <td>2.021947</td>
+      <td>4.088270</td>
+    </tr>
+    <tr>
+      <th>PRC2</th>
+      <td>-1.983842</td>
+      <td>1.983842</td>
+      <td>3.935630</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <th>TAL1</th>
+      <td>-1.962536</td>
+      <td>1.962536</td>
+      <td>3.851547</td>
+    </tr>
+    <tr>
+      <th rowspan="2" valign="top">0</th>
+      <th>ZAP70</th>
+      <td>1.947543</td>
+      <td>1.947543</td>
+      <td>3.792922</td>
+    </tr>
+    <tr>
+      <th>TCR</th>
+      <td>1.871278</td>
+      <td>1.871278</td>
+      <td>3.501682</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_biases_prunedr</span> <span class="o">=</span> <span class="n">df_biases_pruned</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+<span class="n">gene_biases_score</span> <span class="o">=</span> <span class="n">df_biases_prunedr</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;gene&quot;</span><span class="p">)[</span><span class="s2">&quot;pow2_bias&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">gene_biases_score</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>gene
+SUZ12.EZH2    3.994649e+00
+RUNX1         3.776556e+00
+TAL1          2.716972e+00
+ETS1          2.500564e+00
+TCR           2.426713e+00
+                  ...     
+KMT2D         5.081624e-03
+TBP           1.791134e-03
+HMT           4.137235e-04
+ASH2L         3.378770e-06
+GATA3         7.418886e-09
+Name: pow2_bias, Length: 170, dtype: float32
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gene_biases_score</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">bar</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Axes: xlabel=&#39;gene&#39;&gt;
+</pre></div>
+</div>
+<img alt="../../_images/1beffdb8b52a19c21260449f0df1c97916b85bae018c6b56b1769d682c6208ed.png" src="../../_images/1beffdb8b52a19c21260449f0df1c97916b85bae018c6b56b1769d682c6208ed.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get the top genes sorted by mean bias</span>
+<span class="n">top_genes</span> <span class="o">=</span> <span class="n">gene_biases_score</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span><span class="o">.</span><span class="n">index</span>
+
+<span class="c1"># Filter the DataFrame to include only rows with these top genes</span>
+<span class="n">filtered_df</span> <span class="o">=</span> <span class="n">df_biases_prunedr</span><span class="p">[</span><span class="n">df_biases_prunedr</span><span class="p">[</span><span class="s2">&quot;gene&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">top_genes</span><span class="p">)]</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">violinplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">filtered_df</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;gene&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;bias&quot;</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">top_genes</span><span class="p">,</span> <span class="n">dodge</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">stripplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">filtered_df</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;gene&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;bias&quot;</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">top_genes</span><span class="p">,</span> <span class="n">dodge</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">rotation</span><span class="o">=</span><span class="mi">90</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Biases of the trained neurons&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Gene&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Bias&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/34b400d1e5cf9fa95375471210314966d0c92d32d39e551f536360828314c2ef.png" src="../../_images/34b400d1e5cf9fa95375471210314966d0c92d32d39e551f536360828314c2ef.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">param_compression</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">pruned_models</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">count_params</span><span class="p">()</span> <span class="o">/</span> <span class="n">models</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">count_params</span><span class="p">()))</span> <span class="o">*</span> <span class="mi">100</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Parameter compression: </span><span class="si">{</span><span class="n">param_compression</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Parameter compression: 51.22%
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">perf_degradation</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;roc_auc&quot;</span><span class="p">])</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">pruned_metrics</span><span class="p">[</span><span class="s2">&quot;roc_auc&quot;</span><span class="p">]))</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;roc_auc&quot;</span><span class="p">])</span>
+<span class="p">)</span> <span class="o">*</span> <span class="mi">100</span>
+<span class="nb">print</span><span class="p">(</span>
+    <span class="sa">f</span><span class="s2">&quot;Degradation in ROC-AUC after compression (positive = decrease in performance, negative = increase in performance): </span><span class="si">{</span><span class="n">perf_degradation</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">%&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Degradation in ROC-AUC after compression (positive = decrease in performance, negative = increase in performance): -0.19%
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../carnival/network-sampler-example.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Exploring alternative solutions with <span class="math notranslate nohighlight">\(\epsilon\)</span>-perturbation sampling</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../contrib/multi_condition_tutorial/multi_condition_carnival.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Multi-condition signalling network inference</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#why-corneto">Why CORNETO?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-does-it-work">How does it work?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#references">References</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#download-and-import-the-single-cell-dataset">Download and import the single cell dataset</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#import-pkn-with-corneto">Import PKN with CORNETO</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#select-the-single-cell-data-for-training">Select the single cell data for training</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#building-and-training-the-kpnn">Building and training the KPNN</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#use-corneto-for-nn-pruning">Use CORNETO for NN pruning</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2023-2025, Saez-Rodriguez lab. (EMBL-EBI, Heidelberg University).
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

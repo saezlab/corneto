@@ -1,0 +1,52 @@
+Traceback (most recent call last):
+  File "/home/runner/work/corneto/corneto/.venv/lib/python3.11/site-packages/jupyter_core/utils/__init__.py", line 154, in wrapped
+    asyncio.get_running_loop()
+RuntimeError: no running event loop
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/runner/work/corneto/corneto/.venv/lib/python3.11/site-packages/jupyter_cache/executors/utils.py", line 58, in single_nb_execution
+    executenb(
+  File "/home/runner/work/corneto/corneto/.venv/lib/python3.11/site-packages/nbclient/client.py", line 1319, in execute
+    return NotebookClient(nb=nb, resources=resources, km=km, **kwargs).execute()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/corneto/corneto/.venv/lib/python3.11/site-packages/jupyter_core/utils/__init__.py", line 158, in wrapped
+    return loop.run_until_complete(inner)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.13/x64/lib/python3.11/asyncio/base_events.py", line 654, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/home/runner/work/corneto/corneto/.venv/lib/python3.11/site-packages/nbclient/client.py", line 709, in async_execute
+    await self.async_execute_cell(
+  File "/home/runner/work/corneto/corneto/.venv/lib/python3.11/site-packages/nbclient/client.py", line 1062, in async_execute_cell
+    await self._check_raise_for_error(cell, cell_index, exec_reply)
+  File "/home/runner/work/corneto/corneto/.venv/lib/python3.11/site-packages/nbclient/client.py", line 918, in _check_raise_for_error
+    raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
+nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
+------------------
+P_G3 = cno.cellnoptILP(G3_prep, exp_list_toy_full, verbose=False)
+------------------
+
+
+[0;31m---------------------------------------------------------------------------[0m
+[0;31mIndexError[0m                                Traceback (most recent call last)
+Cell [0;32mIn[21], line 1[0m
+[0;32m----> 1[0m P_G3 [38;5;241m=[39m [43mcno[49m[38;5;241;43m.[39;49m[43mcellnoptILP[49m[43m([49m[43mG3_prep[49m[43m,[49m[43m [49m[43mexp_list_toy_full[49m[43m,[49m[43m [49m[43mverbose[49m[38;5;241;43m=[39;49m[38;5;28;43;01mFalse[39;49;00m[43m)[49m
+
+File [0;32m~/work/corneto/corneto/corneto/methods/signal/cellnopt_ilp.py:265[0m, in [0;36mcellnoptILP[0;34m(G, exp_list, solver, alpha_flow, verbose, backend)[0m
+[1;32m    261[0m     P [38;5;241m+[39m[38;5;241m=[39m (
+[1;32m    262[0m         V[is_regular_node, iexp] [38;5;241m<[39m[38;5;241m=[39m (At [38;5;241m@[39m Eact)[is_regular_node, iexp]
+[1;32m    263[0m     )  [38;5;66;03m# but it has an upper constraint, so it takes 0 when all input are 0[39;00m
+[1;32m    264[0m     [38;5;28;01mif[39;00m V_is_inhibited[:, iexp][38;5;241m.[39many():
+[0;32m--> 265[0m         P [38;5;241m+[39m[38;5;241m=[39m V[[43minh_idx[49m[43m[[49m[43m:[49m[43m,[49m[43m [49m[43miexp[49m[43m][49m, iexp] [38;5;241m==[39m np[38;5;241m.[39mzeros([38;5;28msum[39m(V_is_inhibited[:, iexp]))
+[1;32m    267[0m [38;5;66;03m# AND relation expressed as follows:[39;00m
+[1;32m    268[0m [38;5;66;03m# - we only define these constraints for the AND gates[39;00m
+[1;32m    269[0m [38;5;66;03m# - we count the sum of flows (selected edges) and sum of activated edges[39;00m
+[1;32m    270[0m [38;5;66;03m# - if sum of flow equal to the sum of incoming edge activation, i.e. all edge are activated, then the vertex is activated:[39;00m
+[1;32m    271[0m [38;5;66;03m# - to ensure that the AND gate is not active when there is no flow (an no active edge), we add the second constraint:[39;00m
+[1;32m    272[0m [38;5;28;01mif[39;00m V_is_and[38;5;241m.[39many():
+[1;32m    273[0m     [38;5;66;03m# and_idx = np.flatnonzero(V_is_and)[39;00m
+
+[0;31mIndexError[0m: too many indices for array: array is 1-dimensional, but 2 were indexed
+
