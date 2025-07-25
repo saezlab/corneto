@@ -9,77 +9,67 @@
 
 **CORNETO** provides flexible installation options depending on your needs. It integrates with various mathematical optimization solvers, which differ in their licensing, capabilities, and performance. Below are several installation options tailored to different use cases.
 
-## 🔧 Quick Installation
+## 🚀 Recommended Installation
 
-To get started quickly with open-source solvers, run:
+For most users, we recommend creating a conda environment and installing the research flavor:
 
 ```bash
-pip install git+https://github.com/saezlab/corneto.git@dev scipy pyscipopt highspy cvxpy
+conda create -n corneto python>=3.10
+conda activate corneto
+conda install python-graphviz
+pip install corneto[research]
 ```
 
-This installs:
-- **CORNETO** (from the development branch)
-- **PySCIPOpt**: a Python interface for SCIP (a fast open-source solver)
-- **highspy**: Python bindings for the HIGHs solver
-- **CVXPY**: a modeling language for convex optimization problems
-
-These libraries provide solid performance for most users and don’t require a commercial license.
+This installs CORNETO with all research dependencies including Gurobi, PICOS, and visualization libraries.
 
 ---
 
 ## 🧩 Installation Options
 
-### Basic Installation (CORNETO only)
+### Standard Installation
 
-If you only want the core CORNETO package without any solver backend (useful for development or adding solvers manually later):
+The minimal installation via pip provides core functionalities:
 
 ```bash
-pip install git+https://github.com/saezlab/corneto.git@dev
+pip install corneto
 ```
 
-You’ll need to install and configure a solver separately to make CORNETO fully functional.
+### Optional Dependencies
+
+CORNETO provides several optional dependency groups:
+
+- **`research`**: Full research stack with Gurobi, PICOS, visualization, and network tools
+- **`os`**: Open-source solvers (SCIP, HiGHS) with visualization and network tools
+- **`ml`**: Machine learning dependencies (JAX, Keras, scikit-learn)
+- **`vanilla`**: Minimal dependencies (same as base installation)
+
+Install any combination with:
+```bash
+pip install corneto[research,ml]  # Multiple extras
+```
 
 ---
 
-### ⚙️ Installation with Commercial Solvers
+### Gurobi Installation
 
-If you have access to **Gurobi** (a powerful commercial solver, free for academic use), you can install CORNETO along with Gurobi and its supported modeling tools:
+For research problems, we strongly recommend using the Gurobi solver. Gurobi is a commercial solver that offers free academic licences. To install and configure Gurobi, please refer to the [official Gurobi documentation](https://www.gurobi.com/documentation/). After installation, you can verify that Gurobi is correctly set up by running:
 
-```bash
-pip install git+https://github.com/saezlab/corneto.git@dev cvxpy gurobipy
+```python
+from corneto.utils import check_gurobi
+check_gurobi()
 ```
-
-**Note:** Make sure you have a valid Gurobi license set up on your system. You can get a free academic license [here](https://www.gurobi.com/academia/academic-program-and-licenses/).
 
 ---
 
-### 🆓 Installation with Open-Source Solvers
+### Development Installation
 
-Prefer open-source? This installs CORNETO with:
-- **SCIP** (via `pyscipopt`)
-- **HIGHs** (via `highspy`)
-- **CVXPY**
+If you plan to contribute to CORNETO, we recommend using [Poetry](https://python-poetry.org) for dependency management.
 
 ```bash
-pip install git+https://github.com/saezlab/corneto.git@dev scipy pyscipopt highspy cvxpy
+git clone https://github.com/saezlab/corneto.git
+cd corneto
+poetry install --with dev
 ```
-
-These tools are effective and don't require any licensing setup.
-
----
-
-### 🧪 Alternative Backend: PICOS
-
-CORNETO also supports `picos`, another modeling layer for optimization. You can install CORNETO with `picos` and several solvers it supports:
-
-```bash
-pip install git+https://github.com/saezlab/corneto.git@dev scipy picos swiglpk qics
-```
-
-This setup uses:
-- **PICOS**: a high-level modeling tool
-- **swiglpk**: Python bindings for GLPK, a lightweight solver
-- **qics**: another solver supported by PICOS
 
 ---
 
@@ -97,12 +87,18 @@ This should print out CORNETO version info and configuration details.
 
 ---
 
+### Legacy Compatibility
+
+The stable version used by [LIANA+](https://liana-py.readthedocs.io/) and [NetworkCommons](https://networkcommons.readthedocs.io/) remains available. However, we recommend using the latest version for new projects to access the latest features and improvements described in our manuscript.
+
+---
+
 ## 🛠 Troubleshooting
 
 If you run into installation problems:
 
 1. ✅ Make sure you're using **Python 3.10 or higher**
-2. 🧱 Check that you have at least **cvxpy** installed as a backend (this is the recommended one)
+2. 🧱 Check that you have at least one solver backend installed (CVXPY is recommended)
 3. 🔑 For Gurobi users, verify that your **license is properly installed**
 
 In case of using Gurobi, you can check if the license and installation are correct by running:

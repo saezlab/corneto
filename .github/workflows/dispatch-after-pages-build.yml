@@ -1,0 +1,25 @@
+# .github/workflows/dispatch-after-pages-build.yml
+name: Dispatch switcher after Pages build
+
+# Fires when GitHub Pages has finished building/deploying your site
+on:
+  page_build:
+
+permissions:
+  repository_dispatch: write
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger corneto-data update
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.SWITCHER_PAT }}
+          repository: saezlab/corneto-data
+          event-type: corneto_updated
+          client-payload: |
+            {
+              "ref": "${{ github.ref }}",
+              "sha": "${{ github.sha }}"
+            }

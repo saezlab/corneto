@@ -395,6 +395,6 @@ class SteinerTreeFlow(FlowMethod):
             for edata in edge_data:
                 edge_costs[edata.id] = float(edata.value)
 
-            flow_problem.add_objectives(edge_costs[edge_ids] @ selected[edge_ids])
+            flow_problem.add_objective(edge_costs[edge_ids] @ selected[edge_ids], name="edge_cost")
 
         return flow_problem

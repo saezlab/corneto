@@ -6,6 +6,7 @@ https://www.sphinx-doc.org/en/master/usage/configuration.html
 """
 
 import os
+import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -17,9 +18,9 @@ sys.path.insert(0, str(Path(".").resolve()))
 # Import the project module to retrieve version information.
 import corneto
 
-# Derive GitHub username (set in GitHub Actions; use a default for local builds)
+# Derive GitHub username and repo (set in GitHub Actions; use a default for local builds)
 repo = os.environ.get("GITHUB_REPOSITORY", "username/corneto")
-username = repo.split("/")[0]
+username, repo_name = repo.split("/", 1)
 
 # -- Project information -----------------------------------------------------
 project = "CORNETO"
@@ -55,9 +56,71 @@ myst_enable_extensions = [
     "substitution",
 ]
 
+
+def _get_switcher_url():
+    # Try to grab the current HEAD SHA of the corneto-data submodule (or clone),
+    # then point raw.githubusercontent.com at that SHA.
+    try:
+        sha = (
+            subprocess.check_output(
+                [
+                    "git",
+                    "ls-remote",
+                    "https://github.com/saezlab/corneto-data.git",
+                    "HEAD",
+                ]
+            )
+            .decode("utf-8")
+            .split()[0]
+        )
+        return f"https://raw.githubusercontent.com/saezlab/corneto-data/{sha}/assets/docs/switcher.json"
+    except Exception:
+        return "https://raw.githubusercontent.com/saezlab/corneto-data/refs/heads/main/assets/docs/switcher.json"
+
+
+def _switcher_url_with_ts():
+    base = "https://raw.githubusercontent.com/saezlab/corneto-data/refs/heads/main/assets/docs/switcher.json"
+    ts = int(datetime.utcnow().timestamp())
+    return f"{base}?ts={ts}"
+
+
 # Substitutions to be used in MyST documents.
+# Always use the actual package version for content, not the switcher version
+def _format_version_for_display(version_str):
+    """Format version string for user-friendly display in documentation."""
+    # For development versions like "1.0.0b0.post15.dev0+4db02e04"
+    # Show as "1.0.0b0 (development build 15, commit 4db02e04)"
+    if ".dev" in version_str:
+        # Extract base version before .post or .dev
+        base_version = version_str.split(".post")[0].split(".dev")[0]
+
+        # Extract post number (commits since last tag)
+        post_number = ""
+        if ".post" in version_str:
+            post_part = version_str.split(".post")[1].split(".dev")[0]
+            post_number = f"build {post_part}"
+
+        # Extract commit hash
+        commit_hash = ""
+        if "+" in version_str:
+            commit_hash = version_str.split("+")[1][:8]  # First 8 chars
+            commit_hash = f"commit {commit_hash}"
+
+        # Combine parts
+        dev_info = []
+        if post_number:
+            dev_info.append(post_number)
+        if commit_hash:
+            dev_info.append(commit_hash)
+
+        dev_details = ", ".join(dev_info) if dev_info else "latest"
+        return f"{base_version} (development: {dev_details})"
+
+    return version_str
+
+
 myst_substitutions = {
-    "version": corneto.__version__,
+    "version": _format_version_for_display(corneto.__version__),
 }
 
 # File types and their corresponding parsers.
@@ -75,6 +138,7 @@ nb_merge_streams = True
 execution_excludepatterns = [
     "**/*grb*.ipynb",  # grb indicates that uses Gurobi
     "**/kpnn-with-sc.ipynb",  # very slow, requires jax, keras
+    "tutorials/**/*.ipynb",  # tutorials are independent and slow, use cached versions
 ]
 execution_allow_errors = False
 
@@ -128,7 +192,7 @@ todo_include_todos = False
 
 # -- Options for HTML output --
 # html_baseurl = 'https://saezlab.github.io/corneto'
-html_baseurl = f"https://{username}.github.io/corneto"
+html_baseurl = f"https://{username}.github.io/{repo_name}"
 html_favicon = "_static/favicon.ico"
 html_show_sourcelink = False
 add_function_parentheses = False
@@ -148,8 +212,8 @@ html_show_sourcelink = False
 autosectionlabel_prefix_document = True
 
 
-# Make sure switcher.json (located in docs/) is copied to the build root
-html_extra_path = ["switcher.json"]
+# Note: switcher.json is now served from external URL, no need to copy locally
+# html_extra_path = ["switcher.json"]
 
 # Theme-specific options.
 html_theme_options = {
@@ -158,10 +222,13 @@ html_theme_options = {
     "show_toc_level": 1,
     "navbar_align": "left",
     "switcher": {
-        # The switcher.json file is now available at the root.
-        # "json_url": f"{html_baseurl}/switcher.json",
-        "json_url": "/switcher.json",
-        "version_match": corneto.__version__,
+        "json_url": _switcher_url_with_ts(),
+        # SPHINX_VERSION_MATCH: Environment variable to override version matching
+        # - In CI: Set to deployment folder name (e.g., "stable", "latest", "v1.0.0")
+        # - Locally: Defaults to corneto.__version__ for development
+        # Usage: SPHINX_VERSION_MATCH=stable sphinx-build -b html docs docs/_build/html
+        # This injects the variable in every web page of the docs
+        "version_match": os.environ.get("SPHINX_VERSION_MATCH", corneto.__version__),
     },
     "navbar_start": ["navbar-logo", "version-switcher"],
     "analytics": {

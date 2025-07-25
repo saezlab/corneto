@@ -11,51 +11,56 @@ corneto/docs/tutorials/
 
 ## 📁 Directory Structure
 
-Each tutorial must be placed in its own folder inside one of the following:
+Each tutorial is **independent** and must be placed in its own folder with its own `pixi.toml` file:
 
 ```
 corneto/docs/tutorials/
-  accepted/
+  carnival/                    # Official tutorial
+    notebook.ipynb
+    pixi.toml
+  fba/                        # Official tutorial
+    notebook.ipynb
+    pixi.toml
+  contrib/                    # Community contributions
     my_tutorial/
       notebook.ipynb
-      requirements.txt  # or dependencies.yaml
-  contrib/
+      pixi.toml
     another_example/
       example.ipynb
-      dependencies.yaml
-  template/
-    template.ipynb
-    dependencies.yaml
+      pixi.toml
 ```
 
-- `accepted/`: Reviewed and validated tutorials.
-- `contrib/`: Community submissions pending review.
-- `template/`: A suggested structure to help you start.
+- Official tutorials are maintained by the CORNETO team
+- `contrib/`: Community submissions that go through PR review
 
 ---
 
-## 📦 Dependency File Format
+## 📦 Environment Setup with Pixi
 
-Each tutorial folder **must include** a file listing additional dependencies:
-- Use either `requirements.txt` **or** `dependencies.yaml`
-- **All packages must specify a minimum version (`>=`)**
-- Avoid pinning (`==`) unless absolutely required
+Each tutorial folder **must include** a `pixi.toml` file that:
+- Specifies a **specific version** of corneto (not latest)
+- Includes all additional dependencies needed for the tutorial
+- Allows tutorials to be run independently of the main repository
 
-### ✅ Example `requirements.txt`
-```text
-scanpy>=1.9
-matplotlib>=3.5
+### ✅ Example `pixi.toml`
+```toml
+[workspace]
+name = "my_tutorial"
+channels = ["conda-forge"]
+platforms = ["linux-64", "osx-64", "osx-arm64", "win-64"]
+
+[dependencies]
+python = "3.10.*"
+matplotlib = ">=3.5"
+pip = "*"
+
+[pypi-dependencies]
+corneto = "==0.9.2"  # Use specific version, not latest
+scanpy = ">=1.9"
+# Add other dependencies as needed
 ```
 
-### ✅ Example `dependencies.yaml`
-```yaml
-dependencies:
-  - scanpy>=1.9
-  - matplotlib>=3.5
-```
-
-> ℹ️ If your tutorial has no extra dependencies, include an empty file or write:
-> `# No additional dependencies required`
+> ℹ️ **Important**: Always specify a specific corneto version (e.g., `==0.9.2`) to ensure reproducibility and independence from the main repository.
 
 ---
 
@@ -94,9 +99,17 @@ corneto/docs/tutorials/contrib/my_tutorial_name/
 ```
 Include:
 - `my_tutorial_name.ipynb`
-- `requirements.txt` or `dependencies.yaml` with **minimum versions**
+- `pixi.toml` with specific corneto version and dependencies
 
-### 6. Commit and Push
+### 6. Test Your Tutorial
+Before submitting, test your tutorial independently:
+```bash
+cd corneto/docs/tutorials/contrib/my_tutorial_name/
+pixi install
+pixi run jupyter notebook
+```
+
+### 7. Commit and Push
 
 Use **[Conventional Commits](https://www.conventionalcommits.org/)**:
 
@@ -106,7 +119,7 @@ git commit -m "docs(tutorial): add my_tutorial_name example notebook"
 git push origin contrib/my-tutorial-name
 ```
 
-### 7. Open a Pull Request
+### 8. Open a Pull Request
 
 Open a **PR against `dev`** with title:
 ```
@@ -118,6 +131,7 @@ In the PR description, include:
 - 🔧 Which CORNETO functionality it uses
 - 🧪 External dependencies (with versions)
 - 📊 Key outputs or takeaways
+- ✅ Confirm the tutorial runs independently with `pixi install && pixi run jupyter notebook`
 
 ---
 
@@ -129,19 +143,51 @@ In the PR description, include:
 - Ensure the notebook runs top to bottom without errors.
 - Avoid heavy or obscure dependencies unless necessary.
 - Use open source solvers such as `highs` or `scip` if possible.
+- **Pin a specific corneto version** in your `pixi.toml` for reproducibility.
+- Test your tutorial in isolation using `pixi install && pixi run jupyter notebook`.
 - Include a README in your tutorial folder with:
   - A brief description of the tutorial
-  - Instructions to run the notebook
+  - Instructions to run the notebook with pixi
   - Any additional notes or tips
 
 ---
 
 ## ✨ Recognition
 
-Accepted tutorials will:
-- Be moved to `accepted/`
+Merged tutorials will:
 - Be listed in CORNETO documentation
 - Credit the author in the README or release notes
+
+---
+
+## 🔧 For Developers: Automated Testing
+
+The `run_notebooks.py` script allows automated execution of tutorials for testing purposes:
+
+```bash
+# Run all tutorials (default behavior)
+poetry run python docs/tutorials/run_notebooks.py
+poetry run python docs/tutorials/run_notebooks.py --all
+
+# Run specific tutorials by name
+poetry run python docs/tutorials/run_notebooks.py carnival
+poetry run python docs/tutorials/run_notebooks.py carnival fba
+
+# Run tutorials by path
+poetry run python docs/tutorials/run_notebooks.py ../path/to/tutorial
+
+# List available tutorials
+poetry run python docs/tutorials/run_notebooks.py --list
+
+# Preview commands without executing (dry run)
+poetry run python docs/tutorials/run_notebooks.py carnival --dry-run
+```
+
+This script:
+- Installs the pixi environment for each tutorial
+- Executes notebooks using papermill
+- Saves outputs to a `build/` directory within each tutorial folder
+- Supports multiple tutorials at once and dry-run mode
 
 ---
 
