@@ -165,20 +165,29 @@ Merged tutorials will:
 The `run_notebooks.py` script allows automated execution of tutorials for testing purposes:
 
 ```bash
-# Run all tutorials
-python docs/tutorials/run_notebooks.py
+# Run all tutorials (default behavior)
+poetry run python docs/tutorials/run_notebooks.py
+poetry run python docs/tutorials/run_notebooks.py --all
 
-# Run a specific tutorial by name
-python docs/tutorials/run_notebooks.py carnival
+# Run specific tutorials by name
+poetry run python docs/tutorials/run_notebooks.py carnival
+poetry run python docs/tutorials/run_notebooks.py carnival fba
 
-# Run a tutorial by path
-python docs/tutorials/run_notebooks.py path/to/tutorial
+# Run tutorials by path
+poetry run python docs/tutorials/run_notebooks.py ../path/to/tutorial
+
+# List available tutorials
+poetry run python docs/tutorials/run_notebooks.py --list
+
+# Preview commands without executing (dry run)
+poetry run python docs/tutorials/run_notebooks.py carnival --dry-run
 ```
 
 This script:
 - Installs the pixi environment for each tutorial
 - Executes notebooks using papermill
 - Saves outputs to a `build/` directory within each tutorial folder
+- Supports multiple tutorials at once and dry-run mode
 
 ---
 
