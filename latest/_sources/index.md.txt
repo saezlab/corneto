@@ -31,18 +31,14 @@ html_theme.sidebar_secondary.remove: true
 ```{gallery-grid}
 :grid-columns: 1 2 2 4
 
-- header: "**Installation** {octicon}`terminal;1.2em;pst-color-secondary`"
+- header: "{octicon}`terminal;1.2em;pst-color-secondary` [**Installation**](install.html)"
   content: "Get started with CORNETO by following our installation guide for different setups and requirements."
-  website: install.html
-- header: "**User guide** {octicon}`repo;1.2em;pst-color-secondary`"
+- header: "{octicon}`repo;1.2em;pst-color-secondary` [**User guide**](guide)"
   content: "Learn what CORNETO is and how you can use it to create and modify biological network problems."
-  website: guide
-- header: "**Examples & Tutorials** {octicon}`light-bulb;1.2em;pst-color-secondary`"
+- header: "{octicon}`light-bulb;1.2em;pst-color-secondary` [**Examples & Tutorials**](tutorials)"
   content: "Examples using CORNETO to leverage the power of complex biological networks on real-world data."
-  website: tutorials
-- header: "**API Reference** {octicon}`stack;1.2em;pst-color-secondary`"
+- header: "{octicon}`stack;1.2em;pst-color-secondary` [**API Reference**](api)"
   content: "Python API reference for CORNETO."
-  website: api
 ```
 
 </div>
@@ -93,5 +89,6 @@ install
 guide/index
 tutorials/index
 api/index
+releases/index
 GitHub <https://github.com/saezlab/corneto>
 ```
