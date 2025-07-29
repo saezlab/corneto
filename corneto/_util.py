@@ -1,3 +1,4 @@
+import base64
 import contextlib
 import hashlib
 import json
@@ -5,6 +6,7 @@ import os
 import pickle
 import warnings
 from collections import OrderedDict
+from importlib.resources import files
 from itertools import filterfalse
 from typing import Any, Callable, Dict, Iterable, Iterator, Optional, Set, TypeVar
 
@@ -240,7 +242,7 @@ def _get_info() -> Dict[str, Dict]:
     return info
 
 
-def info():
+def info2():
     info = _get_info()
 
     if supports_html():
@@ -282,6 +284,56 @@ def info():
             title = v["title"]
             message = v["message"]
             print(f"{title}:", f"{message}")
+
+
+class Info:
+    def __init__(self):
+        self.info = _get_info()
+        self._html = self._build_html()
+
+    def _build_html(self):
+        # load & encode logo
+        logo_path = files("corneto").joinpath("resources/logo.png")
+        with open(logo_path, "rb") as f:
+            b64 = base64.b64encode(f.read()).decode("ascii")
+
+        # build rows
+        rows = []
+        for key, v in self.info.items():
+            msg = v["message"]
+            if key.endswith("_url"):
+                msg = f'<a href="{msg}">{msg}</a>'
+            rows.append(f"<tr><td>{v['title']}:</td><td style='text-align:left'>{msg}</td></tr>")
+
+        return f"""
+        <table style='background-color:rgba(0,0,0,0);'>
+          <tr>
+            <td style="min-width:85px">
+              <img src="data:image/png;base64,{b64}"
+                   style="width:100%;max-width:100px;" />
+            </td>
+            <td>
+              <table>{"".join(rows)}</table>
+            </td>
+          </tr>
+        </table>
+        """
+
+    def _mime_(self):
+        # Marimo’s #1 hook for rich HTML
+        return "text/html", self._html
+
+    def _repr_html_(self):
+        # IPython/Jupyter hook for the same HTML
+        return self._html
+
+    def __repr__(self):
+        # Plain‑text fallback
+        return "\n".join(f"{v['title']}: {v['message']}" for v in self.info.values())
+
+
+def info():
+    return Info()
 
 
 def _info():

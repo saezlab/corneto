@@ -659,4 +659,4 @@ class CarnivalILP(Method):
         Returns:
             A list of citation keys that can be used to lookup BibTeX entries.
         """
-        return ["liu2019expression", "rodriguez2024unified"]
+        return ["liu2019expression", "rodriguez2025unifying"]

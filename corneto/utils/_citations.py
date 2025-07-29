@@ -3,12 +3,34 @@
 This module provides utilities for handling and displaying citations in BibTeX format.
 """
 
+import html as _html
 import os
 import re
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Optional
 
-from IPython.display import HTML, display
+
+def _strip_tags(html: str) -> str:
+    # Simple fallback for REPLs/logs where HTML isn't rendered.
+    return re.sub(r"<[^>]+>", "", html)
+
+
+class _HTMLDisplayable:
+    def __init__(self, html: str, text_fallback: Optional[str] = None):
+        self._html = html
+        self._text = text_fallback or _strip_tags(html)
+
+    # IPython/Jupyter (and supported by marimo as well)
+    def _repr_html_(self) -> str:
+        return self._html
+
+    # marimo-specific rich display (mime, data) signature
+    def _mime_(self):
+        return "text/html", self._html
+
+    # Fallback for plain Python/REPL
+    def __repr__(self) -> str:
+        return self._text
 
 
 def unescape_latex(text: str) -> str:
@@ -317,24 +339,33 @@ def format_references_plaintext(keys: List[str]) -> str:
     return result
 
 
-def show_references(keys: List[str]) -> None:
-    """Display formatted citations in a Jupyter notebook.
+def show_references(keys: List[str]) -> _HTMLDisplayable:
+    """Return a rich, displayable object of formatted citations.
 
-    Args:
-        keys: List of citation keys to display.
+    Works in Jupyter (via _repr_html_()) and marimo (via _repr_html_() / _mime_()).
+    In plain Python/REPL, falls back to text via __repr__.
     """
     bibtex = get_bibtex_from_keys(keys)
     if not bibtex:
-        display(HTML("<p>No citations available.</p>"))
-        return
+        return _HTMLDisplayable("<p>No citations available.</p>", "No citations available.")
 
     citations = parse_bibtex(bibtex)
     html = render_references_html(citations)
-    display(HTML(html))
+
+    # Use the existing plaintext formatter for a good non-HTML fallback.
+    plaintext = format_references_plaintext(keys).strip()
+    if not plaintext:
+        # As an extra safeguard, strip the tags from HTML if plaintext is empty.
+        plaintext = _strip_tags(html)
+
+    return _HTMLDisplayable(html, plaintext)
 
 
-def show_bibtex(keys: List[str]) -> None:
-    """Display raw BibTeX entries in a nicely formatted and styled HTML block."""
+def show_bibtex(keys: List[str]) -> _HTMLDisplayable:
+    """Return a rich, displayable object containing raw BibTeX entries."""
     bibtex = get_bibtex_from_keys(keys)
     if not bibtex:
-        display(HTML("<p>No BibTeX entries available.</p>"))
+        return _HTMLDisplayable("<p>No BibTeX entries available.</p>", "No BibTeX entries available.")
+    escaped = _html.escape(bibtex)
+    html = f"<pre><code>{escaped}</code></pre>"
+    return _HTMLDisplayable(html, bibtex)

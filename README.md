@@ -1,12 +1,12 @@
 <div align="center">
-<img alt="corneto logo" src="docs/_static/logo/corneto-logo-512px.png" height="200"/>
+<img alt="corneto logo" src="https://raw.githubusercontent.com/saezlab/corneto-data/refs/heads/main/assets/logo/corneto-logo-512px.png" height="200"/>
 <br>
 <h3>CORNETO: Unified knowledge-driven network inference from omics data.</h3>
 
 
 <h4>
 
-[Preprint](https://doi.org/10.1101/2024.10.26.620390) | [Documentation](https://saezlab.github.io/corneto/dev) | [Notebooks](https://saezlab.github.io/corneto/dev/tutorials/index.html)
+[Preprint](https://www.nature.com/articles/s42256-025-01069-9) | [Documentation](https://saezlab.github.io/corneto/stable) | [Notebooks](https://saezlab.github.io/corneto/stable/tutorials/index.html)
 
 </h4>
 
@@ -64,7 +64,6 @@ CORNETO provides several optional dependency groups:
 - **`research`**: Full research stack with Gurobi, PICOS, visualization, and network tools
 - **`os`**: Open-source solvers (SCIP, HiGHS) with visualization and network tools
 - **`ml`**: Machine learning dependencies (JAX, Keras, scikit-learn)
-- **`vanilla`**: Minimal dependencies (same as base installation)
 
 Install any combination with:
 ```bash

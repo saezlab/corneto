@@ -1,21 +1,24 @@
 name: Build and Deploy Docs
 
 on:
-  # Build docs when dev branch is pushed
+  # 1) Build docs when dev branch is pushed, or when any tag is pushed
   push:
     branches:
       - dev
-  # Build docs after successful release (ensures release notes are available)
+    tags:
+      - '*'
+
+  # 2) Also build (and sync release notes) after your Publish Python Package workflow completes
   workflow_run:
     workflows: ["Publish Python Package"]
     types: [completed]
-    branches: [main]
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    # Only run if the upstream workflow succeeded (for workflow_run events)
+    # Only run on dev‑branch pushes, tag pushes, or successful workflow_run
     if: ${{ github.event_name == 'push' || github.event.workflow_run.conclusion == 'success' }}
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -23,7 +26,7 @@ jobs:
           fetch-depth: 0
           fetch-tags: true
           # For workflow_run events, checkout the commit that triggered the original workflow
-          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
+          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.ref }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -71,37 +74,29 @@ jobs:
         run: |
           set -e
           case "${GITHUB_REF}" in
+            refs/heads/dev)
+              echo "doc_version=latest" >> $GITHUB_OUTPUT
+              echo "deploy_to_stable=false" >> $GITHUB_OUTPUT
+              ;;
             refs/tags/*)
               version="${GITHUB_REF#refs/tags/}"
-              echo "Tag detected: ${version}"
-              deploy_to_stable="true"
-              is_release="true"
-              ;;
-            refs/heads/dev)
-              version="latest"
-              deploy_to_stable="false"
-              is_release="false"
+              echo "doc_version=${version}" >> $GITHUB_OUTPUT
+              echo "deploy_to_stable=true" >> $GITHUB_OUTPUT
               ;;
             *)
-              echo "Unexpected branch/ref: ${GITHUB_REF}, skipping deployment"
+              echo "Skipping docs for ref ${GITHUB_REF}" >&2
               exit 0
               ;;
           esac
-          echo "doc_version=${version}" >> $GITHUB_OUTPUT
-          echo "deploy_to_stable=${deploy_to_stable}" >> $GITHUB_OUTPUT
-          echo "is_release=${is_release}" >> $GITHUB_OUTPUT
 
       - name: Sync GitHub Releases to Docs
+        if: ${{ github.event_name == 'workflow_run' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -e
-          echo "Syncing GitHub releases to documentation..."
-          # Small delay to ensure GitHub release API is updated
-          if [ "${{ github.event_name }}" = "workflow_run" ]; then
-            echo "Waiting 30 seconds for GitHub release to be fully available..."
-            sleep 30
-          fi
+          echo "Syncing GitHub releases to documentation…"
+          sleep 30    # ensure release API is updated
           python scripts/sync_releases.py --repo saezlab/corneto --docs-dir docs
 
       - name: Build Docs
@@ -111,7 +106,7 @@ jobs:
           set -e
           poetry run sphinx-build -b html docs docs/_build/html
 
-      - name: Get GitHub Pages URL via GH CLI
+      - name: Get GitHub Pages URL via GH CLI
         id: pages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
