@@ -111,7 +111,7 @@ pip install corneto=={tag_name.lstrip("v")}
 def update_releases_index(releases: List[Dict], releases_dir: Path) -> None:
     """Update the releases index.md file."""
     # Sort releases by version (newest first)
-    sorted_releases = sorted(releases, key=lambda x: x["published_at"], reverse=True)
+    sorted_releases = sorted(releases, key=lambda x: x["published_at"], reverse=False)
 
     content = """# Release Notes
 
@@ -149,7 +149,7 @@ CORNETO follows [semantic versioning](https://semver.org/) with the following re
 
 ## Contributing to Releases
 
-For information on contributing to CORNETO and the release process, see our [contributing guidelines](https://github.com/saezlab/corneto/blob/main/CONTRIBUTING.md) and [release documentation](https://github.com/saezlab/corneto/blob/main/release.md).
+For information on contributing to CORNETO and the release process, see our [contributing guidelines](https://github.com/saezlab/corneto/blob/main/CONTRIBUTING.md) and [release documentation](https://github.com/saezlab/corneto/blob/main/RELEASE.md).
 """
 
     index_file = releases_dir / "index.md"
