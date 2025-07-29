@@ -307,4 +307,4 @@ class MultiSampleIMAT(MultiSampleFBA):
 
     @staticmethod
     def references():
-        return ["shlomi2008network", "rodriguez2024unified"]
+        return ["shlomi2008network", "rodriguez2025unifying"]

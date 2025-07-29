@@ -234,19 +234,14 @@ class Method(ABC):
         """Display formatted citations in a Jupyter notebook."""
         from corneto.utils._citations import show_references
 
-        show_references(cls.references())
+        return show_references(cls.references())
 
     @classmethod
     def show_bibtex(cls):
         """Display raw BibTeX entries in a formatted block for easy copying."""
         from corneto.utils._citations import show_bibtex
 
-        show_bibtex(cls.references())
-
-    @classmethod
-    def about(cls):
-        """Display information about the method in a Jupyter notebook."""
-        cls.show_references()
+        return show_bibtex(cls.references())
 
     @property
     def backend(self):
