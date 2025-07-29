@@ -31,13 +31,13 @@ html_theme.sidebar_secondary.remove: true
 ```{gallery-grid}
 :grid-columns: 1 2 2 4
 
-- header: "{octicon}`terminal;1.2em;pst-color-secondary` [**Installation**](install.html)"
+- header: "{octicon}`terminal;1.2em;pst-color-secondary` [**Installation**](install)"
   content: "Get started with CORNETO by following our installation guide for different setups and requirements."
-- header: "{octicon}`repo;1.2em;pst-color-secondary` [**User guide**](guide)"
+- header: "{octicon}`repo;1.2em;pst-color-secondary` [**User guide**](guide/index)"
   content: "Learn what CORNETO is and how you can use it to create and modify biological network problems."
-- header: "{octicon}`light-bulb;1.2em;pst-color-secondary` [**Examples & Tutorials**](tutorials)"
+- header: "{octicon}`light-bulb;1.2em;pst-color-secondary` [**Examples & Tutorials**](tutorials/index)"
   content: "Examples using CORNETO to leverage the power of complex biological networks on real-world data."
-- header: "{octicon}`stack;1.2em;pst-color-secondary` [**API Reference**](api)"
+- header: "{octicon}`stack;1.2em;pst-color-secondary` [**API Reference**](api/index)"
   content: "Python API reference for CORNETO."
 ```
 
@@ -57,15 +57,16 @@ CORNETO (Constraint-based Optimization for the Reconstruction of NETworks from O
 </div>
 
 
-To install CORNETO with open-source mathematical solvers (HIGHs and SCIP), use the following command:
+To install CORNETO, we recommend creating a conda environment and installing the research flavor:
 
+```bash
+conda create -n corneto python>=3.10
+conda activate corneto
+conda install python-graphviz
+pip install corneto[research]
 ```
-# To install the development version, including the open-source solvers HIGHs and SCIP, use:
-!pip install git+https://github.com/saezlab/corneto.git@dev scipy pyscipopt highspy cvxpy
 
-# If you have a license for Gurobi (free for academic use), you can install it with:
-pip install gurobipy
-```
+For minimal installation or other options, see our [installation guide](install).
 
 ## Acknowledgements
 
