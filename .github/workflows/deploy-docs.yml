@@ -1,14 +1,12 @@
 name: Build and Deploy Docs
 
 on:
-  # 1) Build docs when dev branch is pushed, or when any tag is pushed
   push:
     branches:
       - dev
+      - main
     tags:
       - '*'
-
-  # 2) Also build (and sync release notes) after your Publish Python Package workflow completes
   workflow_run:
     workflows: ["Publish Python Package"]
     types: [completed]
@@ -16,8 +14,9 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    # Only run on dev‑branch pushes, tag pushes, or successful workflow_run
-    if: ${{ github.event_name == 'push' || github.event.workflow_run.conclusion == 'success' }}
+    if: >
+      github.event_name == 'push' ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
 
     steps:
       - name: Checkout Code
@@ -25,137 +24,110 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
-          # For workflow_run events, checkout the commit that triggered the original workflow
           ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.ref }}
 
-      - name: Set up Python
+      - name: Set up Python & Graphviz
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - uses: ts-graphviz/setup-graphviz@v2
 
-      - name: Setup Graphviz
-        uses: ts-graphviz/setup-graphviz@v2
-
-      - name: Cache Poetry packages
+      - name: Cache Poetry & pip
         uses: actions/cache@v3
         with:
-          path: ~/.cache/pypoetry
+          path: |
+            ~/.cache/pypoetry
+            ~/.cache/pip
           key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
-
-      - name: Cache pip packages
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/poetry.lock') }}
 
       - name: Install Dependencies
         env:
           POETRY_DYNAMIC_VERSIONING_COMMANDS: install,build
         run: |
-          set -e
           pip install poetry
           poetry self add "poetry-dynamic-versioning[plugin]"
           poetry install --with dev,docs
 
-      - name: Debug git state and version
+      - name: Debug Git state and version
         run: |
-          echo "=== Git State Debug ==="
-          echo "Current commit: $(git rev-parse HEAD)"
-          echo "Current ref: $GITHUB_REF"
-          echo "Current ref name: $GITHUB_REF_NAME"
-          echo "Tag at HEAD: $(git describe --tags --exact-match HEAD 2>/dev/null || echo 'No exact tag match')"
-          echo "Latest tag: $(git describe --tags --abbrev=0 2>/dev/null || echo 'No tags found')"
-          echo "=== Version Debug ==="
+          echo "=== Git State ==="
+          echo "Commit:     $(git rev-parse HEAD)"
+          echo "Ref:        $GITHUB_REF"
+          echo "Ref name:   $GITHUB_REF_NAME"
+          echo "Exact tag?: $(git describe --tags --exact-match HEAD 2>/dev/null || echo 'none')"
+          echo "Latest tag: $(git describe --tags --abbrev=0 2>/dev/null || echo 'none')"
+          echo "=== Project Version ==="
           poetry version
-          echo "CORNETO __version__: $(poetry run python -c 'import corneto; print(corneto.__version__)')"
+          poetry run python -c 'import corneto; print(corneto.__version__)'
 
-      - name: Determine doc version and deployment targets
+      - name: Determine version_folder
         id: set_version
         run: |
-          set -e
           case "${GITHUB_REF}" in
             refs/heads/dev)
-              echo "doc_version=latest" >> $GITHUB_OUTPUT
-              echo "deploy_to_stable=false" >> $GITHUB_OUTPUT
+              echo "version_folder=latest" >> $GITHUB_OUTPUT
+              ;;
+            refs/heads/main)
+              echo "version_folder=stable" >> $GITHUB_OUTPUT
               ;;
             refs/tags/*)
-              version="${GITHUB_REF#refs/tags/}"
-              echo "doc_version=${version}" >> $GITHUB_OUTPUT
-              echo "deploy_to_stable=true" >> $GITHUB_OUTPUT
+              v="${GITHUB_REF#refs/tags/}"
+              echo "version_folder=${v}" >> $GITHUB_OUTPUT
               ;;
             *)
-              echo "Skipping docs for ref ${GITHUB_REF}" >&2
+              echo "No docs to deploy for ${GITHUB_REF}" >&2
               exit 0
               ;;
           esac
 
       - name: Sync GitHub Releases to Docs
-        if: ${{ github.event_name == 'workflow_run' }}
+        if: github.event_name == 'workflow_run'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          set -e
-          echo "Syncing GitHub releases to documentation…"
-          sleep 30    # ensure release API is updated
+          sleep 30
           python scripts/sync_releases.py --repo saezlab/corneto --docs-dir docs
 
       - name: Build Docs
         env:
-          SPHINX_VERSION_MATCH: ${{ steps.set_version.outputs.doc_version }}
-        run: |
-          set -e
-          poetry run sphinx-build -b html docs docs/_build/html
+          SPHINX_VERSION_MATCH: ${{ steps.set_version.outputs.version_folder }}
+        run: poetry run sphinx-build -b html docs docs/_build/html
 
-      - name: Get GitHub Pages URL via GH CLI
-        id: pages
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          echo "GH CLI version: $(gh --version)"
-          echo "Fetching Pages URL for ${{ github.repository }}…"
-          if page_url=$(gh api \
-            -H "Accept: application/vnd.github.v3+json" \
-            /repos/${{ github.repository }}/pages \
-            --jq .html_url 2>/dev/null); then
-            echo "PAGE_URL=${page_url}" >> $GITHUB_ENV
-          else
-            default_url="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}"
-            echo "PAGE_URL=${default_url}" >> $GITHUB_ENV
-          fi
-
-      - name: Create root redirect to latest
-        run: |
-          set -e
-          mkdir -p temp_root
-          touch temp_root/.nojekyll
-          if [ -f docs/custom-index.html ]; then
-            cp docs/custom-index.html temp_root/index.html
-          else
-            cp docs/default-index.html temp_root/index.html
-          fi
-
-      - name: Deploy content to root
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./temp_root
-          destination_dir: ./
-          keep_files: true
-
-      - name: Deploy versioned docs
+      - name: Deploy “latest” docs
+        if: ${{ steps.set_version.outputs.version_folder == 'latest' }}
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs/_build/html
-          destination_dir: ${{ steps.set_version.outputs.doc_version }}
+          destination_dir: latest
 
-      - name: Deploy tagged version to stable folder
-        if: ${{ steps.set_version.outputs.deploy_to_stable == 'true' }}
+      - name: Deploy “stable” docs
+        if: ${{ steps.set_version.outputs.version_folder == 'stable' }}
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs/_build/html
           destination_dir: stable
 
-      - name: Clean up temporary files
-        run: rm -rf temp_root
+      - name: Deploy versioned docs for tag
+        if: ${{ startsWith(github.ref, 'refs/tags/') }}
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/_build/html
+          destination_dir: ${{ steps.set_version.outputs.version_folder }}
+          #keep_files: true
+
+      - name: Prepare root redirect
+        run: |
+          mkdir -p temp_root
+          touch temp_root/.nojekyll
+          cp docs/custom-index.html temp_root/index.html
+
+      - name: Deploy root redirect
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: temp_root
+          destination_dir: ./
+          keep_files: true
