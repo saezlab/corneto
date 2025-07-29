@@ -130,8 +130,8 @@ def clean_release_body(body: Optional[str]) -> str:
     body = re.sub(r"\[([^\]]+)\]\(\/([^)]+)\)", rf"[\\1]({repo_base}/\\2)", body)
 
     # Ensure proper spacing around headers
-    body = re.sub(r"\n(#{1,6}\s)", r"\n\n\\1", body)
-    body = re.sub(r"^(#{1,6}\s)", r"\\1", body)  # Don't add space at start
+    body = re.sub(r"\n(#{1,6}\s)", r"\n\n\1", body)
+    body = re.sub(r"^(#{1,6}\s)", r"\1", body)  # Don't add space at start
 
     return body.strip()
 
