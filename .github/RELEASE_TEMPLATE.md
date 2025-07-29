@@ -24,8 +24,8 @@ pip install corneto==VERSION_PLACEHOLDER
 ## 📖 Documentation
 
 - [📚 Documentation](https://saezlab.github.io/corneto/)
-- [🚀 Getting Started](https://saezlab.github.io/corneto/install.html)
-- [📑 API Reference](https://saezlab.github.io/corneto/api/)
+- [🚀 Getting Started](https://saezlab.github.io/corneto/stable/install.html)
+- [📑 API Reference](https://saezlab.github.io/corneto/stable/api)
 
 <!-- The automated release notes will be appended below this line -->
 ---
