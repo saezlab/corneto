@@ -81,7 +81,6 @@ jobs:
           esac
 
       - name: Sync GitHub Releases to Docs
-        if: github.event_name == 'workflow_run'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
