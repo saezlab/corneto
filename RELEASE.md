@@ -10,7 +10,7 @@ To create a new release:
 
 1. **Create and push a Git tag** following semantic versioning:
    ```bash
-   git tag v1.2.3
+   git tag -a v1.2.3 -m "v1.2.3"
    git push origin v1.2.3
    ```
 
@@ -40,7 +40,7 @@ git checkout main
 git pull origin main
 
 # Create a release tag (use semantic versioning)
-git tag v0.2.0
+git tag -a v0.2.0 -m "v0.2.0"
 
 # Push the tag to trigger the release pipeline
 git push origin v0.2.0
