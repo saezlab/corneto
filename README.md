@@ -6,7 +6,7 @@
 
 <h4>
 
-[Preprint](https://www.nature.com/articles/s42256-025-01069-9) | [Documentation](https://saezlab.github.io/corneto/stable) | [Notebooks](https://saezlab.github.io/corneto/stable/tutorials/index.html)
+[Paper](https://www.nature.com/articles/s42256-025-01069-9) | [Documentation](https://saezlab.github.io/corneto/stable) | [Notebooks](https://saezlab.github.io/corneto/stable/tutorials/index.html)
 
 </h4>
 
@@ -30,7 +30,7 @@ CORNETO is a Python framework for inferring biological networks from omics data 
 | 🎯 **Exact, solver-backed answers** | LP/MILP formulations guarantee optimality |
 | 📊 **Multi-sample power** | Borrow strength across conditions for cleaner, comparable subnetworks. |
 | 🔧 **Modular & extensible** | Plug-in new constraints, priors, or scoring functions in a few lines of code. |
-| ⚡ **Blazing-fast** | Supports CVXPY and PICOS backends with dozens of solvers. |
+| ⚡ **Multi-backend** | Supports CVXPY and PICOS backends with dozens of mathematical solvers. |
 
 
 

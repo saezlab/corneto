@@ -68,9 +68,9 @@ def format(session: nox.Session) -> None:
 
 @nox.session(python=PYTHON_VERSIONS)
 def typing(session: nox.Session) -> None:
-    """Type‑check with *mypy*."""
+    """Type‑check with *pyrefly*."""
     _install(session, extras=["dev"])
-    session.run("mypy", "corneto", *session.posargs)
+    session.run("pyrefly", "check", "corneto", *session.posargs)
 
 
 # -----------------------------------------------------------------------------
