@@ -187,7 +187,7 @@ We use [Nox](https://nox.thea.codes/) to standardize testing, linting, and docum
   nox -s format
   ```
 
-- **Type Checking**: Run static type analysis with mypy
+- **Type Checking**: Run static type analysis with pyrefly
   ```bash
   nox -s typing
   ```
@@ -253,12 +253,7 @@ We provide several nox sessions for different documentation needs:
   nox -s docs_serve
   ```
 
-- **Generate switcher**: Generate version switcher JSON for Read-the-Docs
-  ```bash
-  nox -s generate_switcher
-  ```
-
-- **Full local check**: Build docs and generate switcher
+- **Full local check**: Build HTML documentation
   ```bash
   nox -s docs_full
   ```

@@ -149,3 +149,47 @@ The release workflow (`.github/workflows/build-and-publish.yml`) is triggered by
 - **`main`**: Stable releases and release tags
 - **`dev`**: Active development branch
 - Pull requests: `dev` → `main` for releases
+
+### Documentation Version Switcher
+
+The documentation uses a centralized version switcher that allows users to navigate between different documentation versions (stable, latest, and specific releases). This system is designed to work across all deployed documentation versions automatically.
+
+#### Architecture
+
+The version switcher uses an **external, centrally-managed approach**:
+
+1. **External Storage**: The `switcher.json` file is maintained in a separate repository: [`saezlab/corneto-data`](https://github.com/saezlab/corneto-data)
+   - Located at: `assets/docs/switcher.json`
+   - Contains entries for all available documentation versions
+   - Each entry specifies: version name, version identifier, and documentation URL
+
+2. **Dynamic Fetching**: Each documentation build fetches the switcher dynamically from:
+   ```
+   https://raw.githubusercontent.com/saezlab/corneto-data/refs/heads/main/assets/docs/switcher.json
+   ```
+   - A timestamp parameter is added to bypass browser caching
+   - Configured in `docs/conf.py` via the `_switcher_url_with_ts()` function
+
+3. **Automated Updates**: When documentation is deployed to GitHub Pages:
+   - The `page_build` event triggers (`.github/workflows/dispatch-after-pages-build.yml`)
+   - A `repository_dispatch` event is sent to the `corneto-data` repository
+   - The `corneto-data` repository automatically updates `switcher.json` with the new version
+   - Requires the `SWITCHER_PAT` secret (Personal Access Token) for cross-repository access
+
+4. **Version Mapping**: Documentation deployments use the following version identifiers:
+   - `dev` branch → deployed as `"latest"`
+   - `main` branch → deployed as `"stable"` (typically marked as preferred)
+   - Git tags (e.g., `v1.0.0`) → deployed using the tag name
+
+   The `SPHINX_VERSION_MATCH` environment variable (set in `.github/workflows/deploy-docs.yml`) tells the PyData Sphinx Theme which version is currently being viewed.
+
+#### Benefits of This Approach
+
+- **Central Management**: One `switcher.json` serves all deployed documentation versions
+- **Automatic Updates**: Old deployed docs automatically show new versions in the switcher dropdown
+- **No Regeneration Needed**: Previously deployed documentation doesn't need to be rebuilt to show new versions
+- **Consistency**: All documentation versions display the same version list
+
+#### Manual Switcher Updates
+
+If the automatic workflow fails or manual intervention is needed, the `switcher.json` file can be updated directly in the [`saezlab/corneto-data`](https://github.com/saezlab/corneto-data) repository at `assets/docs/switcher.json`.
