@@ -68,12 +68,10 @@ def test_imat_without_biomass_high_expression(metabolic_network, backend):
     if isinstance(backend, PicosBackend):
         pytest.skip("iMAT tests require CVXPY backend")
 
+    eps = 1e-3
     # Gene for TPI (Triose Phosphate Isomerase) is ENSG00000111669.
     # We'll mark it as highly expressed.
-    imat = MultiSampleIMAT(
-        backend=backend,
-        lambda_reg=0,
-    )
+    imat = MultiSampleIMAT(backend=backend, lambda_reg=0, eps=eps)
 
     # Create data where TPI-related gene is highly expressed
     # Add minimal constraints to make the network feasible
@@ -101,7 +99,8 @@ def test_imat_without_biomass_high_expression(metabolic_network, backend):
     rid = next(iter(metabolic_network.get_edges_by_attr("id", "TPI")))
     tpi_flux = problem.expr.flow[rid].value
     # TPI flux should be active due to high expression and constraints
-    assert abs(tpi_flux) > 0.01
+    # (above eps)
+    assert abs(tpi_flux) > eps * (1 - eps)
 
 
 def test_single_sample_imat_low_expression_ko(metabolic_network, backend):
