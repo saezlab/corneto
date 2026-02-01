@@ -7,6 +7,16 @@ import sys
 from pathlib import Path
 
 
+def find_repo_root(start: Path) -> Path:
+    """Find repo root by walking up until pyproject.toml is found."""
+    for parent in [start, *start.parents]:
+        if (parent / "pyproject.toml").is_file():
+            return parent
+    raise FileNotFoundError(
+        "Could not find pyproject.toml when locating repo root. Run from the CORNETO repo or pass an explicit path."
+    )
+
+
 def run(cmd, cwd: Path, dry_run: bool = False):
     """Run a command list in cwd, exiting on failure (or just print with --dry-run)."""
     print(f"> {' '.join(cmd)}  (cwd={cwd.name})")
@@ -14,13 +24,27 @@ def run(cmd, cwd: Path, dry_run: bool = False):
         subprocess.run(cmd, cwd=str(cwd), check=True)
 
 
-def process_tutorial(proj: Path, dry_run: bool = False):
+def process_tutorial(
+    proj: Path,
+    dry_run: bool = False,
+    rewrite: bool = False,
+    editable_corneto: bool = False,
+    corneto_root: Path | None = None,
+):
     """Install env, bootstrap tools, and execute notebooks in proj."""
     print(f"\n=== Processing tutorial: {proj.name} ===")
     # 1) Allow post-link scripts (Graphviz etc.)
     run(["pixi", "config", "set", "--local", "run-post-link-scripts", "insecure"], cwd=proj, dry_run=dry_run)
     # 2) Build/update env from pixi.toml
     run(["pixi", "install"], cwd=proj, dry_run=dry_run)
+    # 2b) Optionally install local CORNETO source (editable) into the env
+    if editable_corneto:
+        root = corneto_root or find_repo_root(Path(__file__).resolve())
+        run(
+            ["pixi", "run", "python", "-m", "pip", "install", "-e", str(root)],
+            cwd=proj,
+            dry_run=dry_run,
+        )
     # 3) Bootstrap kernel & notebook tools
     run(
         ["pixi", "run", "python", "-m", "pip", "install", "--upgrade", "ipykernel", "papermill", "nbclient"],
@@ -29,10 +53,10 @@ def process_tutorial(proj: Path, dry_run: bool = False):
     )
     # 4) Execute each notebook via papermill
     build_dir = proj / "build"
-    if not dry_run:
+    if not dry_run and not rewrite:
         build_dir.mkdir(exist_ok=True)
     for nb in sorted(proj.glob("*.ipynb")):
-        out = build_dir / nb.name
+        out = nb if rewrite else (build_dir / nb.name)
         run(["pixi", "run", "python", "-m", "papermill", str(nb), str(out)], cwd=proj, dry_run=dry_run)
 
 
@@ -94,6 +118,21 @@ def parse_args():
         action="store_true",
         help="Print the commands that would be executed, but don't actually run anything.",
     )
+    parser.add_argument(
+        "--rewrite",
+        action="store_true",
+        help="Rewrite notebooks in place instead of writing to build/.",
+    )
+    parser.add_argument(
+        "--editable-corneto",
+        action="store_true",
+        help="Install the local CORNETO source (editable) into each tutorial env.",
+    )
+    parser.add_argument(
+        "--corneto-root",
+        type=Path,
+        help="Path to the CORNETO repo root (used with --editable-corneto).",
+    )
     return parser.parse_args()
 
 
@@ -132,7 +171,13 @@ def main() -> int:
         return 1
 
     for proj in projects:
-        process_tutorial(proj, dry_run=args.dry_run)
+        process_tutorial(
+            proj,
+            dry_run=args.dry_run,
+            rewrite=args.rewrite,
+            editable_corneto=args.editable_corneto,
+            corneto_root=args.corneto_root,
+        )
 
     print("\n✅ Done.")
     return 0

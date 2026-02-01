@@ -3,6 +3,8 @@ from collections import deque
 
 import numpy as np
 
+from corneto.graph import Attr, EdgeType
+
 try:
     import pandas as pd
 
@@ -154,6 +156,103 @@ def index_selector():
     return IndexSelector
 
 
+def _coerce_interaction_sign(value, default=1.0):
+    if value is None:
+        return float(default)
+    try:
+        v = float(value)
+    except (TypeError, ValueError):
+        return float(default)
+    return 1.0 if v >= 0 else -1.0
+
+
+def _edge_interaction_sign(G, source, target, interaction_attribute="interaction", default=1.0):
+    for idx, (s, t) in G.edges(vertices=[target]):
+        attr = G.get_attr_edge(idx)
+        etype = attr.get_attr(Attr.EDGE_TYPE, EdgeType.DIRECTED.value)
+        if etype == EdgeType.UNDIRECTED.value:
+            continue
+        if (source == s or source in s) and (target == t or target in t):
+            return _coerce_interaction_sign(attr.get(interaction_attribute, default), default=default)
+    return _coerce_interaction_sign(default, default=default)
+
+
+def signed_dense():
+    keras = _load_keras()
+
+    @keras.saving.register_keras_serializable(package="Custom")
+    class SignedDense(keras.layers.Layer):
+        def __init__(
+            self,
+            units,
+            kernel_sign,
+            activation=None,
+            kernel_regularizer=None,
+            bias_regularizer=None,
+            **kwargs,
+        ):
+            super().__init__(**kwargs)
+            self.units = int(units)
+            self.kernel_sign = kernel_sign
+            self.activation = keras.activations.get(activation)
+            self.kernel_regularizer = keras.regularizers.get(kernel_regularizer)
+            self.bias_regularizer = keras.regularizers.get(bias_regularizer)
+
+        def build(self, input_shape):
+            input_dim = int(input_shape[-1])
+            ks = np.asarray(self.kernel_sign, dtype="float32")
+            if ks.ndim == 1:
+                if ks.shape[0] != input_dim:
+                    raise ValueError("kernel_sign length must match input dimension")
+                ks = ks.reshape((input_dim, 1))
+            elif ks.ndim == 2:
+                if ks.shape[0] != input_dim:
+                    raise ValueError("kernel_sign first dimension must match input dimension")
+                if ks.shape[1] != self.units:
+                    raise ValueError("kernel_sign second dimension must match units")
+            else:
+                raise ValueError("kernel_sign must be a 1D or 2D array")
+
+            self.kernel_sign_tensor = keras.ops.convert_to_tensor(ks)
+            self.kernel_raw = self.add_weight(
+                name="kernel_raw",
+                shape=(input_dim, self.units),
+                initializer="glorot_uniform",
+                regularizer=self.kernel_regularizer,
+                trainable=True,
+            )
+            self.bias = self.add_weight(
+                name="bias",
+                shape=(self.units,),
+                initializer="zeros",
+                regularizer=self.bias_regularizer,
+                trainable=True,
+            )
+            super().build(input_shape)
+
+        def call(self, inputs):
+            kernel = self.kernel_sign_tensor * keras.ops.softplus(self.kernel_raw)
+            outputs = keras.ops.matmul(inputs, kernel) + self.bias
+            if self.activation is not None:
+                return self.activation(outputs)
+            return outputs
+
+        def get_config(self):
+            config = super().get_config()
+            config.update(
+                {
+                    "units": self.units,
+                    "kernel_sign": np.asarray(self.kernel_sign, dtype="float32").tolist(),
+                    "activation": keras.activations.serialize(self.activation),
+                    "kernel_regularizer": keras.regularizers.serialize(self.kernel_regularizer),
+                    "bias_regularizer": keras.regularizers.serialize(self.bias_regularizer),
+                }
+            )
+            return config
+
+    return SignedDense
+
+
 def build_dagnn(
     G,
     input_nodes,
@@ -171,6 +270,8 @@ def build_dagnn(
     activation_attribute="activation",
     default_hidden_activation="sigmoid",
     default_output_activation="sigmoid",
+    force_sign=True,
+    interaction_attribute="interaction",
     verbose=False,
 ):
     keras = _load_keras()
@@ -186,28 +287,39 @@ def build_dagnn(
         kernel_reg = keras.regularizers.l1_l2(l1=bias_reg_l1, l2=bias_reg_l2)
     if bias_reg_l1 > 0 or bias_reg_l2 > 0:
         bias_reg = keras.regularizers.l1_l2(l1=kernel_reg_l1, l2=kernel_reg_l2)
+    SignedDense = signed_dense() if force_sign else None
     neurons = {}
     for v in vertices:
         neuron_inputs = []
         in_v_inputs = []
+        in_v_inputs_idx = []
         in_v_neurons = []
         predecessors = list(G.predecessors(v))
         if len(predecessors) == 0:
             continue
+        pred_signs = {}
         for par in predecessors:
+            pred_signs[par] = _edge_interaction_sign(
+                G,
+                par,
+                v,
+                interaction_attribute=interaction_attribute,
+                default=1.0,
+            )
             if par in input_index:
-                in_v_inputs.append(input_index[par])
+                in_v_inputs.append(par)
+                in_v_inputs_idx.append(input_index[par])
             else:
                 in_v_neurons.append(par)
         # Collect inputs from the input layer
-        if len(in_v_inputs) > 1:
+        if len(in_v_inputs_idx) > 1:
             # inputs = _concat_indexes(input_layer, in_v_inputs, keras=k)
-            inputs = index_selector()(in_v_inputs)(input_layer)
-            if dropout > 0 and len(in_v_inputs) >= min_inputs_for_dropout:
+            inputs = index_selector()(in_v_inputs_idx)(input_layer)
+            if dropout > 0 and len(in_v_inputs_idx) >= min_inputs_for_dropout:
                 inputs = keras.layers.Dropout(dropout)(inputs)
             neuron_inputs.append(inputs)
-        elif len(in_v_inputs) == 1:
-            j = in_v_inputs[0]
+        elif len(in_v_inputs_idx) == 1:
+            j = in_v_inputs_idx[0]
             neuron_inputs.append(input_layer[:, j : (j + 1)])
         # Collect inputs from other neurons
         if len(in_v_neurons) > 1:
@@ -228,13 +340,24 @@ def build_dagnn(
         # Create the neuron for the current vertex
         default_act = default_hidden_activation if v not in output_nodes else default_output_activation
         act = G.get_attr_vertex(v).get(activation_attribute, default_act)
-        neuron = keras.layers.Dense(
-            1,
-            activation=act,
-            kernel_regularizer=kernel_reg,
-            bias_regularizer=bias_reg,
-            name=v,
-        )
+        if force_sign:
+            sign_vector = [pred_signs[p] for p in in_v_inputs] + [pred_signs[p] for p in in_v_neurons]
+            neuron = SignedDense(
+                1,
+                kernel_sign=np.asarray(sign_vector, dtype="float32"),
+                activation=act,
+                kernel_regularizer=kernel_reg,
+                bias_regularizer=bias_reg,
+                name=v,
+            )
+        else:
+            neuron = keras.layers.Dense(
+                1,
+                activation=act,
+                kernel_regularizer=kernel_reg,
+                bias_regularizer=bias_reg,
+                name=v,
+            )
         x = neuron(neuron_inputs)
         neurons[v] = x
         if verbose:
