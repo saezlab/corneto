@@ -181,13 +181,23 @@ poetry run python docs/tutorials/run_notebooks.py --list
 
 # Preview commands without executing (dry run)
 poetry run python docs/tutorials/run_notebooks.py carnival --dry-run
+
+# Rewrite notebooks in place (overwrites original .ipynb files)
+poetry run python docs/tutorials/run_notebooks.py carnival --rewrite
+
+# Use local CORNETO source (editable) instead of the pinned PyPI version
+poetry run python docs/tutorials/run_notebooks.py carnival --editable-corneto
+
+# Use a specific CORNETO checkout as the source
+poetry run python docs/tutorials/run_notebooks.py carnival --editable-corneto --corneto-root /path/to/corneto
 ```
 
 This script:
 - Installs the pixi environment for each tutorial
 - Executes notebooks using papermill
-- Saves outputs to a `build/` directory within each tutorial folder
-- Supports multiple tutorials at once and dry-run mode
+- Saves outputs to a `build/` directory within each tutorial folder by default
+- Supports multiple tutorials at once, dry-run mode, in-place rewriting with `--rewrite`,
+  and testing against local source with `--editable-corneto`
 
 ---
 

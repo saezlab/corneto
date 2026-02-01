@@ -57,7 +57,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/index';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/saezlab/corneto-data/refs/heads/main/assets/docs/switcher.json?ts=1769975710';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/saezlab/corneto-data/refs/heads/main/assets/docs/switcher.json?ts=1769982755';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
@@ -452,6 +452,26 @@
 </ul>
 </div>
 </section>
+<section id="running-tutorials-locally">
+<h2>Running tutorials locally<a class="headerlink" href="#running-tutorials-locally" title="Link to this heading">#</a></h2>
+<p>Each tutorial is self-contained and includes its own <code class="docutils literal notranslate"><span class="pre">pixi.toml</span></code>. To execute all notebooks via Pixi:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Run all tutorials (outputs go to build/)</span>
+poetry<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>docs/tutorials/run_notebooks.py
+
+<span class="c1"># Run a single tutorial by folder name</span>
+poetry<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>docs/tutorials/run_notebooks.py<span class="w"> </span>ml
+
+<span class="c1"># Rewrite notebooks in place (overwrites original .ipynb files)</span>
+poetry<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>docs/tutorials/run_notebooks.py<span class="w"> </span>ml<span class="w"> </span>--rewrite
+
+<span class="c1"># Use local CORNETO source instead of the pinned PyPI version</span>
+poetry<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>docs/tutorials/run_notebooks.py<span class="w"> </span>ml<span class="w"> </span>--editable-corneto
+
+<span class="c1"># Point to a specific CORNETO checkout</span>
+poetry<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>docs/tutorials/run_notebooks.py<span class="w"> </span>ml<span class="w"> </span>--editable-corneto<span class="w"> </span>--corneto-root<span class="w"> </span>/path/to/corneto
+</pre></div>
+</div>
+</section>
 </section>
 
 
@@ -502,6 +522,7 @@
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#additional-tutorials">Additional Tutorials</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#running-tutorials-locally">Running tutorials locally</a></li>
 </ul>
   </nav></div>
 
