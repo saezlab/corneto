@@ -156,34 +156,26 @@ The documentation uses a centralized version switcher that allows users to navig
 
 #### Architecture
 
-The version switcher uses an **external, centrally-managed approach**:
+The version switcher uses a **single, centrally-updated file hosted on GitHub Pages**:
 
-1. **External Storage**: The `switcher.json` file is maintained in a separate repository: [`saezlab/corneto-data`](https://github.com/saezlab/corneto-data)
-   - Located at: `assets/docs/switcher.json`
-   - Contains entries for all available documentation versions
-   - Each entry specifies: version name, version identifier, and documentation URL
-
-2. **Dynamic Fetching**: Each documentation build fetches the switcher dynamically from:
-   ```
-   https://raw.githubusercontent.com/saezlab/corneto-data/refs/heads/main/assets/docs/switcher.json
-   ```
+1. **Switcher Hosting**: `switcher.json` is deployed to the root of the docs site
+   - URL: `https://<org>.github.io/<repo>/switcher.json`
+   - This URL is configured in `docs/conf.py` via `_switcher_url_with_ts()`
    - A timestamp parameter is added to bypass browser caching
-   - Configured in `docs/conf.py` via the `_switcher_url_with_ts()` function
 
-3. **Automated Updates**: When documentation is deployed to GitHub Pages:
-   - The `page_build` event triggers (`.github/workflows/dispatch-after-pages-build.yml`)
-   - A `repository_dispatch` event is sent to the `corneto-data` repository
-   - The `corneto-data` repository automatically updates `switcher.json` with the new version
-   - Requires the `SWITCHER_PAT` secret (Personal Access Token) for cross-repository access
+2. **Automated Updates**: When documentation is deployed to GitHub Pages:
+   - The docs workflow generates `switcher.json` (`scripts/generate_switcher.py`)
+   - It is published to the site root alongside the redirect page
+   - No cross-repository dispatch or PAT is required
 
-4. **Version Mapping**: Documentation deployments use the following version identifiers:
+3. **Version Mapping**: Documentation deployments use the following version identifiers:
    - `dev` branch → deployed as `"latest"`
    - `main` branch → deployed as `"stable"` (typically marked as preferred)
    - Git tags (e.g., `v1.0.0`) → deployed using the tag name
 
    The `SPHINX_VERSION_MATCH` environment variable (set in `.github/workflows/deploy-docs.yml`) tells the PyData Sphinx Theme which version is currently being viewed.
 
-5. **Deployment Behavior (Why `destination_dir` is used without `keep_files`)**:
+4. **Deployment Behavior (Why `destination_dir` is used without `keep_files`)**:
    - Each docs build replaces only its own folder (`latest/`, `stable/`, or `vX.Y.Z/`) on the `gh-pages` branch.
    - This ensures clean regeneration for a given version (no mixing of old/new files) while leaving other versions untouched.
    - The root redirect is deployed with `keep_files: true` so it doesn’t delete any versioned folders.
@@ -197,4 +189,4 @@ The version switcher uses an **external, centrally-managed approach**:
 
 #### Manual Switcher Updates
 
-If the automatic workflow fails or manual intervention is needed, the `switcher.json` file can be updated directly in the [`saezlab/corneto-data`](https://github.com/saezlab/corneto-data) repository at `assets/docs/switcher.json`.
+If the automatic workflow fails or manual intervention is needed, re-run the docs workflow or regenerate and deploy the root artifacts (redirect + `switcher.json`) using the same workflow steps.

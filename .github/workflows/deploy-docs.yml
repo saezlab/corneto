@@ -122,6 +122,9 @@ jobs:
           mkdir -p temp_root
           touch temp_root/.nojekyll
           cp docs/custom-index.html temp_root/index.html
+      - name: Generate switcher.json
+        run: |
+          python scripts/generate_switcher.py --output temp_root/switcher.json
 
       - name: Deploy root redirect
         uses: peaceiris/actions-gh-pages@v4

@@ -6,7 +6,6 @@ https://www.sphinx-doc.org/en/master/usage/configuration.html
 """
 
 import os
-import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -57,29 +56,14 @@ myst_enable_extensions = [
 ]
 
 
-def _get_switcher_url():
-    # Try to grab the current HEAD SHA of the corneto-data submodule (or clone),
-    # then point raw.githubusercontent.com at that SHA.
-    try:
-        sha = (
-            subprocess.check_output(
-                [
-                    "git",
-                    "ls-remote",
-                    "https://github.com/saezlab/corneto-data.git",
-                    "HEAD",
-                ]
-            )
-            .decode("utf-8")
-            .split()[0]
-        )
-        return f"https://raw.githubusercontent.com/saezlab/corneto-data/{sha}/assets/docs/switcher.json"
-    except Exception:
-        return "https://raw.githubusercontent.com/saezlab/corneto-data/refs/heads/main/assets/docs/switcher.json"
+def _get_docs_base_url():
+    repo = os.environ.get("GITHUB_REPOSITORY", "saezlab/corneto")
+    owner, name = repo.split("/", 1)
+    return f"https://{owner}.github.io/{name}"
 
 
 def _switcher_url_with_ts():
-    base = "https://raw.githubusercontent.com/saezlab/corneto-data/refs/heads/main/assets/docs/switcher.json"
+    base = f"{_get_docs_base_url()}/switcher.json"
     ts = int(datetime.utcnow().timestamp())
     return f"{base}?ts={ts}"
 
@@ -212,8 +196,8 @@ html_show_sourcelink = False
 autosectionlabel_prefix_document = True
 
 
-# Note: switcher.json is now served from external URL, no need to copy locally
-# html_extra_path = ["switcher.json"]
+# Note: switcher.json is generated during CI and deployed to the docs root.
+# It is not copied into the build output here.
 
 # Theme-specific options.
 html_theme_options = {
