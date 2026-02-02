@@ -183,6 +183,11 @@ The version switcher uses an **external, centrally-managed approach**:
 
    The `SPHINX_VERSION_MATCH` environment variable (set in `.github/workflows/deploy-docs.yml`) tells the PyData Sphinx Theme which version is currently being viewed.
 
+5. **Deployment Behavior (Why `destination_dir` is used without `keep_files`)**:
+   - Each docs build replaces only its own folder (`latest/`, `stable/`, or `vX.Y.Z/`) on the `gh-pages` branch.
+   - This ensures clean regeneration for a given version (no mixing of old/new files) while leaving other versions untouched.
+   - The root redirect is deployed with `keep_files: true` so it doesn’t delete any versioned folders.
+
 #### Benefits of This Approach
 
 - **Central Management**: One `switcher.json` serves all deployed documentation versions
