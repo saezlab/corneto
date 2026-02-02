@@ -159,7 +159,7 @@ The documentation uses a centralized version switcher that allows users to navig
 The version switcher uses a **single, centrally-updated file hosted on GitHub Pages**:
 
 1. **Switcher Hosting**: `switcher.json` is deployed to the root of the docs site
-   - URL: `https://<org>.github.io/<repo>/switcher.json`
+   - URL: `https://corneto.org/switcher.json` (configured via `DOCS_BASE_URL`)
    - This URL is configured in `docs/conf.py` via `_switcher_url_with_ts()`
    - A timestamp parameter is added to bypass browser caching
 

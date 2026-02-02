@@ -57,6 +57,9 @@ myst_enable_extensions = [
 
 
 def _get_docs_base_url():
+    base_url = os.environ.get("DOCS_BASE_URL")
+    if base_url:
+        return base_url.rstrip("/")
     repo = os.environ.get("GITHUB_REPOSITORY", "saezlab/corneto")
     owner, name = repo.split("/", 1)
     return f"https://{owner}.github.io/{name}"

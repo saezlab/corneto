@@ -90,6 +90,7 @@ jobs:
       - name: Build Docs
         env:
           SPHINX_VERSION_MATCH: ${{ steps.set_version.outputs.version_folder }}
+          DOCS_BASE_URL: https://corneto.org
         run: poetry run sphinx-build -b html docs docs/_build/html
 
       - name: Deploy “latest” docs
@@ -123,6 +124,8 @@ jobs:
           touch temp_root/.nojekyll
           cp docs/custom-index.html temp_root/index.html
       - name: Generate switcher.json
+        env:
+          DOCS_BASE_URL: https://corneto.org
         run: |
           python scripts/generate_switcher.py --output temp_root/switcher.json
 
