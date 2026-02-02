@@ -11,6 +11,7 @@
 
 fba/context-specific-metabolic-omics.ipynb
 carnival/single-sample-carnival-transcriptomics.ipynb
+carnival/multi-receptor-integration.ipynb
 carnival/network-sampler.ipynb
 carnival/network-sampler-example.ipynb
 ml/kpnn-with-sc.ipynb
