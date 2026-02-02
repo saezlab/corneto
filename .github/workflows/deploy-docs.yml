@@ -136,3 +136,21 @@ jobs:
           publish_dir: temp_root
           destination_dir: ./
           keep_files: true
+
+      - name: Patch switcher URL in published HTML
+        run: |
+          git fetch origin gh-pages
+          git worktree add gh-pages-worktree gh-pages
+          python scripts/patch_switcher_urls.py \
+            --root gh-pages-worktree \
+            --new-url https://corneto.org/switcher.json
+          cd gh-pages-worktree
+          if [ -n "$(git status --porcelain)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add -A
+            git commit -m "chore: update switcher json url"
+            git push origin gh-pages
+          else
+            echo "No switcher URL changes detected."
+          fi
