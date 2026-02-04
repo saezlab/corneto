@@ -60,7 +60,7 @@
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
-    <link rel="canonical" href="https://saezlab.github.io/corneto/guide/networks/steiner-trees.html" />
+    <link rel="canonical" href="https://username.github.io/corneto/guide/networks/steiner-trees.html" />
     <link rel="icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -526,7 +526,7 @@
                    style="width:100%;max-width:100px;" />
             </td>
             <td>
-              <table><tr><td>Installed version:</td><td style='text-align:left'>v1.0.0b2.post25.dev0+fe9ca1ee</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.8.0, PICOS v2.6.2</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CVXOPT, GLPK, GLPK_MI, HIGHS, SCIP, SCIPY</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.3</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href="https://github.com/saezlab/corneto">https://github.com/saezlab/corneto</a></td></tr></table>
+              <table><tr><td>Installed version:</td><td style='text-align:left'>v1.0.0b3.post1.dev0+048af53c</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.8.1, PICOS v2.6.2</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CVXOPT, GLPK, GLPK_MI, HIGHS, SCIP, SCIPY</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.3</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/private/var/folders/b4/gwkwsdb93sv11rtztqbm3l040000gn/T/tmp.Dst0hQI0PJ/wt-latest/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href="https://github.com/saezlab/corneto">https://github.com/saezlab/corneto</a></td></tr></table>
             </td>
           </tr>
         </table>
@@ -608,7 +608,7 @@ Total cost of the Steiner tree: 38.8896
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/769e4d0d7b43daa5359f96ae0cad22b338dacffe7a1c3e51a94bf42e56d6edaf.png" src="../../_images/769e4d0d7b43daa5359f96ae0cad22b338dacffe7a1c3e51a94bf42e56d6edaf.png" />
+<img alt="../../_images/466a06afe61cee3a26c871fa75739828f9c8b2992578f6ec6b8c07c8ccbf9830.png" src="../../_images/466a06afe61cee3a26c871fa75739828f9c8b2992578f6ec6b8c07c8ccbf9830.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -709,8 +709,8 @@ Total cost of the Steiner tree: 38.8896
 </div>
 <div class="cell_output docutils container">
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_flow&#39;: _flow: Variable((521,), _flow),
- &#39;_flow_ineg&#39;: _flow_ineg: Variable((521,), _flow_ineg, boolean=True),
  &#39;_flow_ipos&#39;: _flow_ipos: Variable((521,), _flow_ipos, boolean=True),
+ &#39;_flow_ineg&#39;: _flow_ineg: Variable((521,), _flow_ineg, boolean=True),
  &#39;_dag_layer&#39;: _dag_layer: Variable((100, 1), _dag_layer),
  &#39;flow&#39;: _flow: Variable((521,), _flow),
  &#39;with_flow&#39;: Expression(AFFINE, NONNEGATIVE, (521,))}
@@ -729,7 +729,7 @@ Total cost of the Steiner tree: 38.8896
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>35.85180933414298
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>35.85180933414297
 28.0
 </pre></div>
 </div>
@@ -747,8 +747,39 @@ Total cost of the Steiner tree: 38.8896
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/0224a837a52ae24de75cf31795b296cc76402ca3830d9e2a7491a2a52e0cb7b5.svg" src="../../_images/0224a837a52ae24de75cf31795b296cc76402ca3830d9e2a7491a2a52e0cb7b5.svg" />
-</div>
+<div class="output text_html"></div><div class="output text_html">
+    <div id='container-23413314-948f-4714-9527-0c6fcc8054f1'></div> <!-- Container to display the graph -->
+    <script>
+    function loadScript(url, callback) {
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = url;
+        script.onreadystatechange = callback;
+        script.onload = callback;
+        document.head.appendChild(script);
+    }
+
+    function renderGraph(encodedDot) {
+        loadScript('https://unpkg.com/viz.js/viz.js', function() {
+            loadScript('https://unpkg.com/viz.js/full.render.js', function() {
+                var viz = new Viz();
+                var dotString = atob(encodedDot);
+
+                viz.renderSVGElement(dotString)
+                    .then(function(element) {
+                        document.getElementById('container-23413314-948f-4714-9527-0c6fcc8054f1').appendChild(element);
+                    })
+                    .catch(error => {
+                        console.error('Error rendering graph:', error);
+                    });
+            });
+        });
+    }
+
+    // Execute the rendering function with the base64-encoded DOT string
+    renderGraph("ZGlncmFwaCB7Cglub2RlIFtmaXhlZHNpemU9dHJ1ZV0KCTI4IFtzaGFwZT1jaXJjbGVdCgkzOSBbc2hhcGU9Y2lyY2xlXQoJMjggLT4gMzkgW2Fycm93aGVhZD1ub25lIGRpcj1ub25lXQoJMTIgW3NoYXBlPWNpcmNsZV0KCTMzIFtzaGFwZT1jaXJjbGVdCgkxMiAtPiAzMyBbYXJyb3doZWFkPW5vbmUgZGlyPW5vbmVdCgkyOCBbc2hhcGU9Y2lyY2xlXQoJODUgW3NoYXBlPWNpcmNsZV0KCTI4IC0+IDg1IFthcnJvd2hlYWQ9bm9uZSBkaXI9bm9uZV0KCTEyIFtzaGFwZT1jaXJjbGVdCgk2MiBbc2hhcGU9Y2lyY2xlXQoJMTIgLT4gNjIgW2Fycm93aGVhZD1ub25lIGRpcj1ub25lXQoJMTMgW3NoYXBlPWNpcmNsZV0KCTQzIFtzaGFwZT1jaXJjbGVdCgkxMyAtPiA0MyBbYXJyb3doZWFkPW5vbmUgZGlyPW5vbmVdCgk1OCBbc2hhcGU9Y2lyY2xlXQoJOTIgW3NoYXBlPWNpcmNsZV0KCTU4IC0+IDkyIFthcnJvd2hlYWQ9bm9uZSBkaXI9bm9uZV0KCTYxIFtzaGFwZT1jaXJjbGVdCgk2MiBbc2hhcGU9Y2lyY2xlXQoJNjEgLT4gNjIgW2Fycm93aGVhZD1ub25lIGRpcj1ub25lXQoJNjEgW3NoYXBlPWNpcmNsZV0KCTg1IFtzaGFwZT1jaXJjbGVdCgk2MSAtPiA4NSBbYXJyb3doZWFkPW5vbmUgZGlyPW5vbmVdCgk2NCBbc2hhcGU9Y2lyY2xlXQoJOTIgW3NoYXBlPWNpcmNsZV0KCTY0IC0+IDkyIFthcnJvd2hlYWQ9bm9uZSBkaXI9bm9uZV0KCTIzIFtzaGFwZT1jaXJjbGVdCgkzMyBbc2hhcGU9Y2lyY2xlXQoJMjMgLT4gMzMgW2Fycm93aGVhZD1ub25lIGRpcj1ub25lXQoJNDEgW3NoYXBlPWNpcmNsZV0KCTY0IFtzaGFwZT1jaXJjbGVdCgk0MSAtPiA2NCBbYXJyb3doZWFkPW5vbmUgZGlyPW5vbmVdCgk3MyBbc2hhcGU9Y2lyY2xlXQoJOTUgW3NoYXBlPWNpcmNsZV0KCTczIC0+IDk1IFthcnJvd2hlYWQ9bm9uZSBkaXI9bm9uZV0KCTggW3NoYXBlPWNpcmNsZV0KCTE0IFtzaGFwZT1jaXJjbGVdCgk4IC0+IDE0IFthcnJvd2hlYWQ9bm9uZSBkaXI9bm9uZV0KCTQxIFtzaGFwZT1jaXJjbGVdCgk4NSBbc2hhcGU9Y2lyY2xlXQoJNDEgLT4gODUgW2Fycm93aGVhZD1ub25lIGRpcj1ub25lXQoJOCBbc2hhcGU9Y2lyY2xlXQoJNjggW3NoYXBlPWNpcmNsZV0KCTggLT4gNjggW2Fycm93aGVhZD1ub25lIGRpcj1ub25lXQoJOCBbc2hhcGU9Y2lyY2xlXQoJNzMgW3NoYXBlPWNpcmNsZV0KCTggLT4gNzMgW2Fycm93aGVhZD1ub25lIGRpcj1ub25lXQoJOCBbc2hhcGU9Y2lyY2xlXQoJOTIgW3NoYXBlPWNpcmNsZV0KCTggLT4gOTIgW2Fycm93aGVhZD1ub25lIGRpcj1ub25lXQoJNDMgW3NoYXBlPWNpcmNsZV0KCTYxIFtzaGFwZT1jaXJjbGVdCgk0MyAtPiA2MSBbYXJyb3doZWFkPW5vbmUgZGlyPW5vbmVdCn0K");
+    </script>
+    </div></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -798,7 +829,7 @@ Total cost of the Steiner tree: 38.8896
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/68b6fe4e11388ba57b767fff138780a02e0d3630bf8abecb07f187e2cebcd2b7.png" src="../../_images/68b6fe4e11388ba57b767fff138780a02e0d3630bf8abecb07f187e2cebcd2b7.png" />
+<img alt="../../_images/399b167f1a3203724591435882d21249aabda3405b5e8270aa9beaf33527b0f9.png" src="../../_images/399b167f1a3203724591435882d21249aabda3405b5e8270aa9beaf33527b0f9.png" />
 </div>
 </div>
 </section>
@@ -843,8 +874,8 @@ Total cost of the Steiner tree: 38.8896
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>35.85180933414293
-27.999999999999986
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>35.85180933414297
+28.000000000000004
 </pre></div>
 </div>
 </div>
@@ -857,8 +888,39 @@ Total cost of the Steiner tree: 38.8896
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/5f496eb7891903297d02126fa68fb22530db46a5c86b48a43eaf7933f6ab053b.svg" src="../../_images/5f496eb7891903297d02126fa68fb22530db46a5c86b48a43eaf7933f6ab053b.svg" />
-</div>
+<div class="output text_html"></div><div class="output text_html">
+    <div id='container-bea716d5-9e52-4e91-bf70-0ee8e49b6ee1'></div> <!-- Container to display the graph -->
+    <script>
+    function loadScript(url, callback) {
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = url;
+        script.onreadystatechange = callback;
+        script.onload = callback;
+        document.head.appendChild(script);
+    }
+
+    function renderGraph(encodedDot) {
+        loadScript('https://unpkg.com/viz.js/viz.js', function() {
+            loadScript('https://unpkg.com/viz.js/full.render.js', function() {
+                var viz = new Viz();
+                var dotString = atob(encodedDot);
+
+                viz.renderSVGElement(dotString)
+                    .then(function(element) {
+                        document.getElementById('container-bea716d5-9e52-4e91-bf70-0ee8e49b6ee1').appendChild(element);
+                    })
+                    .catch(error => {
+                        console.error('Error rendering graph:', error);
+                    });
+            });
+        });
+    }
+
+    // Execute the rendering function with the base64-encoded DOT string
+    renderGraph("ZGlncmFwaCB7Cglub2RlIFtmaXhlZHNpemU9dHJ1ZV0KCTYyIFtzaGFwZT1jaXJjbGVdCgk2MSBbc2hhcGU9Y2lyY2xlXQoJNjIgLT4gNjEgW2Fycm93aGVhZD1ub3JtYWxdCgkxMiBbc2hhcGU9Y2lyY2xlXQoJNjIgW3NoYXBlPWNpcmNsZV0KCTEyIC0+IDYyIFthcnJvd2hlYWQ9bm9ybWFsXQoJNjQgW3NoYXBlPWNpcmNsZV0KCTkyIFtzaGFwZT1jaXJjbGVdCgk2NCAtPiA5MiBbYXJyb3doZWFkPW5vcm1hbF0KCTkyIFtzaGFwZT1jaXJjbGVdCgk4IFtzaGFwZT1jaXJjbGVdCgk5MiAtPiA4IFthcnJvd2hlYWQ9bm9ybWFsXQoJMjggW3NoYXBlPWNpcmNsZV0KCTM5IFtzaGFwZT1jaXJjbGVdCgkyOCAtPiAzOSBbYXJyb3doZWFkPW5vcm1hbF0KCTkyIFtzaGFwZT1jaXJjbGVdCgk1OCBbc2hhcGU9Y2lyY2xlXQoJOTIgLT4gNTggW2Fycm93aGVhZD1ub3JtYWxdCgk0MSBbc2hhcGU9Y2lyY2xlXQoJNjQgW3NoYXBlPWNpcmNsZV0KCTQxIC0+IDY0IFthcnJvd2hlYWQ9bm9ybWFsXQoJNDMgW3NoYXBlPWNpcmNsZV0KCTEzIFtzaGFwZT1jaXJjbGVdCgk0MyAtPiAxMyBbYXJyb3doZWFkPW5vcm1hbF0KCTggW3NoYXBlPWNpcmNsZV0KCTE0IFtzaGFwZT1jaXJjbGVdCgk4IC0+IDE0IFthcnJvd2hlYWQ9bm9ybWFsXQoJMzMgW3NoYXBlPWNpcmNsZV0KCTEyIFtzaGFwZT1jaXJjbGVdCgkzMyAtPiAxMiBbYXJyb3doZWFkPW5vcm1hbF0KCTggW3NoYXBlPWNpcmNsZV0KCTY4IFtzaGFwZT1jaXJjbGVdCgk4IC0+IDY4IFthcnJvd2hlYWQ9bm9ybWFsXQoJOCBbc2hhcGU9Y2lyY2xlXQoJNzMgW3NoYXBlPWNpcmNsZV0KCTggLT4gNzMgW2Fycm93aGVhZD1ub3JtYWxdCgk4NSBbc2hhcGU9Y2lyY2xlXQoJMjggW3NoYXBlPWNpcmNsZV0KCTg1IC0+IDI4IFthcnJvd2hlYWQ9bm9ybWFsXQoJODUgW3NoYXBlPWNpcmNsZV0KCTQxIFtzaGFwZT1jaXJjbGVdCgk4NSAtPiA0MSBbYXJyb3doZWFkPW5vcm1hbF0KCTIzIFtzaGFwZT1jaXJjbGVdCgkzMyBbc2hhcGU9Y2lyY2xlXQoJMjMgLT4gMzMgW2Fycm93aGVhZD1ub3JtYWxdCgk3MyBbc2hhcGU9Y2lyY2xlXQoJOTUgW3NoYXBlPWNpcmNsZV0KCTczIC0+IDk1IFthcnJvd2hlYWQ9bm9ybWFsXQoJNjEgW3NoYXBlPWNpcmNsZV0KCTQzIFtzaGFwZT1jaXJjbGVdCgk2MSAtPiA0MyBbYXJyb3doZWFkPW5vcm1hbF0KCTYxIFtzaGFwZT1jaXJjbGVdCgk4NSBbc2hhcGU9Y2lyY2xlXQoJNjEgLT4gODUgW2Fycm93aGVhZD1ub3JtYWxdCn0K");
+    </script>
+    </div></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -919,8 +981,39 @@ Total cost of the Steiner tree: 38.8896
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/e19c37cb3bf371c8df76cd0e7a7326f3e39a583e86cdcf5727d304904b20626b.svg" src="../../_images/e19c37cb3bf371c8df76cd0e7a7326f3e39a583e86cdcf5727d304904b20626b.svg" />
-</div>
+<div class="output text_html"></div><div class="output text_html">
+    <div id='container-ef140d31-757f-453f-8994-b8b3e01c1312'></div> <!-- Container to display the graph -->
+    <script>
+    function loadScript(url, callback) {
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = url;
+        script.onreadystatechange = callback;
+        script.onload = callback;
+        document.head.appendChild(script);
+    }
+
+    function renderGraph(encodedDot) {
+        loadScript('https://unpkg.com/viz.js/viz.js', function() {
+            loadScript('https://unpkg.com/viz.js/full.render.js', function() {
+                var viz = new Viz();
+                var dotString = atob(encodedDot);
+
+                viz.renderSVGElement(dotString)
+                    .then(function(element) {
+                        document.getElementById('container-ef140d31-757f-453f-8994-b8b3e01c1312').appendChild(element);
+                    })
+                    .catch(error => {
+                        console.error('Error rendering graph:', error);
+                    });
+            });
+        });
+    }
+
+    // Execute the rendering function with the base64-encoded DOT string
+    renderGraph("ZGlncmFwaCB7Cglub2RlIFtmaXhlZHNpemU9dHJ1ZV0KCTAgW3NoYXBlPWNpcmNsZV0KCTEgW3NoYXBlPWNpcmNsZV0KCTAgLT4gMSBbYXJyb3doZWFkPW5vcm1hbF0KCTAgW3NoYXBlPWNpcmNsZV0KCTIgW3NoYXBlPWNpcmNsZV0KCTAgLT4gMiBbYXJyb3doZWFkPW5vbmUgZGlyPW5vbmVdCgkyIFtzaGFwZT1jaXJjbGVdCgkxIFtzaGFwZT1jaXJjbGVdCgkyIC0+IDEgW2Fycm93aGVhZD1ub25lIGRpcj1ub25lXQoJMyBbc2hhcGU9Y2lyY2xlXQoJMiBbc2hhcGU9Y2lyY2xlXQoJMyAtPiAyIFthcnJvd2hlYWQ9bm9uZSBkaXI9bm9uZV0KCTIgW3NoYXBlPWNpcmNsZV0KCTQgW3NoYXBlPWNpcmNsZV0KCTIgLT4gNCBbYXJyb3doZWFkPW5vbmUgZGlyPW5vbmVdCgk0IFtzaGFwZT1jaXJjbGVdCgk1IFtzaGFwZT1jaXJjbGVdCgk0IC0+IDUgW2Fycm93aGVhZD1ub3JtYWxdCgk2IFtzaGFwZT1jaXJjbGVdCgk1IFtzaGFwZT1jaXJjbGVdCgk2IC0+IDUgW2Fycm93aGVhZD1ub3JtYWxdCgk2IFtzaGFwZT1jaXJjbGVdCgkwIFtzaGFwZT1jaXJjbGVdCgk2IC0+IDAgW2Fycm93aGVhZD1ub25lIGRpcj1ub25lXQoJMSBbc2hhcGU9Y2lyY2xlXQoJNSBbc2hhcGU9Y2lyY2xlXQoJMSAtPiA1IFthcnJvd2hlYWQ9bm9uZSBkaXI9bm9uZV0KCTAgW3NoYXBlPWNpcmNsZV0KCTcgW3NoYXBlPWNpcmNsZV0KCTAgLT4gNyBbYXJyb3doZWFkPW5vbmUgZGlyPW5vbmVdCn0K");
+    </script>
+    </div></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -948,8 +1041,39 @@ Total cost of the Steiner tree: 38.8896
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/fc24a50d0737ae905fd1d91a22b7a29d10fbedb3c0bc3351fda4f7e0a96be7cc.svg" src="../../_images/fc24a50d0737ae905fd1d91a22b7a29d10fbedb3c0bc3351fda4f7e0a96be7cc.svg" />
-</div>
+<div class="output text_html"></div><div class="output text_html">
+    <div id='container-e2ee333e-4396-4ac2-8d3f-0abfccdbbc9a'></div> <!-- Container to display the graph -->
+    <script>
+    function loadScript(url, callback) {
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = url;
+        script.onreadystatechange = callback;
+        script.onload = callback;
+        document.head.appendChild(script);
+    }
+
+    function renderGraph(encodedDot) {
+        loadScript('https://unpkg.com/viz.js/viz.js', function() {
+            loadScript('https://unpkg.com/viz.js/full.render.js', function() {
+                var viz = new Viz();
+                var dotString = atob(encodedDot);
+
+                viz.renderSVGElement(dotString)
+                    .then(function(element) {
+                        document.getElementById('container-e2ee333e-4396-4ac2-8d3f-0abfccdbbc9a').appendChild(element);
+                    })
+                    .catch(error => {
+                        console.error('Error rendering graph:', error);
+                    });
+            });
+        });
+    }
+
+    // Execute the rendering function with the base64-encoded DOT string
+    renderGraph("ZGlncmFwaCB7Cglub2RlIFtmaXhlZHNpemU9dHJ1ZV0KCTAgW3NoYXBlPWNpcmNsZV0KCTEgW3NoYXBlPWNpcmNsZV0KCTAgLT4gMSBbYXJyb3doZWFkPW5vcm1hbF0KCTAgW3NoYXBlPWNpcmNsZV0KCTIgW3NoYXBlPWNpcmNsZV0KCTAgLT4gMiBbYXJyb3doZWFkPW5vbmUgZGlyPW5vbmVdCgkyIFtzaGFwZT1jaXJjbGVdCgkxIFtzaGFwZT1jaXJjbGVdCgkyIC0+IDEgW2Fycm93aGVhZD1ub25lIGRpcj1ub25lXQoJMyBbc2hhcGU9Y2lyY2xlXQoJMiBbc2hhcGU9Y2lyY2xlXQoJMyAtPiAyIFthcnJvd2hlYWQ9bm9uZSBkaXI9bm9uZV0KCTIgW3NoYXBlPWNpcmNsZV0KCTQgW3NoYXBlPWNpcmNsZV0KCTIgLT4gNCBbYXJyb3doZWFkPW5vbmUgZGlyPW5vbmVdCgk0IFtzaGFwZT1jaXJjbGVdCgk1IFtzaGFwZT1jaXJjbGVdCgk0IC0+IDUgW2Fycm93aGVhZD1ub3JtYWxdCgk2IFtzaGFwZT1jaXJjbGVdCgk1IFtzaGFwZT1jaXJjbGVdCgk2IC0+IDUgW2Fycm93aGVhZD1ub3JtYWxdCgk2IFtzaGFwZT1jaXJjbGVdCgkwIFtzaGFwZT1jaXJjbGVdCgk2IC0+IDAgW2Fycm93aGVhZD1ub25lIGRpcj1ub25lXQoJMSBbc2hhcGU9Y2lyY2xlXQoJNSBbc2hhcGU9Y2lyY2xlXQoJMSAtPiA1IFthcnJvd2hlYWQ9bm9uZSBkaXI9bm9uZV0KCTAgW3NoYXBlPWNpcmNsZV0KCTcgW3NoYXBlPWNpcmNsZV0KCTAgLT4gNyBbYXJyb3doZWFkPW5vbmUgZGlyPW5vbmVdCgllXzEwX3RhcmdldCBbc2hhcGU9cG9pbnRdCgkwIFtzaGFwZT1jaXJjbGVdCgkwIC0+IGVfMTBfdGFyZ2V0IFthcnJvd2hlYWQ9bm9uZSBkaXI9bm9uZV0KCWVfMTFfdGFyZ2V0IFtzaGFwZT1wb2ludF0KCTQgW3NoYXBlPWNpcmNsZV0KCTQgLT4gZV8xMV90YXJnZXQgW2Fycm93aGVhZD1ub25lIGRpcj1ub25lXQoJZV8xMl90YXJnZXQgW3NoYXBlPXBvaW50XQoJNSBbc2hhcGU9Y2lyY2xlXQoJNSAtPiBlXzEyX3RhcmdldCBbYXJyb3doZWFkPW5vbmUgZGlyPW5vbmVdCgllXzEzX3RhcmdldCBbc2hhcGU9cG9pbnRdCgk2IFtzaGFwZT1jaXJjbGVdCgk2IC0+IGVfMTNfdGFyZ2V0IFthcnJvd2hlYWQ9bm9uZSBkaXI9bm9uZV0KfQo=");
+    </script>
+    </div></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -966,8 +1090,39 @@ Total cost of the Steiner tree: 38.8896
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/f7b0fefda8639e4d73c1379567eb41ce91056ec177dd640bb2ba55f4d1f4dfda.svg" src="../../_images/f7b0fefda8639e4d73c1379567eb41ce91056ec177dd640bb2ba55f4d1f4dfda.svg" />
-</div>
+<div class="output text_html"></div><div class="output text_html">
+    <div id='container-622858b9-9c58-4c0b-b4a7-ce0a3a6cc2d0'></div> <!-- Container to display the graph -->
+    <script>
+    function loadScript(url, callback) {
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = url;
+        script.onreadystatechange = callback;
+        script.onload = callback;
+        document.head.appendChild(script);
+    }
+
+    function renderGraph(encodedDot) {
+        loadScript('https://unpkg.com/viz.js/viz.js', function() {
+            loadScript('https://unpkg.com/viz.js/full.render.js', function() {
+                var viz = new Viz();
+                var dotString = atob(encodedDot);
+
+                viz.renderSVGElement(dotString)
+                    .then(function(element) {
+                        document.getElementById('container-622858b9-9c58-4c0b-b4a7-ce0a3a6cc2d0').appendChild(element);
+                    })
+                    .catch(error => {
+                        console.error('Error rendering graph:', error);
+                    });
+            });
+        });
+    }
+
+    // Execute the rendering function with the base64-encoded DOT string
+    renderGraph("ZGlncmFwaCB7Cglub2RlIFtmaXhlZHNpemU9dHJ1ZV0KCTAgW3NoYXBlPWNpcmNsZV0KCTIgW3NoYXBlPWNpcmNsZV0KCTAgLT4gMiBbYXJyb3doZWFkPW5vbmUgZGlyPW5vbmVdCgkyIFtzaGFwZT1jaXJjbGVdCgk0IFtzaGFwZT1jaXJjbGVdCgkyIC0+IDQgW2Fycm93aGVhZD1ub25lIGRpcj1ub25lXQoJNiBbc2hhcGU9Y2lyY2xlXQoJNSBbc2hhcGU9Y2lyY2xlXQoJNiAtPiA1IFthcnJvd2hlYWQ9bm9ybWFsXQoJNiBbc2hhcGU9Y2lyY2xlXQoJMCBbc2hhcGU9Y2lyY2xlXQoJNiAtPiAwIFthcnJvd2hlYWQ9bm9uZSBkaXI9bm9uZV0KfQo=");
+    </script>
+    </div></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -977,8 +1132,39 @@ Total cost of the Steiner tree: 38.8896
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/623b24ff42196f02fbee613caa10e12d490ec744860c03f37ba59667d6cdcd47.svg" src="../../_images/623b24ff42196f02fbee613caa10e12d490ec744860c03f37ba59667d6cdcd47.svg" />
-</div>
+<div class="output text_html"></div><div class="output text_html">
+    <div id='container-384e24e5-ee7c-4268-9b83-f09c5d99b7a6'></div> <!-- Container to display the graph -->
+    <script>
+    function loadScript(url, callback) {
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = url;
+        script.onreadystatechange = callback;
+        script.onload = callback;
+        document.head.appendChild(script);
+    }
+
+    function renderGraph(encodedDot) {
+        loadScript('https://unpkg.com/viz.js/viz.js', function() {
+            loadScript('https://unpkg.com/viz.js/full.render.js', function() {
+                var viz = new Viz();
+                var dotString = atob(encodedDot);
+
+                viz.renderSVGElement(dotString)
+                    .then(function(element) {
+                        document.getElementById('container-384e24e5-ee7c-4268-9b83-f09c5d99b7a6').appendChild(element);
+                    })
+                    .catch(error => {
+                        console.error('Error rendering graph:', error);
+                    });
+            });
+        });
+    }
+
+    // Execute the rendering function with the base64-encoded DOT string
+    renderGraph("ZGlncmFwaCB7Cglub2RlIFtmaXhlZHNpemU9dHJ1ZV0KCTAgW3NoYXBlPWNpcmNsZV0KCTEgW3NoYXBlPWNpcmNsZV0KCTAgLT4gMSBbYXJyb3doZWFkPW5vcm1hbF0KCTAgW3NoYXBlPWNpcmNsZV0KCTIgW3NoYXBlPWNpcmNsZV0KCTAgLT4gMiBbYXJyb3doZWFkPW5vbmUgZGlyPW5vbmVdCgkyIFtzaGFwZT1jaXJjbGVdCgkxIFtzaGFwZT1jaXJjbGVdCgkyIC0+IDEgW2Fycm93aGVhZD1ub25lIGRpcj1ub25lXQoJMyBbc2hhcGU9Y2lyY2xlXQoJMiBbc2hhcGU9Y2lyY2xlXQoJMyAtPiAyIFthcnJvd2hlYWQ9bm9uZSBkaXI9bm9uZV0KCTIgW3NoYXBlPWNpcmNsZV0KCTQgW3NoYXBlPWNpcmNsZV0KCTIgLT4gNCBbYXJyb3doZWFkPW5vbmUgZGlyPW5vbmVdCgk0IFtzaGFwZT1jaXJjbGVdCgk1IFtzaGFwZT1jaXJjbGVdCgk0IC0+IDUgW2Fycm93aGVhZD1ub3JtYWxdCgk2IFtzaGFwZT1jaXJjbGVdCgk1IFtzaGFwZT1jaXJjbGVdCgk2IC0+IDUgW2Fycm93aGVhZD1ub3JtYWxdCgk2IFtzaGFwZT1jaXJjbGVdCgkwIFtzaGFwZT1jaXJjbGVdCgk2IC0+IDAgW2Fycm93aGVhZD1ub25lIGRpcj1ub25lXQoJMSBbc2hhcGU9Y2lyY2xlXQoJNSBbc2hhcGU9Y2lyY2xlXQoJMSAtPiA1IFthcnJvd2hlYWQ9bm9uZSBkaXI9bm9uZV0KCTAgW3NoYXBlPWNpcmNsZV0KCTcgW3NoYXBlPWNpcmNsZV0KCTAgLT4gNyBbYXJyb3doZWFkPW5vbmUgZGlyPW5vbmVdCgk0IFtzaGFwZT1jaXJjbGVdCgk1IFtzaGFwZT1jaXJjbGVdCgk0IC0+IDUgW2Fycm93aGVhZD1ub25lIGRpcj1ub25lXQp9Cg==");
+    </script>
+    </div></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -992,8 +1178,39 @@ Total cost of the Steiner tree: 38.8896
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/8853df7875c64821c36cd7e7f21ba652613f91c7092e6167bf68a42c75983bb3.svg" src="../../_images/8853df7875c64821c36cd7e7f21ba652613f91c7092e6167bf68a42c75983bb3.svg" />
-</div>
+<div class="output text_html"></div><div class="output text_html">
+    <div id='container-4be73f42-1ddc-4b93-b42b-f6f406f8fdfc'></div> <!-- Container to display the graph -->
+    <script>
+    function loadScript(url, callback) {
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = url;
+        script.onreadystatechange = callback;
+        script.onload = callback;
+        document.head.appendChild(script);
+    }
+
+    function renderGraph(encodedDot) {
+        loadScript('https://unpkg.com/viz.js/viz.js', function() {
+            loadScript('https://unpkg.com/viz.js/full.render.js', function() {
+                var viz = new Viz();
+                var dotString = atob(encodedDot);
+
+                viz.renderSVGElement(dotString)
+                    .then(function(element) {
+                        document.getElementById('container-4be73f42-1ddc-4b93-b42b-f6f406f8fdfc').appendChild(element);
+                    })
+                    .catch(error => {
+                        console.error('Error rendering graph:', error);
+                    });
+            });
+        });
+    }
+
+    // Execute the rendering function with the base64-encoded DOT string
+    renderGraph("ZGlncmFwaCB7Cglub2RlIFtmaXhlZHNpemU9dHJ1ZV0KCTYgW3NoYXBlPWNpcmNsZV0KCTUgW3NoYXBlPWNpcmNsZV0KCTYgLT4gNSBbYXJyb3doZWFkPW5vcm1hbF0KCTYgW3NoYXBlPWNpcmNsZV0KCTAgW3NoYXBlPWNpcmNsZV0KCTYgLT4gMCBbYXJyb3doZWFkPW5vbmUgZGlyPW5vbmVdCgk0IFtzaGFwZT1jaXJjbGVdCgk1IFtzaGFwZT1jaXJjbGVdCgk0IC0+IDUgW2Fycm93aGVhZD1ub25lIGRpcj1ub25lXQp9Cg==");
+    </script>
+    </div></div>
 </div>
 </section>
 </section>

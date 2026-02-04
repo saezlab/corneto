@@ -42,8 +42,8 @@
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
     <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-Z263GN2PKK"></script>
     <script>
@@ -60,7 +60,7 @@
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
-    <link rel="canonical" href="https://saezlab.github.io/corneto/guide/networks/multi-commodity-network-flows.html" />
+    <link rel="canonical" href="https://username.github.io/corneto/guide/networks/multi-commodity-network-flows.html" />
     <link rel="icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -485,7 +485,7 @@
                    style="width:100%;max-width:100px;" />
             </td>
             <td>
-              <table><tr><td>Installed version:</td><td style='text-align:left'>v1.0.0b2</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.7.1, PICOS v2.6.1</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CVXOPT, GLPK, GLPK_MI, HIGHS, SCIP, SCIPY</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.3</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href="https://github.com/saezlab/corneto">https://github.com/saezlab/corneto</a></td></tr></table>
+              <table><tr><td>Installed version:</td><td style='text-align:left'>v1.0.0b3.post1.dev0+048af53c</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.8.1, PICOS v2.6.2</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CVXOPT, GLPK, GLPK_MI, HIGHS, SCIP, SCIPY</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.3</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/private/var/folders/b4/gwkwsdb93sv11rtztqbm3l040000gn/T/tmp.Dst0hQI0PJ/wt-stable/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href="https://github.com/saezlab/corneto">https://github.com/saezlab/corneto</a></td></tr></table>
             </td>
           </tr>
         </table>
@@ -508,8 +508,39 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/3ccfac88b3bedb9daa67181645c1b6ca55d42e099c624665f628c3870e617a6a.svg" src="../../_images/3ccfac88b3bedb9daa67181645c1b6ca55d42e099c624665f628c3870e617a6a.svg" />
-</div>
+<div class="output text_html"></div><div class="output text_html">
+    <div id='container-b2e7915f-2a1a-4cd1-8547-a2c69fa01e97'></div> <!-- Container to display the graph -->
+    <script>
+    function loadScript(url, callback) {
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = url;
+        script.onreadystatechange = callback;
+        script.onload = callback;
+        document.head.appendChild(script);
+    }
+
+    function renderGraph(encodedDot) {
+        loadScript('https://unpkg.com/viz.js/viz.js', function() {
+            loadScript('https://unpkg.com/viz.js/full.render.js', function() {
+                var viz = new Viz();
+                var dotString = atob(encodedDot);
+
+                viz.renderSVGElement(dotString)
+                    .then(function(element) {
+                        document.getElementById('container-b2e7915f-2a1a-4cd1-8547-a2c69fa01e97').appendChild(element);
+                    })
+                    .catch(error => {
+                        console.error('Error rendering graph:', error);
+                    });
+            });
+        });
+    }
+
+    // Execute the rendering function with the base64-encoded DOT string
+    renderGraph("ZGlncmFwaCB7Cglub2RlIFtmaXhlZHNpemU9dHJ1ZV0KCUEgW3NoYXBlPWNpcmNsZV0KCUIgW3NoYXBlPWNpcmNsZV0KCUEgLT4gQiBbYXJyb3doZWFkPW5vcm1hbF0KCUEgW3NoYXBlPWNpcmNsZV0KCUQgW3NoYXBlPWNpcmNsZV0KCUEgLT4gRCBbYXJyb3doZWFkPW5vcm1hbF0KCUIgW3NoYXBlPWNpcmNsZV0KCUMgW3NoYXBlPWNpcmNsZV0KCUIgLT4gQyBbYXJyb3doZWFkPW5vcm1hbF0KCUIgW3NoYXBlPWNpcmNsZV0KCUQgW3NoYXBlPWNpcmNsZV0KCUIgLT4gRCBbYXJyb3doZWFkPW5vcm1hbF0KCUMgW3NoYXBlPWNpcmNsZV0KCUUgW3NoYXBlPWNpcmNsZV0KCUMgLT4gRSBbYXJyb3doZWFkPW5vcm1hbF0KCUQgW3NoYXBlPWNpcmNsZV0KCUMgW3NoYXBlPWNpcmNsZV0KCUQgLT4gQyBbYXJyb3doZWFkPW5vcm1hbF0KCUQgW3NoYXBlPWNpcmNsZV0KCUUgW3NoYXBlPWNpcmNsZV0KCUQgLT4gRSBbYXJyb3doZWFkPW5vcm1hbF0KfQo=");
+    </script>
+    </div></div>
 </div>
 <p>Now we will manually create a flow graph by adding incoming edges for flow through the input vertices and outgoing flow edges for the output vertices.</p>
 <div class="cell docutils container">
@@ -526,8 +557,39 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/7d30b72b4df7f97adb02090857c8eb4024708fd1ffec13311bd460e27b029c02.svg" src="../../_images/7d30b72b4df7f97adb02090857c8eb4024708fd1ffec13311bd460e27b029c02.svg" />
-</div>
+<div class="output text_html"></div><div class="output text_html">
+    <div id='container-abdacdb6-7c39-4fee-a59b-3a537daf5d36'></div> <!-- Container to display the graph -->
+    <script>
+    function loadScript(url, callback) {
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = url;
+        script.onreadystatechange = callback;
+        script.onload = callback;
+        document.head.appendChild(script);
+    }
+
+    function renderGraph(encodedDot) {
+        loadScript('https://unpkg.com/viz.js/viz.js', function() {
+            loadScript('https://unpkg.com/viz.js/full.render.js', function() {
+                var viz = new Viz();
+                var dotString = atob(encodedDot);
+
+                viz.renderSVGElement(dotString)
+                    .then(function(element) {
+                        document.getElementById('container-abdacdb6-7c39-4fee-a59b-3a537daf5d36').appendChild(element);
+                    })
+                    .catch(error => {
+                        console.error('Error rendering graph:', error);
+                    });
+            });
+        });
+    }
+
+    // Execute the rendering function with the base64-encoded DOT string
+    renderGraph("ZGlncmFwaCB7Cglub2RlIFtmaXhlZHNpemU9dHJ1ZV0KCUEgW3NoYXBlPWNpcmNsZV0KCUIgW3NoYXBlPWNpcmNsZV0KCUEgLT4gQiBbYXJyb3doZWFkPW5vcm1hbF0KCUEgW3NoYXBlPWNpcmNsZV0KCUQgW3NoYXBlPWNpcmNsZV0KCUEgLT4gRCBbYXJyb3doZWFkPW5vcm1hbF0KCUIgW3NoYXBlPWNpcmNsZV0KCUMgW3NoYXBlPWNpcmNsZV0KCUIgLT4gQyBbYXJyb3doZWFkPW5vcm1hbF0KCUIgW3NoYXBlPWNpcmNsZV0KCUQgW3NoYXBlPWNpcmNsZV0KCUIgLT4gRCBbYXJyb3doZWFkPW5vcm1hbF0KCUMgW3NoYXBlPWNpcmNsZV0KCUUgW3NoYXBlPWNpcmNsZV0KCUMgLT4gRSBbYXJyb3doZWFkPW5vcm1hbF0KCUQgW3NoYXBlPWNpcmNsZV0KCUMgW3NoYXBlPWNpcmNsZV0KCUQgLT4gQyBbYXJyb3doZWFkPW5vcm1hbF0KCUQgW3NoYXBlPWNpcmNsZV0KCUUgW3NoYXBlPWNpcmNsZV0KCUQgLT4gRSBbYXJyb3doZWFkPW5vcm1hbF0KCWVfN19zb3VyY2UgW3NoYXBlPXBvaW50XQoJQSBbc2hhcGU9Y2lyY2xlXQoJZV83X3NvdXJjZSAtPiBBIFthcnJvd2hlYWQ9bm9ybWFsXQoJZV84X3RhcmdldCBbc2hhcGU9cG9pbnRdCglDIFtzaGFwZT1jaXJjbGVdCglDIC0+IGVfOF90YXJnZXQgW2Fycm93aGVhZD1ub3JtYWxdCgllXzlfdGFyZ2V0IFtzaGFwZT1wb2ludF0KCUUgW3NoYXBlPWNpcmNsZV0KCUUgLT4gZV85X3RhcmdldCBbYXJyb3doZWFkPW5vcm1hbF0KfQo=");
+    </script>
+    </div></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -586,7 +648,7 @@
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>===============================================================================
                                      CVXPY                                     
-                                     v1.7.1                                    
+                                     v1.8.1                                    
 ===============================================================================
 -------------------------------------------------------------------------------
                                   Compilation                                  
@@ -873,7 +935,7 @@ Gap                : 0.00 %
 
   <p class="copyright">
     
-      © Copyright 2023-2025, Saez-Rodriguez lab. (EMBL-EBI, Heidelberg University).
+      © Copyright 2023-2026, Saez-Rodriguez lab. (EMBL-EBI, Heidelberg University).
       <br/>
     
   </p>

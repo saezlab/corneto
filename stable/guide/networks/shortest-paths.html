@@ -42,8 +42,8 @@
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
     <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-Z263GN2PKK"></script>
     <script>
@@ -60,7 +60,7 @@
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
-    <link rel="canonical" href="https://saezlab.github.io/corneto/guide/networks/shortest-paths.html" />
+    <link rel="canonical" href="https://username.github.io/corneto/guide/networks/shortest-paths.html" />
     <link rel="icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -496,7 +496,7 @@
                    style="width:100%;max-width:100px;" />
             </td>
             <td>
-              <table><tr><td>Installed version:</td><td style='text-align:left'>v1.0.0b2</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.7.1, PICOS v2.6.1</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CVXOPT, GLPK, GLPK_MI, HIGHS, SCIP, SCIPY</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.3</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href="https://github.com/saezlab/corneto">https://github.com/saezlab/corneto</a></td></tr></table>
+              <table><tr><td>Installed version:</td><td style='text-align:left'>v1.0.0b3.post1.dev0+048af53c</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.8.1, PICOS v2.6.2</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CVXOPT, GLPK, GLPK_MI, HIGHS, SCIP, SCIPY</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.3</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/private/var/folders/b4/gwkwsdb93sv11rtztqbm3l040000gn/T/tmp.Dst0hQI0PJ/wt-stable/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href="https://github.com/saezlab/corneto">https://github.com/saezlab/corneto</a></td></tr></table>
             </td>
           </tr>
         </table>
@@ -517,8 +517,39 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/2630bae81fc12a6e23d9cf07e43d91d7325fd3a6f52681f14eeecc2a303c00a8.svg" src="../../_images/2630bae81fc12a6e23d9cf07e43d91d7325fd3a6f52681f14eeecc2a303c00a8.svg" />
-</div>
+<div class="output text_html"></div><div class="output text_html">
+    <div id='container-9a131ebf-d13a-4dbb-bb88-34e292209e94'></div> <!-- Container to display the graph -->
+    <script>
+    function loadScript(url, callback) {
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = url;
+        script.onreadystatechange = callback;
+        script.onload = callback;
+        document.head.appendChild(script);
+    }
+
+    function renderGraph(encodedDot) {
+        loadScript('https://unpkg.com/viz.js/viz.js', function() {
+            loadScript('https://unpkg.com/viz.js/full.render.js', function() {
+                var viz = new Viz();
+                var dotString = atob(encodedDot);
+
+                viz.renderSVGElement(dotString)
+                    .then(function(element) {
+                        document.getElementById('container-9a131ebf-d13a-4dbb-bb88-34e292209e94').appendChild(element);
+                    })
+                    .catch(error => {
+                        console.error('Error rendering graph:', error);
+                    });
+            });
+        });
+    }
+
+    // Execute the rendering function with the base64-encoded DOT string
+    renderGraph("ZGlncmFwaCB7Cglub2RlIFtmaXhlZHNpemU9dHJ1ZV0KCUEgW3NoYXBlPWNpcmNsZV0KCUIgW3NoYXBlPWNpcmNsZV0KCUEgLT4gQiBbYXJyb3doZWFkPW5vcm1hbF0KCUEgW3NoYXBlPWNpcmNsZV0KCUMgW3NoYXBlPWNpcmNsZV0KCUEgLT4gQyBbYXJyb3doZWFkPW5vcm1hbF0KCUIgW3NoYXBlPWNpcmNsZV0KCUQgW3NoYXBlPWNpcmNsZV0KCUIgLT4gRCBbYXJyb3doZWFkPW5vcm1hbF0KCUMgW3NoYXBlPWNpcmNsZV0KCUUgW3NoYXBlPWNpcmNsZV0KCUMgLT4gRSBbYXJyb3doZWFkPW5vcm1hbF0KCUUgW3NoYXBlPWNpcmNsZV0KCUYgW3NoYXBlPWNpcmNsZV0KCUUgLT4gRiBbYXJyb3doZWFkPW5vcm1hbF0KCUQgW3NoYXBlPWNpcmNsZV0KCUYgW3NoYXBlPWNpcmNsZV0KCUQgLT4gRiBbYXJyb3doZWFkPW5vcm1hbF0KCUYgW3NoYXBlPWNpcmNsZV0KCUcgW3NoYXBlPWNpcmNsZV0KCUYgLT4gRyBbYXJyb3doZWFkPW5vcm1hbF0KfQo=");
+    </script>
+    </div></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -531,8 +562,39 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/08d25f9cf2bdba35ef29a21209ab3f993c2a331a9c5712043ae6dfc6e3889325.svg" src="../../_images/08d25f9cf2bdba35ef29a21209ab3f993c2a331a9c5712043ae6dfc6e3889325.svg" />
-</div>
+<div class="output text_html"></div><div class="output text_html">
+    <div id='container-c855dcd9-b418-40fb-b531-5a42016d1def'></div> <!-- Container to display the graph -->
+    <script>
+    function loadScript(url, callback) {
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = url;
+        script.onreadystatechange = callback;
+        script.onload = callback;
+        document.head.appendChild(script);
+    }
+
+    function renderGraph(encodedDot) {
+        loadScript('https://unpkg.com/viz.js/viz.js', function() {
+            loadScript('https://unpkg.com/viz.js/full.render.js', function() {
+                var viz = new Viz();
+                var dotString = atob(encodedDot);
+
+                viz.renderSVGElement(dotString)
+                    .then(function(element) {
+                        document.getElementById('container-c855dcd9-b418-40fb-b531-5a42016d1def').appendChild(element);
+                    })
+                    .catch(error => {
+                        console.error('Error rendering graph:', error);
+                    });
+            });
+        });
+    }
+
+    // Execute the rendering function with the base64-encoded DOT string
+    renderGraph("ZGlncmFwaCB7Cglub2RlIFtmaXhlZHNpemU9dHJ1ZV0KCUEgW3NoYXBlPWNpcmNsZV0KCUMgW3NoYXBlPWNpcmNsZV0KCUEgLT4gQyBbYXJyb3doZWFkPW5vcm1hbF0KCUMgW3NoYXBlPWNpcmNsZV0KCUUgW3NoYXBlPWNpcmNsZV0KCUMgLT4gRSBbYXJyb3doZWFkPW5vcm1hbF0KCUUgW3NoYXBlPWNpcmNsZV0KCUYgW3NoYXBlPWNpcmNsZV0KCUUgLT4gRiBbYXJyb3doZWFkPW5vcm1hbF0KCUYgW3NoYXBlPWNpcmNsZV0KCUcgW3NoYXBlPWNpcmNsZV0KCUYgLT4gRyBbYXJyb3doZWFkPW5vcm1hbF0KfQo=");
+    </script>
+    </div></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -579,7 +641,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[np.int64(3802), 1296, 51, 3140, 1511, 634, np.int64(4832)]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[np.int64(4483), 217, 177, 35, np.int64(969)]
 </pre></div>
 </div>
 </div>
@@ -591,7 +653,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>17.63532371508366
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>15.11067234030832
 </pre></div>
 </div>
 </div>
@@ -613,7 +675,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>np.float64(17.635323715083658)
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>np.float64(15.110672340308318)
 </pre></div>
 </div>
 </div>
@@ -625,8 +687,39 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/bc3ca34417c5c74f28e1fb899dbe109b3f34b41ab25298ce7013841d7f36450a.svg" src="../../_images/bc3ca34417c5c74f28e1fb899dbe109b3f34b41ab25298ce7013841d7f36450a.svg" />
-</div>
+<div class="output text_html"></div><div class="output text_html">
+    <div id='container-d7442e61-f15e-4b40-b0ed-d1ee00cdbe15'></div> <!-- Container to display the graph -->
+    <script>
+    function loadScript(url, callback) {
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = url;
+        script.onreadystatechange = callback;
+        script.onload = callback;
+        document.head.appendChild(script);
+    }
+
+    function renderGraph(encodedDot) {
+        loadScript('https://unpkg.com/viz.js/viz.js', function() {
+            loadScript('https://unpkg.com/viz.js/full.render.js', function() {
+                var viz = new Viz();
+                var dotString = atob(encodedDot);
+
+                viz.renderSVGElement(dotString)
+                    .then(function(element) {
+                        document.getElementById('container-d7442e61-f15e-4b40-b0ed-d1ee00cdbe15').appendChild(element);
+                    })
+                    .catch(error => {
+                        console.error('Error rendering graph:', error);
+                    });
+            });
+        });
+    }
+
+    // Execute the rendering function with the base64-encoded DOT string
+    renderGraph("ZGlncmFwaCB7Cglub2RlIFtmaXhlZHNpemU9dHJ1ZV0KCTQ0ODMgW3NoYXBlPWNpcmNsZV0KCTIxNyBbc2hhcGU9Y2lyY2xlXQoJNDQ4MyAtPiAyMTcgW2Fycm93aGVhZD1ub3JtYWxdCgkxNzcgW3NoYXBlPWNpcmNsZV0KCTM1IFtzaGFwZT1jaXJjbGVdCgkxNzcgLT4gMzUgW2Fycm93aGVhZD1ub3JtYWxdCgkyMTcgW3NoYXBlPWNpcmNsZV0KCTE3NyBbc2hhcGU9Y2lyY2xlXQoJMjE3IC0+IDE3NyBbYXJyb3doZWFkPW5vcm1hbF0KCTM1IFtzaGFwZT1jaXJjbGVdCgk5NjkgW3NoYXBlPWNpcmNsZV0KCTM1IC0+IDk2OSBbYXJyb3doZWFkPW5vcm1hbF0KCWVfNF9zb3VyY2UgW3NoYXBlPXBvaW50XQoJNDQ4MyBbc2hhcGU9Y2lyY2xlXQoJZV80X3NvdXJjZSAtPiA0NDgzIFthcnJvd2hlYWQ9bm9ybWFsXQoJZV81X3RhcmdldCBbc2hhcGU9cG9pbnRdCgk5NjkgW3NoYXBlPWNpcmNsZV0KCTk2OSAtPiBlXzVfdGFyZ2V0IFthcnJvd2hlYWQ9bm9ybWFsXQp9Cg==");
+    </script>
+    </div></div>
 </div>
 </section>
 </section>
@@ -708,7 +801,7 @@
 
   <p class="copyright">
     
-      © Copyright 2023-2025, Saez-Rodriguez lab. (EMBL-EBI, Heidelberg University).
+      © Copyright 2023-2026, Saez-Rodriguez lab. (EMBL-EBI, Heidelberg University).
       <br/>
     
   </p>

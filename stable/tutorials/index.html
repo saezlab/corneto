@@ -42,8 +42,8 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-Z263GN2PKK"></script>
     <script>
@@ -53,7 +53,7 @@
                 gtag('config', 'G-Z263GN2PKK');
             </script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/index';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
@@ -62,7 +62,7 @@
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
-    <link rel="canonical" href="https://saezlab.github.io/corneto/tutorials/index.html" />
+    <link rel="canonical" href="https://username.github.io/corneto/tutorials/index.html" />
     <link rel="icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -365,6 +365,7 @@
   <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="fba/context-specific-metabolic-omics.html">Context-specific metabolic networks from omics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="carnival/single-sample-carnival-transcriptomics.html">Single sample intracellular signalling network inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="carnival/multi-receptor-integration.html">Multi-receptor integration with CARNIVAL</a></li>
 <li class="toctree-l1"><a class="reference internal" href="carnival/network-sampler.html">Implementing an alternative network sampler</a></li>
 <li class="toctree-l1"><a class="reference internal" href="carnival/network-sampler-example.html">Exploring alternative solutions with <span class="math notranslate nohighlight">\(\epsilon\)</span>-perturbation sampling</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ml/kpnn-with-sc.html">Knowledge-primed Neural Networks (KPNNs) for single cell data</a></li>
@@ -439,6 +440,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="fba/context-specific-metabolic-omics.html">Context-specific metabolic networks from omics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="carnival/single-sample-carnival-transcriptomics.html">Single sample intracellular signalling network inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="carnival/multi-receptor-integration.html">Multi-receptor integration with CARNIVAL</a></li>
 <li class="toctree-l1"><a class="reference internal" href="carnival/network-sampler.html">Implementing an alternative network sampler</a></li>
 <li class="toctree-l1"><a class="reference internal" href="carnival/network-sampler-example.html">Exploring alternative solutions with <span class="math notranslate nohighlight">\(\epsilon\)</span>-perturbation sampling</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ml/kpnn-with-sc.html">Knowledge-primed Neural Networks (KPNNs) for single cell data</a></li>
@@ -450,6 +452,26 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="contrib/multi_condition_tutorial/multi_condition_carnival.html">Multi-condition signalling network inference</a></li>
 </ul>
+</div>
+</section>
+<section id="running-tutorials-locally">
+<h2>Running tutorials locally<a class="headerlink" href="#running-tutorials-locally" title="Link to this heading">#</a></h2>
+<p>Each tutorial is self-contained and includes its own <code class="docutils literal notranslate"><span class="pre">pixi.toml</span></code>. To execute all notebooks via Pixi:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Run all tutorials (outputs go to build/)</span>
+poetry<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>docs/tutorials/run_notebooks.py
+
+<span class="c1"># Run a single tutorial by folder name</span>
+poetry<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>docs/tutorials/run_notebooks.py<span class="w"> </span>ml
+
+<span class="c1"># Rewrite notebooks in place (overwrites original .ipynb files)</span>
+poetry<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>docs/tutorials/run_notebooks.py<span class="w"> </span>ml<span class="w"> </span>--rewrite
+
+<span class="c1"># Use local CORNETO source instead of the pinned PyPI version</span>
+poetry<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>docs/tutorials/run_notebooks.py<span class="w"> </span>ml<span class="w"> </span>--editable-corneto
+
+<span class="c1"># Point to a specific CORNETO checkout</span>
+poetry<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>docs/tutorials/run_notebooks.py<span class="w"> </span>ml<span class="w"> </span>--editable-corneto<span class="w"> </span>--corneto-root<span class="w"> </span>/path/to/corneto
+</pre></div>
 </div>
 </section>
 </section>
@@ -502,6 +524,7 @@
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#additional-tutorials">Additional Tutorials</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#running-tutorials-locally">Running tutorials locally</a></li>
 </ul>
   </nav></div>
 
@@ -530,7 +553,7 @@
 
   <p class="copyright">
     
-      © Copyright 2023-2025, Saez-Rodriguez lab. (EMBL-EBI, Heidelberg University).
+      © Copyright 2023-2026, Saez-Rodriguez lab. (EMBL-EBI, Heidelberg University).
       <br/>
     
   </p>

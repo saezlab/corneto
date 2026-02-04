@@ -1,0 +1,200 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "f2d7b3c9",
+   "metadata": {},
+   "source": [
+    "# CARNIVAL\n",
+    "\n",
+    "CARNIVAL (CAusal Reasoning for Network identification using Integer VALue programming) is a method for the identification of upstream reguatory signalling pathways from downstream gene expression (GEX). Applications of CARNIVAL include the identification of drug’s modes of action and of deregulated processes in diseases (even if the molecular targets remain unknown) by deciphering the alterations of main signalling pathways as well as alternative pathways and off-target effects.\n",
+    "\n",
+    "<div style=\"text-align: center; margin: 25px;\">\n",
+    "    <img src=\"/_static/carnival-abstract.png\" alt=\"CARNIVAL abstract\" style=\"width: 100%; max-width: 800px; margin-bottom: 10px;\" onerror=\"this.onerror=null; this.src='https://github.com/saezlab/PerMedCoE_tools_virtual_course_2023/raw/main/assets/carnival_graphical_abstract.png';\">\n",
+    "    <br>\n",
+    "    <span style=\"font-size: smaller; line-height: 1.25em; display: inline-block; margin-top: -2px;\">\n",
+    "        <b>Figure 1:</b> Liu A., Trairatphisan P., Gjerga E. et al. From expression footprints to causal pathways: contextualizing large signaling networks with CARNIVAL npj Systems Biology and Applications volume 5, Article number: 40 (2019).\n",
+    "    </span>\n",
+    "</div>\n",
+    "\n",
+    "The aim of the CARNIVAL pipeline is to identify a subset of interactions from a prior knowledge network that represent potential regulated pathways linking known or potential targets of perturbation towards active transcription factors derived from GEX data. The pipeline includes a number improved functionalities comparing to the original version and consists of the following processes:\n",
+    "\n",
+    "- Transcription factors’ (TFs) activities and pathway scores from gene expressions can be inferred with our in-house tools (Dorothea, CollecTRI).\n",
+    "- TFs’ activities and signed directed protein-protein interaction networks with or without the provided target of perturbations and pathway scores are then used to construct an optimization problem with CORNETO.\n",
+    "- CORNETO is used to solve the optimization problem with any of the supported solvers (CPLEX, GUROBI, SCIPY, etc), which identifies the sub-network topology with minimised fitting error and model size.\n",
+    "\n",
+    "\n",
+    "\n",
+    "The original version of CARNIVAL was implemented in R and CPLEX. The new re-implementationo of CARNIVAL in CORNETO support a wide variety of solvers thanks to the support of both CVXPY and PICOS. It also has more flexibility since the problem is symbolically defined, and can be modified through the CORNETO API after creating the CARNIVAL problem. This gives user extra flexibility to modify the problem or to use CORNETO as a building block for other optimization problems. "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "a1684e94",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import corneto as cn\n",
+    "\n",
+    "cn.info()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "86e3ce04",
+   "metadata": {},
+   "source": [
+    "## A toy example"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "2a193cb0",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "G = cn.Graph.from_sif_tuples(\n",
+    "    [\n",
+    "        (\"I1\", 1, \"N1\"),  # I1 activates N1\n",
+    "        (\"N1\", 1, \"M1\"),  # N1 activates M1\n",
+    "        (\"N1\", 1, \"M2\"),  # N1 activaes M2\n",
+    "        (\"I2\", -1, \"N2\"),  # I2 inhibits N2\n",
+    "        (\"N2\", -1, \"M2\"),  # N2 inhibits M2\n",
+    "        (\"N2\", -1, \"M1\"),  # N2 inhibits M1\n",
+    "    ]\n",
+    ")\n",
+    "G.plot()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "176d8ced",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from corneto.methods import runVanillaCarnival\n",
+    "\n",
+    "# These are the measurements (e.g. TF activity from Decoupler).\n",
+    "# Positive values correspond to up-regulation and negative values\n",
+    "# with down-regulation. The bigger the absolute value is,\n",
+    "# the bigger the importance is\n",
+    "measurements = {\"M1\": 1, \"M2\": 1}\n",
+    "\n",
+    "# Perturbations are the upstream nodes were the signal originates on,\n",
+    "# for example, ligands or receptors.\n",
+    "perturbations = {\"I1\": 1, \"I2\": 1}\n",
+    "\n",
+    "# We run the `standard` carnival problem. This interface is similar\n",
+    "# to the old R function https://saezlab.github.io/CARNIVAL/reference/runVanillaCarnival.html\n",
+    "P, Gf = runVanillaCarnival(perturbations, measurements, G, betaWeight=0.1)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "79894ada",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "P.objectives[0].value"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "8b03e08d",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "P.objectives[1].value"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "c8be26ab",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# The method for plotting will be simplified in next versions\n",
+    "G.plot(\n",
+    "    custom_edge_attr=cn.pl.edge_style(P, edge_var=\"edge_values_c0\"),\n",
+    "    custom_vertex_attr=cn.pl.vertex_style(P, Gf, vertex_var=\"vertex_values_c0\"),\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "a7b0d803",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import pandas as pd\n",
+    "\n",
+    "from corneto.methods.carnival import get_result, get_selected_edges\n",
+    "\n",
+    "V, E = get_result(P, Gf)\n",
+    "pd.DataFrame(V)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "7ff44c27",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "pd.DataFrame(E)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "548f868d",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "G_sol = Gf.edge_subgraph(get_selected_edges(P, Gf))\n",
+    "G_sol.plot()"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.9.13"
+  },
+  "toc": {
+   "base_numbering": 1,
+   "nav_menu": {},
+   "number_sections": true,
+   "sideBar": true,
+   "skip_h1_title": false,
+   "title_cell": "Table of Contents",
+   "title_sidebar": "Contents",
+   "toc_cell": false,
+   "toc_position": {},
+   "toc_section_display": true,
+   "toc_window_display": false
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

@@ -60,7 +60,7 @@
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
-    <link rel="canonical" href="https://saezlab.github.io/corneto/guide/signaling/cellnopt_ILP.html" />
+    <link rel="canonical" href="https://username.github.io/corneto/guide/signaling/cellnopt_ILP.html" />
     <link rel="icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -494,7 +494,7 @@
                    style="width:100%;max-width:100px;" />
             </td>
             <td>
-              <table><tr><td>Installed version:</td><td style='text-align:left'>v1.0.0b2.post25.dev0+fe9ca1ee</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.8.0, PICOS v2.6.2</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CVXOPT, GLPK, GLPK_MI, HIGHS, SCIP, SCIPY</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.3</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href="https://github.com/saezlab/corneto">https://github.com/saezlab/corneto</a></td></tr></table>
+              <table><tr><td>Installed version:</td><td style='text-align:left'>v1.0.0b3.post1.dev0+048af53c</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.8.1, PICOS v2.6.2</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CVXOPT, GLPK, GLPK_MI, HIGHS, SCIP, SCIPY</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.3</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/private/var/folders/b4/gwkwsdb93sv11rtztqbm3l040000gn/T/tmp.Dst0hQI0PJ/wt-latest/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href="https://github.com/saezlab/corneto">https://github.com/saezlab/corneto</a></td></tr></table>
             </td>
           </tr>
         </table>
@@ -522,8 +522,39 @@ The prior knowledge network of ‘G1’ contains three nodes, EGF, TNFa and Ras.
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/4e46465ca2e4f77c764f290c442ebba66ba6d1e724855d58478655f7aa98c482.svg" src="../../_images/4e46465ca2e4f77c764f290c442ebba66ba6d1e724855d58478655f7aa98c482.svg" />
-</div>
+<div class="output text_html"></div><div class="output text_html">
+    <div id='container-1d582f5f-0ed6-4a4d-94a6-2978cd184f4f'></div> <!-- Container to display the graph -->
+    <script>
+    function loadScript(url, callback) {
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = url;
+        script.onreadystatechange = callback;
+        script.onload = callback;
+        document.head.appendChild(script);
+    }
+
+    function renderGraph(encodedDot) {
+        loadScript('https://unpkg.com/viz.js/viz.js', function() {
+            loadScript('https://unpkg.com/viz.js/full.render.js', function() {
+                var viz = new Viz();
+                var dotString = atob(encodedDot);
+
+                viz.renderSVGElement(dotString)
+                    .then(function(element) {
+                        document.getElementById('container-1d582f5f-0ed6-4a4d-94a6-2978cd184f4f').appendChild(element);
+                    })
+                    .catch(error => {
+                        console.error('Error rendering graph:', error);
+                    });
+            });
+        });
+    }
+
+    // Execute the rendering function with the base64-encoded DOT string
+    renderGraph("ZGlncmFwaCB7Cglub2RlIFtmaXhlZHNpemU9dHJ1ZV0KCUVHRiBbc2hhcGU9Y2lyY2xlXQoJQU5EMSBbc2hhcGU9Y2lyY2xlXQoJRUdGIC0+IEFORDEgW2Fycm93aGVhZD1ub3JtYWxdCglUTkZhIFtzaGFwZT1jaXJjbGVdCglBTkQxIFtzaGFwZT1jaXJjbGVdCglUTkZhIC0+IEFORDEgW2Fycm93aGVhZD1ub3JtYWxdCglBTkQxIFtzaGFwZT1jaXJjbGVdCglSYXMgW3NoYXBlPWNpcmNsZV0KCUFORDEgLT4gUmFzIFthcnJvd2hlYWQ9bm9ybWFsXQoJRUdGIFtzaGFwZT1jaXJjbGVdCglSYXMgW3NoYXBlPWNpcmNsZV0KCUVHRiAtPiBSYXMgW2Fycm93aGVhZD1ub3JtYWxdCglUTkZhIFtzaGFwZT1jaXJjbGVdCglSYXMgW3NoYXBlPWNpcmNsZV0KCVRORmEgLT4gUmFzIFthcnJvd2hlYWQ9bm9ybWFsXQp9Cg==");
+    </script>
+    </div></div>
 </div>
 <p>Now, we organize some in-silico experimental data into a format that can be used by the CNO toolbox.</p>
 <p>First, we define 4 conditions (exp0 … exp3). In each condition, the activated nodes (EGF or TNFa) are set to 1 and the non-activated nodes to 0.
@@ -551,8 +582,39 @@ We expect that the optimization finds the correct subgraph of the above network,
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/b79eb8beaa21c67ef98dc11e8713b8280d5e7def532eaad4e12009a795ed48ed.svg" src="../../_images/b79eb8beaa21c67ef98dc11e8713b8280d5e7def532eaad4e12009a795ed48ed.svg" />
-</div>
+<div class="output text_html"></div><div class="output text_html">
+    <div id='container-42eee7a0-9f94-4b86-90fd-03689a47f1c6'></div> <!-- Container to display the graph -->
+    <script>
+    function loadScript(url, callback) {
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = url;
+        script.onreadystatechange = callback;
+        script.onload = callback;
+        document.head.appendChild(script);
+    }
+
+    function renderGraph(encodedDot) {
+        loadScript('https://unpkg.com/viz.js/viz.js', function() {
+            loadScript('https://unpkg.com/viz.js/full.render.js', function() {
+                var viz = new Viz();
+                var dotString = atob(encodedDot);
+
+                viz.renderSVGElement(dotString)
+                    .then(function(element) {
+                        document.getElementById('container-42eee7a0-9f94-4b86-90fd-03689a47f1c6').appendChild(element);
+                    })
+                    .catch(error => {
+                        console.error('Error rendering graph:', error);
+                    });
+            });
+        });
+    }
+
+    // Execute the rendering function with the base64-encoded DOT string
+    renderGraph("ZGlncmFwaCB7Cglub2RlIFtmaXhlZHNpemU9dHJ1ZV0KCUVHRiBbc2hhcGU9Y2lyY2xlXQoJQU5EMSBbc2hhcGU9Y2lyY2xlXQoJRUdGIC0+IEFORDEgW2Fycm93aGVhZD1ub3JtYWxdCglUTkZhIFtzaGFwZT1jaXJjbGVdCglBTkQxIFtzaGFwZT1jaXJjbGVdCglUTkZhIC0+IEFORDEgW2Fycm93aGVhZD1ub3JtYWxdCglBTkQxIFtzaGFwZT1jaXJjbGVdCglSYXMgW3NoYXBlPWNpcmNsZV0KCUFORDEgLT4gUmFzIFthcnJvd2hlYWQ9bm9ybWFsXQoJRUdGIFtzaGFwZT1jaXJjbGVdCglSYXMgW3NoYXBlPWNpcmNsZV0KCUVHRiAtPiBSYXMgW2Fycm93aGVhZD1ub3JtYWxdCglUTkZhIFtzaGFwZT1jaXJjbGVdCglSYXMgW3NoYXBlPWNpcmNsZV0KCVRORmEgLT4gUmFzIFthcnJvd2hlYWQ9bm9ybWFsXQoJZV81X3RhcmdldCBbc2hhcGU9cG9pbnRdCglSYXMgW3NoYXBlPWNpcmNsZV0KCVJhcyAtPiBlXzVfdGFyZ2V0IFthcnJvd2hlYWQ9bm9ybWFsXQoJZV82X3NvdXJjZSBbc2hhcGU9cG9pbnRdCglFR0YgW3NoYXBlPWNpcmNsZV0KCWVfNl9zb3VyY2UgLT4gRUdGIFthcnJvd2hlYWQ9bm9ybWFsXQoJZV83X3NvdXJjZSBbc2hhcGU9cG9pbnRdCglUTkZhIFtzaGFwZT1jaXJjbGVdCgllXzdfc291cmNlIC0+IFRORmEgW2Fycm93aGVhZD1ub3JtYWxdCn0K");
+    </script>
+    </div></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -561,7 +623,7 @@ We expect that the optimization finds the correct subgraph of the above network,
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/5c73ba820b6cd64de89483759a595673a43bb00047e92efdf2e84b7e07e70ad9.png" src="../../_images/5c73ba820b6cd64de89483759a595673a43bb00047e92efdf2e84b7e07e70ad9.png" />
+<img alt="../../_images/7997fff3557897f450b1a6b2399b73c937e232954634c95d1c148ad5de116f3b.png" src="../../_images/7997fff3557897f450b1a6b2399b73c937e232954634c95d1c148ad5de116f3b.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -578,7 +640,7 @@ We expect that the optimization finds the correct subgraph of the above network,
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/4e3fc491fb736e5dfff92aeceb5fc70126e642a9c45b2be03d72a4486ceb41c2.png" src="../../_images/4e3fc491fb736e5dfff92aeceb5fc70126e642a9c45b2be03d72a4486ceb41c2.png" />
+<img alt="../../_images/3e06c3dcdc68c101076d048c24d25fdf79d11a69043f68e026956a04b1e2cd5e.png" src="../../_images/3e06c3dcdc68c101076d048c24d25fdf79d11a69043f68e026956a04b1e2cd5e.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -588,8 +650,39 @@ We expect that the optimization finds the correct subgraph of the above network,
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/c61d3607bda18fa3e977dc4136911ddbee35e8fcef97a32cc8634abb595da2cd.svg" src="../../_images/c61d3607bda18fa3e977dc4136911ddbee35e8fcef97a32cc8634abb595da2cd.svg" />
-</div>
+<div class="output text_html"></div><div class="output text_html">
+    <div id='container-980bb3e1-1c28-451f-9995-438c1a2b4e80'></div> <!-- Container to display the graph -->
+    <script>
+    function loadScript(url, callback) {
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = url;
+        script.onreadystatechange = callback;
+        script.onload = callback;
+        document.head.appendChild(script);
+    }
+
+    function renderGraph(encodedDot) {
+        loadScript('https://unpkg.com/viz.js/viz.js', function() {
+            loadScript('https://unpkg.com/viz.js/full.render.js', function() {
+                var viz = new Viz();
+                var dotString = atob(encodedDot);
+
+                viz.renderSVGElement(dotString)
+                    .then(function(element) {
+                        document.getElementById('container-980bb3e1-1c28-451f-9995-438c1a2b4e80').appendChild(element);
+                    })
+                    .catch(error => {
+                        console.error('Error rendering graph:', error);
+                    });
+            });
+        });
+    }
+
+    // Execute the rendering function with the base64-encoded DOT string
+    renderGraph("ZGlncmFwaCB7Cglub2RlIFtmaXhlZHNpemU9dHJ1ZV0KCUVHRiBbc2hhcGU9Y2lyY2xlXQoJQU5EMSBbc2hhcGU9Y2lyY2xlXQoJRUdGIC0+IEFORDEgW2Fycm93aGVhZD1ub3JtYWwgY29sb3I9ZG9kZ2VyYmx1ZTQgcGVud2lkdGg9NV0KCVRORmEgW3NoYXBlPWNpcmNsZV0KCUFORDEgW3NoYXBlPWNpcmNsZV0KCVRORmEgLT4gQU5EMSBbYXJyb3doZWFkPW5vcm1hbCBjb2xvcj1kb2RnZXJibHVlNCBwZW53aWR0aD01XQoJQU5EMSBbc2hhcGU9Y2lyY2xlXQoJUmFzIFtzaGFwZT1jaXJjbGVdCglBTkQxIC0+IFJhcyBbYXJyb3doZWFkPW5vcm1hbCBjb2xvcj1kb2RnZXJibHVlNCBwZW53aWR0aD01XQoJRUdGIFtzaGFwZT1jaXJjbGVdCglSYXMgW3NoYXBlPWNpcmNsZV0KCUVHRiAtPiBSYXMgW2Fycm93aGVhZD1ub3JtYWwgY29sb3I9YmxhY2sgcGVud2lkdGg9MC4yNV0KCVRORmEgW3NoYXBlPWNpcmNsZV0KCVJhcyBbc2hhcGU9Y2lyY2xlXQoJVE5GYSAtPiBSYXMgW2Fycm93aGVhZD1ub3JtYWwgY29sb3I9YmxhY2sgcGVud2lkdGg9MC4yNV0KCWVfNV90YXJnZXQgW3NoYXBlPXBvaW50XQoJUmFzIFtzaGFwZT1jaXJjbGVdCglSYXMgLT4gZV81X3RhcmdldCBbYXJyb3doZWFkPW5vcm1hbCBjb2xvcj1kb2RnZXJibHVlNCBwZW53aWR0aD01XQoJZV82X3NvdXJjZSBbc2hhcGU9cG9pbnRdCglFR0YgW3NoYXBlPWNpcmNsZV0KCWVfNl9zb3VyY2UgLT4gRUdGIFthcnJvd2hlYWQ9bm9ybWFsIGNvbG9yPWRvZGdlcmJsdWU0IHBlbndpZHRoPTVdCgllXzdfc291cmNlIFtzaGFwZT1wb2ludF0KCVRORmEgW3NoYXBlPWNpcmNsZV0KCWVfN19zb3VyY2UgLT4gVE5GYSBbYXJyb3doZWFkPW5vcm1hbCBjb2xvcj1kb2RnZXJibHVlNCBwZW53aWR0aD01XQp9Cg==");
+    </script>
+    </div></div>
 </div>
 <p>Tasks:</p>
 <ol class="arabic simple">
@@ -633,8 +726,39 @@ Note the difference in the definition of the prior knowledge network.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/015ceeaeea34d4052d32e66820424fe5446084f93d597ca8cc81e22fb11a9e41.svg" src="../../_images/015ceeaeea34d4052d32e66820424fe5446084f93d597ca8cc81e22fb11a9e41.svg" />
-</div>
+<div class="output text_html"></div><div class="output text_html">
+    <div id='container-1172efe3-6c84-441a-94dd-40e7bd1db02a'></div> <!-- Container to display the graph -->
+    <script>
+    function loadScript(url, callback) {
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = url;
+        script.onreadystatechange = callback;
+        script.onload = callback;
+        document.head.appendChild(script);
+    }
+
+    function renderGraph(encodedDot) {
+        loadScript('https://unpkg.com/viz.js/viz.js', function() {
+            loadScript('https://unpkg.com/viz.js/full.render.js', function() {
+                var viz = new Viz();
+                var dotString = atob(encodedDot);
+
+                viz.renderSVGElement(dotString)
+                    .then(function(element) {
+                        document.getElementById('container-1172efe3-6c84-441a-94dd-40e7bd1db02a').appendChild(element);
+                    })
+                    .catch(error => {
+                        console.error('Error rendering graph:', error);
+                    });
+            });
+        });
+    }
+
+    // Execute the rendering function with the base64-encoded DOT string
+    renderGraph("ZGlncmFwaCB7Cglub2RlIFtmaXhlZHNpemU9dHJ1ZV0KCUVHRiBbc2hhcGU9Y2lyY2xlXQoJQU5EMSBbc2hhcGU9Y2lyY2xlXQoJRUdGIC0+IEFORDEgW2Fycm93aGVhZD10ZWVdCglUTkZhIFtzaGFwZT1jaXJjbGVdCglBTkQxIFtzaGFwZT1jaXJjbGVdCglUTkZhIC0+IEFORDEgW2Fycm93aGVhZD1ub3JtYWxdCglBTkQxIFtzaGFwZT1jaXJjbGVdCglSYXMgW3NoYXBlPWNpcmNsZV0KCUFORDEgLT4gUmFzIFthcnJvd2hlYWQ9bm9ybWFsXQoJRUdGIFtzaGFwZT1jaXJjbGVdCglSYXMgW3NoYXBlPWNpcmNsZV0KCUVHRiAtPiBSYXMgW2Fycm93aGVhZD10ZWVdCglUTkZhIFtzaGFwZT1jaXJjbGVdCglSYXMgW3NoYXBlPWNpcmNsZV0KCVRORmEgLT4gUmFzIFthcnJvd2hlYWQ9bm9ybWFsXQoJZV81X3RhcmdldCBbc2hhcGU9cG9pbnRdCglSYXMgW3NoYXBlPWNpcmNsZV0KCVJhcyAtPiBlXzVfdGFyZ2V0IFthcnJvd2hlYWQ9bm9ybWFsXQoJZV82X3NvdXJjZSBbc2hhcGU9cG9pbnRdCglFR0YgW3NoYXBlPWNpcmNsZV0KCWVfNl9zb3VyY2UgLT4gRUdGIFthcnJvd2hlYWQ9bm9ybWFsXQoJZV83X3NvdXJjZSBbc2hhcGU9cG9pbnRdCglUTkZhIFtzaGFwZT1jaXJjbGVdCgllXzdfc291cmNlIC0+IFRORmEgW2Fycm93aGVhZD1ub3JtYWxdCn0K");
+    </script>
+    </div></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -650,7 +774,7 @@ Note the difference in the definition of the prior knowledge network.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/28f6c11c8bc471a7cda9b043e4abe0ae6af4e4eb2dc755eb4bdb46fdfd169a39.png" src="../../_images/28f6c11c8bc471a7cda9b043e4abe0ae6af4e4eb2dc755eb4bdb46fdfd169a39.png" />
+<img alt="../../_images/28dba9a8f709f1ac9277808f478e972a93a03ab78c8103b86c2aed2c45bea92d.png" src="../../_images/28dba9a8f709f1ac9277808f478e972a93a03ab78c8103b86c2aed2c45bea92d.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -660,8 +784,39 @@ Note the difference in the definition of the prior knowledge network.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/4ce7860609960047e739d838509ef98935a8904cd8f2aa979eaab392052342cf.svg" src="../../_images/4ce7860609960047e739d838509ef98935a8904cd8f2aa979eaab392052342cf.svg" />
-</div>
+<div class="output text_html"></div><div class="output text_html">
+    <div id='container-5b066d9d-ff09-4c0f-938e-e3f564e4ac6a'></div> <!-- Container to display the graph -->
+    <script>
+    function loadScript(url, callback) {
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = url;
+        script.onreadystatechange = callback;
+        script.onload = callback;
+        document.head.appendChild(script);
+    }
+
+    function renderGraph(encodedDot) {
+        loadScript('https://unpkg.com/viz.js/viz.js', function() {
+            loadScript('https://unpkg.com/viz.js/full.render.js', function() {
+                var viz = new Viz();
+                var dotString = atob(encodedDot);
+
+                viz.renderSVGElement(dotString)
+                    .then(function(element) {
+                        document.getElementById('container-5b066d9d-ff09-4c0f-938e-e3f564e4ac6a').appendChild(element);
+                    })
+                    .catch(error => {
+                        console.error('Error rendering graph:', error);
+                    });
+            });
+        });
+    }
+
+    // Execute the rendering function with the base64-encoded DOT string
+    renderGraph("ZGlncmFwaCB7Cglub2RlIFtmaXhlZHNpemU9dHJ1ZV0KCUVHRiBbc2hhcGU9Y2lyY2xlXQoJQU5EMSBbc2hhcGU9Y2lyY2xlXQoJRUdGIC0+IEFORDEgW2Fycm93aGVhZD10ZWUgY29sb3I9YmxhY2sgcGVud2lkdGg9MC4yNV0KCVRORmEgW3NoYXBlPWNpcmNsZV0KCUFORDEgW3NoYXBlPWNpcmNsZV0KCVRORmEgLT4gQU5EMSBbYXJyb3doZWFkPW5vcm1hbCBjb2xvcj1ibGFjayBwZW53aWR0aD0wLjI1XQoJQU5EMSBbc2hhcGU9Y2lyY2xlXQoJUmFzIFtzaGFwZT1jaXJjbGVdCglBTkQxIC0+IFJhcyBbYXJyb3doZWFkPW5vcm1hbCBjb2xvcj1ibGFjayBwZW53aWR0aD0wLjI1XQoJRUdGIFtzaGFwZT1jaXJjbGVdCglSYXMgW3NoYXBlPWNpcmNsZV0KCUVHRiAtPiBSYXMgW2Fycm93aGVhZD10ZWUgY29sb3I9ZG9kZ2VyYmx1ZTQgcGVud2lkdGg9NV0KCVRORmEgW3NoYXBlPWNpcmNsZV0KCVJhcyBbc2hhcGU9Y2lyY2xlXQoJVE5GYSAtPiBSYXMgW2Fycm93aGVhZD1ub3JtYWwgY29sb3I9YmxhY2sgcGVud2lkdGg9MC4yNV0KCWVfNV90YXJnZXQgW3NoYXBlPXBvaW50XQoJUmFzIFtzaGFwZT1jaXJjbGVdCglSYXMgLT4gZV81X3RhcmdldCBbYXJyb3doZWFkPW5vcm1hbCBjb2xvcj1kb2RnZXJibHVlNCBwZW53aWR0aD01XQoJZV82X3NvdXJjZSBbc2hhcGU9cG9pbnRdCglFR0YgW3NoYXBlPWNpcmNsZV0KCWVfNl9zb3VyY2UgLT4gRUdGIFthcnJvd2hlYWQ9bm9ybWFsIGNvbG9yPWJsYWNrIHBlbndpZHRoPTAuMjVdCgllXzdfc291cmNlIFtzaGFwZT1wb2ludF0KCVRORmEgW3NoYXBlPWNpcmNsZV0KCWVfN19zb3VyY2UgLT4gVE5GYSBbYXJyb3doZWFkPW5vcm1hbCBjb2xvcj1ibGFjayBwZW53aWR0aD0wLjI1XQp9Cg==");
+    </script>
+    </div></div>
 </div>
 </section>
 <section id="inhibition-with-and-gates">
@@ -699,8 +854,39 @@ Note the difference in the definition of the prior knowledge network.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/015ceeaeea34d4052d32e66820424fe5446084f93d597ca8cc81e22fb11a9e41.svg" src="../../_images/015ceeaeea34d4052d32e66820424fe5446084f93d597ca8cc81e22fb11a9e41.svg" />
-</div>
+<div class="output text_html"></div><div class="output text_html">
+    <div id='container-879e3eb8-4326-473d-8863-659fd6dd81af'></div> <!-- Container to display the graph -->
+    <script>
+    function loadScript(url, callback) {
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = url;
+        script.onreadystatechange = callback;
+        script.onload = callback;
+        document.head.appendChild(script);
+    }
+
+    function renderGraph(encodedDot) {
+        loadScript('https://unpkg.com/viz.js/viz.js', function() {
+            loadScript('https://unpkg.com/viz.js/full.render.js', function() {
+                var viz = new Viz();
+                var dotString = atob(encodedDot);
+
+                viz.renderSVGElement(dotString)
+                    .then(function(element) {
+                        document.getElementById('container-879e3eb8-4326-473d-8863-659fd6dd81af').appendChild(element);
+                    })
+                    .catch(error => {
+                        console.error('Error rendering graph:', error);
+                    });
+            });
+        });
+    }
+
+    // Execute the rendering function with the base64-encoded DOT string
+    renderGraph("ZGlncmFwaCB7Cglub2RlIFtmaXhlZHNpemU9dHJ1ZV0KCUVHRiBbc2hhcGU9Y2lyY2xlXQoJQU5EMSBbc2hhcGU9Y2lyY2xlXQoJRUdGIC0+IEFORDEgW2Fycm93aGVhZD10ZWVdCglUTkZhIFtzaGFwZT1jaXJjbGVdCglBTkQxIFtzaGFwZT1jaXJjbGVdCglUTkZhIC0+IEFORDEgW2Fycm93aGVhZD1ub3JtYWxdCglBTkQxIFtzaGFwZT1jaXJjbGVdCglSYXMgW3NoYXBlPWNpcmNsZV0KCUFORDEgLT4gUmFzIFthcnJvd2hlYWQ9bm9ybWFsXQoJRUdGIFtzaGFwZT1jaXJjbGVdCglSYXMgW3NoYXBlPWNpcmNsZV0KCUVHRiAtPiBSYXMgW2Fycm93aGVhZD10ZWVdCglUTkZhIFtzaGFwZT1jaXJjbGVdCglSYXMgW3NoYXBlPWNpcmNsZV0KCVRORmEgLT4gUmFzIFthcnJvd2hlYWQ9bm9ybWFsXQoJZV81X3RhcmdldCBbc2hhcGU9cG9pbnRdCglSYXMgW3NoYXBlPWNpcmNsZV0KCVJhcyAtPiBlXzVfdGFyZ2V0IFthcnJvd2hlYWQ9bm9ybWFsXQoJZV82X3NvdXJjZSBbc2hhcGU9cG9pbnRdCglFR0YgW3NoYXBlPWNpcmNsZV0KCWVfNl9zb3VyY2UgLT4gRUdGIFthcnJvd2hlYWQ9bm9ybWFsXQoJZV83X3NvdXJjZSBbc2hhcGU9cG9pbnRdCglUTkZhIFtzaGFwZT1jaXJjbGVdCgllXzdfc291cmNlIC0+IFRORmEgW2Fycm93aGVhZD1ub3JtYWxdCn0K");
+    </script>
+    </div></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -710,8 +896,39 @@ Note the difference in the definition of the prior knowledge network.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/2ed3796501afc91e03c6e1583309ce55fc40f84d6e4b51e9ee525c1413413a7b.svg" src="../../_images/2ed3796501afc91e03c6e1583309ce55fc40f84d6e4b51e9ee525c1413413a7b.svg" />
-</div>
+<div class="output text_html"></div><div class="output text_html">
+    <div id='container-f86aa352-6db9-4813-9aa1-654fa8e95996'></div> <!-- Container to display the graph -->
+    <script>
+    function loadScript(url, callback) {
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = url;
+        script.onreadystatechange = callback;
+        script.onload = callback;
+        document.head.appendChild(script);
+    }
+
+    function renderGraph(encodedDot) {
+        loadScript('https://unpkg.com/viz.js/viz.js', function() {
+            loadScript('https://unpkg.com/viz.js/full.render.js', function() {
+                var viz = new Viz();
+                var dotString = atob(encodedDot);
+
+                viz.renderSVGElement(dotString)
+                    .then(function(element) {
+                        document.getElementById('container-f86aa352-6db9-4813-9aa1-654fa8e95996').appendChild(element);
+                    })
+                    .catch(error => {
+                        console.error('Error rendering graph:', error);
+                    });
+            });
+        });
+    }
+
+    // Execute the rendering function with the base64-encoded DOT string
+    renderGraph("ZGlncmFwaCB7Cglub2RlIFtmaXhlZHNpemU9dHJ1ZV0KCUVHRiBbc2hhcGU9Y2lyY2xlXQoJQU5EMSBbc2hhcGU9Y2lyY2xlXQoJRUdGIC0+IEFORDEgW2Fycm93aGVhZD10ZWUgY29sb3I9ZG9kZ2VyYmx1ZTQgcGVud2lkdGg9NV0KCVRORmEgW3NoYXBlPWNpcmNsZV0KCUFORDEgW3NoYXBlPWNpcmNsZV0KCVRORmEgLT4gQU5EMSBbYXJyb3doZWFkPW5vcm1hbCBjb2xvcj1kb2RnZXJibHVlNCBwZW53aWR0aD01XQoJQU5EMSBbc2hhcGU9Y2lyY2xlXQoJUmFzIFtzaGFwZT1jaXJjbGVdCglBTkQxIC0+IFJhcyBbYXJyb3doZWFkPW5vcm1hbCBjb2xvcj1kb2RnZXJibHVlNCBwZW53aWR0aD01XQoJRUdGIFtzaGFwZT1jaXJjbGVdCglSYXMgW3NoYXBlPWNpcmNsZV0KCUVHRiAtPiBSYXMgW2Fycm93aGVhZD10ZWUgY29sb3I9YmxhY2sgcGVud2lkdGg9MC4yNV0KCVRORmEgW3NoYXBlPWNpcmNsZV0KCVJhcyBbc2hhcGU9Y2lyY2xlXQoJVE5GYSAtPiBSYXMgW2Fycm93aGVhZD1ub3JtYWwgY29sb3I9YmxhY2sgcGVud2lkdGg9MC4yNV0KCWVfNV90YXJnZXQgW3NoYXBlPXBvaW50XQoJUmFzIFtzaGFwZT1jaXJjbGVdCglSYXMgLT4gZV81X3RhcmdldCBbYXJyb3doZWFkPW5vcm1hbCBjb2xvcj1kb2RnZXJibHVlNCBwZW53aWR0aD01XQoJZV82X3NvdXJjZSBbc2hhcGU9cG9pbnRdCglFR0YgW3NoYXBlPWNpcmNsZV0KCWVfNl9zb3VyY2UgLT4gRUdGIFthcnJvd2hlYWQ9bm9ybWFsIGNvbG9yPWJsYWNrIHBlbndpZHRoPTAuMjVdCgllXzdfc291cmNlIFtzaGFwZT1wb2ludF0KCVRORmEgW3NoYXBlPWNpcmNsZV0KCWVfN19zb3VyY2UgLT4gVE5GYSBbYXJyb3doZWFkPW5vcm1hbCBjb2xvcj1kb2RnZXJibHVlNCBwZW53aWR0aD01XQp9Cg==");
+    </script>
+    </div></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -720,7 +937,7 @@ Note the difference in the definition of the prior knowledge network.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/cfed092dc3ab5d418e627c3240d19e8a62e1bebc98ed65b12dbfdb603dd475d4.png" src="../../_images/cfed092dc3ab5d418e627c3240d19e8a62e1bebc98ed65b12dbfdb603dd475d4.png" />
+<img alt="../../_images/3830281808fa8edcba46edde4be638341fb12b15436cdc507094dc2ba9acbbf1.png" src="../../_images/3830281808fa8edcba46edde4be638341fb12b15436cdc507094dc2ba9acbbf1.png" />
 </div>
 </div>
 </section>
@@ -900,8 +1117,39 @@ Note the difference in the definition of the prior knowledge network.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/a7b2152f0be063ecdd4d073baa74125df189602839b0ffcfd773741e4eb18dcf.svg" src="../../_images/a7b2152f0be063ecdd4d073baa74125df189602839b0ffcfd773741e4eb18dcf.svg" />
-</div>
+<div class="output text_html"></div><div class="output text_html">
+    <div id='container-383a3b70-72e7-48b4-9b73-f3d74a334b50'></div> <!-- Container to display the graph -->
+    <script>
+    function loadScript(url, callback) {
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = url;
+        script.onreadystatechange = callback;
+        script.onload = callback;
+        document.head.appendChild(script);
+    }
+
+    function renderGraph(encodedDot) {
+        loadScript('https://unpkg.com/viz.js/viz.js', function() {
+            loadScript('https://unpkg.com/viz.js/full.render.js', function() {
+                var viz = new Viz();
+                var dotString = atob(encodedDot);
+
+                viz.renderSVGElement(dotString)
+                    .then(function(element) {
+                        document.getElementById('container-383a3b70-72e7-48b4-9b73-f3d74a334b50').appendChild(element);
+                    })
+                    .catch(error => {
+                        console.error('Error rendering graph:', error);
+                    });
+            });
+        });
+    }
+
+    // Execute the rendering function with the base64-encoded DOT string
+    renderGraph("ZGlncmFwaCB7Cglub2RlIFtmaXhlZHNpemU9dHJ1ZV0KCUVHRiBbc2hhcGU9Y2lyY2xlXQoJUmFzIFtzaGFwZT1jaXJjbGVdCglFR0YgLT4gUmFzIFthcnJvd2hlYWQ9bm9ybWFsXQoJRUdGIFtzaGFwZT1jaXJjbGVdCglQSTNLIFtzaGFwZT1jaXJjbGVdCglFR0YgLT4gUEkzSyBbYXJyb3doZWFkPW5vcm1hbF0KCVRORmEgW3NoYXBlPWNpcmNsZV0KCVBJM0sgW3NoYXBlPWNpcmNsZV0KCVRORmEgLT4gUEkzSyBbYXJyb3doZWFkPW5vcm1hbF0KCVRORmEgW3NoYXBlPWNpcmNsZV0KCVRSQUY2IFtzaGFwZT1jaXJjbGVdCglUTkZhIC0+IFRSQUY2IFthcnJvd2hlYWQ9bm9ybWFsXQoJVFJBRjYgW3NoYXBlPWNpcmNsZV0KCXAzOCBbc2hhcGU9Y2lyY2xlXQoJVFJBRjYgLT4gcDM4IFthcnJvd2hlYWQ9bm9ybWFsXQoJVFJBRjYgW3NoYXBlPWNpcmNsZV0KCUpuayBbc2hhcGU9Y2lyY2xlXQoJVFJBRjYgLT4gSm5rIFthcnJvd2hlYWQ9bm9ybWFsXQoJVFJBRjYgW3NoYXBlPWNpcmNsZV0KCU5Ga0IgW3NoYXBlPWNpcmNsZV0KCVRSQUY2IC0+IE5Ga0IgW2Fycm93aGVhZD1ub3JtYWxdCglKbmsgW3NoYXBlPWNpcmNsZV0KCWNKdW4gW3NoYXBlPWNpcmNsZV0KCUpuayAtPiBjSnVuIFthcnJvd2hlYWQ9bm9ybWFsXQoJcDM4IFtzaGFwZT1jaXJjbGVdCglIc3AyNyBbc2hhcGU9Y2lyY2xlXQoJcDM4IC0+IEhzcDI3IFthcnJvd2hlYWQ9bm9ybWFsXQoJUEkzSyBbc2hhcGU9Y2lyY2xlXQoJQWt0IFtzaGFwZT1jaXJjbGVdCglQSTNLIC0+IEFrdCBbYXJyb3doZWFkPW5vcm1hbF0KCVJhcyBbc2hhcGU9Y2lyY2xlXQoJUmFmIFtzaGFwZT1jaXJjbGVdCglSYXMgLT4gUmFmIFthcnJvd2hlYWQ9bm9ybWFsXQoJUmFmIFtzaGFwZT1jaXJjbGVdCglNZWsgW3NoYXBlPWNpcmNsZV0KCVJhZiAtPiBNZWsgW2Fycm93aGVhZD1ub3JtYWxdCglBa3QgW3NoYXBlPWNpcmNsZV0KCU1layBbc2hhcGU9Y2lyY2xlXQoJQWt0IC0+IE1layBbYXJyb3doZWFkPXRlZV0KCU1layBbc2hhcGU9Y2lyY2xlXQoJcDkwUlNLIFtzaGFwZT1jaXJjbGVdCglNZWsgLT4gcDkwUlNLIFthcnJvd2hlYWQ9bm9ybWFsXQoJTWVrIFtzaGFwZT1jaXJjbGVdCglFcmsgW3NoYXBlPWNpcmNsZV0KCU1layAtPiBFcmsgW2Fycm93aGVhZD1ub3JtYWxdCglFcmsgW3NoYXBlPWNpcmNsZV0KCUhzcDI3IFtzaGFwZT1jaXJjbGVdCglFcmsgLT4gSHNwMjcgW2Fycm93aGVhZD1ub3JtYWxdCn0K");
+    </script>
+    </div></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -910,7 +1158,7 @@ Note the difference in the definition of the prior knowledge network.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/6fb21409ad61e478498226d0cc1c4119b2bd89263978f49b8b077949f60ebc8a.png" src="../../_images/6fb21409ad61e478498226d0cc1c4119b2bd89263978f49b8b077949f60ebc8a.png" />
+<img alt="../../_images/346850eca9a4a58f704c0ce952edb500c63ed1d85bdc1dfe884505cb7f956dbd.png" src="../../_images/346850eca9a4a58f704c0ce952edb500c63ed1d85bdc1dfe884505cb7f956dbd.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -921,8 +1169,39 @@ Note the difference in the definition of the prior knowledge network.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/63fa7777548e644fb8d835103a784e0cd5e171ab10c9fa4cc4fdd55929a403b2.svg" src="../../_images/63fa7777548e644fb8d835103a784e0cd5e171ab10c9fa4cc4fdd55929a403b2.svg" />
-</div>
+<div class="output text_html"></div><div class="output text_html">
+    <div id='container-cc0e49d4-bd3f-4149-a206-cb27c97c6f24'></div> <!-- Container to display the graph -->
+    <script>
+    function loadScript(url, callback) {
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = url;
+        script.onreadystatechange = callback;
+        script.onload = callback;
+        document.head.appendChild(script);
+    }
+
+    function renderGraph(encodedDot) {
+        loadScript('https://unpkg.com/viz.js/viz.js', function() {
+            loadScript('https://unpkg.com/viz.js/full.render.js', function() {
+                var viz = new Viz();
+                var dotString = atob(encodedDot);
+
+                viz.renderSVGElement(dotString)
+                    .then(function(element) {
+                        document.getElementById('container-cc0e49d4-bd3f-4149-a206-cb27c97c6f24').appendChild(element);
+                    })
+                    .catch(error => {
+                        console.error('Error rendering graph:', error);
+                    });
+            });
+        });
+    }
+
+    // Execute the rendering function with the base64-encoded DOT string
+    renderGraph("ZGlncmFwaCB7Cglub2RlIFtmaXhlZHNpemU9dHJ1ZV0KCUVHRiBbc2hhcGU9Y2lyY2xlXQoJUmFzIFtzaGFwZT1jaXJjbGVdCglFR0YgLT4gUmFzIFthcnJvd2hlYWQ9bm9ybWFsXQoJRUdGIFtzaGFwZT1jaXJjbGVdCglQSTNLIFtzaGFwZT1jaXJjbGVdCglFR0YgLT4gUEkzSyBbYXJyb3doZWFkPW5vcm1hbF0KCVRORmEgW3NoYXBlPWNpcmNsZV0KCVBJM0sgW3NoYXBlPWNpcmNsZV0KCVRORmEgLT4gUEkzSyBbYXJyb3doZWFkPW5vcm1hbF0KCVRORmEgW3NoYXBlPWNpcmNsZV0KCVRSQUY2IFtzaGFwZT1jaXJjbGVdCglUTkZhIC0+IFRSQUY2IFthcnJvd2hlYWQ9bm9ybWFsXQoJVFJBRjYgW3NoYXBlPWNpcmNsZV0KCXAzOCBbc2hhcGU9Y2lyY2xlXQoJVFJBRjYgLT4gcDM4IFthcnJvd2hlYWQ9bm9ybWFsXQoJVFJBRjYgW3NoYXBlPWNpcmNsZV0KCUpuayBbc2hhcGU9Y2lyY2xlXQoJVFJBRjYgLT4gSm5rIFthcnJvd2hlYWQ9bm9ybWFsXQoJVFJBRjYgW3NoYXBlPWNpcmNsZV0KCU5Ga0IgW3NoYXBlPWNpcmNsZV0KCVRSQUY2IC0+IE5Ga0IgW2Fycm93aGVhZD1ub3JtYWxdCglKbmsgW3NoYXBlPWNpcmNsZV0KCWNKdW4gW3NoYXBlPWNpcmNsZV0KCUpuayAtPiBjSnVuIFthcnJvd2hlYWQ9bm9ybWFsXQoJcDM4IFtzaGFwZT1jaXJjbGVdCglIc3AyNyBbc2hhcGU9Y2lyY2xlXQoJcDM4IC0+IEhzcDI3IFthcnJvd2hlYWQ9bm9ybWFsXQoJUEkzSyBbc2hhcGU9Y2lyY2xlXQoJQWt0IFtzaGFwZT1jaXJjbGVdCglQSTNLIC0+IEFrdCBbYXJyb3doZWFkPW5vcm1hbF0KCVJhcyBbc2hhcGU9Y2lyY2xlXQoJUmFmIFtzaGFwZT1jaXJjbGVdCglSYXMgLT4gUmFmIFthcnJvd2hlYWQ9bm9ybWFsXQoJUmFmIFtzaGFwZT1jaXJjbGVdCglNZWsgW3NoYXBlPWNpcmNsZV0KCVJhZiAtPiBNZWsgW2Fycm93aGVhZD1ub3JtYWxdCglBa3QgW3NoYXBlPWNpcmNsZV0KCU1layBbc2hhcGU9Y2lyY2xlXQoJQWt0IC0+IE1layBbYXJyb3doZWFkPXRlZV0KCU1layBbc2hhcGU9Y2lyY2xlXQoJcDkwUlNLIFtzaGFwZT1jaXJjbGVdCglNZWsgLT4gcDkwUlNLIFthcnJvd2hlYWQ9bm9ybWFsXQoJTWVrIFtzaGFwZT1jaXJjbGVdCglFcmsgW3NoYXBlPWNpcmNsZV0KCU1layAtPiBFcmsgW2Fycm93aGVhZD1ub3JtYWxdCglFcmsgW3NoYXBlPWNpcmNsZV0KCUhzcDI3IFtzaGFwZT1jaXJjbGVdCglFcmsgLT4gSHNwMjcgW2Fycm93aGVhZD1ub3JtYWxdCgllXzE2X3RhcmdldCBbc2hhcGU9cG9pbnRdCglFcmsgW3NoYXBlPWNpcmNsZV0KCUVyayAtPiBlXzE2X3RhcmdldCBbYXJyb3doZWFkPW5vcm1hbF0KCWVfMTdfdGFyZ2V0IFtzaGFwZT1wb2ludF0KCUhzcDI3IFtzaGFwZT1jaXJjbGVdCglIc3AyNyAtPiBlXzE3X3RhcmdldCBbYXJyb3doZWFkPW5vcm1hbF0KCWVfMThfdGFyZ2V0IFtzaGFwZT1wb2ludF0KCUpuayBbc2hhcGU9Y2lyY2xlXQoJSm5rIC0+IGVfMThfdGFyZ2V0IFthcnJvd2hlYWQ9bm9ybWFsXQoJZV8xOV90YXJnZXQgW3NoYXBlPXBvaW50XQoJcDkwUlNLIFtzaGFwZT1jaXJjbGVdCglwOTBSU0sgLT4gZV8xOV90YXJnZXQgW2Fycm93aGVhZD1ub3JtYWxdCgllXzIwX3RhcmdldCBbc2hhcGU9cG9pbnRdCgljSnVuIFtzaGFwZT1jaXJjbGVdCgljSnVuIC0+IGVfMjBfdGFyZ2V0IFthcnJvd2hlYWQ9bm9ybWFsXQoJZV8yMV90YXJnZXQgW3NoYXBlPXBvaW50XQoJTkZrQiBbc2hhcGU9Y2lyY2xlXQoJTkZrQiAtPiBlXzIxX3RhcmdldCBbYXJyb3doZWFkPW5vcm1hbF0KCWVfMjJfdGFyZ2V0IFtzaGFwZT1wb2ludF0KCUFrdCBbc2hhcGU9Y2lyY2xlXQoJQWt0IC0+IGVfMjJfdGFyZ2V0IFthcnJvd2hlYWQ9bm9ybWFsXQoJZV8yM19zb3VyY2UgW3NoYXBlPXBvaW50XQoJRUdGIFtzaGFwZT1jaXJjbGVdCgllXzIzX3NvdXJjZSAtPiBFR0YgW2Fycm93aGVhZD1ub3JtYWxdCgllXzI0X3NvdXJjZSBbc2hhcGU9cG9pbnRdCglUTkZhIFtzaGFwZT1jaXJjbGVdCgllXzI0X3NvdXJjZSAtPiBUTkZhIFthcnJvd2hlYWQ9bm9ybWFsXQp9Cg==");
+    </script>
+    </div></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -936,7 +1215,7 @@ Note the difference in the definition of the prior knowledge network.</p>
 <span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">21</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
 <span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">P_G3</span> <span class="o">=</span> <span class="n">cno</span><span class="o">.</span><span class="n">cellnoptILP</span><span class="p">(</span><span class="n">G3_prep</span><span class="p">,</span> <span class="n">exp_list_toy_full</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-<span class="nn">File ~/work/corneto/corneto/corneto/methods/signal/cellnopt_ilp.py:265,</span> in <span class="ni">cellnoptILP</span><span class="nt">(G, exp_list, solver, alpha_flow, verbose, backend)</span>
+<span class="nn">File /private/var/folders/b4/gwkwsdb93sv11rtztqbm3l040000gn/T/tmp.Dst0hQI0PJ/wt-latest/corneto/methods/signal/cellnopt_ilp.py:265,</span> in <span class="ni">cellnoptILP</span><span class="nt">(G, exp_list, solver, alpha_flow, verbose, backend)</span>
 <span class="g g-Whitespace">    </span><span class="mi">261</span>     <span class="n">P</span> <span class="o">+=</span> <span class="p">(</span>
 <span class="g g-Whitespace">    </span><span class="mi">262</span>         <span class="n">V</span><span class="p">[</span><span class="n">is_regular_node</span><span class="p">,</span> <span class="n">iexp</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="n">At</span> <span class="o">@</span> <span class="n">Eact</span><span class="p">)[</span><span class="n">is_regular_node</span><span class="p">,</span> <span class="n">iexp</span><span class="p">]</span>
 <span class="g g-Whitespace">    </span><span class="mi">263</span>     <span class="p">)</span>  <span class="c1"># but it has an upper constraint, so it takes 0 when all input are 0</span>

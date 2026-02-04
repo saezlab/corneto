@@ -42,8 +42,8 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-Z263GN2PKK"></script>
     <script>
@@ -60,7 +60,7 @@
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
-    <link rel="canonical" href="https://saezlab.github.io/corneto/tutorials/README.html" />
+    <link rel="canonical" href="https://username.github.io/corneto/tutorials/README.html" />
     <link rel="icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -598,14 +598,24 @@ poetry<span class="w"> </span>run<span class="w"> </span>python<span class="w"> 
 
 <span class="c1"># Preview commands without executing (dry run)</span>
 poetry<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>docs/tutorials/run_notebooks.py<span class="w"> </span>carnival<span class="w"> </span>--dry-run
+
+<span class="c1"># Rewrite notebooks in place (overwrites original .ipynb files)</span>
+poetry<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>docs/tutorials/run_notebooks.py<span class="w"> </span>carnival<span class="w"> </span>--rewrite
+
+<span class="c1"># Use local CORNETO source (editable) instead of the pinned PyPI version</span>
+poetry<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>docs/tutorials/run_notebooks.py<span class="w"> </span>carnival<span class="w"> </span>--editable-corneto
+
+<span class="c1"># Use a specific CORNETO checkout as the source</span>
+poetry<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>docs/tutorials/run_notebooks.py<span class="w"> </span>carnival<span class="w"> </span>--editable-corneto<span class="w"> </span>--corneto-root<span class="w"> </span>/path/to/corneto
 </pre></div>
 </div>
 <p>This script:</p>
 <ul class="simple">
 <li><p>Installs the pixi environment for each tutorial</p></li>
 <li><p>Executes notebooks using papermill</p></li>
-<li><p>Saves outputs to a <code class="docutils literal notranslate"><span class="pre">build/</span></code> directory within each tutorial folder</p></li>
-<li><p>Supports multiple tutorials at once and dry-run mode</p></li>
+<li><p>Saves outputs to a <code class="docutils literal notranslate"><span class="pre">build/</span></code> directory within each tutorial folder by default</p></li>
+<li><p>Supports multiple tutorials at once, dry-run mode, in-place rewriting with <code class="docutils literal notranslate"><span class="pre">--rewrite</span></code>,
+and testing against local source with <code class="docutils literal notranslate"><span class="pre">--editable-corneto</span></code></p></li>
 </ul>
 </section>
 <hr class="docutils" />
@@ -694,7 +704,7 @@ poetry<span class="w"> </span>run<span class="w"> </span>python<span class="w"> 
 
   <p class="copyright">
     
-      © Copyright 2023-2025, Saez-Rodriguez lab. (EMBL-EBI, Heidelberg University).
+      © Copyright 2023-2026, Saez-Rodriguez lab. (EMBL-EBI, Heidelberg University).
       <br/>
     
   </p>

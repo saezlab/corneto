@@ -60,7 +60,7 @@
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
-    <link rel="canonical" href="https://saezlab.github.io/corneto/guide/networks/shortest-paths.html" />
+    <link rel="canonical" href="https://username.github.io/corneto/guide/networks/shortest-paths.html" />
     <link rel="icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -482,7 +482,7 @@
             </td>
             <td>
             <table>
-                <tr><td>Installed version:</td><td style='text-align:left'>v1.0.0b0</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.7.1, PICOS v2.6.1</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CVXOPT, GLPK, GLPK_MI, HIGHS, SCIP, SCIPY</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.3</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href=https://github.com/saezlab/corneto>https://github.com/saezlab/corneto</a></td></tr>
+                <tr><td>Installed version:</td><td style='text-align:left'>v1.0.0b0</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.7.1, PICOS v2.6.1</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CVXOPT, GLPK, GLPK_MI, HIGHS, SCIP, SCIPY</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.3</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/private/var/folders/b4/gwkwsdb93sv11rtztqbm3l040000gn/T/tmp.Dst0hQI0PJ/wt-v1.0.0-beta.0/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href=https://github.com/saezlab/corneto>https://github.com/saezlab/corneto</a></td></tr>
             </table>
             </td>
         </tr>
@@ -503,8 +503,39 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/2630bae81fc12a6e23d9cf07e43d91d7325fd3a6f52681f14eeecc2a303c00a8.svg" src="../../_images/2630bae81fc12a6e23d9cf07e43d91d7325fd3a6f52681f14eeecc2a303c00a8.svg" />
-</div>
+<div class="output text_html"></div><div class="output text_html">
+    <div id='container-848477c3-cd82-4e3b-9413-e315124b8d1f'></div> <!-- Container to display the graph -->
+    <script>
+    function loadScript(url, callback) {
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = url;
+        script.onreadystatechange = callback;
+        script.onload = callback;
+        document.head.appendChild(script);
+    }
+
+    function renderGraph(encodedDot) {
+        loadScript('https://unpkg.com/viz.js/viz.js', function() {
+            loadScript('https://unpkg.com/viz.js/full.render.js', function() {
+                var viz = new Viz();
+                var dotString = atob(encodedDot);
+
+                viz.renderSVGElement(dotString)
+                    .then(function(element) {
+                        document.getElementById('container-848477c3-cd82-4e3b-9413-e315124b8d1f').appendChild(element);
+                    })
+                    .catch(error => {
+                        console.error('Error rendering graph:', error);
+                    });
+            });
+        });
+    }
+
+    // Execute the rendering function with the base64-encoded DOT string
+    renderGraph("ZGlncmFwaCB7Cglub2RlIFtmaXhlZHNpemU9dHJ1ZV0KCUEgW3NoYXBlPWNpcmNsZV0KCUIgW3NoYXBlPWNpcmNsZV0KCUEgLT4gQiBbYXJyb3doZWFkPW5vcm1hbF0KCUEgW3NoYXBlPWNpcmNsZV0KCUMgW3NoYXBlPWNpcmNsZV0KCUEgLT4gQyBbYXJyb3doZWFkPW5vcm1hbF0KCUIgW3NoYXBlPWNpcmNsZV0KCUQgW3NoYXBlPWNpcmNsZV0KCUIgLT4gRCBbYXJyb3doZWFkPW5vcm1hbF0KCUMgW3NoYXBlPWNpcmNsZV0KCUUgW3NoYXBlPWNpcmNsZV0KCUMgLT4gRSBbYXJyb3doZWFkPW5vcm1hbF0KCUUgW3NoYXBlPWNpcmNsZV0KCUYgW3NoYXBlPWNpcmNsZV0KCUUgLT4gRiBbYXJyb3doZWFkPW5vcm1hbF0KCUQgW3NoYXBlPWNpcmNsZV0KCUYgW3NoYXBlPWNpcmNsZV0KCUQgLT4gRiBbYXJyb3doZWFkPW5vcm1hbF0KCUYgW3NoYXBlPWNpcmNsZV0KCUcgW3NoYXBlPWNpcmNsZV0KCUYgLT4gRyBbYXJyb3doZWFkPW5vcm1hbF0KfQo=");
+    </script>
+    </div></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -517,8 +548,39 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/08d25f9cf2bdba35ef29a21209ab3f993c2a331a9c5712043ae6dfc6e3889325.svg" src="../../_images/08d25f9cf2bdba35ef29a21209ab3f993c2a331a9c5712043ae6dfc6e3889325.svg" />
-</div>
+<div class="output text_html"></div><div class="output text_html">
+    <div id='container-ee0c2741-7a39-48f3-967a-5b20dff56bf3'></div> <!-- Container to display the graph -->
+    <script>
+    function loadScript(url, callback) {
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = url;
+        script.onreadystatechange = callback;
+        script.onload = callback;
+        document.head.appendChild(script);
+    }
+
+    function renderGraph(encodedDot) {
+        loadScript('https://unpkg.com/viz.js/viz.js', function() {
+            loadScript('https://unpkg.com/viz.js/full.render.js', function() {
+                var viz = new Viz();
+                var dotString = atob(encodedDot);
+
+                viz.renderSVGElement(dotString)
+                    .then(function(element) {
+                        document.getElementById('container-ee0c2741-7a39-48f3-967a-5b20dff56bf3').appendChild(element);
+                    })
+                    .catch(error => {
+                        console.error('Error rendering graph:', error);
+                    });
+            });
+        });
+    }
+
+    // Execute the rendering function with the base64-encoded DOT string
+    renderGraph("ZGlncmFwaCB7Cglub2RlIFtmaXhlZHNpemU9dHJ1ZV0KCUEgW3NoYXBlPWNpcmNsZV0KCUMgW3NoYXBlPWNpcmNsZV0KCUEgLT4gQyBbYXJyb3doZWFkPW5vcm1hbF0KCUMgW3NoYXBlPWNpcmNsZV0KCUUgW3NoYXBlPWNpcmNsZV0KCUMgLT4gRSBbYXJyb3doZWFkPW5vcm1hbF0KCUUgW3NoYXBlPWNpcmNsZV0KCUYgW3NoYXBlPWNpcmNsZV0KCUUgLT4gRiBbYXJyb3doZWFkPW5vcm1hbF0KCUYgW3NoYXBlPWNpcmNsZV0KCUcgW3NoYXBlPWNpcmNsZV0KCUYgLT4gRyBbYXJyb3doZWFkPW5vcm1hbF0KfQo=");
+    </script>
+    </div></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -565,7 +627,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[np.int64(78), 49, 73, 35, 264, np.int64(4551)]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[np.int64(947), 459, 33, 2, 985, 28, 11, np.int64(4426)]
 </pre></div>
 </div>
 </div>
@@ -577,7 +639,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>16.652592510910242
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>12.382882140025504
 </pre></div>
 </div>
 </div>
@@ -599,7 +661,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>np.float64(16.652592510910242)
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>np.float64(12.382882140025504)
 </pre></div>
 </div>
 </div>
@@ -611,8 +673,39 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/6c42e7f30da9d251d0a4c69bb2871c98f0b4ce567bbf269a248d2f842a223314.svg" src="../../_images/6c42e7f30da9d251d0a4c69bb2871c98f0b4ce567bbf269a248d2f842a223314.svg" />
-</div>
+<div class="output text_html"></div><div class="output text_html">
+    <div id='container-9617366d-a215-4c39-9886-f1f4961c9efa'></div> <!-- Container to display the graph -->
+    <script>
+    function loadScript(url, callback) {
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = url;
+        script.onreadystatechange = callback;
+        script.onload = callback;
+        document.head.appendChild(script);
+    }
+
+    function renderGraph(encodedDot) {
+        loadScript('https://unpkg.com/viz.js/viz.js', function() {
+            loadScript('https://unpkg.com/viz.js/full.render.js', function() {
+                var viz = new Viz();
+                var dotString = atob(encodedDot);
+
+                viz.renderSVGElement(dotString)
+                    .then(function(element) {
+                        document.getElementById('container-9617366d-a215-4c39-9886-f1f4961c9efa').appendChild(element);
+                    })
+                    .catch(error => {
+                        console.error('Error rendering graph:', error);
+                    });
+            });
+        });
+    }
+
+    // Execute the rendering function with the base64-encoded DOT string
+    renderGraph("ZGlncmFwaCB7Cglub2RlIFtmaXhlZHNpemU9dHJ1ZV0KCTIgW3NoYXBlPWNpcmNsZV0KCTk4NSBbc2hhcGU9Y2lyY2xlXQoJMiAtPiA5ODUgW2Fycm93aGVhZD1ub3JtYWxdCgkzMyBbc2hhcGU9Y2lyY2xlXQoJMiBbc2hhcGU9Y2lyY2xlXQoJMzMgLT4gMiBbYXJyb3doZWFkPW5vcm1hbF0KCTExIFtzaGFwZT1jaXJjbGVdCgk0NDI2IFtzaGFwZT1jaXJjbGVdCgkxMSAtPiA0NDI2IFthcnJvd2hlYWQ9bm9ybWFsXQoJMjggW3NoYXBlPWNpcmNsZV0KCTExIFtzaGFwZT1jaXJjbGVdCgkyOCAtPiAxMSBbYXJyb3doZWFkPW5vcm1hbF0KCTk4NSBbc2hhcGU9Y2lyY2xlXQoJMjggW3NoYXBlPWNpcmNsZV0KCTk4NSAtPiAyOCBbYXJyb3doZWFkPW5vcm1hbF0KCTk0NyBbc2hhcGU9Y2lyY2xlXQoJNDU5IFtzaGFwZT1jaXJjbGVdCgk5NDcgLT4gNDU5IFthcnJvd2hlYWQ9bm9ybWFsXQoJNDU5IFtzaGFwZT1jaXJjbGVdCgkzMyBbc2hhcGU9Y2lyY2xlXQoJNDU5IC0+IDMzIFthcnJvd2hlYWQ9bm9ybWFsXQoJZV83X3NvdXJjZSBbc2hhcGU9cG9pbnRdCgk5NDcgW3NoYXBlPWNpcmNsZV0KCWVfN19zb3VyY2UgLT4gOTQ3IFthcnJvd2hlYWQ9bm9ybWFsXQoJZV84X3RhcmdldCBbc2hhcGU9cG9pbnRdCgk0NDI2IFtzaGFwZT1jaXJjbGVdCgk0NDI2IC0+IGVfOF90YXJnZXQgW2Fycm93aGVhZD1ub3JtYWxdCn0K");
+    </script>
+    </div></div>
 </div>
 </section>
 </section>
@@ -694,7 +787,7 @@
 
   <p class="copyright">
     
-      © Copyright 2023-2025, Saez-Rodriguez lab. (EMBL-EBI, Heidelberg University).
+      © Copyright 2023-2026, Saez-Rodriguez lab. (EMBL-EBI, Heidelberg University).
       <br/>
     
   </p>

@@ -42,8 +42,8 @@
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
     <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-Z263GN2PKK"></script>
     <script>
@@ -60,7 +60,7 @@
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
-    <link rel="canonical" href="https://saezlab.github.io/corneto/guide/interoperability/networkx.html" />
+    <link rel="canonical" href="https://username.github.io/corneto/guide/interoperability/networkx.html" />
     <link rel="icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -507,8 +507,8 @@
 Node 1 to node 1: Path: [1] with total weight: 0
 Node 1 to node 2: Path: [1, 2] with total weight: 1
 Node 1 to node 3: Path: [1, 2, 3] with total weight: 3
-Node 1 to node 5: Path: [1, 2, 3, 4, 5] with total weight: 7
 Node 1 to node 4: Path: [1, 2, 3, 4] with total weight: 4
+Node 1 to node 5: Path: [1, 2, 3, 4, 5] with total weight: 7
 </pre></div>
 </div>
 </div>
@@ -573,8 +573,8 @@ Node 1 to node 4: Path: [1, 2, 3, 4] with total weight: 4
 Node 1 to node 1: Path: [1] with total weight: 0
 Node 1 to node 2: Path: [1, 2] with total weight: 1
 Node 1 to node 3: Path: [1, 2, 3] with total weight: 3
-Node 1 to node 5: Path: [1, 2, 3, 4, 5] with total weight: 7
 Node 1 to node 4: Path: [1, 2, 3, 4] with total weight: 4
+Node 1 to node 5: Path: [1, 2, 3, 4, 5] with total weight: 7
 </pre></div>
 </div>
 </div>
@@ -590,8 +590,39 @@ Node 1 to node 4: Path: [1, 2, 3, 4] with total weight: 4
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/25dad3b2c5be1f1cff7e8ab23198a801ebaa30df366d4d32ff39bd56236ab5af.svg" src="../../_images/25dad3b2c5be1f1cff7e8ab23198a801ebaa30df366d4d32ff39bd56236ab5af.svg" />
-</div>
+<div class="output text_html"></div><div class="output text_html">
+    <div id='container-d8fd5205-80e7-4878-822e-8474a8a1cd95'></div> <!-- Container to display the graph -->
+    <script>
+    function loadScript(url, callback) {
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = url;
+        script.onreadystatechange = callback;
+        script.onload = callback;
+        document.head.appendChild(script);
+    }
+
+    function renderGraph(encodedDot) {
+        loadScript('https://unpkg.com/viz.js/viz.js', function() {
+            loadScript('https://unpkg.com/viz.js/full.render.js', function() {
+                var viz = new Viz();
+                var dotString = atob(encodedDot);
+
+                viz.renderSVGElement(dotString)
+                    .then(function(element) {
+                        document.getElementById('container-d8fd5205-80e7-4878-822e-8474a8a1cd95').appendChild(element);
+                    })
+                    .catch(error => {
+                        console.error('Error rendering graph:', error);
+                    });
+            });
+        });
+    }
+
+    // Execute the rendering function with the base64-encoded DOT string
+    renderGraph("ZGlncmFwaCB7Cglub2RlIFtmaXhlZHNpemU9dHJ1ZV0KCWVfMF9zb3VyY2UgW3NoYXBlPXBvaW50XQoJQSBbc2hhcGU9Y2lyY2xlXQoJZV8wX3NvdXJjZSAtPiBBIFthcnJvd2hlYWQ9bm9ybWFsXQoJQSBbc2hhcGU9Y2lyY2xlXQoJQiBbc2hhcGU9Y2lyY2xlXQoJQSAtPiBCIFthcnJvd2hlYWQ9bm9ybWFsXQoJZV8yX3RhcmdldCBbc2hhcGU9cG9pbnRdCglCIFtzaGFwZT1jaXJjbGVdCglCIC0+IGVfMl90YXJnZXQgW2Fycm93aGVhZD1ub3JtYWxdCn0K");
+    </script>
+    </div></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -666,7 +697,7 @@ Node 1 to node 4: Path: [1, 2, 3, 4] with total weight: 4
 
   <p class="copyright">
     
-      © Copyright 2023-2025, Saez-Rodriguez lab. (EMBL-EBI, Heidelberg University).
+      © Copyright 2023-2026, Saez-Rodriguez lab. (EMBL-EBI, Heidelberg University).
       <br/>
     
   </p>

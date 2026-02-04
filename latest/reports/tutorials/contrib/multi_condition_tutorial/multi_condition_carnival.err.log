@@ -1,20 +1,30 @@
 Traceback (most recent call last):
-  File "/home/runner/work/corneto/corneto/.venv/lib/python3.11/site-packages/jupyter_cache/executors/utils.py", line 58, in single_nb_execution
+  File "/private/var/folders/b4/gwkwsdb93sv11rtztqbm3l040000gn/T/tmp.Dst0hQI0PJ/wt-latest/.venv/lib/python3.13/site-packages/jupyter_cache/executors/utils.py", line 58, in single_nb_execution
     executenb(
-  File "/home/runner/work/corneto/corneto/.venv/lib/python3.11/site-packages/nbclient/client.py", line 1323, in execute
+    ~~~~~~~~~^
+        nb,
+        ^^^
+    ...<4 lines>...
+        **kwargs,
+        ^^^^^^^^^
+    )
+    ^
+  File "/private/var/folders/b4/gwkwsdb93sv11rtztqbm3l040000gn/T/tmp.Dst0hQI0PJ/wt-latest/.venv/lib/python3.13/site-packages/nbclient/client.py", line 1323, in execute
     return NotebookClient(nb=nb, resources=resources, km=km, **kwargs).execute()
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/corneto/corneto/.venv/lib/python3.11/site-packages/jupyter_core/utils/__init__.py", line 165, in wrapped
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/private/var/folders/b4/gwkwsdb93sv11rtztqbm3l040000gn/T/tmp.Dst0hQI0PJ/wt-latest/.venv/lib/python3.13/site-packages/jupyter_core/utils/__init__.py", line 165, in wrapped
     return loop.run_until_complete(inner)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/asyncio/base_events.py", line 654, in run_until_complete
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.13/3.13.11_2/Frameworks/Python.framework/Versions/3.13/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
     return future.result()
-           ^^^^^^^^^^^^^^^
-  File "/home/runner/work/corneto/corneto/.venv/lib/python3.11/site-packages/nbclient/client.py", line 709, in async_execute
+           ~~~~~~~~~~~~~^^
+  File "/private/var/folders/b4/gwkwsdb93sv11rtztqbm3l040000gn/T/tmp.Dst0hQI0PJ/wt-latest/.venv/lib/python3.13/site-packages/nbclient/client.py", line 709, in async_execute
     await self.async_execute_cell(
-  File "/home/runner/work/corneto/corneto/.venv/lib/python3.11/site-packages/nbclient/client.py", line 1062, in async_execute_cell
+        cell, index, execution_count=self.code_cells_executed + 1
+    )
+  File "/private/var/folders/b4/gwkwsdb93sv11rtztqbm3l040000gn/T/tmp.Dst0hQI0PJ/wt-latest/.venv/lib/python3.13/site-packages/nbclient/client.py", line 1062, in async_execute_cell
     await self._check_raise_for_error(cell, cell_index, exec_reply)
-  File "/home/runner/work/corneto/corneto/.venv/lib/python3.11/site-packages/nbclient/client.py", line 918, in _check_raise_for_error
+  File "/private/var/folders/b4/gwkwsdb93sv11rtztqbm3l040000gn/T/tmp.Dst0hQI0PJ/wt-latest/.venv/lib/python3.13/site-packages/nbclient/client.py", line 918, in _check_raise_for_error
     raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
 nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
 ------------------
@@ -47,20 +57,20 @@ cn.info()
 ------------------
 
 ----- stderr -----
-/home/runner/work/corneto/corneto/.venv/lib/python3.11/site-packages/tqdm/auto.py:21: TqdmWarning: IProgress not found. Please update jupyter and ipywidgets. See https://ipywidgets.readthedocs.io/en/stable/user_install.html
+/private/var/folders/b4/gwkwsdb93sv11rtztqbm3l040000gn/T/tmp.Dst0hQI0PJ/wt-latest/.venv/lib/python3.13/site-packages/tqdm/auto.py:21: TqdmWarning: IProgress not found. Please update jupyter and ipywidgets. See https://ipywidgets.readthedocs.io/en/stable/user_install.html
   from .autonotebook import tqdm as notebook_tqdm
 ----- stderr -----
-2026-02-02 23:58:04 | [INFO] Downloading data from `https://omnipathdb.org/queries/enzsub?format=json`
+2026-02-04 21:24:25 | [INFO] Downloading data from `https://omnipathdb.org/queries/enzsub?format=json`
 ----- stderr -----
-2026-02-02 23:58:05 | [INFO] Downloading data from `https://omnipathdb.org/queries/interactions?format=json`
+2026-02-04 21:24:25 | [INFO] Downloading data from `https://omnipathdb.org/queries/interactions?format=json`
 ----- stderr -----
-2026-02-02 23:58:05 | [INFO] Downloading data from `https://omnipathdb.org/queries/complexes?format=json`
+2026-02-04 21:24:25 | [INFO] Downloading data from `https://omnipathdb.org/queries/complexes?format=json`
 ----- stderr -----
-2026-02-02 23:58:05 | [INFO] Downloading data from `https://omnipathdb.org/queries/annotations?format=json`
+2026-02-04 21:24:25 | [INFO] Downloading data from `https://omnipathdb.org/queries/annotations?format=json`
 ----- stderr -----
-2026-02-02 23:58:06 | [INFO] Downloading data from `https://omnipathdb.org/queries/intercell?format=json`
+2026-02-04 21:24:25 | [INFO] Downloading data from `https://omnipathdb.org/queries/intercell?format=json`
 ----- stderr -----
-2026-02-02 23:58:06 | [INFO] Downloading data from `https://omnipathdb.org/about?format=text`
+2026-02-04 21:24:26 | [INFO] Downloading data from `https://omnipathdb.org/about?format=text`
 ------------------
 
 [0;31m---------------------------------------------------------------------------[0m
