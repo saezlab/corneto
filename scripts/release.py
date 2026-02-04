@@ -14,7 +14,7 @@ import sys
 from dataclasses import dataclass
 from typing import Iterable
 
-SEMVER_RE = re.compile(r"^v?(\d+)\.(\d+)\.(\d+)$")
+SEMVER_RE = re.compile(r"^v?(\d+)\.(\d+)\.(\d+)(?:[.-].+)?$")
 
 
 @dataclass(frozen=True)
@@ -44,26 +44,45 @@ def _run(cmd: list[str], *, capture: bool = False) -> str:
 
 
 def _iter_tags() -> Iterable[str]:
-    raw = _run(["git", "tag", "--list", "v*", "--sort=-v:refname"], capture=True)
+    raw = _run(["git", "tag", "--list", "--sort=-v:refname"], capture=True)
     for line in raw.splitlines():
         tag = line.strip()
         if tag:
             yield tag
 
 
-def _parse_tag(tag: str) -> Version | None:
+def _parse_tag(tag: str) -> tuple[Version, bool] | None:
     m = SEMVER_RE.match(tag)
     if not m:
         return None
-    return Version(int(m.group(1)), int(m.group(2)), int(m.group(3)))
+    version = Version(int(m.group(1)), int(m.group(2)), int(m.group(3)))
+    # Stable if tag is exactly vX.Y.Z or X.Y.Z
+    stable = re.fullmatch(r"v?\d+\.\d+\.\d+", tag) is not None
+    return version, stable
 
 
-def _latest_version() -> Version:
+def _latest_version() -> tuple[Version, str | None, bool]:
+    best_stable: tuple[Version, str] | None = None
+    best_any: tuple[Version, str, bool] | None = None
+
     for tag in _iter_tags():
-        v = _parse_tag(tag)
-        if v is not None:
-            return v
-    return Version(0, 0, 0)
+        parsed = _parse_tag(tag)
+        if parsed is None:
+            continue
+        version, stable = parsed
+        if stable:
+            if best_stable is None or version > best_stable[0]:
+                best_stable = (version, tag)
+        if best_any is None or version > best_any[0]:
+            best_any = (version, tag, stable)
+
+    if best_stable is not None:
+        version, tag = best_stable
+        return version, tag, True
+    if best_any is not None:
+        version, tag, stable = best_any
+        return version, tag, stable
+    return Version(0, 0, 0), None, True
 
 
 def _ensure_clean(allow_dirty: bool) -> None:
@@ -96,11 +115,16 @@ def main() -> int:
 
     _ensure_clean(args.allow_dirty)
 
-    latest = _latest_version()
+    latest, latest_tag, latest_is_stable = _latest_version()
     next_version = latest.bump(args.part)
     tag = f"{args.tag_prefix}{next_version}"
 
     if args.dry_run:
+        if latest_tag is None:
+            print("Latest tag: <none found>")
+        else:
+            stability = "stable" if latest_is_stable else "prerelease"
+            print(f"Latest tag: {latest_tag} ({stability})")
         print(f"Latest version: v{latest}")
         print(f"Next tag: {tag}")
         print(f"Would run: git tag -a {tag} -m {tag}")
