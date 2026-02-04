@@ -39,11 +39,8 @@ To create a new release:
 git checkout main
 git pull origin main
 
-# Create a release tag (use semantic versioning)
-git tag -a v0.2.0 -m "v0.2.0"
-
-# Push the tag to trigger the release pipeline
-git push origin v0.2.0
+# Create and push a release tag (use semantic versioning)
+python scripts/release.py minor
 ```
 
 The release pipeline (`.github/workflows/build-and-publish.yml`) will automatically:
@@ -51,6 +48,18 @@ The release pipeline (`.github/workflows/build-and-publish.yml`) will automatica
 - Create a GitHub Release with automated release notes
 - Publish to PyPI using trusted publishing
 - Deploy documentation with version switcher
+
+### Release Helper
+
+Use the helper script to bump and push the next tag:
+
+```bash
+python scripts/release.py major   # vX.0.0
+python scripts/release.py minor   # v0.X.0
+python scripts/release.py patch   # v0.0.X
+```
+
+It finds the latest `v*` tag, computes the next version, creates an annotated tag, and pushes it to `origin`.
 
 ### Customizing Release Notes
 
@@ -166,7 +175,9 @@ The version switcher uses a **single, centrally-updated file hosted on GitHub Pa
 2. **Automated Updates**: When documentation is deployed to GitHub Pages:
    - The docs workflow generates `switcher.json` (`scripts/generate_switcher.py`)
    - It is published to the site root alongside the redirect page
-   - No cross-repository dispatch or PAT is required
+   - A post-deploy patch step updates existing HTML in `gh-pages` to:
+     - point `theme_switcher_json_url` to `https://corneto.org/switcher.json`
+     - correct `theme_switcher_version_match` based on folder (`stable/`, `latest/`, `vX.Y.Z/`)
 
 3. **Version Mapping**: Documentation deployments use the following version identifiers:
    - `dev` branch → deployed as `"latest"`
