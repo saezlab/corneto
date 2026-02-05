@@ -136,7 +136,7 @@ if ! "${poetry_bin}" self show plugins | grep -q "poetry-dynamic-versioning"; th
   exit 1
 fi
 POETRY_DYNAMIC_VERSIONING_COMMANDS=install,build \
-  "${poetry_bin}" install --with dev,docs
+  "${poetry_bin}" install --with dev --extras docs
 
 SPHINX_VERSION_MATCH="${tag}" DOCS_BASE_URL="${base_url}" \
   "${poetry_bin}" run sphinx-build -b html docs docs/_build/html

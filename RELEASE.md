@@ -112,13 +112,13 @@ poetry run pre-commit install --hook-type pre-commit --hook-type commit-msg
 Before releasing, run comprehensive quality checks:
 ```bash
 # Run all quality checks
-nox -s lint format typing tests
+poetry run nox -s lint format typing tests
 
 # Or individual checks
-nox -s tests          # Run test suite
-nox -s lint           # Check code style
-nox -s format         # Auto-fix formatting
-nox -s typing         # Type checking
+poetry run nox -s tests          # Run test suite
+poetry run nox -s lint           # Check code style
+poetry run nox -s format         # Auto-fix formatting
+poetry run nox -s typing         # Type checking
 ```
 
 ## Development Workflow

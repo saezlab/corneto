@@ -141,7 +141,7 @@ poetry run pytest
 
 ### Using Nox (recommended):
 ```bash
-nox -s tests
+poetry run nox -s tests
 ```
 
 The nox approach is recommended as it creates an isolated environment and ensures consistent testing across different setups. Nox is our primary task runner that provides standardized environments for testing, linting, formatting, and documentation building.
@@ -170,31 +170,31 @@ We use [Nox](https://nox.thea.codes/) to standardize testing, linting, and docum
 
 - **Testing**: Run unit tests across supported Python versions (3.10, 3.11, 3.12)
   ```bash
-  nox -s tests  # Uses your current Python version
+  poetry run nox -s tests  # Uses your current Python version
   # Or specify a version if you have multiple:
-  nox -s "tests-3.10"  # Python 3.10
-  nox -s "tests-3.11"  # Python 3.11
-  nox -s "tests-3.12"  # Python 3.12
+  poetry run nox -s "tests-3.10"  # Python 3.10
+  poetry run nox -s "tests-3.11"  # Python 3.11
+  poetry run nox -s "tests-3.12"  # Python 3.12
   ```
 
 - **Linting**: Check code style and quality with ruff
   ```bash
-  nox -s lint
+  poetry run nox -s lint
   ```
 
 - **Formatting**: Auto-fix code formatting issues
   ```bash
-  nox -s format
+  poetry run nox -s format
   ```
 
 - **Type Checking**: Run static type analysis with pyrefly
   ```bash
-  nox -s typing
+  poetry run nox -s typing
   ```
 
 - **Documentation**: Build HTML documentation
   ```bash
-  nox -s docs
+  poetry run nox -s docs
   ```
 
 
@@ -202,7 +202,7 @@ We use [Nox](https://nox.thea.codes/) to standardize testing, linting, and docum
 
 To run all quality checks (linting, formatting, typing, and tests) at once:
 ```bash
-nox -s lint format typing tests
+poetry run nox -s lint format typing tests
 ```
 
 ## Generating the documentation
@@ -214,7 +214,7 @@ This project uses Sphinx along with the PyData Sphinx theme to generate HTML doc
 To generate the HTML documentation for the current version of the project using nox:
 
 ```bash
-nox -s docs
+poetry run nox -s docs
 ```
 
 This command will build the documentation in the `docs/_build/html` directory, which you can open in a browser to view.
@@ -225,37 +225,37 @@ We provide several nox sessions for different documentation needs:
 
 - **Clean build**: Remove previous builds and rebuild documentation
   ```bash
-  nox -s docs_clean
+  poetry run nox -s docs_clean
   ```
 
 - **Force notebook execution**: Build docs with forced notebook execution
   ```bash
-  nox -s docs_force
+  poetry run nox -s docs_force
   ```
 
 - **Strict mode**: Build docs treating warnings as errors
   ```bash
-  nox -s docs_werror
+  poetry run nox -s docs_werror
   ```
 
 - **Complete build**: Clean, force notebook execution, and build with warnings as errors
   ```bash
-  nox -s docs_all
+  poetry run nox -s docs_all
   ```
 
 - **Link checking**: Verify all external links in documentation
   ```bash
-  nox -s docs_linkcheck
+  poetry run nox -s docs_linkcheck
   ```
 
 - **Serve locally**: Build and serve documentation at http://localhost:8000
   ```bash
-  nox -s docs_serve
+  poetry run nox -s docs_serve
   ```
 
 - **Full local check**: Build HTML documentation
   ```bash
-  nox -s docs_full
+  poetry run nox -s docs_full
   ```
 
 ### Notebook Execution with Pixi

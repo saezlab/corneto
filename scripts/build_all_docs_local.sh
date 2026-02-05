@@ -103,7 +103,7 @@ build_ref () {
   cd "${wt}"
 
   POETRY_DYNAMIC_VERSIONING_COMMANDS=install,build \
-    "${poetry_bin}" install --with dev,docs
+    "${poetry_bin}" install --with dev --extras docs
 
   SPHINX_VERSION_MATCH="${dest}" DOCS_BASE_URL="${base_url}" \
     "${poetry_bin}" run sphinx-build -b html docs docs/_build/html
