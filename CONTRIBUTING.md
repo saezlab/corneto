@@ -6,7 +6,7 @@ We value community input and look forward to opening up for contributions once w
 
 ## Setup environment
 
-We use [Poetry](https://python-poetry.org) for dependency management and [Nox](https://nox.thea.codes/) for task automation. Please follow the instructions to install `poetry` on your system: https://python-poetry.org/docs/#installing-with-pipx. We recommend to install poetry using `pipx`.
+We use [Poetry](https://python-poetry.org) for dependency management and task execution. Please follow the instructions to install `poetry` on your system: https://python-poetry.org/docs/#installing-with-pipx. We recommend to install poetry using `pipx`.
 
 For notebook execution in tutorials, we also support [Pixi](https://pixi.sh/) environments for isolated execution per tutorial directory.
 
@@ -139,13 +139,6 @@ We use `pytest` for running our automated tests. You can run tests in several wa
 poetry run pytest
 ```
 
-### Using Nox (recommended):
-```bash
-poetry run nox -s tests
-```
-
-The nox approach is recommended as it creates an isolated environment and ensures consistent testing across different setups. Nox is our primary task runner that provides standardized environments for testing, linting, formatting, and documentation building.
-
 This command will run all test files in your project that follow the `test_*.py` naming convention, as recognized by `pytest`.
 
 ### Writing Tests
@@ -162,47 +155,22 @@ def test_calculate_division():
         calculate_division(5, 0)
 ```
 
-## Code Quality and Testing with Nox
+## Code Quality and Testing
 
-We use [Nox](https://nox.thea.codes/) to standardize testing, linting, and documentation building across different environments. Nox provides isolated virtual environments for running different tasks and supports multiple Python versions.
-
-### Available Nox Sessions
-
-- **Testing**: Run unit tests across supported Python versions (3.10, 3.11, 3.12)
-  ```bash
-  poetry run nox -s tests  # Uses your current Python version
-  # Or specify a version if you have multiple:
-  poetry run nox -s "tests-3.10"  # Python 3.10
-  poetry run nox -s "tests-3.11"  # Python 3.11
-  poetry run nox -s "tests-3.12"  # Python 3.12
-  ```
-
-- **Linting**: Check code style and quality with ruff
-  ```bash
-  poetry run nox -s lint
-  ```
-
-- **Formatting**: Auto-fix code formatting issues
-  ```bash
-  poetry run nox -s format
-  ```
-
-- **Type Checking**: Run static type analysis with pyrefly
-  ```bash
-  poetry run nox -s typing
-  ```
-
-- **Documentation**: Build HTML documentation
-  ```bash
-  poetry run nox -s docs
-  ```
-
-
-### Running All Quality Checks
-
-To run all quality checks (linting, formatting, typing, and tests) at once:
+### Linting
 ```bash
-poetry run nox -s lint format typing tests
+poetry run ruff check corneto --exclude tests
+```
+
+### Formatting
+```bash
+poetry run ruff check corneto --exclude tests --fix
+poetry run ruff format corneto --exclude tests
+```
+
+### Type Checking
+```bash
+poetry run pyrefly check corneto
 ```
 
 ## Generating the documentation
@@ -211,51 +179,52 @@ This project uses Sphinx along with the PyData Sphinx theme to generate HTML doc
 
 ### Documentation for the current version
 
-To generate the HTML documentation for the current version of the project using nox:
+To generate the HTML documentation for the current version of the project using pixi:
 
 ```bash
-poetry run nox -s docs
+pixi run docs
 ```
 
 This command will build the documentation in the `docs/_build/html` directory, which you can open in a browser to view.
 
 ### Additional Documentation Options
 
-We provide several nox sessions for different documentation needs:
+We provide several pixi tasks for different documentation needs:
 
 - **Clean build**: Remove previous builds and rebuild documentation
   ```bash
-  poetry run nox -s docs_clean
+  pixi run docs-force
   ```
 
 - **Force notebook execution**: Build docs with forced notebook execution
   ```bash
-  poetry run nox -s docs_force
+  pixi run docs-force
   ```
 
 - **Strict mode**: Build docs treating warnings as errors
   ```bash
-  poetry run nox -s docs_werror
+  pixi run python -m sphinx-build -b html -W docs docs/_build/html
   ```
 
 - **Complete build**: Clean, force notebook execution, and build with warnings as errors
   ```bash
-  poetry run nox -s docs_all
+  pixi run docs-force
+  pixi run python -m sphinx-build -b html -W docs docs/_build/html
   ```
 
 - **Link checking**: Verify all external links in documentation
   ```bash
-  poetry run nox -s docs_linkcheck
+  pixi run python -m sphinx-build -b linkcheck docs docs/_build/linkcheck
   ```
 
 - **Serve locally**: Build and serve documentation at http://localhost:8000
   ```bash
-  poetry run nox -s docs_serve
+  pixi run docs-serve
   ```
 
 - **Full local check**: Build HTML documentation
   ```bash
-  poetry run nox -s docs_full
+  pixi run docs
   ```
 
 ### Notebook Execution with Pixi
@@ -269,7 +238,7 @@ poetry run python docs/tutorials/run_notebooks.py
 
 ### Additional notes
 
-- **Task automation**: All documentation, testing, and quality assurance tasks are standardized through nox sessions defined in `noxfile.py`.
+- **Task automation**: Testing and code quality are run via poetry commands; documentation tasks use pixi tasks defined in `pixi.toml`.
 - **`myst-nb`**: We use `myst-nb` to handle the conversion of Jupyter notebooks (`.ipynb` files) into HTML. If your contribution involves notebooks, make sure they render correctly in the generated documentation.
 - **Pixi integration**: Tutorial notebooks can use individual `pixi.toml` files for isolated execution environments with specific dependencies.
 - **Poetry and PEP 621**: The project uses both Poetry (legacy) and modern PEP 621 project configuration in `pyproject.toml`.

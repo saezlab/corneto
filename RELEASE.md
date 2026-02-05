@@ -83,7 +83,6 @@ Before creating a release, ensure the development environment and code quality s
 All maintainers should have the development environment properly configured as described in [CONTRIBUTING.md](CONTRIBUTING.md), including:
 - Poetry for dependency management
 - Pre-commit hooks installed and active
-- Nox for running quality checks
 
 ### Pre-commit Requirements
 **Critical**: Pre-commit hooks must be installed and passing for all commits that will be included in the release. The pre-commit configuration ensures:
@@ -111,14 +110,18 @@ poetry run pre-commit install --hook-type pre-commit --hook-type commit-msg
 ### Code Quality Validation
 Before releasing, run comprehensive quality checks:
 ```bash
-# Run all quality checks
-poetry run nox -s lint format typing tests
+# Tests
+poetry run pytest
 
-# Or individual checks
-poetry run nox -s tests          # Run test suite
-poetry run nox -s lint           # Check code style
-poetry run nox -s format         # Auto-fix formatting
-poetry run nox -s typing         # Type checking
+# Linting
+poetry run ruff check corneto --exclude tests
+
+# Formatting
+poetry run ruff check corneto --exclude tests --fix
+poetry run ruff format corneto --exclude tests
+
+# Type checking
+poetry run pyrefly check corneto
 ```
 
 ## Development Workflow
