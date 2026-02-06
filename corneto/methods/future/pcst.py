@@ -54,6 +54,8 @@ class PrizeCollectingSteinerTree(FlowMethod):
         # Initialize containers and placeholders
         self._terminal_edgeflow_idx = []
         self.flow_edges = dict()
+        self.flow_edges_in = dict()
+        self.flow_edges_out = dict()
         self.prized_flow_edges = dict()
 
         # Internal storage for per-sample values.
@@ -79,6 +81,8 @@ class PrizeCollectingSteinerTree(FlowMethod):
         # Reset per-run attributes
         self._terminal_edgeflow_idx = []
         self.flow_edges = dict()
+        self.flow_edges_in = dict()
+        self.flow_edges_out = dict()
         self.prized_flow_edges = dict()
 
         flow_graph = graph.copy()
@@ -132,20 +136,21 @@ class PrizeCollectingSteinerTree(FlowMethod):
         # Determine edge types based on the selected roots.
         in_type = self.in_flow_edge_type
         out_type = self.out_flow_edge_type
-        if all(r is None for r in selected_roots):
+        # Mixed root strategies across samples require undirected out-flow edges
+        # so "best" samples can still use negative flow to select a root.
+        if any(r is None for r in selected_roots):
             out_type = EdgeType.UNDIRECTED
 
-        # Create an in-edge for every unique root that is not None.
-        unique_roots = set(r for r in selected_roots if r is not None)
-        for r in unique_roots:
-            idx_root = flow_graph.add_edge((), r, type=in_type)
-            self.flow_edges[r] = idx_root
-
-        # For all other vertices, add an out-edge.
+        # Create in/out flow edges for every vertex so each sample can choose
+        # root/non-root behavior independently.
         for v in all_vertices:
-            if v not in unique_roots:
-                idx = flow_graph.add_edge(v, (), type=out_type)
-                self.flow_edges[v] = idx
+            idx_in = flow_graph.add_edge((), v, type=in_type)
+            idx_out = flow_graph.add_edge(v, (), type=out_type)
+            self.flow_edges_in[v] = idx_in
+            self.flow_edges_out[v] = idx_out
+
+        # Backward-compatible alias used by some callers; map to out-edges.
+        self.flow_edges = self.flow_edges_out.copy()
 
         return flow_graph, data
 
@@ -177,7 +182,7 @@ class PrizeCollectingSteinerTree(FlowMethod):
 
     def create_flow_based_problem(self, flow_problem: ProblemDef, graph: BaseGraph, data: Data):
         """Create the flow-based optimization problem."""
-        flow_edge_ids = list(self.flow_edges.values())
+        flow_edge_ids = list(set(self.flow_edges_in.values()) | set(self.flow_edges_out.values()))
         edge_ids = list(set(range(graph.num_edges)) - set(flow_edge_ids))
 
         if self.strict_acyclic:
@@ -217,32 +222,33 @@ class PrizeCollectingSteinerTree(FlowMethod):
 
             for terminal in terminals:
                 if sample_selected_root is None or terminal != sample_selected_root:
-                    if terminal in self.flow_edges:
-                        idx = self.flow_edges[terminal]
+                    if terminal in self.flow_edges_out:
+                        idx = self.flow_edges_out[terminal]
                         terminals_edgeflow_idx.append(idx)
 
             for vertex in all_vertices_with_data:
                 if sample_selected_root is None or vertex != sample_selected_root:
-                    if vertex in self.flow_edges:
-                        idx = self.flow_edges[vertex]
+                    if vertex in self.flow_edges_out:
+                        idx = self.flow_edges_out[vertex]
                         vertices_edgeflow_idx.append(idx)
 
             sample_flow_edges = set(vertices_edgeflow_idx)
             if sample_selected_root is not None:
-                sample_flow_edges.add(self.flow_edges[sample_selected_root])
+                sample_flow_edges.add(self.flow_edges_in[sample_selected_root])
             sample_flow_edges = list(sample_flow_edges)
             self._terminal_edgeflow_idx.append(sample_flow_edges)
 
-            other_flow_edges = list(set(self.flow_edges.values()) - set(sample_flow_edges))
+            all_flow_edges = set(self.flow_edges_in.values()) | set(self.flow_edges_out.values())
+            other_flow_edges = list(all_flow_edges - set(sample_flow_edges))
             if other_flow_edges:
                 flow_problem += F[other_flow_edges] == 0
 
             # --- Root Flow Constraints ---
             if sample_selected_root is not None:
                 if self.force_flow_through_root:
-                    flow_problem += F[self.flow_edges[sample_selected_root]] == sample_max_flow
+                    flow_problem += F[self.flow_edges_in[sample_selected_root]] == sample_max_flow
                 else:
-                    flow_problem += F[self.flow_edges[sample_selected_root]] >= 0
+                    flow_problem += F[self.flow_edges_in[sample_selected_root]] >= 0
 
                 if self.include_all_terminals and terminals_edgeflow_idx:
                     flow_problem += F[terminals_edgeflow_idx] >= 1
@@ -267,24 +273,34 @@ class PrizeCollectingSteinerTree(FlowMethod):
                             flow_problem += flow_problem.expr[terminal_pos][t_idx].sum() == len(t_idx) - 1
 
             # --- Costs Objective ---
-            edge_costs = np.ones((len(edge_ids))) * self.default_edge_cost
+            edge_costs = np.ones((graph.num_edges)) * self.default_edge_cost
             selected = with_flow if len(with_flow.shape) == 1 else with_flow[:, i]
 
             edge_data = sample_data.query.select(lambda f: f.mapping == "edge").to_list()
             for edata in edge_data:
+                if not isinstance(edata.id, int) or edata.id < 0 or edata.id >= graph.num_edges:
+                    raise ValueError(
+                        f"Invalid edge feature id={edata.id!r}. Expected an integer in [0, {graph.num_edges - 1}]"
+                    )
                 edge_costs[edata.id] = float(edata.value)
 
             flow_problem.add_objective(edge_costs[edge_ids] @ selected[edge_ids], name="edge_cost")
 
             # --- Prizes Objective (PCST) ---
             if prized_terminals:
-                prized_idx = [
-                    self.flow_edges[prized] for prized in prized_terminals.keys() if prized in self.flow_edges
-                ]
+                prized_idx = []
+                prized_vertices = []
+                for prized in prized_terminals.keys():
+                    if sample_selected_root is not None and prized == sample_selected_root:
+                        if prized in self.flow_edges_in:
+                            prized_idx.append(self.flow_edges_in[prized])
+                            prized_vertices.append(prized)
+                    else:
+                        if prized in self.flow_edges_out:
+                            prized_idx.append(self.flow_edges_out[prized])
+                            prized_vertices.append(prized)
                 if prized_idx:
-                    prizes = np.array(
-                        [prized_terminals[prized] for prized in prized_terminals.keys() if prized in self.flow_edges]
-                    )
+                    prizes = np.array([prized_terminals[prized] for prized in prized_vertices])
 
                     if self.strict_acyclic:
                         selected_for_prizes = flow_problem.expr._flow_ipos + flow_problem.expr._flow_ineg

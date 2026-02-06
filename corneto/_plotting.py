@@ -228,6 +228,115 @@ def _create_vertices(g, e, vertex_props=None):
     return v_s, v_t
 
 
+def _dot_quote(value: Any) -> str:
+    text = str(value).replace("\\", "\\\\").replace('"', '\\"')
+    return f'"{text}"'
+
+
+def _dot_attr_dict(attrs: Optional[Dict[str, str]]) -> str:
+    if not attrs:
+        return ""
+    parts = [f"{k}={_dot_quote(v)}" for k, v in attrs.items()]
+    return "[" + ", ".join(parts) + "]"
+
+
+def to_dot_source(
+    graph: BaseGraph,
+    graph_attr: Optional[Dict[str, str]] = None,
+    node_attr: Optional[Dict[str, str]] = None,
+    edge_attr: Optional[Dict[str, str]] = None,
+    custom_edge_attr: Optional[Dict[int, Dict[str, str]]] = None,
+    custom_vertex_attr: Optional[Dict[Union[int, str], Dict[str, str]]] = None,
+    edge_indexes: Optional[List[int]] = None,
+    orphan_edges: bool = True,
+) -> str:
+    """Create DOT source without requiring graphviz/pydot."""
+    if custom_edge_attr is None:
+        custom_edge_attr = {}
+    if custom_vertex_attr is None:
+        custom_vertex_attr = {}
+
+    if len(custom_vertex_attr) > 0:
+        keys = list(custom_vertex_attr.keys())
+        if all(isinstance(k, int) for k in keys):
+            vertices = graph.V
+            custom_vertex_attr = {str(v): custom_vertex_attr[i] for i, v in enumerate(vertices)}
+
+    node_defaults = dict(fixedsize="true") if node_attr is None else node_attr
+    lines = ["digraph {"]
+    if graph_attr:
+        lines.append(f"  graph {_dot_attr_dict(graph_attr)};")
+    if node_defaults:
+        lines.append(f"  node {_dot_attr_dict(node_defaults)};")
+    if edge_attr:
+        lines.append(f"  edge {_dot_attr_dict(edge_attr)};")
+
+    is_hypergraph = False
+    for i, e in enumerate(graph.edges()):
+        if edge_indexes is not None and i not in edge_indexes:
+            continue
+        i, (s, t) = e
+        if not orphan_edges and (len(s) == 0 or len(t) == 0):
+            continue
+
+        v_s: List[str] = []
+        v_t: List[str] = []
+
+        def add_node(v_name: str, default_shape: str) -> None:
+            attrs = {"shape": default_shape}
+            if v_name in custom_vertex_attr:
+                attrs.update(custom_vertex_attr[v_name])
+            lines.append(f"  {_dot_quote(v_name)} {_dot_attr_dict(attrs)};")
+
+        if len(s) == 0:
+            v_name = f"e_{i}_source"
+            add_node(v_name, "point")
+            v_s.append(v_name)
+        if len(t) == 0:
+            v_name = f"e_{i}_target"
+            add_node(v_name, "point")
+            v_t.append(v_name)
+
+        for v in s:
+            v_name = str(v)
+            v_s.append(v_name)
+            add_node(v_name, "circle")
+        for v in t:
+            v_name = str(v)
+            v_t.append(v_name)
+            add_node(v_name, "circle")
+
+        if len(s) > 1 or len(t) > 1:
+            is_hypergraph = True
+            edge_center = f"e_{i}_center"
+            lines.append(
+                f"  {_dot_quote(edge_center)} {_dot_attr_dict({'shape': 'square', 'width': '0.1', 'height': '0.1', 'label': ''})};"
+            )
+            for v in v_s:
+                attrs = dict(arrowtail="none", arrowhead="none", dir="both")
+                attrs.update(custom_edge_attr.get(i, {}))
+                lines.append(f"  {_dot_quote(v)} -> {_dot_quote(edge_center)} {_dot_attr_dict(attrs)};")
+            for v in v_t:
+                attrs = custom_edge_attr.get(i, {})
+                lines.append(f"  {_dot_quote(edge_center)} -> {_dot_quote(v)} {_dot_attr_dict(attrs)};")
+        else:
+            if graph.get_attr_edge(i).get_attr(Attr.EDGE_TYPE, "") == EdgeType.UNDIRECTED.value:
+                attrs = dict(arrowhead="none", dir="none")
+                attrs.update(custom_edge_attr.get(i, {}))
+            else:
+                head = "normal"
+                if graph.get_attr_edge(i).get("interaction", 0) < 0:
+                    head = "tee"
+                attrs = dict(arrowhead=head)
+                attrs.update(custom_edge_attr.get(i, {}))
+            lines.append(f"  {_dot_quote(v_s[0])} -> {_dot_quote(v_t[0])} {_dot_attr_dict(attrs)};")
+
+    if is_hypergraph and graph_attr is None:
+        lines.append('  graph [splines="true"];')
+    lines.append("}")
+    return "\n".join(lines)
+
+
 def to_python_graphviz(
     graph: BaseGraph,
     graph_attr: Optional[Dict[str, str]] = None,

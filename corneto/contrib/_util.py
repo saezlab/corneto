@@ -6,6 +6,7 @@ def dot_vizjs_html(
     vizjs_version=None,
 ):
     import base64
+    import os
     import uuid
 
     # Generate a random container ID if none is provided
@@ -14,14 +15,17 @@ def dot_vizjs_html(
 
     dot_string = ""
 
-    # Determine if input is a file path or a Graphviz object
+    # Determine if input is a file path, raw DOT source, or a Graphviz object
     if isinstance(dot_input, str):
-        try:
-            with open(dot_input, "r") as file:
-                dot_string = file.read()
-        except IOError as e:
-            print(f"Error reading DOT file: {e}")
-            return
+        if os.path.exists(dot_input):
+            try:
+                with open(dot_input, "r") as file:
+                    dot_string = file.read()
+            except IOError as e:
+                print(f"Error reading DOT file: {e}")
+                return
+        else:
+            dot_string = dot_input
     else:
         try:
             dot_string = dot_input.source

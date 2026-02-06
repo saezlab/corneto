@@ -926,13 +926,14 @@ class BaseGraph(abc.ABC):
         reachable = list(forward.intersection(backward))
         return self.subgraph(reachable)
 
-    def plot(self, **kwargs):
+    def plot(self, renderer: str = "auto", **kwargs):
         """Plot the graph using Graphviz.
 
         Renders the graph structure visually using Graphviz.
         Falls back to Viz.js rendering if SVG+XML rendering fails.
 
         Args:
+            renderer: Rendering backend ('auto', 'graphviz', 'vizjs').
             **kwargs: Additional plotting options passed to Graphviz
 
         Returns:
@@ -941,21 +942,48 @@ class BaseGraph(abc.ABC):
         Raises:
             OSError: If Graphviz rendering fails
         """
-        # from corneto._util import suppress_output
+        import sys
+
+        from corneto._settings import LOGGER
+        from corneto._util import supports_html
+        from corneto.contrib._util import dot_vizjs_html
+
+        def _as_vizjs_plot() -> Any:
+            if not supports_html():
+                raise RuntimeError("HTML rendering is required for Viz.js plotting.")
+            from corneto._plotting import to_dot_source
+
+            dot_input: Any
+            try:
+                dot_input = self.to_graphviz(**kwargs)
+            except Exception:
+                dot_input = to_dot_source(self, **kwargs)
+
+            class _VizJS:
+                def _repr_html_(self):
+                    return dot_vizjs_html(dot_input)
+
+            return _VizJS()
+
+        if renderer == "vizjs":
+            return _as_vizjs_plot()
+        if renderer != "auto" and renderer != "graphviz":
+            raise ValueError("Unknown renderer specified. Must be 'auto', 'graphviz', or 'vizjs'.")
+
+        # Pyodide/wasm notebooks cannot run dot subprocesses; prefer Viz.js.
+        if renderer == "auto" and sys.platform == "emscripten":
+            return _as_vizjs_plot()
+
         Gv = self.to_graphviz(**kwargs)
         try:
             # Check if the object is able to produce a MIME bundle
             Gv._repr_mimebundle_()
             return Gv
         except (OSError, Exception) as e:
-            from corneto._settings import LOGGER
-            from corneto._util import supports_html
-
             LOGGER.debug(f"SVG+XML rendering failed: {e}.")
             # Detect if HTML support
             if supports_html():
                 LOGGER.debug("Falling back to Viz.js rendering.")
-                from corneto.contrib._util import dot_vizjs_html
 
                 class _VizJS:
                     def _repr_html_(self):

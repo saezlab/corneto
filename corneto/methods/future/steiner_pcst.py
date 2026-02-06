@@ -1,3 +1,4 @@
+import warnings
 from typing import Any, Dict, Literal, Optional, Tuple
 
 import numpy as np
@@ -11,6 +12,11 @@ from corneto.methods.future.method import FlowMethod
 
 class SteinerTreeFlow(FlowMethod):
     """Exact Steiner Tree optimization method as a flow-based problem.
+
+    Deprecated:
+        This legacy implementation is deprecated. Use
+        `corneto.methods.future.steiner.SteinerTreeFlow` for Steiner Tree and
+        `corneto.methods.future.pcst.PrizeCollectingSteinerTree` for PCST.
 
     This class implements the exact Steiner tree algorithm where given a graph and a set of
     terminal nodes, it finds a minimal-weight connected subgraph (tree) that spans all terminals.
@@ -42,6 +48,13 @@ class SteinerTreeFlow(FlowMethod):
         lambda_reg: float = 0.0,
         backend: Optional[Backend] = None,
     ):
+        warnings.warn(
+            "corneto.methods.future.steiner_pcst.SteinerTreeFlow is deprecated. "
+            "Use corneto.methods.future.steiner.SteinerTreeFlow (Steiner) or "
+            "corneto.methods.future.pcst.PrizeCollectingSteinerTree (PCST).",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         super().__init__(
             lambda_reg=lambda_reg,
             disable_structured_sparsity=disable_structured_sparsity,
@@ -216,13 +229,17 @@ class SteinerTreeFlow(FlowMethod):
                     flow_problem += flow_problem.expr._flow_terminal_neg.sum() == 1
 
         for i, sample_data in enumerate(data.samples.values()):
-            edge_costs = np.ones((len(edge_ids))) * self.default_edge_cost
+            edge_costs = np.ones((graph.num_edges)) * self.default_edge_cost
             selected = with_flow if len(with_flow.shape) == 1 else with_flow[:, i]
             F = flow_problem.expr.flow
             F = F if len(F.shape) == 1 else F[:, i]
             edge_data = sample_data.query.select(lambda f: f.mapping == "edge").to_list()
             # Note: ids of edges correspond to the original graph, not the preprocessed graph
             for edata in edge_data:
+                if not isinstance(edata.id, int) or edata.id < 0 or edata.id >= graph.num_edges:
+                    raise ValueError(
+                        f"Invalid edge feature id={edata.id!r}. Expected an integer in [0, {graph.num_edges - 1}]"
+                    )
                 edge_costs[edata.id] = edata.value
             flow_problem.add_objectives(edge_costs[edge_ids] @ selected[edge_ids])
             # If prized terminals are present, we need to:
