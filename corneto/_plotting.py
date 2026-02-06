@@ -4,8 +4,8 @@ from typing import Any, Dict, List, Literal, Optional, Union
 
 import numpy as np
 
-from corneto._graph import Attr, BaseGraph, EdgeType
 from corneto.backend._base import EXPR_NAME_FLOW
+from corneto.graph import Attr, BaseGraph, EdgeType
 
 
 def suppress_repr_warnings(g):

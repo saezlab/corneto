@@ -930,10 +930,10 @@ class BaseGraph(abc.ABC):
         """Plot the graph using Graphviz.
 
         Renders the graph structure visually using Graphviz.
-        Falls back to Viz.js rendering if SVG+XML rendering fails.
+        Falls back to browser-side Graphviz WASM rendering if SVG+XML rendering fails.
 
         Args:
-            renderer: Rendering backend ('auto', 'graphviz', 'vizjs').
+            renderer: Rendering backend ('auto', 'graphviz', 'wasm').
             **kwargs: Additional plotting options passed to Graphviz
 
         Returns:
@@ -946,11 +946,11 @@ class BaseGraph(abc.ABC):
 
         from corneto._settings import LOGGER
         from corneto._util import supports_html
-        from corneto.contrib._util import dot_vizjs_html
+        from corneto.contrib._util import dot_wasm_render
 
-        def _as_vizjs_plot() -> Any:
+        def _as_wasm_plot() -> Any:
             if not supports_html():
-                raise RuntimeError("HTML rendering is required for Viz.js plotting.")
+                raise RuntimeError("HTML rendering is required for browser WASM plotting.")
             from corneto._plotting import to_dot_source
 
             dot_input: Any
@@ -958,21 +958,16 @@ class BaseGraph(abc.ABC):
                 dot_input = self.to_graphviz(**kwargs)
             except Exception:
                 dot_input = to_dot_source(self, **kwargs)
+            return dot_wasm_render(dot_input)
 
-            class _VizJS:
-                def _repr_html_(self):
-                    return dot_vizjs_html(dot_input)
-
-            return _VizJS()
-
-        if renderer == "vizjs":
-            return _as_vizjs_plot()
+        if renderer == "wasm":
+            return _as_wasm_plot()
         if renderer != "auto" and renderer != "graphviz":
-            raise ValueError("Unknown renderer specified. Must be 'auto', 'graphviz', or 'vizjs'.")
+            raise ValueError("Unknown renderer specified. Must be 'auto', 'graphviz', or 'wasm'.")
 
-        # Pyodide/wasm notebooks cannot run dot subprocesses; prefer Viz.js.
+        # Pyodide/wasm notebooks cannot run dot subprocesses; prefer browser WASM.
         if renderer == "auto" and sys.platform == "emscripten":
-            return _as_vizjs_plot()
+            return _as_wasm_plot()
 
         Gv = self.to_graphviz(**kwargs)
         try:
@@ -983,13 +978,8 @@ class BaseGraph(abc.ABC):
             LOGGER.debug(f"SVG+XML rendering failed: {e}.")
             # Detect if HTML support
             if supports_html():
-                LOGGER.debug("Falling back to Viz.js rendering.")
-
-                class _VizJS:
-                    def _repr_html_(self):
-                        return dot_vizjs_html(Gv)
-
-                return _VizJS()
+                LOGGER.debug("Falling back to browser WASM rendering.")
+                return dot_wasm_render(Gv)
             else:
                 LOGGER.debug("HTML rendering not supported.")
                 raise e
