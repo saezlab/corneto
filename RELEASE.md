@@ -8,7 +8,16 @@ CORNETO uses an automated tag-based release process powered by Poetry Dynamic Ve
 
 To create a new release:
 
-1. **Merge `dev` into `main`** via pull request.
+1. **Integrate `dev` into `main`**.
+   - Merge via pull request (`dev` -> `main`) or fast-forward merge locally.
+   ```bash
+   git checkout dev
+   git pull --ff-only origin dev
+   git checkout main
+   git pull --ff-only origin main
+   git merge --ff-only dev
+   git push origin main
+   ```
 
 2. **Create and push the release tag from `main`**:
    ```bash
@@ -40,9 +49,13 @@ To create a new release:
 ## Example Release Process
 
 ```bash
-# Ensure you're on the main branch and up to date
+# Integrate dev into main
+git checkout dev
+git pull --ff-only origin dev
 git checkout main
 git pull --ff-only origin main
+git merge --ff-only dev
+git push origin main
 
 # Create and push a release tag explicitly
 poetry run release v1.0.0-beta.4
@@ -144,7 +157,7 @@ The typical development workflow involves:
 1. **Work in the `dev` branch** for ongoing development
 2. **Ensure all commits follow conventional commit format** (enforced by pre-commit hooks)
 3. **Run quality checks** before merging to main
-4. **Merge to `main`** when ready for release (via pull request)
+4. **Integrate into `main`** when ready for release (via pull request or fast-forward merge)
 5. **Create release tag** on the `main` branch to trigger automated publishing
 
 ## Technical Details
@@ -173,7 +186,7 @@ The release workflow (`.github/workflows/build-and-publish.yml`) is triggered by
 
 - **`main`**: Stable releases and release tags
 - **`dev`**: Active development branch
-- Pull requests: `dev` → `main` for releases
+- Recommended integration: `dev` -> `main` (pull request or fast-forward merge)
 
 ### Documentation Version Switcher
 

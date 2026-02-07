@@ -247,4 +247,11 @@ Please see [contributing with tutorials](https://github.com/saezlab/corneto/blob
 
 ## Releases
 
-For information about the release process, please see [RELEASE.md](RELEASE.md).
+For detailed release instructions, see [RELEASE.md](RELEASE.md).
+The supported command is:
+
+```bash
+poetry run release vX.Y.Z
+```
+
+Pre-releases are also supported (for example `v1.0.0-beta.4`).
