@@ -117,7 +117,10 @@ class BaseGraph(abc.ABC):
             Dict mapping vertices to their attributes
         """
         if isinstance(s, dict):
-            return {k: v if isinstance(v, (dict, Number)) else ValueError() for k, v in s.items()}
+            invalid = [k for k, v in s.items() if not isinstance(v, (dict, Number))]
+            if invalid:
+                raise ValueError(f"Invalid vertex attribute values for keys {invalid}; expected dict or Number values.")
+            return dict(s)
         elif isinstance(s, (str, Number, Iterable)):
             return {v: {} for v in (s if isinstance(s, Iterable) else [s])}
         else:
@@ -134,7 +137,12 @@ class BaseGraph(abc.ABC):
             Dict mapping vertices to their attributes
         """
         if isinstance(s, dict):
-            return {k: v if isinstance(v, (dict, Number)) else ValueError() for k, v in s.items()}
+            invalid = [k for k, v in s.items() if not isinstance(v, (dict, Number))]
+            if invalid:
+                raise ValueError(
+                    f"Invalid vertex-edge attribute values for keys {invalid}; expected dict or Number values."
+                )
+            return dict(s)
         elif isinstance(s, (str, Number, Iterable)):
             return {v: {} for v in (s if not isinstance(s, str) and isinstance(s, Iterable) else [s])}
         else:
@@ -1040,7 +1048,7 @@ class BaseGraph(abc.ABC):
         Returns:
             DOT representation of the graph
         """
-        from corneto._plotting import to_graphviz as _dot
+        from corneto._plotting import to_dot_source as _dot
 
         return _dot(self, **kwargs)
 

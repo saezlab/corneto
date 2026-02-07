@@ -1,3 +1,12 @@
+"""LEGACY graph module.
+
+This module is kept for backward compatibility and internal transition only.
+New code should import graph types from ``corneto.graph``.
+
+Planned direction: remove this module after all internal imports/tests have
+been migrated to ``corneto.graph``.
+"""
+
 import abc
 import pickle
 from collections import OrderedDict, deque
