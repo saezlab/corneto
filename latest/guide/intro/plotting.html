@@ -55,7 +55,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'guide/intro/plotting';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1770476211';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
@@ -496,7 +496,7 @@
                    style="width:100%;max-width:100px;" />
             </td>
             <td>
-              <table><tr><td>Installed version:</td><td style='text-align:left'>v1.0.0b3.post16.dev0+964fcc56</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.8.1, PICOS v2.6.2</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CVXOPT, GLPK, GLPK_MI, HIGHS, SCIP, SCIPY</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.3</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href="https://github.com/saezlab/corneto">https://github.com/saezlab/corneto</a></td></tr></table>
+              <table><tr><td>Installed version:</td><td style='text-align:left'>v1.0.0b3.post17.dev0+ef2d73b7</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.8.1, PICOS v2.6.2</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CVXOPT, GLPK, GLPK_MI, HIGHS, SCIP, SCIPY</td></tr><tr><td>Plot backend (default):</td><td style='text-align:left'>auto -> graphviz</td></tr><tr><td>Available plot backends:</td><td style='text-align:left'>graphviz v0.20.3; networkx v3.6.1+mpl v3.10.8; graphviz-wasm</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href="https://github.com/saezlab/corneto">https://github.com/saezlab/corneto</a></td></tr></table>
             </td>
           </tr>
         </table>
@@ -701,10 +701,28 @@ This is useful for inspecting activities, scores, or inferred edge effects.</p>
 </div>
 <div class="cell_output docutils container">
 <div class="output text_html"></div><div class="output text_html">
-    <div id="container-126f4c8d-5980-4e86-a3dc-8225ddb41043" style="overflow:auto"></div>
+    <div id="container-868944b7-a0fb-460a-bf35-5e00e8a005cb" style="overflow:auto"></div>
     <script type="module">
     (async () => {
-      const target = document.getElementById("container-126f4c8d-5980-4e86-a3dc-8225ddb41043");
+      const target = document.getElementById("container-868944b7-a0fb-460a-bf35-5e00e8a005cb");
+      const resizeFrameToContent = () => {
+        try {
+          let h = target ? target.scrollHeight : 0;
+          const svg = target ? target.querySelector("svg") : null;
+          if (svg) {
+            const rect = svg.getBoundingClientRect();
+            if (rect && Number.isFinite(rect.height)) {
+              h = Math.max(h, rect.height);
+            }
+          }
+          h = Math.max(120, Math.ceil(h) + 24);
+          if (window.frameElement) {
+            window.frameElement.style.height = `${h}px`;
+          }
+        } catch (_err) {
+          // best effort only
+        }
+      };
       try {
         const mod = await import("https://cdn.jsdelivr.net/npm/@hpcc-js/wasm-graphviz@1.21.0/dist/index.min.js");
         const Graphviz = mod.Graphviz || (mod.default && mod.default.Graphviz) || mod.default;
@@ -715,9 +733,13 @@ This is useful for inspecting activities, scores, or inferred edge effects.</p>
         const dot = atob("ZGlncmFwaCB7Cglub2RlIFtmaXhlZHNpemU9dHJ1ZV0KCUEgW3NoYXBlPWNpcmNsZV0KCUIgW3NoYXBlPWNpcmNsZV0KCUIgW3NoYXBlPWNpcmNsZV0KCUMgW3NoYXBlPWNpcmNsZV0KCUEgW3NoYXBlPWNpcmNsZV0KCUMgW3NoYXBlPWNpcmNsZV0KCUEgLT4gQiBbYXJyb3doZWFkPW5vcm1hbF0KCUIgLT4gQyBbYXJyb3doZWFkPW5vcm1hbF0KCUEgLT4gQyBbYXJyb3doZWFkPW5vcm1hbF0KfQo=");
         const svg = await graphviz.dot(dot, "svg", "dot");
         target.innerHTML = svg;
+        resizeFrameToContent();
+        requestAnimationFrame(resizeFrameToContent);
+        setTimeout(resizeFrameToContent, 50);
       } catch (error) {
         target.innerHTML = "<pre style='white-space:pre-wrap;color:#b00020'>Graph rendering failed: " +
           String(error) + "</pre>";
+        resizeFrameToContent();
       }
     })();
     </script>
