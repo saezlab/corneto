@@ -90,12 +90,19 @@ import_sif = load_graph_from_sif
 
 try:
     # Python 3.8 and newer
-    from importlib.metadata import version
+    from importlib.metadata import PackageNotFoundError, version
 except ImportError:
     # Python < 3.8
-    from importlib_metadata import version
+    from importlib_metadata import PackageNotFoundError, version
 
-__version__ = version("corneto")
+try:
+    __version__ = version("corneto")
+except PackageNotFoundError:
+    # Source checkout mode (not installed): keep import working.
+    try:
+        __version__ = get_version()
+    except Exception:
+        __version__ = "0+unknown"
 
 sys.modules.update({f"{__name__}.{m}": globals()[m] for m in ["pl"]})
 

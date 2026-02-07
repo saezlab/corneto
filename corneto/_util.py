@@ -1,11 +1,14 @@
 import base64
 import contextlib
 import hashlib
+import importlib.util
 import json
 import os
 import pickle
+import sys
 import warnings
 from collections import OrderedDict
+from importlib import metadata
 from importlib.resources import files
 from itertools import filterfalse
 from typing import Any, Callable, Dict, Iterable, Iterator, Optional, Set, TypeVar
@@ -220,18 +223,51 @@ def _get_info() -> Dict[str, Dict]:
         info["default_backend"]["value"] = DEFAULT_BACKEND
         info["available_solvers"]["message"] = ", ".join([s for s in DEFAULT_BACKEND.available_solvers()])
         info["available_solvers"]["value"] = DEFAULT_BACKEND.available_solvers()
-    info["graphviz_version"] = {
-        "title": "Graphviz version",
-        "message": "Graphviz not installed. To support plotting, please install graphviz with conda",
-        "value": None,
-    }
+    graphviz_py_version = None
     try:
         import graphviz
 
-        info["graphviz_version"]["message"] = f"v{graphviz.__version__}"
-        info["graphviz_version"]["value"] = graphviz.__version__
+        graphviz_py_version = graphviz.__version__
     except Exception:
-        pass
+        graphviz_py_version = None
+
+    networkx_installed = importlib.util.find_spec("networkx") is not None
+    matplotlib_installed = importlib.util.find_spec("matplotlib") is not None
+    networkx_version = None
+    matplotlib_version = None
+    if networkx_installed:
+        networkx_version = metadata.version("networkx")
+    if matplotlib_installed:
+        matplotlib_version = metadata.version("matplotlib")
+
+    html_runtime = "marimo" in sys.modules or ("IPython" in sys.modules and "IPython.display" in sys.modules)
+
+    default_plot = "auto -> graphviz (n/a)"
+    if sys.platform == "emscripten":
+        default_plot = "auto -> wasm"
+    elif graphviz_py_version:
+        default_plot = "auto -> graphviz"
+    elif html_runtime:
+        default_plot = "auto -> wasm fallback"
+
+    info["plot_default"] = {
+        "title": "Plot backend (default)",
+        "message": default_plot,
+        "value": default_plot,
+    }
+
+    available_plot_backends = []
+    if graphviz_py_version:
+        available_plot_backends.append(f"graphviz v{graphviz_py_version}")
+    if networkx_installed and matplotlib_installed:
+        available_plot_backends.append(f"networkx v{networkx_version}+mpl v{matplotlib_version}")
+    if html_runtime:
+        available_plot_backends.append("graphviz-wasm")
+    info["plot_available"] = {
+        "title": "Available plot backends",
+        "message": "; ".join(available_plot_backends) if available_plot_backends else "n/a",
+        "value": available_plot_backends,
+    }
 
     info["installed_path"] = {
         "title": "Installed path",
