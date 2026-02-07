@@ -167,6 +167,10 @@ def supports_html() -> bool:
     import sys
 
     """Test whether current runtime supports HTML."""
+    # marimo supports rich HTML rendering via _mime_ / _repr_html_ without IPython.
+    if "marimo" in sys.modules:
+        return True
+
     if "IPython" not in sys.modules or "IPython.display" not in sys.modules:
         return False
 

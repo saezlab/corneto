@@ -3,6 +3,7 @@ import sys
 import pytest
 
 from corneto._plotting import to_dot_source
+from corneto._util import supports_html
 from corneto.contrib._util import DEFAULT_WASM_GRAPHVIZ_JS_URL, dot_wasm_html
 from corneto.graph import Graph
 
@@ -85,6 +86,13 @@ def test_plot_networkx_renderer(monkeypatch):
 
     obj = g.plot(renderer="networkx")
     assert obj is sentinel_fig
+
+
+def test_supports_html_true_when_marimo_loaded(monkeypatch):
+    monkeypatch.setitem(sys.modules, "marimo", object())
+    monkeypatch.delitem(sys.modules, "IPython", raising=False)
+    monkeypatch.delitem(sys.modules, "IPython.display", raising=False)
+    assert supports_html() is True
 
 
 def test_to_dot_accepts_backend_for_backward_compatibility():
