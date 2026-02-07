@@ -18,14 +18,14 @@ The automated release notes will be generated first, then you can add additional
 ## 📦 Installation
 
 ```bash
-pip install corneto==VERSION_PLACEHOLDER
+pip install corneto==<version-without-v-prefix>
 ```
 
 ## 📖 Documentation
 
-- [📚 Documentation](https://saezlab.github.io/corneto/)
+- [📚 Documentation](https://saezlab.github.io/corneto/stable/)
 - [🚀 Getting Started](https://saezlab.github.io/corneto/stable/install.html)
-- [📑 API Reference](https://saezlab.github.io/corneto/stable/api)
+- [📑 API Reference](https://saezlab.github.io/corneto/stable/api/)
 
 <!-- The automated release notes will be appended below this line -->
 ---
