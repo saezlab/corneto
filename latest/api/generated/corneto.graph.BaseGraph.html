@@ -55,7 +55,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'api/generated/corneto.graph.BaseGraph';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1770427618';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
@@ -575,8 +575,8 @@ Supports directed/undirected/mixed edges and self-edges.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="#corneto.graph.BaseGraph.out_edges" title="corneto.graph.BaseGraph.out_edges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">out_edges</span></code></a>(vertices)</p></td>
 <td><p>Get outgoing edges for vertices.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#corneto.graph.BaseGraph.plot" title="corneto.graph.BaseGraph.plot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot</span></code></a>(**kwargs)</p></td>
-<td><p>Plot the graph using Graphviz.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#corneto.graph.BaseGraph.plot" title="corneto.graph.BaseGraph.plot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot</span></code></a>([renderer])</p></td>
+<td><p>Plot the graph.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#corneto.graph.BaseGraph.plot_values" title="corneto.graph.BaseGraph.plot_values"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_values</span></code></a>([vertex_values, edge_values, ...])</p></td>
 <td><p></p></td>
@@ -1319,19 +1319,22 @@ Supports directed/undirected/mixed edges and self-edges.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="corneto.graph.BaseGraph.plot">
-<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.graph.BaseGraph.plot" title="Link to this definition">#</a></dt>
-<dd><p>Plot the graph using Graphviz.</p>
-<p>Renders the graph structure visually using Graphviz.
-Falls back to Viz.js rendering if SVG+XML rendering fails.</p>
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">renderer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.graph.BaseGraph.plot" title="Link to this definition">#</a></dt>
+<dd><p>Plot the graph.</p>
+<p>Uses Graphviz by default. In <code class="docutils literal notranslate"><span class="pre">renderer=&quot;auto&quot;</span></code>, falls back to browser-side
+Graphviz WASM rendering when Graphviz is unavailable and HTML rendering is available.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>**kwargs</strong> – Additional plotting options passed to Graphviz</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>renderer</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Rendering backend (‘auto’, ‘graphviz’, ‘networkx’, ‘wasm’).</p></li>
+<li><p><strong>**kwargs</strong> – Additional plotting options passed to the chosen backend.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Graphviz plot object</p>
+<dd class="field-even"><p>Plot object from the selected backend.</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#OSError" title="(in Python v3.14)"><strong>OSError</strong></a> – If Graphviz rendering fails</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#OSError" title="(in Python v3.14)"><strong>OSError</strong></a> – If rendering fails</p>
 </dd>
 </dl>
 </dd></dl>

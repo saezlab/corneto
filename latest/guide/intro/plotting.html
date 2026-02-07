@@ -55,7 +55,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'guide/intro/plotting';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1770427618';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
@@ -468,10 +468,20 @@
                   
   <section class="tex2jax_ignore mathjax_ignore" id="plotting">
 <h1>Plotting<a class="headerlink" href="#plotting" title="Link to this heading">#</a></h1>
-<p>CORNETO supports plotting of graphs through different backends, such as Graphviz, Pydot, and NetworkX</p>
+<p>This guide shows how to visualize CORNETO graphs, from basic plotting to configurable styling.</p>
+<p>It covers:</p>
+<ul class="simple">
+<li><p>plotting a graph directly</p></li>
+<li><p>styling edges and vertices from numeric values</p></li>
+<li><p>using presets for common workflows</p></li>
+<li><p>customizing themes</p></li>
+<li><p>exporting and interoperability (DOT, pydot, NetworkX)</p></li>
+<li><p>browser-side rendering for notebook environments</p></li>
+</ul>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">corneto</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cn</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">corneto.graph</span><span class="w"> </span><span class="kn">import</span> <span class="n">Graph</span>
 
 <span class="n">cn</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
 </pre></div>
@@ -486,110 +496,180 @@
                    style="width:100%;max-width:100px;" />
             </td>
             <td>
-              <table><tr><td>Installed version:</td><td style='text-align:left'>v1.0.0b3.post6.dev0+f7eddb94</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.8.1, PICOS v2.6.2</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CVXOPT, GLPK, GLPK_MI, HIGHS, SCIP, SCIPY</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.3</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href="https://github.com/saezlab/corneto">https://github.com/saezlab/corneto</a></td></tr></table>
+              <table><tr><td>Installed version:</td><td style='text-align:left'>v1.0.0b3.post11.dev0+20354173</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.8.1, PICOS v2.6.2</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CVXOPT, GLPK, GLPK_MI, HIGHS, SCIP, SCIPY</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.3</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href="https://github.com/saezlab/corneto">https://github.com/saezlab/corneto</a></td></tr></table>
             </td>
           </tr>
         </table>
         </div></div>
 </div>
-<section id="using-graphviz">
-<h2>Using graphviz<a class="headerlink" href="#using-graphviz" title="Link to this heading">#</a></h2>
-<p>If graphviz and dot are installed, e.g. via <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">install</span> <span class="pre">python-graphviz</span></code>, you can use the <code class="docutils literal notranslate"><span class="pre">plot</span></code> method to visualize the graphs</p>
+<section id="basic-graph-visualization">
+<h2>1. Basic graph visualization<a class="headerlink" href="#basic-graph-visualization" title="Link to this heading">#</a></h2>
+<p>Create a graph and visualize it directly.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.graph</span><span class="w"> </span><span class="kn">import</span> <span class="n">Graph</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">G</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;toy&quot;</span><span class="p">)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">)</span>
 
-<span class="n">G</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
-<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
-<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
 <span class="n">G</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/b26ad1cae5f801af9f1f8987fd50baf9d02e13ca30bb919b1953c71386255646.svg" src="../../_images/b26ad1cae5f801af9f1f8987fd50baf9d02e13ca30bb919b1953c71386255646.svg" />
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># This returns a graphviz object</span>
-<span class="n">digraph</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">to_graphviz</span><span class="p">()</span>
-<span class="nb">type</span><span class="p">(</span><span class="n">digraph</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>graphviz.graphs.Digraph
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">str</span><span class="p">(</span><span class="n">digraph</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&#39;digraph {\n\tnode [fixedsize=true]\n\t1 [shape=circle]\n\t2 [shape=circle]\n\t1 -&gt; 2 [arrowhead=normal]\n\t2 [shape=circle]\n\t3 [shape=circle]\n\t2 -&gt; 3 [arrowhead=normal]\n\t1 [shape=circle]\n\t3 [shape=circle]\n\t1 -&gt; 3 [arrowhead=normal]\n}\n&#39;
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">G</span><span class="o">.</span><span class="n">plot_values</span><span class="p">(</span><span class="n">edge_values</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<img alt="../../_images/57d11cef1bfdf549eb5f3ad7f89af176d7cc4ca1e4123c50f0f474bb5f08e64e.svg" src="../../_images/57d11cef1bfdf549eb5f3ad7f89af176d7cc4ca1e4123c50f0f474bb5f08e64e.svg" />
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">G</span><span class="o">.</span><span class="n">plot_values</span><span class="p">(</span><span class="n">edge_values</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">edge_indexes</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<img alt="../../_images/695b675bbed64769795a5d4b5679f497a98ea53de0131017b1f088e057155cc7.svg" src="../../_images/695b675bbed64769795a5d4b5679f497a98ea53de0131017b1f088e057155cc7.svg" />
+<img alt="../../_images/a71025b976c1c752ee0a47efd73032cb7fbb263c0a57e58b823abfa6cf6ba41f.svg" src="../../_images/a71025b976c1c752ee0a47efd73032cb7fbb263c0a57e58b823abfa6cf6ba41f.svg" />
 </div>
 </div>
 </section>
-<section id="using-pydot">
-<h2>Using Pydot<a class="headerlink" href="#using-pydot" title="Link to this heading">#</a></h2>
+<section id="visual-encoding-from-values">
+<h2>2. Visual encoding from values<a class="headerlink" href="#visual-encoding-from-values" title="Link to this heading">#</a></h2>
+<p>Map signs and magnitudes to colors and line widths.
+This is useful for inspecting activities, scores, or inferred edge effects.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">G</span><span class="o">.</span><span class="n">plot_values</span><span class="p">(</span>
+    <span class="n">edge_values</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+    <span class="n">vertex_values</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&#39;digraph {\n  node [fixedsize=&quot;true&quot;];\n  &quot;A&quot; [shape=&quot;circle&quot;, color=&quot;firebrick4&quot;, penwidth=&quot;2&quot;];\n  &quot;B&quot; [shape=&quot;circle&quot;, color=&quot;dodgerblue4&quot;, penwidth=&quot;2&quot;];\n  &quot;B&quot; [shape=&quot;circle&quot;, color=&quot;dodgerblue4&quot;, penwidth=&quot;2&quot;];\n  &quot;C&quot; [shape=&quot;circle&quot;];\n  &quot;A&quot; [shape=&quot;circle&quot;, color=&quot;firebrick4&quot;, penwidth=&quot;2&quot;];\n  &quot;C&quot; [shape=&quot;circle&quot;];\n  &quot;A&quot; -&gt; &quot;B&quot; [arrowhead=&quot;normal&quot;, penwidth=&quot;5&quot;, color=&quot;dodgerblue4&quot;];\n  &quot;B&quot; -&gt; &quot;C&quot; [arrowhead=&quot;normal&quot;, penwidth=&quot;5&quot;, color=&quot;firebrick4&quot;];\n  &quot;A&quot; -&gt; &quot;C&quot; [arrowhead=&quot;normal&quot;, penwidth=&quot;0.25&quot;, color=&quot;black&quot;];\n}&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<p>You can also focus on a subset of edges.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">G</span><span class="o">.</span><span class="n">plot_values</span><span class="p">(</span><span class="n">edge_values</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">edge_indexes</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&#39;digraph {\n  node [fixedsize=&quot;true&quot;];\n  &quot;A&quot; [shape=&quot;circle&quot;];\n  &quot;B&quot; [shape=&quot;circle&quot;];\n  &quot;B&quot; [shape=&quot;circle&quot;];\n  &quot;C&quot; [shape=&quot;circle&quot;];\n  &quot;A&quot; -&gt; &quot;B&quot; [arrowhead=&quot;normal&quot;, penwidth=&quot;5&quot;, color=&quot;dodgerblue4&quot;];\n  &quot;B&quot; -&gt; &quot;C&quot; [arrowhead=&quot;normal&quot;, penwidth=&quot;5&quot;, color=&quot;firebrick4&quot;];\n}&#39;
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="presets-for-common-workflows">
+<h2>3. Presets for common workflows<a class="headerlink" href="#presets-for-common-workflows" title="Link to this heading">#</a></h2>
+<p>Presets provide sensible styling defaults with minimal code.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">G</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">preset</span><span class="o">=</span><span class="s2">&quot;simple&quot;</span><span class="p">,</span>
+    <span class="n">data</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;edge_values&quot;</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span>
+        <span class="s2">&quot;vertex_values&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+    <span class="p">},</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/7ec406deaf637802f12450f7b2faf382fd95ba4c6537b69f0e05a2c43a8f03af.svg" src="../../_images/7ec406deaf637802f12450f7b2faf382fd95ba4c6537b69f0e05a2c43a8f03af.svg" />
+</div>
+</div>
+<section id="metabolic-flux-visualization">
+<h3>Metabolic flux visualization<a class="headerlink" href="#metabolic-flux-visualization" title="Link to this heading">#</a></h3>
+<p>For metabolic models, <code class="docutils literal notranslate"><span class="pre">metabolism_flux</span></code> rescales flux values and highlights sign and magnitude.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">G_flux</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;flux-demo&quot;</span><span class="p">)</span>
+<span class="n">G_flux</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;Glucose&quot;</span><span class="p">,</span> <span class="s2">&quot;Pyruvate&quot;</span><span class="p">)</span>
+<span class="n">G_flux</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;Pyruvate&quot;</span><span class="p">,</span> <span class="s2">&quot;Lactate&quot;</span><span class="p">)</span>
+<span class="n">G_flux</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;Pyruvate&quot;</span><span class="p">,</span> <span class="s2">&quot;Acetyl-CoA&quot;</span><span class="p">)</span>
+
+<span class="n">G_flux</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">preset</span><span class="o">=</span><span class="s2">&quot;metabolism_flux&quot;</span><span class="p">,</span>
+    <span class="n">data</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;edge_values&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">20.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">],</span>
+        <span class="s2">&quot;scale&quot;</span><span class="p">:</span> <span class="s2">&quot;log&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;clip_quantil&quot;</span><span class="p">:</span> <span class="mf">0.05</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/088bfb045c963e355755df8ebfe88beb54f0dc9919b889c63ddde47923a491d8.svg" src="../../_images/088bfb045c963e355755df8ebfe88beb54f0dc9919b889c63ddde47923a491d8.svg" />
+</div>
+</div>
+</section>
+</section>
+<section id="theme-customization">
+<h2>4. Theme customization<a class="headerlink" href="#theme-customization" title="Link to this heading">#</a></h2>
+<p>Override theme values to adapt colors and widths to your preferred visual style.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">G</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">processor</span><span class="o">=</span><span class="s2">&quot;sign_magnitude&quot;</span><span class="p">,</span>
+    <span class="n">theme</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;positive_color&quot;</span><span class="p">:</span> <span class="s2">&quot;darkgreen&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;negative_color&quot;</span><span class="p">:</span> <span class="s2">&quot;darkorange&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;zero_color&quot;</span><span class="p">:</span> <span class="s2">&quot;gray40&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;min_edge_width&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+        <span class="s2">&quot;max_edge_width&quot;</span><span class="p">:</span> <span class="mf">6.0</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;edge_values&quot;</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]},</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/ad9366cee517e9a84d286ebfa74c221cb1a799c18c3ed012f542fa3007e54bce.svg" src="../../_images/ad9366cee517e9a84d286ebfa74c221cb1a799c18c3ed012f542fa3007e54bce.svg" />
+</div>
+</div>
+</section>
+<section id="export-and-interoperability">
+<h2>5. Export and interoperability<a class="headerlink" href="#export-and-interoperability" title="Link to this heading">#</a></h2>
+<p>Export DOT text or backend objects for integration with other tools.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dot_source</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">to_dot</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">dot_source</span><span class="p">),</span> <span class="n">dot_source</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="n">G_pydot</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">to_dot</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s2">&quot;pydot&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">G_pydot</span><span class="p">))</span>
+
+<span class="n">G_graphviz</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">to_graphviz</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">G_graphviz</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;class &#39;str&#39;&gt; digraph {
+&lt;class &#39;pydot.core.Dot&#39;&gt;
+&lt;class &#39;graphviz.graphs.Digraph&#39;&gt;
+</pre></div>
+</div>
+</div>
+</div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">SVG</span><span class="p">,</span> <span class="n">display</span>
 
-<span class="n">G_pydot</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">to_dot</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s2">&quot;pydot&quot;</span><span class="p">)</span>
 <span class="n">display</span><span class="p">(</span><span class="n">SVG</span><span class="p">(</span><span class="n">G_pydot</span><span class="o">.</span><span class="n">create_svg</span><span class="p">()))</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/24e1ec3456aac414ead7e1d2a0132bca5e4cf7d7906abec983423b0bf388c670.svg" src="../../_images/24e1ec3456aac414ead7e1d2a0132bca5e4cf7d7906abec983423b0bf388c670.svg" />
+<img alt="../../_images/9ba490fae7c423f1ccab81b75a297f8df8acd35150e95a3a13c78c51d5d4e018.svg" src="../../_images/9ba490fae7c423f1ccab81b75a297f8df8acd35150e95a3a13c78c51d5d4e018.svg" />
 </div>
 </div>
-</section>
-<section id="using-networkx-with-pydot">
-<h2>Using NetworkX with Pydot<a class="headerlink" href="#using-networkx-with-pydot" title="Link to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">networkx</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nx</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">networkx.drawing.nx_pydot</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_pydot</span><span class="p">,</span> <span class="n">graphviz_layout</span>
 
-<span class="c1"># Convert pydot to networkx</span>
 <span class="n">G_nx</span> <span class="o">=</span> <span class="n">from_pydot</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">to_dot</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s2">&quot;pydot&quot;</span><span class="p">))</span>
+<span class="n">pos</span> <span class="o">=</span> <span class="n">graphviz_layout</span><span class="p">(</span><span class="n">G_nx</span><span class="p">,</span> <span class="n">prog</span><span class="o">=</span><span class="s2">&quot;neato&quot;</span><span class="p">)</span>
 
-<span class="c1"># Use Graphviz layout (e.g. &#39;dot&#39; for hierarchies, &#39;neato&#39; for general layout)</span>
-<span class="n">pos</span> <span class="o">=</span> <span class="n">graphviz_layout</span><span class="p">(</span><span class="n">G_nx</span><span class="p">,</span> <span class="n">prog</span><span class="o">=</span><span class="s2">&quot;neato&quot;</span><span class="p">)</span>  <span class="c1"># &#39;neato&#39;, &#39;dot&#39;, &#39;fdp&#39;, etc.</span>
-
-<span class="c1"># Plot with styling</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
 <span class="n">nx</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span>
     <span class="n">G_nx</span><span class="p">,</span>
     <span class="n">pos</span><span class="p">,</span>
@@ -597,15 +677,84 @@
     <span class="n">arrows</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">node_color</span><span class="o">=</span><span class="s2">&quot;lightblue&quot;</span><span class="p">,</span>
     <span class="n">edge_color</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">,</span>
-    <span class="n">node_size</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
-    <span class="n">font_size</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span>
+    <span class="n">node_size</span><span class="o">=</span><span class="mi">700</span><span class="p">,</span>
+    <span class="n">font_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/098da99310f538f128155eed3b4dd594e3fe258743ad4514180be87429c7d0a1.png" src="../../_images/098da99310f538f128155eed3b4dd594e3fe258743ad4514180be87429c7d0a1.png" />
+<img alt="../../_images/224a0951bf4415e20683a0f22b1b6d741c2f5f8a0dbb214d9ccf8a4fe4609c74.png" src="../../_images/224a0951bf4415e20683a0f22b1b6d741c2f5f8a0dbb214d9ccf8a4fe4609c74.png" />
+</div>
+</div>
+</section>
+<section id="browser-wasm-rendering">
+<h2>6. Browser/WASM rendering<a class="headerlink" href="#browser-wasm-rendering" title="Link to this heading">#</a></h2>
+<p>Use <code class="docutils literal notranslate"><span class="pre">renderer=&quot;wasm&quot;</span></code> in browser-based notebook environments
+(e.g. marimo or Pyodide) where local Graphviz <code class="docutils literal notranslate"><span class="pre">dot</span></code> may be unavailable.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">G</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">renderer</span><span class="o">=</span><span class="s2">&quot;wasm&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"></div><div class="output text_html">
+    <div id="container-1fd68ff2-6318-4193-82fe-d57bfaa8fc17" style="overflow:auto"></div>
+    <script type="module">
+    (async () => {
+      const target = document.getElementById("container-1fd68ff2-6318-4193-82fe-d57bfaa8fc17");
+      try {
+        const mod = await import("https://cdn.jsdelivr.net/npm/@hpcc-js/wasm-graphviz@1/dist/index.min.js");
+        const Graphviz = mod.Graphviz || (mod.default && mod.default.Graphviz) || mod.default;
+        if (!Graphviz || !Graphviz.load) {
+          throw new Error("Graphviz WASM module does not expose Graphviz.load()");
+        }
+        const graphviz = await Graphviz.load();
+        const dot = atob("ZGlncmFwaCB7Cglub2RlIFtmaXhlZHNpemU9dHJ1ZV0KCUEgW3NoYXBlPWNpcmNsZV0KCUIgW3NoYXBlPWNpcmNsZV0KCUIgW3NoYXBlPWNpcmNsZV0KCUMgW3NoYXBlPWNpcmNsZV0KCUEgW3NoYXBlPWNpcmNsZV0KCUMgW3NoYXBlPWNpcmNsZV0KCUEgLT4gQiBbYXJyb3doZWFkPW5vcm1hbF0KCUIgLT4gQyBbYXJyb3doZWFkPW5vcm1hbF0KCUEgLT4gQyBbYXJyb3doZWFkPW5vcm1hbF0KfQo=");
+        const svg = await graphviz.dot(dot, "svg", "dot");
+        target.innerHTML = svg;
+      } catch (error) {
+        target.innerHTML = "<pre style='white-space:pre-wrap;color:#b00020'>Graph rendering failed: " +
+          String(error) + "</pre>";
+      }
+    })();
+    </script>
+    </div></div>
+</div>
+</section>
+<section id="custom-processors">
+<h2>7. Custom processors<a class="headerlink" href="#custom-processors" title="Link to this heading">#</a></h2>
+<p>A processor is a callable:
+<code class="docutils literal notranslate"><span class="pre">processor(graph,</span> <span class="pre">data,</span> <span class="pre">theme)</span> <span class="pre">-&gt;</span> <span class="pre">(edge_attrs,</span> <span class="pre">vertex_attrs)</span></code>.</p>
+<p>Use a custom processor when styling needs to follow domain-specific rules.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">highlight_path_processor</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">theme</span><span class="p">):</span>
+    <span class="n">path_edges</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;path_edges&quot;</span><span class="p">,</span> <span class="p">[]))</span>
+    <span class="n">edge_attrs</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">num_edges</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">path_edges</span><span class="p">:</span>
+            <span class="n">edge_attrs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;purple&quot;</span><span class="p">,</span> <span class="s2">&quot;penwidth&quot;</span><span class="p">:</span> <span class="s2">&quot;5&quot;</span><span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">edge_attrs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="n">theme</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;zero_color&quot;</span><span class="p">,</span> <span class="s2">&quot;black&quot;</span><span class="p">),</span>
+                <span class="s2">&quot;penwidth&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span>
+            <span class="p">}</span>
+    <span class="k">return</span> <span class="n">edge_attrs</span><span class="p">,</span> <span class="p">{}</span>
+
+
+<span class="n">G</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">processor</span><span class="o">=</span><span class="n">highlight_path_processor</span><span class="p">,</span>
+    <span class="n">theme</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;zero_color&quot;</span><span class="p">:</span> <span class="s2">&quot;lightgray&quot;</span><span class="p">},</span>
+    <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;path_edges&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]},</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/58fd68e564750d094b60fa51097c5666365c0fdcd7e17a20abb991d2e90e543a.svg" src="../../_images/58fd68e564750d094b60fa51097c5666365c0fdcd7e17a20abb991d2e90e543a.svg" />
 </div>
 </div>
 </section>
@@ -658,9 +807,16 @@
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-graphviz">Using graphviz</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-pydot">Using Pydot</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-networkx-with-pydot">Using NetworkX with Pydot</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-graph-visualization">1. Basic graph visualization</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#visual-encoding-from-values">2. Visual encoding from values</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#presets-for-common-workflows">3. Presets for common workflows</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metabolic-flux-visualization">Metabolic flux visualization</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#theme-customization">4. Theme customization</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#export-and-interoperability">5. Export and interoperability</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#browser-wasm-rendering">6. Browser/WASM rendering</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#custom-processors">7. Custom processors</a></li>
 </ul>
   </nav></div>
 
