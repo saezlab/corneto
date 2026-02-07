@@ -123,7 +123,6 @@ nb_execution_mode = "cache"
 nb_execution_timeout = 300
 nb_merge_streams = True
 execution_excludepatterns = [
-    "**/*grb*.ipynb",  # grb indicates that uses Gurobi
     "**/kpnn-with-sc.ipynb",  # very slow, requires jax, keras
     "tutorials/**/*.ipynb",  # tutorials are independent and slow, use cached versions
 ]
@@ -150,6 +149,9 @@ exclude_patterns = [
     ".DS_Store",
     "**.ipynb_checkpoints",
     "**/_*.ipynb",
+    "**/.pixi/**",
+    "**/build/**",
+    "**/.venv/**",
 ]
 
 # Autosummary and autodoc settings.

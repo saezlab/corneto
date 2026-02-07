@@ -59,6 +59,15 @@ jobs:
               echo "Valid release tag detected: ${version}"
               echo "should_publish=true" >> $GITHUB_OUTPUT
               echo "version=${version}" >> $GITHUB_OUTPUT
+              echo "pypi_version=${version#v}" >> $GITHUB_OUTPUT
+              # Mark alpha/beta/rc tags as GitHub pre-releases automatically.
+              if [[ "${version}" =~ -(alpha|beta|rc)([.-].*)?$ ]]; then
+                echo "is_prerelease=true" >> $GITHUB_OUTPUT
+                echo "make_latest=false" >> $GITHUB_OUTPUT
+              else
+                echo "is_prerelease=false" >> $GITHUB_OUTPUT
+                echo "make_latest=true" >> $GITHUB_OUTPUT
+              fi
               ;;
             *)
               echo "Not a v* tag: ${GITHUB_REF}, skipping publishing"
@@ -80,21 +89,22 @@ jobs:
           tag_name: ${{ steps.validate_tag.outputs.version }}
           name: Release ${{ steps.validate_tag.outputs.version }}
           generate_release_notes: true
-          make_latest: true
+          prerelease: ${{ steps.validate_tag.outputs.is_prerelease }}
+          make_latest: ${{ steps.validate_tag.outputs.make_latest }}
           files: |
             dist/*
           body: |
             ## 📦 Installation
 
             ```bash
-            pip install corneto==${{ steps.validate_tag.outputs.version }}
+            pip install corneto==${{ steps.validate_tag.outputs.pypi_version }}
             ```
 
             ## 📖 Documentation
 
-            - [📚 Documentation](https://saezlab.github.io/corneto/)
-            - [🚀 Getting Started](https://saezlab.github.io/corneto/install.html)
-            - [📑 API Reference](https://saezlab.github.io/corneto/api/)
+            - [📚 Documentation](https://saezlab.github.io/corneto/stable/)
+            - [🚀 Getting Started](https://saezlab.github.io/corneto/stable/install.html)
+            - [📑 API Reference](https://saezlab.github.io/corneto/stable/api/)
 
             ---
 

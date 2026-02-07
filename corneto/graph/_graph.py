@@ -125,7 +125,7 @@ class Graph(BaseGraph):
             self._vertex_attr[vertex] = Attributes(kwargs)
             idx = len(self._vertices) - 1
         else:
-            idx = list(self._vertices).index(vertex)
+            idx = next(i for i, v in enumerate(self._vertices) if v == vertex)
             if vertex in self._vertex_attr:
                 va = self._vertex_attr[vertex]
             else:
@@ -302,8 +302,8 @@ class Graph(BaseGraph):
             # Collect vertices from edges
             for i in edges:
                 s, t = self.get_edge(i)
-                v_set = s.union(t)
-                append_unique(vertices, v_set)
+                append_unique(vertices, s)
+                append_unique(vertices, t)
         else:
             edges = []
             # If edges are not specified but vertices are, include edges induced by the vertices
@@ -378,10 +378,14 @@ class Graph(BaseGraph):
             edges = (i for i, _ in self.edges() if filter_edge(i))
         else:
             edges = (i for i in range(self.ne))
-            for i in edges:
-                s, t = self.get_edge(i)
+
+        for i in edges:
+            s, t = self.get_edge(i)
+            # Keep only edges induced by the filtered vertex set
+            if (s | t).issubset(vertices):
                 attr = deepcopy(self.get_attr_edge(i))
                 g.add_edge(s, t, **attr)
+        return g
 
     def _subgraph(self, vertices: Iterable):
         """Internal method to create vertex-induced subgraph.
@@ -410,11 +414,7 @@ class Graph(BaseGraph):
 
         for i in edges:
             s, t = self.get_edge(i)
-            # Merge if many sets
-            if len(s) > 1:
-                s = set().union(*s)
-            if len(t) > 1:
-                t = set().union(*t)
+            # s/t are vertex sets already; avoid flattening scalar vertices.
             if len(s.intersection(vertices)) > 0 and len(t.intersection(vertices)) > 0:
                 # Copy the edge
                 attr = deepcopy(self.get_attr_edge(i))
@@ -535,7 +535,7 @@ class Graph(BaseGraph):
             New Graph instance created from the dictionary
         """
         # Create a new graph with any global attributes
-        graph_attrs = data.get("attributes", {})
+        graph_attrs = dict(data.get("attributes", {}))
         default_edge_type = (
             graph_attrs.pop("edge_type", EdgeType.DIRECTED) if "edge_type" in graph_attrs else EdgeType.DIRECTED
         )
@@ -560,7 +560,7 @@ class Graph(BaseGraph):
         for edge in edges:
             source = edge.get("source", [])
             target = edge.get("target", [])
-            attrs = edge.get("attributes", {})
+            attrs = dict(edge.get("attributes", {}))
 
             # Extract edge type
             edge_type = (
@@ -737,7 +737,7 @@ class Graph(BaseGraph):
         delimiter: str = "\t",
         has_header: bool = False,
         discard_self_loops: Optional[bool] = True,
-        column_order: List[int] = [0, 1, 2],
+        column_order: Optional[Tuple[int, int, int]] = None,
     ):
         """Create graph from Simple Interaction Format (SIF) file.
 
@@ -753,6 +753,8 @@ class Graph(BaseGraph):
         """
         from corneto._io import _read_sif_iter
 
+        if column_order is None:
+            column_order = (0, 1, 2)
         it = _read_sif_iter(
             sif_file,
             delimiter=delimiter,
@@ -812,7 +814,7 @@ class Graph(BaseGraph):
 
             S, R, M = _load_compressed_gem(model)
         else:
-            S = model.S, M = model.M, R = model.R
+            S, M, R = model.S, model.M, model.R
         G = Graph.from_vertex_incidence(S, M["id"], R["id"])
         # Add metadata to the graph, such as default lb/ub for reactions
         for i in range(G.num_edges):

@@ -1,3 +1,12 @@
+"""LEGACY graph module.
+
+This module is kept for backward compatibility and internal transition only.
+New code should import graph types from ``corneto.graph``.
+
+Planned direction: remove this module after all internal imports/tests have
+been migrated to ``corneto.graph``.
+"""
+
 import abc
 import pickle
 from collections import OrderedDict, deque
@@ -927,13 +936,14 @@ class BaseGraph(abc.ABC):
         reachable = list(forward.intersection(backward))
         return self.subgraph(reachable)
 
-    def plot(self, **kwargs):
+    def plot(self, renderer: str = "auto", **kwargs):
         """Plot the graph using Graphviz.
 
         Renders the graph structure visually using Graphviz.
-        Falls back to Viz.js rendering if SVG+XML rendering fails.
+        Falls back to browser-side Graphviz WASM rendering if SVG+XML rendering fails.
 
         Args:
+            renderer: Rendering backend ('auto', 'graphviz', 'wasm').
             **kwargs: Additional plotting options passed to Graphviz
 
         Returns:
@@ -942,29 +952,9 @@ class BaseGraph(abc.ABC):
         Raises:
             OSError: If Graphviz rendering fails
         """
-        Gv = self.to_graphviz(**kwargs)
-        try:
-            # Check if the object is able to produce a MIME bundle
-            Gv._repr_mimebundle_()
-            return Gv
-        except (OSError, Exception) as e:
-            from corneto._settings import LOGGER
-            from corneto._util import supports_html
+        from corneto._plotting import plot_graph
 
-            LOGGER.debug(f"SVG+XML rendering failed: {e}.")
-            # Detect if HTML support
-            if supports_html():
-                LOGGER.debug("Falling back to Viz.js rendering.")
-                from corneto.contrib._util import dot_vizjs_html
-
-                class _VizJS:
-                    def _repr_html_(self):
-                        return dot_vizjs_html(Gv)
-
-                return _VizJS()
-            else:
-                LOGGER.debug("HTML rendering not supported.")
-                raise e
+        return plot_graph(self, renderer=renderer, **kwargs)
 
     def plot_values(self, vertex_values=None, edge_values=None, vertex_props=None, edge_props=None):
         """Plot graph with vertex and edge values visualized.

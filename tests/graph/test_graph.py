@@ -6,6 +6,8 @@ including vertex and edge operations, graph traversal algorithms, and attribute 
 
 from copy import deepcopy
 
+import numpy as np
+
 from corneto.graph import (
     EdgeType,
     Graph,
@@ -163,6 +165,28 @@ def test_add_edge_with_edge_attributes():
     g = Graph()
     idx = g.add_edge(1, 2, name="edge_name")
     assert g._edge_attr[idx]["name"] == "edge_name"
+
+
+def test_add_edge_raises_on_invalid_source_attribute_value():
+    """Test that invalid source dict values fail fast."""
+    g = Graph()
+    try:
+        g.add_edge({"a": object()}, {"b": 1})
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Expected ValueError for invalid source attribute value")
+
+
+def test_add_edge_raises_on_invalid_target_attribute_value():
+    """Test that invalid target dict values fail fast."""
+    g = Graph()
+    try:
+        g.add_edge({"a": 1}, {"b": object()})
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Expected ValueError for invalid target attribute value")
 
 
 def test_edges_by_single_vertex():
@@ -471,3 +495,99 @@ def test_graph_hash():
     assert h1 != h2
     assert h1 != h3
     assert h2 != h3
+
+
+def test_from_miom_model_object_uses_model_fields_without_mutation():
+    """Test object input handling in from_miom_model."""
+
+    class DummyModel:
+        def __init__(self):
+            self.S = np.array([[-1], [1]])
+            self.M = {"id": np.array(["A", "B"])}
+            self.R = {
+                "id": np.array(["r1"]),
+                "lb": np.array([-1000.0]),
+                "ub": np.array([1000.0]),
+                "gpr": np.array(["geneA"]),
+            }
+
+    model = DummyModel()
+    g = Graph.from_miom_model(model)
+
+    assert g.num_vertices == 2
+    assert g.num_edges == 1
+    assert model.S.shape == (2, 1)
+    assert model.M["id"][0] == "A"
+    assert model.R["id"][0] == "r1"
+
+
+def test_subgraph_handles_scalar_vertices_in_hyperedges():
+    """Regression test for scalar-vertex hyperedge handling in _subgraph."""
+    g = Graph()
+    g.add_edge({1, 2}, {3, 4})
+    sg = g._subgraph([1, 2, 3, 4])
+    assert sg.num_edges == 1
+
+
+def test_from_dict_does_not_mutate_input_payload():
+    """Regression test that from_dict should not mutate caller-provided dicts."""
+    payload = {
+        "attributes": {"edge_type": "directed"},
+        "vertices": {"A": {}},
+        "edges": [],
+    }
+    original = deepcopy(payload)
+    Graph.from_dict(payload)
+    assert payload == original
+
+
+def test_to_dot_returns_dot_source_string():
+    """Regression test for to_dot API contract."""
+    g = Graph()
+    g.add_edge("A", "B")
+    dot = g.to_dot()
+    assert isinstance(dot, str)
+    assert dot.startswith("digraph")
+
+
+def test_filter_graph_applies_vertex_and_edge_filters():
+    """Test that filter_graph returns a graph and applies both filters."""
+    g = Graph(name="graph")
+    g.add_edge("A", "B", custom="e0")
+    g.add_edge("B", "C", custom="e1")
+    g.add_edge("A", "C", custom="e2")
+
+    gf = g.filter_graph(
+        filter_vertex=lambda v: v != "C",
+        filter_edge=lambda i: i == 1,  # selects B->C, but C is filtered out
+    )
+
+    assert isinstance(gf, Graph)
+    assert gf.get_graph_attributes().name == "graph"
+    assert set(gf.V) == {"A", "B"}
+    assert gf.num_edges == 0
+
+
+def test_extract_subgraph_keep_order_preserves_vertex_order_from_edges():
+    """Regression test for deterministic vertex order in keep-order extraction."""
+    g = Graph()
+    g.add_edge("A", "C")
+    g.add_edge("B", "D")
+    sg = g._extract_subgraph_keep_order(edges=[0, 1])
+    assert sg.V == ("A", "C", "B", "D")
+
+
+def test_from_sif_default_column_order_is_immutable():
+    """Regression test ensuring from_sif does not expose mutable list default."""
+    defaults = Graph.from_sif.__defaults__
+    assert defaults is not None
+    # Defaults are (delimiter, has_header, discard_self_loops, column_order)
+    assert defaults[3] is None
+
+
+def test_add_vertex_existing_lookup_not_linear_scan():
+    """Regression test for _add_vertex implementation detail."""
+    import inspect
+
+    source = inspect.getsource(Graph._add_vertex)
+    assert "list(self._vertices).index(vertex)" not in source

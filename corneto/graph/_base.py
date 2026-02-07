@@ -117,7 +117,10 @@ class BaseGraph(abc.ABC):
             Dict mapping vertices to their attributes
         """
         if isinstance(s, dict):
-            return {k: v if isinstance(v, (dict, Number)) else ValueError() for k, v in s.items()}
+            invalid = [k for k, v in s.items() if not isinstance(v, (dict, Number))]
+            if invalid:
+                raise ValueError(f"Invalid vertex attribute values for keys {invalid}; expected dict or Number values.")
+            return dict(s)
         elif isinstance(s, (str, Number, Iterable)):
             return {v: {} for v in (s if isinstance(s, Iterable) else [s])}
         else:
@@ -134,7 +137,12 @@ class BaseGraph(abc.ABC):
             Dict mapping vertices to their attributes
         """
         if isinstance(s, dict):
-            return {k: v if isinstance(v, (dict, Number)) else ValueError() for k, v in s.items()}
+            invalid = [k for k, v in s.items() if not isinstance(v, (dict, Number))]
+            if invalid:
+                raise ValueError(
+                    f"Invalid vertex-edge attribute values for keys {invalid}; expected dict or Number values."
+                )
+            return dict(s)
         elif isinstance(s, (str, Number, Iterable)):
             return {v: {} for v in (s if not isinstance(s, str) and isinstance(s, Iterable) else [s])}
         else:
@@ -926,45 +934,25 @@ class BaseGraph(abc.ABC):
         reachable = list(forward.intersection(backward))
         return self.subgraph(reachable)
 
-    def plot(self, **kwargs):
-        """Plot the graph using Graphviz.
+    def plot(self, renderer: str = "auto", **kwargs):
+        """Plot the graph.
 
-        Renders the graph structure visually using Graphviz.
-        Falls back to Viz.js rendering if SVG+XML rendering fails.
+        Uses Graphviz by default. In ``renderer="auto"``, falls back to browser-side
+        Graphviz WASM rendering when Graphviz is unavailable and HTML rendering is available.
 
         Args:
-            **kwargs: Additional plotting options passed to Graphviz
+            renderer: Rendering backend ('auto', 'graphviz', 'networkx', 'wasm').
+            **kwargs: Additional plotting options passed to the chosen backend.
 
         Returns:
-            Graphviz plot object
+            Plot object from the selected backend.
 
         Raises:
-            OSError: If Graphviz rendering fails
+            OSError: If rendering fails
         """
-        # from corneto._util import suppress_output
-        Gv = self.to_graphviz(**kwargs)
-        try:
-            # Check if the object is able to produce a MIME bundle
-            Gv._repr_mimebundle_()
-            return Gv
-        except (OSError, Exception) as e:
-            from corneto._settings import LOGGER
-            from corneto._util import supports_html
+        from corneto._plotting import plot_graph
 
-            LOGGER.debug(f"SVG+XML rendering failed: {e}.")
-            # Detect if HTML support
-            if supports_html():
-                LOGGER.debug("Falling back to Viz.js rendering.")
-                from corneto.contrib._util import dot_vizjs_html
-
-                class _VizJS:
-                    def _repr_html_(self):
-                        return dot_vizjs_html(Gv)
-
-                return _VizJS()
-            else:
-                LOGGER.debug("HTML rendering not supported.")
-                raise e
+        return plot_graph(self, renderer=renderer, **kwargs)
 
     def plot_values(
         self,
@@ -1022,9 +1010,22 @@ class BaseGraph(abc.ABC):
         Returns:
             DOT representation of the graph
         """
-        from corneto._plotting import to_graphviz as _dot
+        from corneto._plotting import to_dot_source as _dot_source
+        from corneto._plotting import to_graphviz as _to_graphviz
 
-        return _dot(self, **kwargs)
+        dot_source_keys = {
+            "graph_attr",
+            "node_attr",
+            "edge_attr",
+            "custom_edge_attr",
+            "custom_vertex_attr",
+            "edge_indexes",
+            "orphan_edges",
+        }
+        if any(k not in dot_source_keys for k in kwargs):
+            # Backward compatibility: historically to_dot accepted graphviz/pydot kwargs.
+            return _to_graphviz(self, **kwargs)
+        return _dot_source(self, **kwargs)
 
     def _get_compression_and_filepath(
         self, filepath: str, compression: Optional[str] = None

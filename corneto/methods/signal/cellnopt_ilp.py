@@ -208,7 +208,6 @@ def cellnoptILP(G, exp_list, solver=None, alpha_flow=1e-3, verbose=False, backen
     V_is_and = get_AND_gate_nodes(G)
     and_idx = np.flatnonzero(V_is_and)
     V_is_inhibited = get_inhibited_nodes(G, exp_list)
-    inh_idx = np.flatnonzero(V_is_inhibited)
 
     # let's start with acyclic flow
     P = backend.AcyclicFlow(G)
@@ -262,7 +261,8 @@ def cellnoptILP(G, exp_list, solver=None, alpha_flow=1e-3, verbose=False, backen
             V[is_regular_node, iexp] <= (At @ Eact)[is_regular_node, iexp]
         )  # but it has an upper constraint, so it takes 0 when all input are 0
         if V_is_inhibited[:, iexp].any():
-            P += V[inh_idx[:, iexp], iexp] == np.zeros(sum(V_is_inhibited[:, iexp]))
+            inh_idx = np.flatnonzero(V_is_inhibited[:, iexp])
+            P += V[inh_idx, iexp] == np.zeros(inh_idx.size)
 
     # AND relation expressed as follows:
     # - we only define these constraints for the AND gates
