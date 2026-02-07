@@ -952,47 +952,9 @@ class BaseGraph(abc.ABC):
         Raises:
             OSError: If Graphviz rendering fails
         """
-        import sys
+        from corneto._plotting import plot_graph
 
-        from corneto._settings import LOGGER
-        from corneto._util import supports_html
-        from corneto.contrib._util import dot_wasm_render
-
-        def _as_wasm_plot() -> Any:
-            if not supports_html():
-                raise RuntimeError("HTML rendering is required for browser WASM plotting.")
-            from corneto._plotting import to_dot_source
-
-            dot_input: Any
-            try:
-                dot_input = self.to_graphviz(**kwargs)
-            except Exception:
-                dot_input = to_dot_source(self, **kwargs)
-            return dot_wasm_render(dot_input)
-
-        if renderer == "wasm":
-            return _as_wasm_plot()
-        if renderer != "auto" and renderer != "graphviz":
-            raise ValueError("Unknown renderer specified. Must be 'auto', 'graphviz', or 'wasm'.")
-
-        # Pyodide/wasm notebooks cannot run dot subprocesses; prefer browser WASM.
-        if renderer == "auto" and sys.platform == "emscripten":
-            return _as_wasm_plot()
-
-        Gv = self.to_graphviz(**kwargs)
-        try:
-            # Check if the object is able to produce a MIME bundle
-            Gv._repr_mimebundle_()
-            return Gv
-        except (OSError, Exception) as e:
-            LOGGER.debug(f"SVG+XML rendering failed: {e}.")
-            # Detect if HTML support
-            if supports_html():
-                LOGGER.debug("Falling back to browser WASM rendering.")
-                return dot_wasm_render(Gv)
-            else:
-                LOGGER.debug("HTML rendering not supported.")
-                raise e
+        return plot_graph(self, renderer=renderer, **kwargs)
 
     def plot_values(self, vertex_values=None, edge_values=None, vertex_props=None, edge_props=None):
         """Plot graph with vertex and edge values visualized.

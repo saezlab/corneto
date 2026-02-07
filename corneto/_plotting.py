@@ -1,11 +1,250 @@
 import contextlib
 import io
-from typing import Any, Dict, List, Literal, Optional, Union
+from typing import Any, Callable, Dict, List, Literal, Optional, Tuple, Union
 
 import numpy as np
 
 from corneto.backend._base import EXPR_NAME_FLOW
 from corneto.graph import Attr, BaseGraph, EdgeType
+
+Theme = Dict[str, Any]
+ProcessorOutput = Tuple[Dict[int, Dict[str, str]], Dict[Union[int, str], Dict[str, str]]]
+ProcessorFn = Callable[[BaseGraph, Dict[str, Any], Theme], ProcessorOutput]
+
+_THEMES: Dict[str, Theme] = {
+    "default": {
+        "positive_color": "firebrick4",
+        "negative_color": "dodgerblue4",
+        "zero_color": "black",
+        "min_edge_width": 0.25,
+        "max_edge_width": 5.0,
+    },
+    "red_blue": {
+        "positive_color": "firebrick4",
+        "negative_color": "dodgerblue4",
+        "zero_color": "black",
+        "min_edge_width": 0.25,
+        "max_edge_width": 5.0,
+    },
+}
+
+
+def _resolve_theme(theme: Optional[Union[str, Theme]]) -> Theme:
+    if theme is None:
+        return dict(_THEMES["default"])
+    if isinstance(theme, str):
+        if theme not in _THEMES:
+            raise ValueError(f"Unknown theme '{theme}'. Available themes: {list(_THEMES.keys())}")
+        return dict(_THEMES[theme])
+    out = dict(_THEMES["default"])
+    out.update(theme)
+    return out
+
+
+def _as_values(value: Any) -> Optional[np.ndarray]:
+    if value is None:
+        return None
+    if hasattr(value, "value"):
+        value = value.value
+    if value is None:
+        return None
+    return np.array(value)
+
+
+def _processor_sign_magnitude(graph: BaseGraph, data: Dict[str, Any], theme: Theme) -> ProcessorOutput:
+    edge_attrs: Dict[int, Dict[str, str]] = {}
+    vertex_attrs: Dict[Union[int, str], Dict[str, str]] = {}
+
+    edge_values = _as_values(data.get("edge_values"))
+    if edge_values is not None:
+        edge_attrs = create_graphviz_edge_attributes(
+            edge_values=edge_values,
+            min_edge_width=float(theme["min_edge_width"]),
+            max_edge_width=float(theme["max_edge_width"]),
+            negative_color=str(theme["negative_color"]),
+            positive_color=str(theme["positive_color"]),
+        )
+        for attrs in edge_attrs.values():
+            if attrs.get("color") == "black":
+                attrs["color"] = str(theme["zero_color"])
+
+    vertex_values = _as_values(data.get("vertex_values"))
+    if vertex_values is not None:
+        vertex_attrs = create_graphviz_vertex_attributes(
+            graph_vertices=list(graph.V),
+            vertex_values=vertex_values,
+            negative_color=str(theme["negative_color"]),
+            positive_color=str(theme["positive_color"]),
+        )
+    return edge_attrs, vertex_attrs
+
+
+def _processor_metabolism_flux(graph: BaseGraph, data: Dict[str, Any], theme: Theme) -> ProcessorOutput:
+    del graph
+    edge_attrs: Dict[int, Dict[str, str]] = {}
+    flux_values = _as_values(data.get("edge_values"))
+    if flux_values is None:
+        flux_values = _as_values(data.get("flux_values"))
+    if flux_values is None:
+        return {}, {}
+
+    zero_flow_threshold = float(data.get("zero_flow_threshold", 1e-6))
+    scale = data.get("scale", "log")
+    clip_quantil = data.get("clip_quantil", 0.05)
+
+    flow = np.array(flux_values, dtype=float)
+    flow[np.abs(flow) < zero_flow_threshold] = 0
+    if scale is not None:
+        if scale == "log":
+            flow = np.sign(flow) * np.log10(np.abs(flow) + 1.0)
+        elif scale == "std":
+            std = float(np.std(flow))
+            if std > 0:
+                flow = flow / std
+        else:
+            raise ValueError(f"Unknown scale '{scale}'. Use None, 'log', or 'std'.")
+    if clip_quantil is not None:
+        flow = clip_quantiles(flow, float(clip_quantil))
+    max_flow = max(float(np.max(np.abs(flow))), 1e-6)
+    min_w = float(theme["min_edge_width"])
+    max_w = float(theme["max_edge_width"])
+
+    for i, v in enumerate(flow):
+        if scale is None:
+            edge_width = max_w if abs(v) > 0 else min_w
+        else:
+            edge_width = min_w + (max_w - min_w) * abs(v / max_flow)
+        edge_attrs[i] = {"penwidth": str(edge_width)}
+        if v > 0:
+            edge_attrs[i]["color"] = str(theme["positive_color"])
+        elif v < 0:
+            edge_attrs[i]["color"] = str(theme["negative_color"])
+        else:
+            edge_attrs[i]["color"] = str(theme["zero_color"])
+    return edge_attrs, {}
+
+
+_PROCESSORS: Dict[str, ProcessorFn] = {
+    "sign_magnitude": _processor_sign_magnitude,
+    "metabolism_flux": _processor_metabolism_flux,
+}
+
+_PRESETS: Dict[str, Dict[str, str]] = {
+    "simple": {"theme": "default", "processor": "sign_magnitude"},
+    "metabolism_flux": {"theme": "red_blue", "processor": "metabolism_flux"},
+}
+
+
+def _resolve_processor(processor: Optional[Union[str, ProcessorFn]]) -> Optional[ProcessorFn]:
+    if processor is None:
+        return None
+    if callable(processor):
+        return processor
+    if processor not in _PROCESSORS:
+        raise ValueError(f"Unknown processor '{processor}'. Available processors: {list(_PROCESSORS.keys())}")
+    return _PROCESSORS[processor]
+
+
+def _merge_attrs(
+    base: Optional[Dict[Any, Dict[str, str]]],
+    override: Optional[Dict[Any, Dict[str, str]]],
+) -> Optional[Dict[Any, Dict[str, str]]]:
+    if not base and not override:
+        return None
+    out: Dict[Any, Dict[str, str]] = {}
+    for source in (base or {}, override or {}):
+        for key, value in source.items():
+            out.setdefault(key, {}).update(value)
+    return out
+
+
+def _plot_with_networkx(graph: BaseGraph, **kwargs) -> Any:
+    import matplotlib.pyplot as plt
+    import networkx as nx
+
+    from corneto.contrib.networkx import corneto_graph_to_networkx
+
+    skip_unsupported_edges = bool(kwargs.get("skip_unsupported_edges", True))
+    nx_graph = corneto_graph_to_networkx(graph, skip_unsupported_edges=skip_unsupported_edges)
+
+    pos = kwargs.get("pos")
+    if pos is None:
+        pos = nx.spring_layout(nx_graph)
+
+    ax = kwargs.get("ax")
+    if ax is None:
+        fig, ax = plt.subplots(figsize=kwargs.get("figsize"))
+    else:
+        fig = ax.figure
+
+    nx.draw_networkx(nx_graph, pos=pos, ax=ax, with_labels=kwargs.get("node_labels") is None)
+    if kwargs.get("node_labels") is not None:
+        nx.draw_networkx_labels(nx_graph, pos=pos, labels=kwargs["node_labels"], ax=ax)
+    ax.set_axis_off()
+    return fig
+
+
+def plot_graph(graph: BaseGraph, renderer: str = "auto", **kwargs) -> Any:
+    import sys
+
+    from corneto._settings import LOGGER
+    from corneto._util import supports_html
+    from corneto.contrib._util import dot_wasm_render
+
+    preset = kwargs.pop("preset", None)
+    theme_arg = kwargs.pop("theme", None)
+    processor_arg = kwargs.pop("processor", None)
+    data = kwargs.pop("data", None) or {}
+
+    if preset is not None:
+        if preset not in _PRESETS:
+            raise ValueError(f"Unknown preset '{preset}'. Available presets: {list(_PRESETS.keys())}")
+        preset_cfg = _PRESETS[preset]
+        if theme_arg is None:
+            theme_arg = preset_cfg["theme"]
+        if processor_arg is None:
+            processor_arg = preset_cfg["processor"]
+
+    processor = _resolve_processor(processor_arg)
+    if processor is not None:
+        theme = _resolve_theme(theme_arg)
+        proc_edge_attr, proc_vertex_attr = processor(graph, data, theme)
+        kwargs["custom_edge_attr"] = _merge_attrs(proc_edge_attr, kwargs.get("custom_edge_attr"))
+        kwargs["custom_vertex_attr"] = _merge_attrs(proc_vertex_attr, kwargs.get("custom_vertex_attr"))
+
+    def _as_wasm_plot() -> Any:
+        if not supports_html():
+            raise RuntimeError("HTML rendering is required for browser WASM plotting.")
+
+        dot_input: Any
+        try:
+            dot_input = graph.to_graphviz(**kwargs)
+        except Exception:
+            dot_input = to_dot_source(graph, **kwargs)
+        return dot_wasm_render(dot_input)
+
+    if renderer == "wasm":
+        return _as_wasm_plot()
+    if renderer == "networkx":
+        return _plot_with_networkx(graph, **kwargs)
+    if renderer != "auto" and renderer != "graphviz":
+        raise ValueError("Unknown renderer specified. Must be 'auto', 'graphviz', 'networkx', or 'wasm'.")
+
+    # Pyodide/wasm notebooks cannot run dot subprocesses; prefer browser WASM.
+    if renderer == "auto" and sys.platform == "emscripten":
+        return _as_wasm_plot()
+
+    try:
+        graphviz_obj = graph.to_graphviz(**kwargs)
+        graphviz_obj._repr_mimebundle_()
+        return graphviz_obj
+    except (OSError, Exception) as e:
+        LOGGER.debug(f"Graphviz rendering failed: {e}.")
+        if supports_html():
+            LOGGER.debug("Falling back to browser WASM rendering.")
+            return _as_wasm_plot()
+        LOGGER.debug("HTML rendering not supported.")
+        raise e
 
 
 def suppress_repr_warnings(g):
@@ -164,7 +403,7 @@ def flow_style(
     flow[np.abs(flow) < zero_flow_threshold] = 0
     if scale is not None:
         if scale == "log":
-            flow = np.log10(np.abs(flow) + 1e-6) * np.sign(flow)
+            flow = np.sign(flow) * np.log10(np.abs(flow) + 1.0)
         elif scale == "std":
             flow = flow / np.std(flow)
         else:
@@ -240,7 +479,22 @@ def _dot_attr_dict(attrs: Optional[Dict[str, str]]) -> str:
     return "[" + ", ".join(parts) + "]"
 
 
-def to_dot_source(
+def _normalize_custom_vertex_attr(
+    graph: BaseGraph,
+    custom_vertex_attr: Optional[Dict[Union[int, str], Dict[str, str]]],
+) -> Dict[str, Dict[str, str]]:
+    if custom_vertex_attr is None:
+        return {}
+    out = dict(custom_vertex_attr)
+    if len(out) > 0:
+        keys = list(out.keys())
+        if all(isinstance(k, int) for k in keys):
+            vertices = graph.V
+            out = {str(v): out[i] for i, v in enumerate(vertices)}
+    return out
+
+
+def _build_plot_model(
     graph: BaseGraph,
     graph_attr: Optional[Dict[str, str]] = None,
     node_attr: Optional[Dict[str, str]] = None,
@@ -249,29 +503,15 @@ def to_dot_source(
     custom_vertex_attr: Optional[Dict[Union[int, str], Dict[str, str]]] = None,
     edge_indexes: Optional[List[int]] = None,
     orphan_edges: bool = True,
-) -> str:
-    """Create DOT source without requiring graphviz/pydot."""
-    if custom_edge_attr is None:
-        custom_edge_attr = {}
-    if custom_vertex_attr is None:
-        custom_vertex_attr = {}
-
-    if len(custom_vertex_attr) > 0:
-        keys = list(custom_vertex_attr.keys())
-        if all(isinstance(k, int) for k in keys):
-            vertices = graph.V
-            custom_vertex_attr = {str(v): custom_vertex_attr[i] for i, v in enumerate(vertices)}
-
+) -> Dict[str, Any]:
+    custom_edge_attr = custom_edge_attr or {}
+    custom_vertex_attr_str = _normalize_custom_vertex_attr(graph, custom_vertex_attr)
     node_defaults = dict(fixedsize="true") if node_attr is None else node_attr
-    lines = ["digraph {"]
-    if graph_attr:
-        lines.append(f"  graph {_dot_attr_dict(graph_attr)};")
-    if node_defaults:
-        lines.append(f"  node {_dot_attr_dict(node_defaults)};")
-    if edge_attr:
-        lines.append(f"  edge {_dot_attr_dict(edge_attr)};")
 
+    nodes: List[Tuple[str, Dict[str, str]]] = []
+    edges: List[Tuple[str, str, Dict[str, str]]] = []
     is_hypergraph = False
+
     for i, e in enumerate(graph.edges()):
         if edge_indexes is not None and i not in edge_indexes:
             continue
@@ -284,9 +524,9 @@ def to_dot_source(
 
         def add_node(v_name: str, default_shape: str) -> None:
             attrs = {"shape": default_shape}
-            if v_name in custom_vertex_attr:
-                attrs.update(custom_vertex_attr[v_name])
-            lines.append(f"  {_dot_quote(v_name)} {_dot_attr_dict(attrs)};")
+            if v_name in custom_vertex_attr_str:
+                attrs.update(custom_vertex_attr_str[v_name])
+            nodes.append((v_name, attrs))
 
         if len(s) == 0:
             v_name = f"e_{i}_source"
@@ -309,16 +549,14 @@ def to_dot_source(
         if len(s) > 1 or len(t) > 1:
             is_hypergraph = True
             edge_center = f"e_{i}_center"
-            lines.append(
-                f"  {_dot_quote(edge_center)} {_dot_attr_dict({'shape': 'square', 'width': '0.1', 'height': '0.1', 'label': ''})};"
-            )
+            nodes.append((edge_center, {"shape": "square", "width": "0.1", "height": "0.1", "label": ""}))
             for v in v_s:
                 attrs = dict(arrowtail="none", arrowhead="none", dir="both")
                 attrs.update(custom_edge_attr.get(i, {}))
-                lines.append(f"  {_dot_quote(v)} -> {_dot_quote(edge_center)} {_dot_attr_dict(attrs)};")
+                edges.append((v, edge_center, attrs))
             for v in v_t:
-                attrs = custom_edge_attr.get(i, {})
-                lines.append(f"  {_dot_quote(edge_center)} -> {_dot_quote(v)} {_dot_attr_dict(attrs)};")
+                attrs = dict(custom_edge_attr.get(i, {}))
+                edges.append((edge_center, v, attrs))
         else:
             if graph.get_attr_edge(i).get_attr(Attr.EDGE_TYPE, "") == EdgeType.UNDIRECTED.value:
                 attrs = dict(arrowhead="none", dir="none")
@@ -329,9 +567,53 @@ def to_dot_source(
                     head = "tee"
                 attrs = dict(arrowhead=head)
                 attrs.update(custom_edge_attr.get(i, {}))
-            lines.append(f"  {_dot_quote(v_s[0])} -> {_dot_quote(v_t[0])} {_dot_attr_dict(attrs)};")
+            edges.append((v_s[0], v_t[0], attrs))
 
-    if is_hypergraph and graph_attr is None:
+    return {
+        "graph_attr": graph_attr,
+        "node_defaults": node_defaults,
+        "edge_attr": edge_attr,
+        "nodes": nodes,
+        "edges": edges,
+        "is_hypergraph": is_hypergraph,
+    }
+
+
+def to_dot_source(
+    graph: BaseGraph,
+    graph_attr: Optional[Dict[str, str]] = None,
+    node_attr: Optional[Dict[str, str]] = None,
+    edge_attr: Optional[Dict[str, str]] = None,
+    custom_edge_attr: Optional[Dict[int, Dict[str, str]]] = None,
+    custom_vertex_attr: Optional[Dict[Union[int, str], Dict[str, str]]] = None,
+    edge_indexes: Optional[List[int]] = None,
+    orphan_edges: bool = True,
+) -> str:
+    """Create DOT source without requiring graphviz/pydot."""
+    model = _build_plot_model(
+        graph=graph,
+        graph_attr=graph_attr,
+        node_attr=node_attr,
+        edge_attr=edge_attr,
+        custom_edge_attr=custom_edge_attr,
+        custom_vertex_attr=custom_vertex_attr,
+        edge_indexes=edge_indexes,
+        orphan_edges=orphan_edges,
+    )
+
+    lines = ["digraph {"]
+    if model["graph_attr"]:
+        lines.append(f"  graph {_dot_attr_dict(model['graph_attr'])};")
+    if model["node_defaults"]:
+        lines.append(f"  node {_dot_attr_dict(model['node_defaults'])};")
+    if model["edge_attr"]:
+        lines.append(f"  edge {_dot_attr_dict(model['edge_attr'])};")
+    for node_name, attrs in model["nodes"]:
+        lines.append(f"  {_dot_quote(node_name)} {_dot_attr_dict(attrs)};")
+    for source, target, attrs in model["edges"]:
+        lines.append(f"  {_dot_quote(source)} -> {_dot_quote(target)} {_dot_attr_dict(attrs)};")
+
+    if model["is_hypergraph"] and graph_attr is None:
         lines.append('  graph [splines="true"];')
     lines.append("}")
     return "\n".join(lines)
@@ -351,50 +633,27 @@ def to_python_graphviz(
 ) -> Any:
     import graphviz  # type: ignore
 
-    is_hypergraph = False
-    if custom_edge_attr is None:
-        custom_edge_attr = {}
-    if custom_vertex_attr is None:
-        custom_vertex_attr = {}
-    if len(custom_vertex_attr) > 0:
-        keys = list(custom_vertex_attr.keys())
-        if all(isinstance(k, int) for k in keys):
-            vertices = graph.V
-            custom_vertex_attr = {str(v): custom_vertex_attr[i] for i, v in enumerate(vertices)}
-    if node_attr is None:
-        node_attr = dict(fixedsize="true")
-    g = graphviz.Digraph(engine=layout, graph_attr=graph_attr, node_attr=node_attr, edge_attr=edge_attr)
-    for i, e in enumerate(graph.edges()):
-        if edge_indexes is not None and i not in edge_indexes:
-            continue
-        i, (s, t) = e
-        if not orphan_edges and (len(s) == 0 or len(t) == 0):
-            continue
-        v_s, v_t = _create_vertices(g, e, vertex_props=custom_vertex_attr)
-        if len(s) > 1 or len(t) > 1:
-            is_hypergraph = True
-            edge_center = f"e_{i}_center"
-            g.node(edge_center, shape="square", width="0.1", height="0.1", label="")
-            for v in v_s:
-                e_attr = dict(arrowtail="none", arrowhead="none", dir="both")
-                e_attr.update(custom_edge_attr.get(i, {}))
-                g.edge(v, edge_center, **e_attr)
-            for v in v_t:
-                e_attr = custom_edge_attr.get(i, {})
-                g.edge(edge_center, v, **e_attr)
-        else:
-            if graph.get_attr_edge(i).get_attr(Attr.EDGE_TYPE, "") == EdgeType.UNDIRECTED.value:
-                e_attr = dict(arrowhead="none", dir="none")
-                e_attr.update(custom_edge_attr.get(i, {}))
-                g.edge(v_s[0], v_t[0], **e_attr)
-            else:
-                head = "normal"
-                if graph.get_attr_edge(i).get("interaction", 0) < 0:
-                    head = "tee"
-                e_attr = dict(arrowhead=head)
-                e_attr.update(custom_edge_attr.get(i, {}))
-                g.edge(v_s[0], v_t[0], **e_attr)
-    if is_hypergraph and graph_attr is None:
+    model = _build_plot_model(
+        graph=graph,
+        graph_attr=graph_attr,
+        node_attr=node_attr,
+        edge_attr=edge_attr,
+        custom_edge_attr=custom_edge_attr,
+        custom_vertex_attr=custom_vertex_attr,
+        edge_indexes=edge_indexes,
+        orphan_edges=orphan_edges,
+    )
+    g = graphviz.Digraph(
+        engine=layout,
+        graph_attr=model["graph_attr"],
+        node_attr=model["node_defaults"],
+        edge_attr=model["edge_attr"],
+    )
+    for node_name, attrs in model["nodes"]:
+        g.node(node_name, **attrs)
+    for source, target, attrs in model["edges"]:
+        g.edge(source, target, **attrs)
+    if model["is_hypergraph"] and graph_attr is None:
         g.graph_attr["splines"] = "true"
     if supress_warnings:
         suppress_repr_warnings(g)
@@ -448,58 +707,27 @@ def to_pydot(
 ) -> Any:
     import pydot
 
-    is_hypergraph = False
-    if custom_edge_attr is None:
-        custom_edge_attr = {}
-    if custom_vertex_attr is None:
-        custom_vertex_attr = {}
-    if len(custom_vertex_attr) > 0:
-        keys = list(custom_vertex_attr.keys())
-        if all(isinstance(k, int) for k in keys):
-            vertices = graph.V
-            custom_vertex_attr = {str(v): custom_vertex_attr[i] for i, v in enumerate(vertices)}
+    model = _build_plot_model(
+        graph=graph,
+        graph_attr=graph_attr,
+        node_attr=node_attr,
+        edge_attr=edge_attr,
+        custom_edge_attr=custom_edge_attr,
+        custom_vertex_attr=custom_vertex_attr,
+        edge_indexes=edge_indexes,
+        orphan_edges=orphan_edges,
+    )
     # Create a pydot.Dot graph
-    g = pydot.Dot(graph_type="digraph", **(graph_attr if graph_attr else {}))
+    g = pydot.Dot(graph_type="digraph", **(model["graph_attr"] if model["graph_attr"] else {}))
     if node_attr is not None:
         g.set_node_defaults(**node_attr)
-    if edge_attr is not None:
-        g.set_edge_defaults(**edge_attr)
-    for i, e in enumerate(graph.edges()):
-        if edge_indexes is not None and i not in edge_indexes:
-            continue
-        i, (s, t) = e
-        if not orphan_edges and (len(s) == 0 or len(t) == 0):
-            continue
-        v_s, v_t = _pydot_create_vertices(g, e, vertex_props=custom_vertex_attr)
-        if len(s) > 1 or len(t) > 1:
-            is_hypergraph = True
-            edge_center = f"e_{i}_center"
-            center_node = pydot.Node(edge_center, shape="square", width="0.1", height="0.1", label="")
-            g.add_node(center_node)
-            for v in v_s:
-                e_attr = dict(arrowtail="none", arrowhead="none", dir="both")
-                e_attr.update(custom_edge_attr.get(i, {}))
-                edge = pydot.Edge(v, edge_center, **e_attr)
-                g.add_edge(edge)
-            for v in v_t:
-                e_attr = custom_edge_attr.get(i, {})
-                edge = pydot.Edge(edge_center, v, **e_attr)
-                g.add_edge(edge)
-        else:
-            if graph.get_attr_edge(i).get_attr(Attr.EDGE_TYPE, "") == EdgeType.UNDIRECTED.value:
-                e_attr = dict(arrowhead="none", dir="none")
-                e_attr.update(custom_edge_attr.get(i, {}))
-                edge = pydot.Edge(v_s[0], v_t[0], **e_attr)
-                g.add_edge(edge)
-            else:
-                head = "normal"
-                if graph.get_attr_edge(i).get("interaction", 0) < 0:
-                    head = "tee"
-                e_attr = dict(arrowhead=head)
-                e_attr.update(custom_edge_attr.get(i, {}))
-                edge = pydot.Edge(v_s[0], v_t[0], **e_attr)
-                g.add_edge(edge)
-    if is_hypergraph and graph_attr is None:
+    if model["edge_attr"] is not None:
+        g.set_edge_defaults(**model["edge_attr"])
+    for node_name, attrs in model["nodes"]:
+        g.add_node(pydot.Node(node_name, **attrs))
+    for source, target, attrs in model["edges"]:
+        g.add_edge(pydot.Edge(source, target, **attrs))
+    if model["is_hypergraph"] and graph_attr is None:
         g.set_splines("true")
     return g
 

@@ -935,62 +935,24 @@ class BaseGraph(abc.ABC):
         return self.subgraph(reachable)
 
     def plot(self, renderer: str = "auto", **kwargs):
-        """Plot the graph using Graphviz.
+        """Plot the graph.
 
-        Renders the graph structure visually using Graphviz.
-        Falls back to browser-side Graphviz WASM rendering if SVG+XML rendering fails.
+        Uses Graphviz by default. In ``renderer="auto"``, falls back to browser-side
+        Graphviz WASM rendering when Graphviz is unavailable and HTML rendering is available.
 
         Args:
-            renderer: Rendering backend ('auto', 'graphviz', 'wasm').
-            **kwargs: Additional plotting options passed to Graphviz
+            renderer: Rendering backend ('auto', 'graphviz', 'networkx', 'wasm').
+            **kwargs: Additional plotting options passed to the chosen backend.
 
         Returns:
-            Graphviz plot object
+            Plot object from the selected backend.
 
         Raises:
-            OSError: If Graphviz rendering fails
+            OSError: If rendering fails
         """
-        import sys
+        from corneto._plotting import plot_graph
 
-        from corneto._settings import LOGGER
-        from corneto._util import supports_html
-        from corneto.contrib._util import dot_wasm_render
-
-        def _as_wasm_plot() -> Any:
-            if not supports_html():
-                raise RuntimeError("HTML rendering is required for browser WASM plotting.")
-            from corneto._plotting import to_dot_source
-
-            dot_input: Any
-            try:
-                dot_input = self.to_graphviz(**kwargs)
-            except Exception:
-                dot_input = to_dot_source(self, **kwargs)
-            return dot_wasm_render(dot_input)
-
-        if renderer == "wasm":
-            return _as_wasm_plot()
-        if renderer != "auto" and renderer != "graphviz":
-            raise ValueError("Unknown renderer specified. Must be 'auto', 'graphviz', or 'wasm'.")
-
-        # Pyodide/wasm notebooks cannot run dot subprocesses; prefer browser WASM.
-        if renderer == "auto" and sys.platform == "emscripten":
-            return _as_wasm_plot()
-
-        Gv = self.to_graphviz(**kwargs)
-        try:
-            # Check if the object is able to produce a MIME bundle
-            Gv._repr_mimebundle_()
-            return Gv
-        except (OSError, Exception) as e:
-            LOGGER.debug(f"SVG+XML rendering failed: {e}.")
-            # Detect if HTML support
-            if supports_html():
-                LOGGER.debug("Falling back to browser WASM rendering.")
-                return dot_wasm_render(Gv)
-            else:
-                LOGGER.debug("HTML rendering not supported.")
-                raise e
+        return plot_graph(self, renderer=renderer, **kwargs)
 
     def plot_values(
         self,
@@ -1048,9 +1010,22 @@ class BaseGraph(abc.ABC):
         Returns:
             DOT representation of the graph
         """
-        from corneto._plotting import to_dot_source as _dot
+        from corneto._plotting import to_dot_source as _dot_source
+        from corneto._plotting import to_graphviz as _to_graphviz
 
-        return _dot(self, **kwargs)
+        dot_source_keys = {
+            "graph_attr",
+            "node_attr",
+            "edge_attr",
+            "custom_edge_attr",
+            "custom_vertex_attr",
+            "edge_indexes",
+            "orphan_edges",
+        }
+        if any(k not in dot_source_keys for k in kwargs):
+            # Backward compatibility: historically to_dot accepted graphviz/pydot kwargs.
+            return _to_graphviz(self, **kwargs)
+        return _dot_source(self, **kwargs)
 
     def _get_compression_and_filepath(
         self, filepath: str, compression: Optional[str] = None
