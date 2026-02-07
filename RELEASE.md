@@ -8,25 +8,30 @@ CORNETO uses an automated tag-based release process powered by Poetry Dynamic Ve
 
 To create a new release:
 
-1. **Create and push a Git tag** following semantic versioning:
-   ```bash
-   git tag -a v1.2.3 -m "v1.2.3"
-   git push origin v1.2.3
-   ```
+1. **Merge `dev` into `main`** via pull request.
 
-2. **Automatic pipeline execution**:
+2. **Create and push the release tag from `main`**:
+   ```bash
+   poetry install
+   git checkout main
+   git pull --ff-only origin main
+   poetry run release v1.2.3
+   ```
+   - Use pre-release tags as needed: `v1.2.3-alpha.0`, `v1.2.3-beta.0`, `v1.2.3-rc.0`.
+
+3. **Automatic pipeline execution**:
    - GitHub Actions detects the new tag
    - Builds the package using Poetry
    - **Creates GitHub Release with automated release notes**
    - Publishes to PyPI via OIDC trusted publishing
    - Deploys versioned documentation to GitHub Pages
 
-3. **Version resolution**:
+4. **Version resolution**:
    - Poetry Dynamic Versioning automatically extracts the version from the Git tag
    - The package version in `pyproject.toml` remains at `0.0.0` (placeholder)
    - Built packages use the actual tag version (e.g., `1.2.3`)
 
-4. **Automated Release Notes**:
+5. **Automated Release Notes**:
    - GitHub automatically generates release notes based on merged PRs and commits
    - Uses conventional commit patterns to categorize changes
    - Includes contributor acknowledgments and change summaries
@@ -37,10 +42,10 @@ To create a new release:
 ```bash
 # Ensure you're on the main branch and up to date
 git checkout main
-git pull origin main
+git pull --ff-only origin main
 
-# Create and push a release tag (use semantic versioning)
-python scripts/release.py minor
+# Create and push a release tag explicitly
+poetry run release v1.0.0-beta.4
 ```
 
 The release pipeline (`.github/workflows/build-and-publish.yml`) will automatically:
@@ -51,15 +56,23 @@ The release pipeline (`.github/workflows/build-and-publish.yml`) will automatica
 
 ### Release Helper
 
-Use the helper script to bump and push the next tag:
+Use the helper command to create and push an explicit tag:
 
 ```bash
-python scripts/release.py major   # vX.0.0
-python scripts/release.py minor   # v0.X.0
-python scripts/release.py patch   # v0.0.X
+poetry run release v1.2.3
+poetry run release v1.0.0-beta.4
+poetry run release 1.0.0-rc.1     # 'v' prefix is optional
 ```
 
-It finds the latest `v*` tag, computes the next version, creates an annotated tag, and pushes it to `origin`.
+It validates release preconditions (clean tree, on `main`, in sync with `origin/main`,
+`origin/dev` merged into `main`, tag not already present), then creates an annotated tag and pushes it to `origin`.
+
+Useful options:
+
+```bash
+poetry run release v1.0.0-beta.4 --dry-run  # validate only
+poetry run release v1.0.0-beta.4 --yes      # skip confirmation prompt
+```
 
 ### Customizing Release Notes
 
