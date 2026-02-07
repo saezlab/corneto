@@ -34,6 +34,9 @@ jobs:
         pip install poetry
         poetry self add "poetry-dynamic-versioning[plugin]"
         poetry install
+    - name: Validate pinned wasm-graphviz checksum
+      run: |
+        poetry run python scripts/check_wasm_graphviz_checksum.py
     - name: Test with pytest
       run: |
         poetry run pytest

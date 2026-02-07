@@ -1,7 +1,9 @@
 import sys
 
+import pytest
+
 from corneto._plotting import to_dot_source
-from corneto.contrib._util import dot_wasm_html
+from corneto.contrib._util import DEFAULT_WASM_GRAPHVIZ_JS_URL, dot_wasm_html
 from corneto.graph import Graph
 
 
@@ -17,7 +19,7 @@ def test_to_dot_source_generates_basic_dot():
 
 def test_dot_wasm_html_accepts_raw_dot_source():
     html = dot_wasm_html('digraph {"A" -> "B";}')
-    assert "@hpcc-js/wasm-graphviz" in html
+    assert DEFAULT_WASM_GRAPHVIZ_JS_URL in html
     assert 'script type="module"' in html
 
 
@@ -36,7 +38,7 @@ def test_plot_wasm_works_without_graphviz(monkeypatch):
     mime, payload = obj._mime_()
     assert mime == "text/html"
     assert payload == html
-    assert "@hpcc-js/wasm-graphviz" in html
+    assert DEFAULT_WASM_GRAPHVIZ_JS_URL in html
 
 
 def test_plot_auto_uses_wasm_on_emscripten(monkeypatch):
@@ -86,6 +88,7 @@ def test_plot_networkx_renderer(monkeypatch):
 
 
 def test_to_dot_accepts_backend_for_backward_compatibility():
+    pytest.importorskip("pydot")
     g = Graph()
     g.add_edge("A", "B")
     dot_obj = g.to_dot(backend="pydot")

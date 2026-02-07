@@ -3,6 +3,8 @@ import os
 import uuid
 from typing import Any, Optional, Tuple
 
+DEFAULT_WASM_GRAPHVIZ_JS_URL = "https://cdn.jsdelivr.net/npm/@hpcc-js/wasm-graphviz@1.21.0/dist/index.min.js"
+
 
 class GraphRender:
     """Small rich display wrapper compatible with Jupyter and marimo."""
@@ -45,7 +47,7 @@ def dot_wasm_html(
     dot_string_base64 = base64.b64encode(dot_string.encode()).decode("utf-8")
 
     if wasm_graphviz_js_url is None:
-        wasm_graphviz_js_url = "https://cdn.jsdelivr.net/npm/@hpcc-js/wasm-graphviz@1/dist/index.min.js"
+        wasm_graphviz_js_url = DEFAULT_WASM_GRAPHVIZ_JS_URL
 
     return f"""
     <div id="{container_id}" style="overflow:auto"></div>
