@@ -1,5 +1,6 @@
 import contextlib
 import io
+from collections.abc import Mapping
 from typing import Any, Callable, Dict, List, Literal, Optional, Tuple, Union
 
 import numpy as np
@@ -10,6 +11,14 @@ from corneto.graph import Attr, BaseGraph, EdgeType
 Theme = Dict[str, Any]
 ProcessorOutput = Tuple[Dict[int, Dict[str, str]], Dict[Union[int, str], Dict[str, str]]]
 ProcessorFn = Callable[[BaseGraph, Dict[str, Any], Theme], ProcessorOutput]
+ProcessorArg = Optional[
+    Union[
+        str,
+        ProcessorFn,
+        List[Union[str, ProcessorFn]],
+        Tuple[Union[str, ProcessorFn], ...],
+    ]
+]
 
 _THEMES: Dict[str, Theme] = {
     "default": {
@@ -124,9 +133,40 @@ def _processor_metabolism_flux(graph: BaseGraph, data: Dict[str, Any], theme: Th
     return edge_attrs, {}
 
 
+def _processor_vertex_attribute_style(graph: BaseGraph, data: Dict[str, Any], theme: Theme) -> ProcessorOutput:
+    del theme
+    vertex_style_map = data.get("vertex_style_map")
+    if not vertex_style_map:
+        return {}, {}
+    if not isinstance(vertex_style_map, Mapping):
+        raise ValueError("data['vertex_style_map'] must be a mapping from attribute values to Graphviz attrs.")
+
+    vertex_style_attr = str(data.get("vertex_style_attr", "type"))
+    default_vertex_style = data.get("default_vertex_style")
+    if default_vertex_style is not None and not isinstance(default_vertex_style, Mapping):
+        raise ValueError("data['default_vertex_style'] must be a dict with Graphviz attrs.")
+
+    vertex_attrs: Dict[Union[int, str], Dict[str, str]] = {}
+    for v in graph.V:
+        attr = graph.get_attr_vertex(v)
+        attr_value = attr.get(vertex_style_attr, None)
+        style = vertex_style_map.get(attr_value, default_vertex_style)
+        if style is None:
+            continue
+        if isinstance(style, str):
+            style = {"shape": style}
+        elif not isinstance(style, Mapping):
+            raise ValueError(
+                f"Style for vertex attribute value {attr_value!r} must be a dict or a shape string, got {type(style)}."
+            )
+        vertex_attrs[v] = {str(k): str(val) for k, val in style.items()}
+    return {}, vertex_attrs
+
+
 _PROCESSORS: Dict[str, ProcessorFn] = {
     "sign_magnitude": _processor_sign_magnitude,
     "metabolism_flux": _processor_metabolism_flux,
+    "vertex_attribute_style": _processor_vertex_attribute_style,
 }
 
 _PRESETS: Dict[str, Dict[str, str]] = {
@@ -135,14 +175,24 @@ _PRESETS: Dict[str, Dict[str, str]] = {
 }
 
 
-def _resolve_processor(processor: Optional[Union[str, ProcessorFn]]) -> Optional[ProcessorFn]:
+def _resolve_processors(processor: ProcessorArg) -> List[ProcessorFn]:
     if processor is None:
-        return None
-    if callable(processor):
-        return processor
-    if processor not in _PROCESSORS:
-        raise ValueError(f"Unknown processor '{processor}'. Available processors: {list(_PROCESSORS.keys())}")
-    return _PROCESSORS[processor]
+        return []
+    candidates: List[Union[str, ProcessorFn]]
+    if isinstance(processor, (list, tuple)):
+        candidates = list(processor)
+    else:
+        candidates = [processor]
+
+    resolved: List[ProcessorFn] = []
+    for p in candidates:
+        if callable(p):
+            resolved.append(p)
+        else:
+            if p not in _PROCESSORS:
+                raise ValueError(f"Unknown processor '{p}'. Available processors: {list(_PROCESSORS.keys())}")
+            resolved.append(_PROCESSORS[p])
+    return resolved
 
 
 def _merge_attrs(
@@ -205,12 +255,13 @@ def plot_graph(graph: BaseGraph, renderer: str = "auto", **kwargs) -> Any:
         if processor_arg is None:
             processor_arg = preset_cfg["processor"]
 
-    processor = _resolve_processor(processor_arg)
-    if processor is not None:
+    processors = _resolve_processors(processor_arg)
+    if processors:
         theme = _resolve_theme(theme_arg)
-        proc_edge_attr, proc_vertex_attr = processor(graph, data, theme)
-        kwargs["custom_edge_attr"] = _merge_attrs(proc_edge_attr, kwargs.get("custom_edge_attr"))
-        kwargs["custom_vertex_attr"] = _merge_attrs(proc_vertex_attr, kwargs.get("custom_vertex_attr"))
+        for processor in processors:
+            proc_edge_attr, proc_vertex_attr = processor(graph, data, theme)
+            kwargs["custom_edge_attr"] = _merge_attrs(proc_edge_attr, kwargs.get("custom_edge_attr"))
+            kwargs["custom_vertex_attr"] = _merge_attrs(proc_vertex_attr, kwargs.get("custom_vertex_attr"))
 
     def _as_wasm_plot() -> Any:
         if not supports_html():

@@ -176,3 +176,77 @@ def test_plot_with_metabolism_flux_log_keeps_negative_sign(monkeypatch):
     )
     assert 'color="firebrick4"' in obj.source
     assert 'color="dodgerblue4"' in obj.source
+
+
+def test_plot_with_vertex_attribute_style_processor(monkeypatch):
+    g = Graph()
+    g.add_vertex("EGFR", type="receptor")
+    g.add_vertex("AKT1", type="signaling")
+    g.add_vertex("STAT3", type="tf")
+    g.add_edge("EGFR", "AKT1")
+    g.add_edge("AKT1", "STAT3")
+
+    class _FakeGV:
+        def __init__(self, source):
+            self.source = source
+
+        def _repr_mimebundle_(self):
+            return {}
+
+    def _fake_to_graphviz(self, **kwargs):
+        from corneto._plotting import to_dot_source
+
+        return _FakeGV(to_dot_source(self, **kwargs))
+
+    monkeypatch.setattr(Graph, "to_graphviz", _fake_to_graphviz)
+    obj = g.plot(
+        renderer="graphviz",
+        processor="vertex_attribute_style",
+        data={
+            "vertex_style_attr": "type",
+            "vertex_style_map": {
+                "receptor": {"shape": "triangle"},
+                "signaling": "box",
+                "tf": {"shape": "diamond"},
+            },
+        },
+    )
+    assert '"EGFR" [shape="triangle"]' in obj.source
+    assert '"AKT1" [shape="box"]' in obj.source
+    assert '"STAT3" [shape="diamond"]' in obj.source
+
+
+def test_plot_with_composed_processors_combines_vertex_shape_and_sign_color(monkeypatch):
+    g = Graph()
+    g.add_vertex("EGFR", type="receptor")
+    g.add_vertex("AKT1", type="signaling")
+    g.add_edge("EGFR", "AKT1")
+
+    class _FakeGV:
+        def __init__(self, source):
+            self.source = source
+
+        def _repr_mimebundle_(self):
+            return {}
+
+    def _fake_to_graphviz(self, **kwargs):
+        from corneto._plotting import to_dot_source
+
+        return _FakeGV(to_dot_source(self, **kwargs))
+
+    monkeypatch.setattr(Graph, "to_graphviz", _fake_to_graphviz)
+    obj = g.plot(
+        renderer="graphviz",
+        processor=["sign_magnitude", "vertex_attribute_style"],
+        data={
+            "vertex_values": [1.0, -1.0],
+            "vertex_style_attr": "type",
+            "vertex_style_map": {"receptor": {"shape": "triangle"}},
+        },
+    )
+    assert '"EGFR"' in obj.source
+    assert 'shape="triangle"' in obj.source
+    assert 'color="firebrick4"' in obj.source
+    assert '"AKT1"' in obj.source
+    assert 'shape="circle"' in obj.source
+    assert 'color="dodgerblue4"' in obj.source
