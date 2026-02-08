@@ -35,12 +35,22 @@ To create a new release:
    - Publishes to PyPI via OIDC trusted publishing
    - Deploys versioned documentation to GitHub Pages
 
-4. **Version resolution**:
+4. **Sync `main` back into `dev` after tagging**:
+   - This keeps `dev` reachable from the latest release tags used by dynamic versioning.
+   - Without this step, `dev` may continue reporting an older pre-release base (e.g., `1.0.0b3+...`).
+   ```bash
+   git checkout dev
+   git pull --ff-only origin dev
+   git merge --ff-only origin/main
+   git push origin dev
+   ```
+
+5. **Version resolution**:
    - Poetry Dynamic Versioning automatically extracts the version from the Git tag
    - The package version in `pyproject.toml` remains at `0.0.0` (placeholder)
    - Built packages use the actual tag version (e.g., `1.2.3`)
 
-5. **Automated Release Notes**:
+6. **Automated Release Notes**:
    - GitHub automatically generates release notes based on merged PRs and commits
    - Uses conventional commit patterns to categorize changes
    - Includes contributor acknowledgments and change summaries
@@ -59,6 +69,12 @@ git push origin main
 
 # Create and push a release tag explicitly
 poetry run release v1.0.0-beta.4
+
+# Sync main back into dev so dev sees the latest release tag ancestry
+git checkout dev
+git pull --ff-only origin dev
+git merge --ff-only origin/main
+git push origin dev
 ```
 
 The release pipeline (`.github/workflows/build-and-publish.yml`) will automatically:
@@ -159,6 +175,7 @@ The typical development workflow involves:
 3. **Run quality checks** before merging to main
 4. **Integrate into `main`** when ready for release (via pull request or fast-forward merge)
 5. **Create release tag** on the `main` branch to trigger automated publishing
+6. **Sync `main` back into `dev`** immediately after tagging
 
 ## Technical Details
 
@@ -186,7 +203,7 @@ The release workflow (`.github/workflows/build-and-publish.yml`) is triggered by
 
 - **`main`**: Stable releases and release tags
 - **`dev`**: Active development branch
-- Recommended integration: `dev` -> `main` (pull request or fast-forward merge)
+- Recommended integration: `dev` -> `main` for releases, then `main` -> `dev` immediately after tagging
 
 ### Documentation Version Switcher
 

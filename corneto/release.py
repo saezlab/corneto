@@ -127,6 +127,12 @@ def main(argv: Sequence[str] | None = None) -> int:
         _create_and_push_tag(version)
         print(f"Release tag pushed: {version}")
         print("GitHub Actions will now build, publish, and create the GitHub release.")
+        print("Post-release sync reminder:")
+        print("  git checkout dev")
+        print("  git pull --ff-only origin dev")
+        print("  git merge --ff-only origin/main")
+        print("  git push origin dev")
+        print("This keeps dev aligned with the latest release tag ancestry for dynamic versioning.")
         return 0
     except ReleaseError as exc:
         print(f"Release aborted: {exc}", file=sys.stderr)
