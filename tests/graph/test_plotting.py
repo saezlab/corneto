@@ -85,6 +85,14 @@ def test_graph_render_mime_prefers_html_field_over_text(monkeypatch):
     assert payload == _Frame.html
 
 
+def test_graph_render_repr_html_wraps_in_iframe_when_ipython_loaded(monkeypatch):
+    monkeypatch.setitem(sys.modules, "IPython", object())
+    html = GraphRender('<div><script type="module">console.log("x")</script></div>')._repr_html_()
+    assert html.startswith("<iframe ")
+    assert "srcdoc=" in html
+    assert "&lt;script" in html
+
+
 def test_plot_auto_uses_wasm_on_emscripten(monkeypatch):
     g = Graph()
     g.add_edge("A", "B")

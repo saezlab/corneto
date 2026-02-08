@@ -1,5 +1,7 @@
 import base64
+import html
 import os
+import sys
 import uuid
 from typing import Any, Optional, Tuple
 
@@ -36,12 +38,24 @@ class GraphRender:
             if isinstance(text_payload, str):
                 return "text/html", text_payload
 
+            if "IPython" in sys.modules:
+                return "text/html", self._iframe_html(self._html)
             return "text/html", self._html
         except Exception:
+            if "IPython" in sys.modules:
+                return "text/html", self._iframe_html(self._html)
             return "text/html", self._html
 
     def _repr_html_(self) -> str:
+        # In Jupyter/IPython, run WASM bootstrap in an isolated iframe to avoid
+        # blocking the notebook document thread.
+        if "IPython" in sys.modules:
+            return self._iframe_html(self._html)
         return self._html
+
+    def _iframe_html(self, body: str) -> str:
+        escaped = html.escape(body, quote=True)
+        return f"<iframe srcdoc='{escaped}' width='100%' height='{self._iframe_height}' frameborder='0'></iframe>"
 
     def __repr__(self) -> str:
         return self._plain_text if self._plain_text else "GraphRender(html)"
