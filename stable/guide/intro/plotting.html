@@ -55,7 +55,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'guide/intro/plotting';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1770578347';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'stable';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
@@ -496,7 +496,7 @@
                    style="width:100%;max-width:100px;" />
             </td>
             <td>
-              <table><tr><td>Installed version:</td><td style='text-align:left'>v1.0.0b4</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.8.1, PICOS v2.6.2</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CVXOPT, GLPK, GLPK_MI, HIGHS, SCIP, SCIPY</td></tr><tr><td>Graphviz version:</td><td style='text-align:left'>v0.20.3</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href="https://github.com/saezlab/corneto">https://github.com/saezlab/corneto</a></td></tr></table>
+              <table><tr><td>Installed version:</td><td style='text-align:left'>v1.0.0b4.post6.dev0+b3716e6c</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.8.1, PICOS v2.6.2</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CVXOPT, GLPK, GLPK_MI, HIGHS, SCIP, SCIPY</td></tr><tr><td>Plot backend (default):</td><td style='text-align:left'>auto -> graphviz</td></tr><tr><td>Available plot backends:</td><td style='text-align:left'>graphviz v0.20.3; networkx v3.6.1+mpl v3.10.8; graphviz-wasm</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href="https://github.com/saezlab/corneto">https://github.com/saezlab/corneto</a></td></tr></table>
             </td>
           </tr>
         </table>
@@ -560,7 +560,7 @@ This is useful for inspecting activities, scores, or inferred edge effects.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">G</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
-    <span class="n">preset</span><span class="o">=</span><span class="s2">&quot;simple&quot;</span><span class="p">,</span>
+    <span class="n">preset</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">,</span>
     <span class="n">data</span><span class="o">=</span><span class="p">{</span>
         <span class="s2">&quot;edge_values&quot;</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span>
         <span class="s2">&quot;vertex_values&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
@@ -575,7 +575,7 @@ This is useful for inspecting activities, scores, or inferred edge effects.</p>
 </div>
 <section id="metabolic-flux-visualization">
 <h3>Metabolic flux visualization<a class="headerlink" href="#metabolic-flux-visualization" title="Link to this heading">#</a></h3>
-<p>For metabolic models, <code class="docutils literal notranslate"><span class="pre">metabolism_flux</span></code> rescales flux values and highlights sign and magnitude.</p>
+<p>For metabolic models, <code class="docutils literal notranslate"><span class="pre">metabolism</span></code> rescales flux values and highlights sign and magnitude.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">G_flux</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;flux-demo&quot;</span><span class="p">)</span>
@@ -584,7 +584,7 @@ This is useful for inspecting activities, scores, or inferred edge effects.</p>
 <span class="n">G_flux</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;Pyruvate&quot;</span><span class="p">,</span> <span class="s2">&quot;Acetyl-CoA&quot;</span><span class="p">)</span>
 
 <span class="n">G_flux</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
-    <span class="n">preset</span><span class="o">=</span><span class="s2">&quot;metabolism_flux&quot;</span><span class="p">,</span>
+    <span class="n">preset</span><span class="o">=</span><span class="s2">&quot;metabolism&quot;</span><span class="p">,</span>
     <span class="n">data</span><span class="o">=</span><span class="p">{</span>
         <span class="s2">&quot;edge_values&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">20.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">],</span>
         <span class="s2">&quot;scale&quot;</span><span class="p">:</span> <span class="s2">&quot;log&quot;</span><span class="p">,</span>
@@ -596,6 +596,47 @@ This is useful for inspecting activities, scores, or inferred edge effects.</p>
 </div>
 <div class="cell_output docutils container">
 <img alt="../../_images/088bfb045c963e355755df8ebfe88beb54f0dc9919b889c63ddde47923a491d8.svg" src="../../_images/088bfb045c963e355755df8ebfe88beb54f0dc9919b889c63ddde47923a491d8.svg" />
+</div>
+</div>
+</section>
+<section id="method-aware-presets-and-role-styling">
+<h3>Method-aware presets and role styling<a class="headerlink" href="#method-aware-presets-and-role-styling" title="Link to this heading">#</a></h3>
+<p>Some presets can apply role-aware node styling when role metadata is available (for example from <code class="docutils literal notranslate"><span class="pre">feature_data</span></code>).
+This keeps the plotting API generic while allowing method-specific defaults.</p>
+<p>As one concrete case, <code class="docutils literal notranslate"><span class="pre">preset=&quot;signaling&quot;</span></code> uses defaults such as:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">input</span></code> (e.g. receptors): triangle</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">output</span></code> (e.g. TFs): diamond</p></li>
+<li><p>internal nodes: circle</p></li>
+</ul>
+<p>You can still override styles explicitly via <code class="docutils literal notranslate"><span class="pre">role_styles</span></code> or <code class="docutils literal notranslate"><span class="pre">custom_vertex_attr</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example: signaling preset with role metadata + custom solution variable names</span>
+<span class="n">G_sig</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;signaling-demo&quot;</span><span class="p">)</span>
+<span class="n">G_sig</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;TGFBR1&quot;</span><span class="p">,</span> <span class="s2">&quot;AKT1&quot;</span><span class="p">)</span>
+<span class="n">G_sig</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;AKT1&quot;</span><span class="p">,</span> <span class="s2">&quot;STAT3&quot;</span><span class="p">)</span>
+
+<span class="n">D_sig</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Data</span><span class="o">.</span><span class="n">from_cdict</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;sample1&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;TGFBR1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;mapping&quot;</span><span class="p">:</span> <span class="s2">&quot;vertex&quot;</span><span class="p">,</span> <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;input&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">},</span>
+            <span class="s2">&quot;STAT3&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;mapping&quot;</span><span class="p">:</span> <span class="s2">&quot;vertex&quot;</span><span class="p">,</span> <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;output&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">},</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+
+<span class="n">G_sig</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">preset</span><span class="o">=</span><span class="s2">&quot;signaling&quot;</span><span class="p">,</span>
+    <span class="n">feature_data</span><span class="o">=</span><span class="n">D_sig</span><span class="p">,</span>
+    <span class="n">solution</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;v&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">],</span> <span class="s2">&quot;e&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">]},</span>
+    <span class="n">solution_map</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;vertex&quot;</span><span class="p">:</span> <span class="s2">&quot;v&quot;</span><span class="p">,</span> <span class="s2">&quot;edge&quot;</span><span class="p">:</span> <span class="s2">&quot;e&quot;</span><span class="p">},</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/d24b0e0637efc4a413e8b7b31d03c52fd49f3cf185185d7808935c5b79150536.svg" src="../../_images/d24b0e0637efc4a413e8b7b31d03c52fd49f3cf185185d7808935c5b79150536.svg" />
 </div>
 </div>
 </section>
@@ -701,10 +742,28 @@ This is useful for inspecting activities, scores, or inferred edge effects.</p>
 </div>
 <div class="cell_output docutils container">
 <div class="output text_html"></div><div class="output text_html">
-    <div id="container-45675877-8e85-4119-9bfe-017577fb0e85" style="overflow:auto"></div>
+    <div id="container-bb4ba727-a442-4628-aa66-6a32ff957005" style="overflow:auto"></div>
     <script type="module">
     (async () => {
-      const target = document.getElementById("container-45675877-8e85-4119-9bfe-017577fb0e85");
+      const target = document.getElementById("container-bb4ba727-a442-4628-aa66-6a32ff957005");
+      const resizeFrameToContent = () => {
+        try {
+          let h = target ? target.scrollHeight : 0;
+          const svg = target ? target.querySelector("svg") : null;
+          if (svg) {
+            const rect = svg.getBoundingClientRect();
+            if (rect && Number.isFinite(rect.height)) {
+              h = Math.max(h, rect.height);
+            }
+          }
+          h = Math.max(120, Math.ceil(h) + 24);
+          if (window.frameElement) {
+            window.frameElement.style.height = `${h}px`;
+          }
+        } catch (_err) {
+          // best effort only
+        }
+      };
       try {
         const mod = await import("https://cdn.jsdelivr.net/npm/@hpcc-js/wasm-graphviz@1.21.0/dist/index.min.js");
         const Graphviz = mod.Graphviz || (mod.default && mod.default.Graphviz) || mod.default;
@@ -715,9 +774,13 @@ This is useful for inspecting activities, scores, or inferred edge effects.</p>
         const dot = atob("ZGlncmFwaCB7Cglub2RlIFtmaXhlZHNpemU9dHJ1ZV0KCUEgW3NoYXBlPWNpcmNsZV0KCUIgW3NoYXBlPWNpcmNsZV0KCUIgW3NoYXBlPWNpcmNsZV0KCUMgW3NoYXBlPWNpcmNsZV0KCUEgW3NoYXBlPWNpcmNsZV0KCUMgW3NoYXBlPWNpcmNsZV0KCUEgLT4gQiBbYXJyb3doZWFkPW5vcm1hbF0KCUIgLT4gQyBbYXJyb3doZWFkPW5vcm1hbF0KCUEgLT4gQyBbYXJyb3doZWFkPW5vcm1hbF0KfQo=");
         const svg = await graphviz.dot(dot, "svg", "dot");
         target.innerHTML = svg;
+        resizeFrameToContent();
+        requestAnimationFrame(resizeFrameToContent);
+        setTimeout(resizeFrameToContent, 50);
       } catch (error) {
         target.innerHTML = "<pre style='white-space:pre-wrap;color:#b00020'>Graph rendering failed: " +
           String(error) + "</pre>";
+        resizeFrameToContent();
       }
     })();
     </script>
@@ -811,6 +874,7 @@ This is useful for inspecting activities, scores, or inferred edge effects.</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#visual-encoding-from-values">2. Visual encoding from values</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#presets-for-common-workflows">3. Presets for common workflows</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metabolic-flux-visualization">Metabolic flux visualization</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#method-aware-presets-and-role-styling">Method-aware presets and role styling</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#theme-customization">4. Theme customization</a></li>
