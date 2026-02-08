@@ -39,6 +39,12 @@ def test_dot_wasm_html_accepts_raw_dot_source():
     html = dot_wasm_html('digraph {"A" -> "B";}')
     assert DEFAULT_WASM_GRAPHVIZ_JS_URL in html
     assert 'script type="module"' in html
+    assert "renderInWorker" in html
+
+
+def test_dot_wasm_html_disables_main_thread_fallback_when_requested():
+    html = dot_wasm_html('digraph {"A" -> "B";}', allow_main_thread_fallback=False)
+    assert "const allowMainThreadFallback = false;" in html
 
 
 def test_plot_wasm_works_without_graphviz(monkeypatch):
@@ -57,6 +63,13 @@ def test_plot_wasm_works_without_graphviz(monkeypatch):
     assert mime == "text/html"
     assert payload == html
     assert DEFAULT_WASM_GRAPHVIZ_JS_URL in html
+
+
+def test_dot_wasm_render_disables_main_thread_fallback_in_ipython(monkeypatch):
+    monkeypatch.setitem(sys.modules, "IPython", object())
+    render_obj = Graph().plot(renderer="wasm")
+    html = render_obj._repr_html_()
+    assert "const allowMainThreadFallback = false;" in html
 
 
 def test_graph_render_mime_uses_marimo_frame_mime(monkeypatch):
