@@ -1,12 +1,28 @@
 import sys
+from types import ModuleType
 
 import pytest
 
 from corneto._data import Data
 from corneto._plotting import to_dot_source
 from corneto._util import supports_html
-from corneto.contrib._util import DEFAULT_WASM_GRAPHVIZ_JS_URL, dot_wasm_html
+from corneto.contrib._util import (
+    DEFAULT_WASM_GRAPHVIZ_JS_URL,
+    GraphRender,
+    dot_wasm_html,
+)
 from corneto.graph import Graph
+
+
+def _install_fake_marimo(monkeypatch, iframe_impl):
+    marimo_module = ModuleType("marimo")
+    output_module = ModuleType("marimo._output")
+    formatting_module = ModuleType("marimo._output.formatting")
+    formatting_module.iframe = iframe_impl
+
+    monkeypatch.setitem(sys.modules, "marimo", marimo_module)
+    monkeypatch.setitem(sys.modules, "marimo._output", output_module)
+    monkeypatch.setitem(sys.modules, "marimo._output.formatting", formatting_module)
 
 
 def test_to_dot_source_generates_basic_dot():
@@ -41,6 +57,32 @@ def test_plot_wasm_works_without_graphviz(monkeypatch):
     assert mime == "text/html"
     assert payload == html
     assert DEFAULT_WASM_GRAPHVIZ_JS_URL in html
+
+
+def test_graph_render_mime_uses_marimo_frame_mime(monkeypatch):
+    expected = '<iframe srcdoc="<p>ok</p>"></iframe>'
+
+    class _Frame:
+        def _mime_(self):
+            return "text/html", expected
+
+    _install_fake_marimo(monkeypatch, lambda *_args, **_kwargs: _Frame())
+
+    mime, payload = GraphRender("<div>graph</div>")._mime_()
+    assert mime == "text/html"
+    assert payload == expected
+
+
+def test_graph_render_mime_prefers_html_field_over_text(monkeypatch):
+    class _Frame:
+        html = '<iframe srcdoc="<p>ok</p>"></iframe>'
+        text = "&lt;iframe srcdoc=&quot;&lt;p&gt;escaped&lt;/p&gt;&quot;&gt;&lt;/iframe&gt;"
+
+    _install_fake_marimo(monkeypatch, lambda *_args, **_kwargs: _Frame())
+
+    mime, payload = GraphRender("<div>graph</div>")._mime_()
+    assert mime == "text/html"
+    assert payload == _Frame.html
 
 
 def test_plot_auto_uses_wasm_on_emscripten(monkeypatch):

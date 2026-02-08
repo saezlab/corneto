@@ -20,7 +20,23 @@ class GraphRender:
         try:
             from marimo._output.formatting import iframe
 
-            return "text/html", iframe(self._html, height=self._iframe_height).text
+            frame = iframe(self._html, height=self._iframe_height)
+
+            frame_mime = getattr(frame, "_mime_", None)
+            if callable(frame_mime):
+                mime_type, payload = frame_mime()
+                if mime_type == "text/html" and isinstance(payload, str):
+                    return mime_type, payload
+
+            html_payload = getattr(frame, "html", None)
+            if isinstance(html_payload, str):
+                return "text/html", html_payload
+
+            text_payload = getattr(frame, "text", None)
+            if isinstance(text_payload, str):
+                return "text/html", text_payload
+
+            return "text/html", self._html
         except Exception:
             return "text/html", self._html
 
