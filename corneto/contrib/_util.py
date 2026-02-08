@@ -1,6 +1,5 @@
 import base64
 import html
-import json
 import os
 import sys
 import uuid
@@ -78,7 +77,6 @@ def dot_wasm_html(
     dot_input: Any,
     container_id: Optional[str] = None,
     wasm_graphviz_js_url: Optional[str] = None,
-    allow_main_thread_fallback: bool = True,
 ) -> str:
     if container_id is None:
         container_id = f"container-{uuid.uuid4()}"
@@ -94,7 +92,6 @@ def dot_wasm_html(
     <script type="module">
     (async () => {{
       const target = document.getElementById("{container_id}");
-      const allowMainThreadFallback = {str(allow_main_thread_fallback).lower()};
       const resizeFrameToContent = () => {{
         try {{
           let h = target ? target.scrollHeight : 0;
@@ -113,75 +110,15 @@ def dot_wasm_html(
           // best effort only
         }}
       }};
-      const loadGraphvizModule = async () => {{
+      try {{
         const mod = await import("{wasm_graphviz_js_url}");
         const Graphviz = mod.Graphviz || (mod.default && mod.default.Graphviz) || mod.default;
         if (!Graphviz || !Graphviz.load) {{
           throw new Error("Graphviz WASM module does not expose Graphviz.load()");
         }}
-        return Graphviz;
-      }};
-      const renderInWorker = async (dot) => {{
-        const workerSource = `
-          const wasmUrl = ${json.dumps(wasm_graphviz_js_url)};
-          self.onmessage = async (ev) => {{
-            try {{
-              const dot = ev.data.dot;
-              const mod = await import(wasmUrl);
-              const Graphviz = mod.Graphviz || (mod.default && mod.default.Graphviz) || mod.default;
-              if (!Graphviz || !Graphviz.load) {{
-                throw new Error("Graphviz WASM module does not expose Graphviz.load()");
-              }}
-              const graphviz = await Graphviz.load();
-              const svg = await graphviz.dot(dot, "svg", "dot");
-              self.postMessage({{ ok: true, svg }});
-            }} catch (error) {{
-              self.postMessage({{ ok: false, error: String(error) }});
-            }}
-          }};
-        `;
-        const blob = new Blob([workerSource], {{ type: "text/javascript" }});
-        const workerUrl = URL.createObjectURL(blob);
-        const worker = new Worker(workerUrl, {{ type: "module" }});
-        try {{
-          const result = await new Promise((resolve, reject) => {{
-            const timeout = setTimeout(() => reject(new Error("Worker render timeout")), 45000);
-            worker.onmessage = (ev) => {{
-              clearTimeout(timeout);
-              if (ev.data && ev.data.ok) {{
-                resolve(ev.data.svg);
-              }} else {{
-                reject(new Error(ev.data && ev.data.error ? ev.data.error : "Unknown worker error"));
-              }}
-            }};
-            worker.onerror = (ev) => {{
-              clearTimeout(timeout);
-              reject(new Error(ev.message || "Worker error"));
-            }};
-            worker.postMessage({{ dot }});
-          }});
-          return result;
-        }} finally {{
-          worker.terminate();
-          URL.revokeObjectURL(workerUrl);
-        }}
-      }};
-      const renderOnMainThread = async (dot) => {{
-        const Graphviz = await loadGraphvizModule();
         const graphviz = await Graphviz.load();
-        return graphviz.dot(dot, "svg", "dot");
-      }};
-      try {{
         const dot = atob("{dot_string_base64}");
-        let svg;
-        try {{
-          svg = await renderInWorker(dot);
-        }} catch (workerError) {{
-          if (!allowMainThreadFallback) {{
-            throw workerError;
-          }}
-          svg = await renderOnMainThread(dot);
-        }}
+        const svg = await graphviz.dot(dot, "svg", "dot");
         target.innerHTML = svg;
         resizeFrameToContent();
         requestAnimationFrame(resizeFrameToContent);
@@ -203,15 +140,11 @@ def dot_wasm_render(
     iframe_height: str = "220px",
 ) -> GraphRender:
     dot_source = _to_dot_source(dot_input)
-    # In IPython/Jupyter, avoid fallback to main-thread WASM rendering, which can
-    # freeze the notebook tab for larger graphs.
-    allow_main_thread_fallback = "IPython" not in sys.modules
     return GraphRender(
         html=dot_wasm_html(
             dot_source,
             container_id=container_id,
             wasm_graphviz_js_url=wasm_graphviz_js_url,
-            allow_main_thread_fallback=allow_main_thread_fallback,
         ),
         plain_text=dot_source,
         iframe_height=iframe_height,
