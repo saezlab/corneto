@@ -9,12 +9,20 @@ DEFAULT_WASM_GRAPHVIZ_JS_URL = "https://cdn.jsdelivr.net/npm/@hpcc-js/wasm-graph
 class GraphRender:
     """Small rich display wrapper compatible with Jupyter and marimo."""
 
-    def __init__(self, html: str, plain_text: str = ""):
+    def __init__(self, html: str, plain_text: str = "", iframe_height: str = "220px"):
         self._html = html
         self._plain_text = plain_text
+        self._iframe_height = iframe_height
 
     def _mime_(self) -> Tuple[str, str]:
-        return "text/html", self._html
+        # marimo does not execute inline scripts in raw text/html; wrap in
+        # iframe so WASM bootstrap scripts can run.
+        try:
+            from marimo._output.formatting import iframe
+
+            return "text/html", iframe(self._html, height=self._iframe_height).text
+        except Exception:
+            return "text/html", self._html
 
     def _repr_html_(self) -> str:
         return self._html
@@ -54,6 +62,24 @@ def dot_wasm_html(
     <script type="module">
     (async () => {{
       const target = document.getElementById("{container_id}");
+      const resizeFrameToContent = () => {{
+        try {{
+          let h = target ? target.scrollHeight : 0;
+          const svg = target ? target.querySelector("svg") : null;
+          if (svg) {{
+            const rect = svg.getBoundingClientRect();
+            if (rect && Number.isFinite(rect.height)) {{
+              h = Math.max(h, rect.height);
+            }}
+          }}
+          h = Math.max(120, Math.ceil(h) + 24);
+          if (window.frameElement) {{
+            window.frameElement.style.height = `${{h}}px`;
+          }}
+        }} catch (_err) {{
+          // best effort only
+        }}
+      }};
       try {{
         const mod = await import("{wasm_graphviz_js_url}");
         const Graphviz = mod.Graphviz || (mod.default && mod.default.Graphviz) || mod.default;
@@ -64,9 +90,13 @@ def dot_wasm_html(
         const dot = atob("{dot_string_base64}");
         const svg = await graphviz.dot(dot, "svg", "dot");
         target.innerHTML = svg;
+        resizeFrameToContent();
+        requestAnimationFrame(resizeFrameToContent);
+        setTimeout(resizeFrameToContent, 50);
       }} catch (error) {{
         target.innerHTML = "<pre style='white-space:pre-wrap;color:#b00020'>Graph rendering failed: " +
           String(error) + "</pre>";
+        resizeFrameToContent();
       }}
     }})();
     </script>
@@ -77,6 +107,7 @@ def dot_wasm_render(
     dot_input: Any,
     container_id: Optional[str] = None,
     wasm_graphviz_js_url: Optional[str] = None,
+    iframe_height: str = "220px",
 ) -> GraphRender:
     dot_source = _to_dot_source(dot_input)
     return GraphRender(
@@ -86,4 +117,5 @@ def dot_wasm_render(
             wasm_graphviz_js_url=wasm_graphviz_js_url,
         ),
         plain_text=dot_source,
+        iframe_height=iframe_height,
     )

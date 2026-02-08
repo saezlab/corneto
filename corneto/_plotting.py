@@ -1,5 +1,6 @@
 import contextlib
 import io
+from collections.abc import Mapping
 from typing import Any, Callable, Dict, List, Literal, Optional, Tuple, Union
 
 import numpy as np
@@ -10,6 +11,14 @@ from corneto.graph import Attr, BaseGraph, EdgeType
 Theme = Dict[str, Any]
 ProcessorOutput = Tuple[Dict[int, Dict[str, str]], Dict[Union[int, str], Dict[str, str]]]
 ProcessorFn = Callable[[BaseGraph, Dict[str, Any], Theme], ProcessorOutput]
+ProcessorArg = Optional[
+    Union[
+        str,
+        ProcessorFn,
+        List[Union[str, ProcessorFn]],
+        Tuple[Union[str, ProcessorFn], ...],
+    ]
+]
 
 _THEMES: Dict[str, Theme] = {
     "default": {
@@ -124,25 +133,205 @@ def _processor_metabolism_flux(graph: BaseGraph, data: Dict[str, Any], theme: Th
     return edge_attrs, {}
 
 
+def _processor_vertex_attribute_style(graph: BaseGraph, data: Dict[str, Any], theme: Theme) -> ProcessorOutput:
+    del theme
+    vertex_style_map = data.get("vertex_style_map")
+    if not vertex_style_map:
+        return {}, {}
+    if not isinstance(vertex_style_map, Mapping):
+        raise ValueError("data['vertex_style_map'] must be a mapping from attribute values to Graphviz attrs.")
+
+    vertex_style_attr = str(data.get("vertex_style_attr", "type"))
+    default_vertex_style = data.get("default_vertex_style")
+    if default_vertex_style is not None and not isinstance(default_vertex_style, Mapping):
+        raise ValueError("data['default_vertex_style'] must be a dict with Graphviz attrs.")
+
+    vertex_attrs: Dict[Union[int, str], Dict[str, str]] = {}
+    for v in graph.V:
+        attr = graph.get_attr_vertex(v)
+        attr_value = attr.get(vertex_style_attr, None)
+        style = vertex_style_map.get(attr_value, default_vertex_style)
+        if style is None:
+            continue
+        if isinstance(style, str):
+            style = {"shape": style}
+        elif not isinstance(style, Mapping):
+            raise ValueError(
+                f"Style for vertex attribute value {attr_value!r} must be a dict or a shape string, got {type(style)}."
+            )
+        vertex_attrs[v] = {str(k): str(val) for k, val in style.items()}
+    return {}, vertex_attrs
+
+
 _PROCESSORS: Dict[str, ProcessorFn] = {
     "sign_magnitude": _processor_sign_magnitude,
     "metabolism_flux": _processor_metabolism_flux,
+    "vertex_attribute_style": _processor_vertex_attribute_style,
 }
 
 _PRESETS: Dict[str, Dict[str, str]] = {
+    # Preferred names
+    "default": {"theme": "default", "processor": "sign_magnitude"},
+    "signaling": {"theme": "default", "processor": "sign_magnitude"},
+    "metabolism": {"theme": "red_blue", "processor": "metabolism_flux"},
+    # Backward-compatible aliases
     "simple": {"theme": "default", "processor": "sign_magnitude"},
     "metabolism_flux": {"theme": "red_blue", "processor": "metabolism_flux"},
 }
 
+# Default role styles for domain presets.
+_PRESET_ROLE_STYLES: Dict[str, Dict[str, Dict[str, str]]] = {
+    "signaling": {
+        "input": {"shape": "triangle", "style": "filled", "fillcolor": "#dff3ff"},
+        "output": {"shape": "diamond", "style": "filled", "fillcolor": "#ffe8d6"},
+        "internal": {"shape": "circle"},
+        "mixed": {"shape": "circle", "style": "dashed"},
+    }
+}
 
-def _resolve_processor(processor: Optional[Union[str, ProcessorFn]]) -> Optional[ProcessorFn]:
-    if processor is None:
+
+def _solution_get(solution: Any, name: str) -> Any:
+    if solution is None:
         return None
-    if callable(processor):
-        return processor
-    if processor not in _PROCESSORS:
-        raise ValueError(f"Unknown processor '{processor}'. Available processors: {list(_PROCESSORS.keys())}")
-    return _PROCESSORS[processor]
+    if isinstance(solution, Mapping):
+        return solution.get(name, None)
+    expr = getattr(solution, "expr", None)
+    if expr is None:
+        return None
+    try:
+        if hasattr(expr, "__contains__") and name in expr:
+            return expr[name]
+    except Exception:
+        pass
+    if hasattr(expr, name):
+        return getattr(expr, name)
+    return None
+
+
+def _merge_solution_data(
+    base_data: Dict[str, Any],
+    solution: Any,
+    solution_map: Optional[Dict[str, str]],
+) -> Dict[str, Any]:
+    if solution is None:
+        return base_data
+    merged = dict(base_data)
+    semantic_to_data_key = {
+        "vertex": "vertex_values",
+        "edge": "edge_values",
+        "flux": "flux_values",
+    }
+    for semantic_key, data_key in semantic_to_data_key.items():
+        var_name = None
+        if solution_map is not None:
+            var_name = solution_map.get(semantic_key, None)
+        if not var_name:
+            continue
+        if data_key in merged:
+            # Keep explicit user-provided plotting data over inferred solution values.
+            continue
+        value = _solution_get(solution, var_name)
+        if value is not None:
+            merged[data_key] = value
+    return merged
+
+
+def _resolve_role_styles(
+    preset: Optional[str],
+    role_styles: Optional[Dict[str, Union[str, Dict[str, str]]]],
+) -> Dict[str, Dict[str, str]]:
+    defaults = dict(_PRESET_ROLE_STYLES.get(preset or "", {}))
+    if role_styles is None:
+        return defaults
+    out: Dict[str, Dict[str, str]] = {}
+    out.update(defaults)
+    for role, style in role_styles.items():
+        if isinstance(style, str):
+            out[role] = {"shape": style}
+        else:
+            out[role] = {str(k): str(v) for k, v in style.items()}
+    return out
+
+
+def _infer_node_roles_from_feature_data(
+    feature_data: Any,
+    sample: Optional[Union[int, str]] = None,
+    role_key: str = "role",
+) -> Dict[Any, str]:
+    samples = getattr(feature_data, "samples", None)
+    if samples is None:
+        raise ValueError("feature_data must be a Data-like object with a 'samples' attribute.")
+
+    items = list(samples.items())
+    if len(items) == 0:
+        return {}
+
+    if sample is None:
+        selected_items = items
+    elif isinstance(sample, int):
+        if sample < 0 or sample >= len(items):
+            raise ValueError(f"sample index {sample} out of range for feature_data with {len(items)} samples.")
+        selected_items = [items[sample]]
+    else:
+        if sample not in samples:
+            raise ValueError(f"sample '{sample}' not found in feature_data samples.")
+        selected_items = [(sample, samples[sample])]
+
+    per_vertex_roles: Dict[Any, set] = {}
+    for _, sample_obj in selected_items:
+        for feat in sample_obj.features:
+            feat_mapping = getattr(feat, "mapping", None)
+            feat_role = feat.data.get(role_key, None) if hasattr(feat, "data") else None
+            if feat_mapping != "vertex" or feat_role is None:
+                continue
+            per_vertex_roles.setdefault(feat.id, set()).add(str(feat_role))
+
+    node_roles: Dict[Any, str] = {}
+    for v, roles in per_vertex_roles.items():
+        if len(roles) == 1:
+            node_roles[v] = next(iter(roles))
+        else:
+            node_roles[v] = "mixed"
+    return node_roles
+
+
+def _build_vertex_attrs_from_roles(
+    graph: BaseGraph,
+    node_roles: Dict[Any, str],
+    role_styles: Dict[str, Dict[str, str]],
+) -> Dict[Union[int, str], Dict[str, str]]:
+    attrs: Dict[Union[int, str], Dict[str, str]] = {}
+    for v in graph.V:
+        role = node_roles.get(v, None)
+        if role is None:
+            role = "internal" if "internal" in role_styles else None
+        if role is None:
+            continue
+        style = role_styles.get(role, None)
+        if style is None:
+            continue
+        attrs[v] = dict(style)
+    return attrs
+
+
+def _resolve_processors(processor: ProcessorArg) -> List[ProcessorFn]:
+    if processor is None:
+        return []
+    candidates: List[Union[str, ProcessorFn]]
+    if isinstance(processor, (list, tuple)):
+        candidates = list(processor)
+    else:
+        candidates = [processor]
+
+    resolved: List[ProcessorFn] = []
+    for p in candidates:
+        if callable(p):
+            resolved.append(p)
+        else:
+            if p not in _PROCESSORS:
+                raise ValueError(f"Unknown processor '{p}'. Available processors: {list(_PROCESSORS.keys())}")
+            resolved.append(_PROCESSORS[p])
+    return resolved
 
 
 def _merge_attrs(
@@ -195,6 +384,13 @@ def plot_graph(graph: BaseGraph, renderer: str = "auto", **kwargs) -> Any:
     theme_arg = kwargs.pop("theme", None)
     processor_arg = kwargs.pop("processor", None)
     data = kwargs.pop("data", None) or {}
+    solution = kwargs.pop("solution", None)
+    solution_map = kwargs.pop("solution_map", None)
+    feature_data = kwargs.pop("feature_data", None)
+    node_roles = kwargs.pop("node_roles", None)
+    role_styles_arg = kwargs.pop("role_styles", None)
+    sample = kwargs.pop("sample", None)
+    role_key = kwargs.pop("role_key", "role")
 
     if preset is not None:
         if preset not in _PRESETS:
@@ -205,12 +401,30 @@ def plot_graph(graph: BaseGraph, renderer: str = "auto", **kwargs) -> Any:
         if processor_arg is None:
             processor_arg = preset_cfg["processor"]
 
-    processor = _resolve_processor(processor_arg)
-    if processor is not None:
+    preset_solution_map = None
+    if preset in ("simple", "default", "signaling"):
+        preset_solution_map = {"vertex": "vertex_value", "edge": "edge_value"}
+    elif preset in ("metabolism_flux", "metabolism"):
+        preset_solution_map = {"flux": EXPR_NAME_FLOW}
+    merged_solution_map = dict(preset_solution_map or {})
+    if solution_map is not None:
+        merged_solution_map.update(solution_map)
+    data = _merge_solution_data(data, solution, merged_solution_map)
+
+    if node_roles is None and feature_data is not None:
+        node_roles = _infer_node_roles_from_feature_data(feature_data, sample=sample, role_key=role_key)
+    if node_roles is not None:
+        role_styles = _resolve_role_styles(preset, role_styles_arg)
+        role_vertex_attr = _build_vertex_attrs_from_roles(graph, node_roles, role_styles)
+        kwargs["custom_vertex_attr"] = _merge_attrs(role_vertex_attr, kwargs.get("custom_vertex_attr"))
+
+    processors = _resolve_processors(processor_arg)
+    if processors:
         theme = _resolve_theme(theme_arg)
-        proc_edge_attr, proc_vertex_attr = processor(graph, data, theme)
-        kwargs["custom_edge_attr"] = _merge_attrs(proc_edge_attr, kwargs.get("custom_edge_attr"))
-        kwargs["custom_vertex_attr"] = _merge_attrs(proc_vertex_attr, kwargs.get("custom_vertex_attr"))
+        for processor in processors:
+            proc_edge_attr, proc_vertex_attr = processor(graph, data, theme)
+            kwargs["custom_edge_attr"] = _merge_attrs(proc_edge_attr, kwargs.get("custom_edge_attr"))
+            kwargs["custom_vertex_attr"] = _merge_attrs(proc_vertex_attr, kwargs.get("custom_vertex_attr"))
 
     def _as_wasm_plot() -> Any:
         if not supports_html():

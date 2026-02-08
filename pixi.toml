@@ -31,7 +31,15 @@ ipykernel = "*"
 nbclient = "*"
 papermill = "*"
 
+[feature.marimo-test.pypi-dependencies]
+marimo = "*"
+
+[environments]
+marimo-test = ["marimo-test"]
+
 [tasks]
+marimo = "./scripts/marimo"
+marimo-temp = "./scripts/marimo-temp"
 setup = "python -m pip install -e ."
 docs = "python -m pip install -e . && sphinx-build -b html docs docs/_build/html"
 docs-force = "python -m pip install -e . && rm -rf docs/_jupyter-cache docs/_build && sphinx-build -b html -E -a -D nb_execution_mode=force docs docs/_build/html"

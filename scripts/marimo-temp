@@ -1,0 +1,73 @@
+#!/usr/bin/env sh
+set -eu
+
+usage() {
+  cat <<'USAGE'
+Usage: scripts/marimo-temp [run|edit] [-- <extra marimo args>]
+
+Creates a temporary marimo notebook with a small CORNETO plotting smoke test.
+Modes:
+  run   Run notebook as read-only app
+  edit  Open notebook editor (default)
+USAGE
+}
+
+MODE="edit"
+if [ "${1:-}" = "run" ] || [ "${1:-}" = "edit" ]; then
+  MODE="$1"
+  shift
+elif [ "${1:-}" = "-h" ] || [ "${1:-}" = "--help" ]; then
+  usage
+  exit 0
+fi
+
+if [ "${1:-}" = "--" ]; then
+  shift
+fi
+
+TMP_DIR="$(mktemp -d /tmp/corneto-marimo-XXXXXX)"
+TMP_NOTEBOOK="$TMP_DIR/notebook.py"
+cleanup() {
+  rm -rf "$TMP_DIR"
+}
+trap cleanup EXIT INT TERM
+
+cat > "$TMP_NOTEBOOK" <<'PY'
+import marimo
+
+__generated_with = "0.19.9"
+app = marimo.App()
+
+
+@app.cell
+def _():
+    import corneto as cn
+    cn.info()
+
+
+@app.cell
+def _():
+    G = cn.Graph()
+    G.add_edge("A", "B")
+    G.add_edge("A", "C")
+    G.add_edge("A", "F")
+    G.add_edge("B", "D")
+    G.add_edge("B", "E")
+    G.add_edge("C", "F")
+    G.add_edge("D", "A")
+    G.add_edge("D", "C")
+    G.add_edge("D", "G")
+    G.add_edge("E", "D")
+    G.add_edge("E", "H")
+    G.add_edge("F", "G")
+    G.add_edge("G", "E")
+    G.add_edge("G", "H")
+    G.add_edge("H", "F")
+    G.plot(renderer="wasm")
+
+
+if __name__ == "__main__":
+    app.run()
+PY
+
+exec "$(dirname "$0")/marimo" "$MODE" "$TMP_NOTEBOOK" "$@"
