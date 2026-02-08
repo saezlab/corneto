@@ -2,6 +2,7 @@ import sys
 
 import pytest
 
+from corneto._data import Data
 from corneto._plotting import to_dot_source
 from corneto._util import supports_html
 from corneto.contrib._util import DEFAULT_WASM_GRAPHVIZ_JS_URL, dot_wasm_html
@@ -250,3 +251,199 @@ def test_plot_with_composed_processors_combines_vertex_shape_and_sign_color(monk
     assert '"AKT1"' in obj.source
     assert 'shape="circle"' in obj.source
     assert 'color="dodgerblue4"' in obj.source
+
+
+def test_plot_with_solution_and_solution_map(monkeypatch):
+    g = Graph()
+    g.add_edge("A", "B")
+
+    class _FakeGV:
+        def __init__(self, source):
+            self.source = source
+
+        def _repr_mimebundle_(self):
+            return {}
+
+    def _fake_to_graphviz(self, **kwargs):
+        from corneto._plotting import to_dot_source
+
+        return _FakeGV(to_dot_source(self, **kwargs))
+
+    monkeypatch.setattr(Graph, "to_graphviz", _fake_to_graphviz)
+    obj = g.plot(
+        renderer="graphviz",
+        preset="simple",
+        solution={"v_sol": [1.0, -1.0], "e_sol": [1.0]},
+        solution_map={"vertex": "v_sol", "edge": "e_sol"},
+    )
+    assert 'color="firebrick4"' in obj.source
+    assert 'color="dodgerblue4"' in obj.source
+
+
+def test_plot_with_metabolism_flux_preset_uses_solution_default_mapping(monkeypatch):
+    g = Graph()
+    g.add_edge("A", "B")
+
+    class _FakeGV:
+        def __init__(self, source):
+            self.source = source
+
+        def _repr_mimebundle_(self):
+            return {}
+
+    def _fake_to_graphviz(self, **kwargs):
+        from corneto._plotting import to_dot_source
+
+        return _FakeGV(to_dot_source(self, **kwargs))
+
+    monkeypatch.setattr(Graph, "to_graphviz", _fake_to_graphviz)
+    obj = g.plot(
+        renderer="graphviz",
+        preset="metabolism_flux",
+        solution={"flow": [3.0]},
+    )
+    assert "penwidth=" in obj.source
+    assert 'color="firebrick4"' in obj.source
+
+
+def test_plot_data_overrides_solution_values(monkeypatch):
+    g = Graph()
+    g.add_edge("A", "B")
+
+    class _FakeGV:
+        def __init__(self, source):
+            self.source = source
+
+        def _repr_mimebundle_(self):
+            return {}
+
+    def _fake_to_graphviz(self, **kwargs):
+        from corneto._plotting import to_dot_source
+
+        return _FakeGV(to_dot_source(self, **kwargs))
+
+    monkeypatch.setattr(Graph, "to_graphviz", _fake_to_graphviz)
+    obj = g.plot(
+        renderer="graphviz",
+        preset="simple",
+        data={"edge_values": [-1.0], "vertex_values": [0.0, 0.0]},
+        solution={"edge_value": [1.0], "vertex_value": [1.0, -1.0]},
+    )
+    assert 'color="dodgerblue4"' in obj.source
+
+
+def test_plot_with_signaling_preset_applies_edge_style(monkeypatch):
+    g = Graph()
+    g.add_edge("A", "B")
+
+    class _FakeGV:
+        def __init__(self, source):
+            self.source = source
+
+        def _repr_mimebundle_(self):
+            return {}
+
+    def _fake_to_graphviz(self, **kwargs):
+        from corneto._plotting import to_dot_source
+
+        return _FakeGV(to_dot_source(self, **kwargs))
+
+    monkeypatch.setattr(Graph, "to_graphviz", _fake_to_graphviz)
+    obj = g.plot(
+        renderer="graphviz",
+        preset="signaling",
+        data={"edge_values": [1.0], "vertex_values": [1.0, -1.0]},
+    )
+    assert 'color="firebrick4"' in obj.source
+    assert 'color="dodgerblue4"' in obj.source
+
+
+def test_plot_with_metabolism_preset_uses_solution_default_mapping(monkeypatch):
+    g = Graph()
+    g.add_edge("A", "B")
+
+    class _FakeGV:
+        def __init__(self, source):
+            self.source = source
+
+        def _repr_mimebundle_(self):
+            return {}
+
+    def _fake_to_graphviz(self, **kwargs):
+        from corneto._plotting import to_dot_source
+
+        return _FakeGV(to_dot_source(self, **kwargs))
+
+    monkeypatch.setattr(Graph, "to_graphviz", _fake_to_graphviz)
+    obj = g.plot(
+        renderer="graphviz",
+        preset="metabolism",
+        solution={"flow": [3.0]},
+    )
+    assert "penwidth=" in obj.source
+    assert 'color="firebrick4"' in obj.source
+
+
+def test_plot_with_signaling_preset_role_shapes_from_node_roles(monkeypatch):
+    g = Graph()
+    g.add_edge("TGFBR1", "AKT1")
+    g.add_edge("AKT1", "STAT3")
+
+    class _FakeGV:
+        def __init__(self, source):
+            self.source = source
+
+        def _repr_mimebundle_(self):
+            return {}
+
+    def _fake_to_graphviz(self, **kwargs):
+        from corneto._plotting import to_dot_source
+
+        return _FakeGV(to_dot_source(self, **kwargs))
+
+    monkeypatch.setattr(Graph, "to_graphviz", _fake_to_graphviz)
+    obj = g.plot(
+        renderer="graphviz",
+        preset="signaling",
+        node_roles={"TGFBR1": "input", "STAT3": "output"},
+    )
+    assert '"TGFBR1" [shape="triangle"' in obj.source
+    assert '"STAT3" [shape="diamond"' in obj.source
+    assert '"AKT1" [shape="circle"]' in obj.source
+
+
+def test_plot_with_signaling_preset_role_shapes_from_feature_data(monkeypatch):
+    g = Graph()
+    g.add_edge("TGFBR1", "AKT1")
+    g.add_edge("AKT1", "STAT3")
+
+    feature_data = Data.from_cdict(
+        {
+            "sample1": {
+                "TGFBR1": {"value": 1.0, "role": "input", "mapping": "vertex"},
+                "STAT3": {"value": -1.0, "role": "output", "mapping": "vertex"},
+            }
+        }
+    )
+
+    class _FakeGV:
+        def __init__(self, source):
+            self.source = source
+
+        def _repr_mimebundle_(self):
+            return {}
+
+    def _fake_to_graphviz(self, **kwargs):
+        from corneto._plotting import to_dot_source
+
+        return _FakeGV(to_dot_source(self, **kwargs))
+
+    monkeypatch.setattr(Graph, "to_graphviz", _fake_to_graphviz)
+    obj = g.plot(
+        renderer="graphviz",
+        preset="signaling",
+        feature_data=feature_data,
+    )
+    assert '"TGFBR1" [shape="triangle"' in obj.source
+    assert '"STAT3" [shape="diamond"' in obj.source
+    assert '"AKT1" [shape="circle"]' in obj.source

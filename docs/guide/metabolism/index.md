@@ -1,6 +1,6 @@
 # Metabolism
 
-CORNETO can be used to infer and contextualize metabolic networks. In this tutorial, we will show how to use CORNETO to infer a metabolic network from a gene expression dataset and a metabolic model. We will then show how to contextualize the inferred network with prior knowledge.
+CORNETO supports flux balance analysis workflows while adding modeling flexibility to define custom constraints, objectives, and coupled formulations in a single optimization problem. For users familiar with COBRA-style modeling, this enables extension from standard FBA to explicit use cases such as multi-condition FBA and integration of omics data into metabolic networks to detect stoichiometrically consistent steady-state metabolic states.
 
 ```{toctree}
 :maxdepth: 3
