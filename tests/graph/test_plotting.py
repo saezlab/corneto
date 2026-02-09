@@ -42,6 +42,24 @@ def test_dot_wasm_html_accepts_raw_dot_source():
     assert "Graphviz.load" in html
 
 
+def test_dot_wasm_html_avoids_line_comments_in_inline_script():
+    html = dot_wasm_html('digraph {"A" -> "B";}')
+    assert "// best effort only" not in html
+    assert "/* best effort only */" in html
+
+
+def test_dot_wasm_html_guards_missing_target_element():
+    html = dot_wasm_html('digraph {"A" -> "B";}')
+    assert "if (!target) {" in html
+    assert "setTargetHtml" in html
+
+
+def test_dot_wasm_html_decodes_dot_as_utf8():
+    html = dot_wasm_html('digraph {"á" -> "ß";}')
+    assert 'new TextDecoder("utf-8").decode(bytes)' in html
+    assert "decodeBase64Utf8" in html
+
+
 def test_plot_wasm_works_without_graphviz(monkeypatch):
     g = Graph()
     g.add_edge("A", "B")

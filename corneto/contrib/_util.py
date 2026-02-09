@@ -92,6 +92,19 @@ def dot_wasm_html(
     <script type="module">
     (async () => {{
       const target = document.getElementById("{container_id}");
+      const setTargetHtml = (markup) => {{
+        if (target) {{
+          target.innerHTML = markup;
+        }}
+      }};
+      if (!target) {{
+        return;
+      }}
+      const decodeBase64Utf8 = (encoded) => {{
+        const binary = atob(encoded);
+        const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
+        return new TextDecoder("utf-8").decode(bytes);
+      }};
       const resizeFrameToContent = () => {{
         try {{
           let h = target ? target.scrollHeight : 0;
@@ -107,7 +120,7 @@ def dot_wasm_html(
             window.frameElement.style.height = `${{h}}px`;
           }}
         }} catch (_err) {{
-          // best effort only
+          /* best effort only */
         }}
       }};
       try {{
@@ -117,15 +130,15 @@ def dot_wasm_html(
           throw new Error("Graphviz WASM module does not expose Graphviz.load()");
         }}
         const graphviz = await Graphviz.load();
-        const dot = atob("{dot_string_base64}");
+        const dot = decodeBase64Utf8("{dot_string_base64}");
         const svg = await graphviz.dot(dot, "svg", "dot");
-        target.innerHTML = svg;
+        setTargetHtml(svg);
         resizeFrameToContent();
         requestAnimationFrame(resizeFrameToContent);
         setTimeout(resizeFrameToContent, 50);
       }} catch (error) {{
-        target.innerHTML = "<pre style='white-space:pre-wrap;color:#b00020'>Graph rendering failed: " +
-          String(error) + "</pre>";
+        setTargetHtml("<pre style='white-space:pre-wrap;color:#b00020'>Graph rendering failed: " +
+          String(error) + "</pre>");
         resizeFrameToContent();
       }}
     }})();
