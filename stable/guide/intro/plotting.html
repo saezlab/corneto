@@ -55,7 +55,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'guide/intro/plotting';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1770630542';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'stable';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
@@ -496,7 +496,7 @@
                    style="width:100%;max-width:100px;" />
             </td>
             <td>
-              <table><tr><td>Installed version:</td><td style='text-align:left'>v1.0.0b5</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.8.1, PICOS v2.6.2</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CVXOPT, GLPK, GLPK_MI, HIGHS, SCIP, SCIPY</td></tr><tr><td>Plot backend (default):</td><td style='text-align:left'>auto -> graphviz</td></tr><tr><td>Available plot backends:</td><td style='text-align:left'>graphviz v0.20.3; networkx v3.6.1+mpl v3.10.8; graphviz-wasm</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href="https://github.com/saezlab/corneto">https://github.com/saezlab/corneto</a></td></tr></table>
+              <table><tr><td>Installed version:</td><td style='text-align:left'>v1.0.0b5.post7.dev0+f808d198</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.8.1, PICOS v2.6.2</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CVXOPT, GLPK, GLPK_MI, HIGHS, SCIP, SCIPY</td></tr><tr><td>Plot backend (default):</td><td style='text-align:left'>auto -> graphviz</td></tr><tr><td>Available plot backends:</td><td style='text-align:left'>graphviz v0.20.3; networkx v3.6.1+mpl v3.10.8; graphviz-wasm</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href="https://github.com/saezlab/corneto">https://github.com/saezlab/corneto</a></td></tr></table>
             </td>
           </tr>
         </table>
@@ -741,18 +741,18 @@ This keeps the plotting API generic while allowing method-specific defaults.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"></div><div class="output text_html">
-    <div id="container-2ce70013-9e86-4738-b41f-41a5b3ff7f54" style="overflow:auto"></div>
-    <script type="module">
-    (async () => {
-      const target = document.getElementById("container-2ce70013-9e86-4738-b41f-41a5b3ff7f54");
-      const resizeFrameToContent = () => {
+<div class="output text_html"></div><div class="output text_html"><iframe srcdoc='
+    &lt;div id=&quot;container-23b4881b-b924-4487-8d56-e6aff70f9c2e&quot; style=&quot;overflow:auto&quot;&gt;&lt;/div&gt;
+    &lt;script type=&quot;module&quot;&gt;
+    (async () =&gt; {
+      const target = document.getElementById(&quot;container-23b4881b-b924-4487-8d56-e6aff70f9c2e&quot;);
+      const resizeFrameToContent = () =&gt; {
         try {
           let h = target ? target.scrollHeight : 0;
-          const svg = target ? target.querySelector("svg") : null;
+          const svg = target ? target.querySelector(&quot;svg&quot;) : null;
           if (svg) {
             const rect = svg.getBoundingClientRect();
-            if (rect && Number.isFinite(rect.height)) {
+            if (rect &amp;&amp; Number.isFinite(rect.height)) {
               h = Math.max(h, rect.height);
             }
           }
@@ -765,26 +765,26 @@ This keeps the plotting API generic while allowing method-specific defaults.</p>
         }
       };
       try {
-        const mod = await import("https://cdn.jsdelivr.net/npm/@hpcc-js/wasm-graphviz@1.21.0/dist/index.min.js");
-        const Graphviz = mod.Graphviz || (mod.default && mod.default.Graphviz) || mod.default;
+        const mod = await import(&quot;https://cdn.jsdelivr.net/npm/@hpcc-js/wasm-graphviz@1.21.0/dist/index.min.js&quot;);
+        const Graphviz = mod.Graphviz || (mod.default &amp;&amp; mod.default.Graphviz) || mod.default;
         if (!Graphviz || !Graphviz.load) {
-          throw new Error("Graphviz WASM module does not expose Graphviz.load()");
+          throw new Error(&quot;Graphviz WASM module does not expose Graphviz.load()&quot;);
         }
         const graphviz = await Graphviz.load();
-        const dot = atob("ZGlncmFwaCB7Cglub2RlIFtmaXhlZHNpemU9dHJ1ZV0KCUEgW3NoYXBlPWNpcmNsZV0KCUIgW3NoYXBlPWNpcmNsZV0KCUIgW3NoYXBlPWNpcmNsZV0KCUMgW3NoYXBlPWNpcmNsZV0KCUEgW3NoYXBlPWNpcmNsZV0KCUMgW3NoYXBlPWNpcmNsZV0KCUEgLT4gQiBbYXJyb3doZWFkPW5vcm1hbF0KCUIgLT4gQyBbYXJyb3doZWFkPW5vcm1hbF0KCUEgLT4gQyBbYXJyb3doZWFkPW5vcm1hbF0KfQo=");
-        const svg = await graphviz.dot(dot, "svg", "dot");
+        const dot = atob(&quot;ZGlncmFwaCB7Cglub2RlIFtmaXhlZHNpemU9dHJ1ZV0KCUEgW3NoYXBlPWNpcmNsZV0KCUIgW3NoYXBlPWNpcmNsZV0KCUIgW3NoYXBlPWNpcmNsZV0KCUMgW3NoYXBlPWNpcmNsZV0KCUEgW3NoYXBlPWNpcmNsZV0KCUMgW3NoYXBlPWNpcmNsZV0KCUEgLT4gQiBbYXJyb3doZWFkPW5vcm1hbF0KCUIgLT4gQyBbYXJyb3doZWFkPW5vcm1hbF0KCUEgLT4gQyBbYXJyb3doZWFkPW5vcm1hbF0KfQo=&quot;);
+        const svg = await graphviz.dot(dot, &quot;svg&quot;, &quot;dot&quot;);
         target.innerHTML = svg;
         resizeFrameToContent();
         requestAnimationFrame(resizeFrameToContent);
         setTimeout(resizeFrameToContent, 50);
       } catch (error) {
-        target.innerHTML = "<pre style='white-space:pre-wrap;color:#b00020'>Graph rendering failed: " +
-          String(error) + "</pre>";
+        target.innerHTML = &quot;&lt;pre style=&#x27;white-space:pre-wrap;color:#b00020&#x27;&gt;Graph rendering failed: &quot; +
+          String(error) + &quot;&lt;/pre&gt;&quot;;
         resizeFrameToContent();
       }
     })();
-    </script>
-    </div></div>
+    &lt;/script&gt;
+    ' width='100%' height='220px' frameborder='0'></iframe></div></div>
 </div>
 </section>
 <section id="custom-processors">
