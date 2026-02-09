@@ -142,7 +142,7 @@ class Method(ABC):
         pass
 
     @abstractmethod
-    def create_problem(self, graph: BaseGraph, data: Data):
+    def create_problem(self, graph: BaseGraph, data: Data) -> ProblemDef:
         """Create the optimization problem.
 
         This method should define variables, constraints, and objectives according to the method's
@@ -157,7 +157,7 @@ class Method(ABC):
         """
         pass
 
-    def build(self, graph: BaseGraph, data: Data) -> ProblemDef:
+    def build(self, graph: BaseGraph, data: Optional[Data] = None) -> ProblemDef:
         """Build the complete optimization problem.
 
         The process involves:
@@ -175,6 +175,8 @@ class Method(ABC):
         Raises:
             ValueError: If lambda_reg > 0 but no regularization variable name is provided.
         """
+        if data is None:
+            data = Data.empty()
         self.processed_graph, self.processed_data = self.preprocess(graph, data)
         self.problem = self.create_problem(self.processed_graph, self.processed_data)
 
@@ -502,7 +504,7 @@ class GeneralizedMultiSampleMethod(Method):
                 # is selected or not, to the edges in the original graph, using the selected_edges list that
                 # contains the indexes of the edges in the original graph. The variable selected_edges contains
                 # None for edges that are not selected in the original graph, those we ignore.
-                # --- Step 1: Filter out None entries ---
+
                 # Create a boolean mask that is True for valid indices (not None)
                 valid_mask = np.array([edge is not None for edge in selected_edges])
 
@@ -512,7 +514,7 @@ class GeneralizedMultiSampleMethod(Method):
                 # Extract the valid edge indices (they are already 0-indexed)
                 valid_edges = np.array([edge for edge in selected_edges if edge is not None])
 
-                # --- Step 2: Build the indicator matrix E ---
+                # Build the indicator matrix E
                 # m is the number of edges in the original graph
                 m = graph.num_edges  # Total number of rows in the target vector
 
@@ -524,7 +526,7 @@ class GeneralizedMultiSampleMethod(Method):
                 # resulting in an indicator matrix E of shape (m, n_valid).
                 E = (rows == valid_edges.reshape(1, -1)).astype(int)
 
-                # --- Step 3: Matrix multiplication to scatter the values ---
+                # Matrix multiplication to scatter the values
                 # Here the "@" operator multiplies the indicator matrix E with valid_vec.
                 # Y is then a vector of shape (m, 1) with the values from vec mapped
                 # to their corresponding positions in the original graph.

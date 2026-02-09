@@ -141,6 +141,10 @@ class Data:
             samples[sample_key] = Sample(features)
         return cls(samples)
 
+    @classmethod
+    def empty(cls) -> "Data":
+        return cls.from_cdict({"": {}})
+
     def to_json(self, **kwargs) -> str:
         return json.dumps(self.to_dict(), **kwargs)
 

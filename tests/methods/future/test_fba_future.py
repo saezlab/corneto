@@ -17,6 +17,14 @@ def metabolic_network():
     return import_miom_model(file_path)
 
 
+def test_fba_without_data(metabolic_network, backend):
+    """Test a standard FBA problem with no objective."""
+    fba = MultiSampleFBA(backend=backend)
+    P = fba.build(metabolic_network)
+    result = P.solve()
+    assert result.status == "optimal"
+
+
 def test_single_sample_standard_fba(metabolic_network, backend):
     """Test the standard FBA method with a single sample."""
     fba = MultiSampleFBA(backend=backend)

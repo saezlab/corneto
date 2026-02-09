@@ -81,10 +81,11 @@ def fba_problem(G, create_reaction_indicators=False, num_fluxes=1, eps=1e-4, bac
 
     Args:
         G (BaseGraph): The metabolic network graph.
-        create_reaction_indicators (bool, optional): Whether to create binary indicators
-            for reactions. Defaults to False.
+        create_reaction_indicators (bool, optional): Whether to create binary positive
+            and negative indicators for reaction fluxes. Defaults to False.
         num_fluxes (int, optional): Number of flux variables per reaction. Defaults to 1.
-        eps (float, optional): Tolerance for considering a flux as non-zero. Defaults to 1e-4.
+        eps (float, optional): Tolerance for considering a flux as non-zero. Only used
+            with indicators. Defaults to 1e-4.
         backend (Backend, optional): The optimization backend to use. Defaults to K.
 
     Returns:

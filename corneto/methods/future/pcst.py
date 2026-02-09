@@ -10,7 +10,7 @@ from corneto.methods.future.method import FlowMethod
 
 
 class PrizeCollectingSteinerTree(FlowMethod):
-    """Prize-Collecting Steiner Tree optimization method as a flow-based problem.
+    """Prize-Collecting Steiner Tree optimization method built on top of FlowMethod.
 
     In a prize-collecting Steiner tree problem, terminals can have prizes (values > 0),
     making them optional terminals that provide a benefit if included in the solution.
@@ -298,7 +298,7 @@ class PrizeCollectingSteinerTree(FlowMethod):
             if other_flow_edges:
                 flow_problem += F[other_flow_edges] == 0
 
-            # --- Root Flow Constraints ---
+            # Root Flow Constraints
             if sample_selected_root is not None:
                 if self.force_flow_through_root:
                     flow_problem += F[self.flow_edges_in[sample_selected_root]] == sample_max_flow
@@ -331,7 +331,7 @@ class PrizeCollectingSteinerTree(FlowMethod):
                                 terminal_neg
                             ][t_idx].sum() == len(t_idx)
 
-            # --- Costs Objective ---
+            # Costs Objective
             edge_costs = np.ones((graph.num_edges)) * self.default_edge_cost
             selected = with_flow if len(with_flow.shape) == 1 else with_flow[:, i]
 
@@ -345,7 +345,7 @@ class PrizeCollectingSteinerTree(FlowMethod):
 
             flow_problem.add_objective(edge_costs[edge_ids] @ selected[edge_ids], name="edge_cost")
 
-            # --- Prizes Objective (PCST) ---
+            # Prizes Objective (PCST)
             if prized_terminals:
                 prized_idx = []
                 prized_vertices = []
