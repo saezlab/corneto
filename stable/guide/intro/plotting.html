@@ -55,7 +55,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'guide/intro/plotting';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1770713062';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'stable';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
@@ -496,7 +496,7 @@
                    style="width:100%;max-width:100px;" />
             </td>
             <td>
-              <table><tr><td>Installed version:</td><td style='text-align:left'>v1.0.0b6</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.8.1, PICOS v2.6.2</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CVXOPT, GLPK, GLPK_MI, HIGHS, SCIP, SCIPY</td></tr><tr><td>Plot backend (default):</td><td style='text-align:left'>auto -> graphviz</td></tr><tr><td>Available plot backends:</td><td style='text-align:left'>graphviz v0.20.3; networkx v3.6.1+mpl v3.10.8; graphviz-wasm</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href="https://github.com/saezlab/corneto">https://github.com/saezlab/corneto</a></td></tr></table>
+              <table><tr><td>Installed version:</td><td style='text-align:left'>v1.0.0b6.post1.dev0+0ab82c68</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.8.1, PICOS v2.6.2</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CVXOPT, GLPK, GLPK_MI, HIGHS, SCIP, SCIPY</td></tr><tr><td>Plot backend (default):</td><td style='text-align:left'>auto -> graphviz</td></tr><tr><td>Available plot backends:</td><td style='text-align:left'>graphviz v0.20.3; networkx v3.6.1+mpl v3.10.8; graphviz-wasm</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href="https://github.com/saezlab/corneto">https://github.com/saezlab/corneto</a></td></tr></table>
             </td>
           </tr>
         </table>
@@ -742,10 +742,23 @@ This keeps the plotting API generic while allowing method-specific defaults.</p>
 </div>
 <div class="cell_output docutils container">
 <div class="output text_html"></div><div class="output text_html"><iframe srcdoc='
-    &lt;div id=&quot;container-25c6aa19-29a3-4777-a3c1-133039428342&quot; style=&quot;overflow:auto&quot;&gt;&lt;/div&gt;
+    &lt;div id=&quot;container-fbd6a9f6-e1e6-4a12-8fc6-3418888bdee2&quot; style=&quot;overflow:auto&quot;&gt;&lt;/div&gt;
     &lt;script type=&quot;module&quot;&gt;
     (async () =&gt; {
-      const target = document.getElementById(&quot;container-25c6aa19-29a3-4777-a3c1-133039428342&quot;);
+      const target = document.getElementById(&quot;container-fbd6a9f6-e1e6-4a12-8fc6-3418888bdee2&quot;);
+      const setTargetHtml = (markup) =&gt; {
+        if (target) {
+          target.innerHTML = markup;
+        }
+      };
+      if (!target) {
+        return;
+      }
+      const decodeBase64Utf8 = (encoded) =&gt; {
+        const binary = atob(encoded);
+        const bytes = Uint8Array.from(binary, (char) =&gt; char.charCodeAt(0));
+        return new TextDecoder(&quot;utf-8&quot;).decode(bytes);
+      };
       const resizeFrameToContent = () =&gt; {
         try {
           let h = target ? target.scrollHeight : 0;
@@ -761,7 +774,7 @@ This keeps the plotting API generic while allowing method-specific defaults.</p>
             window.frameElement.style.height = `${h}px`;
           }
         } catch (_err) {
-          // best effort only
+          /* best effort only */
         }
       };
       try {
@@ -771,15 +784,15 @@ This keeps the plotting API generic while allowing method-specific defaults.</p>
           throw new Error(&quot;Graphviz WASM module does not expose Graphviz.load()&quot;);
         }
         const graphviz = await Graphviz.load();
-        const dot = atob(&quot;ZGlncmFwaCB7Cglub2RlIFtmaXhlZHNpemU9dHJ1ZV0KCUEgW3NoYXBlPWNpcmNsZV0KCUIgW3NoYXBlPWNpcmNsZV0KCUIgW3NoYXBlPWNpcmNsZV0KCUMgW3NoYXBlPWNpcmNsZV0KCUEgW3NoYXBlPWNpcmNsZV0KCUMgW3NoYXBlPWNpcmNsZV0KCUEgLT4gQiBbYXJyb3doZWFkPW5vcm1hbF0KCUIgLT4gQyBbYXJyb3doZWFkPW5vcm1hbF0KCUEgLT4gQyBbYXJyb3doZWFkPW5vcm1hbF0KfQo=&quot;);
+        const dot = decodeBase64Utf8(&quot;ZGlncmFwaCB7Cglub2RlIFtmaXhlZHNpemU9dHJ1ZV0KCUEgW3NoYXBlPWNpcmNsZV0KCUIgW3NoYXBlPWNpcmNsZV0KCUIgW3NoYXBlPWNpcmNsZV0KCUMgW3NoYXBlPWNpcmNsZV0KCUEgW3NoYXBlPWNpcmNsZV0KCUMgW3NoYXBlPWNpcmNsZV0KCUEgLT4gQiBbYXJyb3doZWFkPW5vcm1hbF0KCUIgLT4gQyBbYXJyb3doZWFkPW5vcm1hbF0KCUEgLT4gQyBbYXJyb3doZWFkPW5vcm1hbF0KfQo=&quot;);
         const svg = await graphviz.dot(dot, &quot;svg&quot;, &quot;dot&quot;);
-        target.innerHTML = svg;
+        setTargetHtml(svg);
         resizeFrameToContent();
         requestAnimationFrame(resizeFrameToContent);
         setTimeout(resizeFrameToContent, 50);
       } catch (error) {
-        target.innerHTML = &quot;&lt;pre style=&#x27;white-space:pre-wrap;color:#b00020&#x27;&gt;Graph rendering failed: &quot; +
-          String(error) + &quot;&lt;/pre&gt;&quot;;
+        setTargetHtml(&quot;&lt;pre style=&#x27;white-space:pre-wrap;color:#b00020&#x27;&gt;Graph rendering failed: &quot; +
+          String(error) + &quot;&lt;/pre&gt;&quot;);
         resizeFrameToContent();
       }
     })();
