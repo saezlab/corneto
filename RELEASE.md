@@ -237,13 +237,6 @@ The version switcher uses a **single, centrally-updated file hosted on GitHub Pa
    - This ensures clean regeneration for a given version (no mixing of old/new files) while leaving other versions untouched.
    - The root redirect is deployed with `keep_files: true` so it doesn’t delete any versioned folders.
 
-#### Benefits of This Approach
-
-- **Central Management**: One `switcher.json` serves all deployed documentation versions
-- **Automatic Updates**: Old deployed docs automatically show new versions in the switcher dropdown
-- **No Regeneration Needed**: Previously deployed documentation doesn't need to be rebuilt to show new versions
-- **Consistency**: All documentation versions display the same version list
-
 #### Manual Switcher Updates
 
 If the automatic workflow fails or manual intervention is needed, re-run the docs workflow or regenerate and deploy the root artifacts (redirect + `switcher.json`) using the same workflow steps.
