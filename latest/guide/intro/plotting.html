@@ -55,7 +55,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'guide/intro/plotting';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1770988625';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
@@ -496,7 +496,7 @@
                    style="width:100%;max-width:100px;" />
             </td>
             <td>
-              <table><tr><td>Installed version:</td><td style='text-align:left'>v1.0.0b7.post1.dev0+e32a7173</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.8.1, PICOS v2.6.2</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CVXOPT, GLPK, GLPK_MI, HIGHS, SCIP, SCIPY</td></tr><tr><td>Plot backend (default):</td><td style='text-align:left'>auto -> graphviz</td></tr><tr><td>Available plot backends:</td><td style='text-align:left'>graphviz v0.20.3; networkx v3.6.1+mpl v3.10.8; graphviz-wasm</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href="https://github.com/saezlab/corneto">https://github.com/saezlab/corneto</a></td></tr></table>
+              <table><tr><td>Installed version:</td><td style='text-align:left'>v1.0.0b7.post2.dev0+7f1c3c7e</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.8.1, PICOS v2.6.2</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CVXOPT, GLPK, GLPK_MI, HIGHS, SCIP, SCIPY</td></tr><tr><td>Plot backend (default):</td><td style='text-align:left'>auto -> graphviz</td></tr><tr><td>Available plot backends:</td><td style='text-align:left'>graphviz v0.20.3; networkx v3.6.1+mpl v3.10.8; graphviz-wasm</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href="https://github.com/saezlab/corneto">https://github.com/saezlab/corneto</a></td></tr></table>
             </td>
           </tr>
         </table>
@@ -549,6 +549,25 @@ This is useful for inspecting activities, scores, or inferred edge effects.</p>
 <img alt="../../_images/687218db39c2caca2d4a1770ece61956f8dabf254b1f581b20062276599e1f20.svg" src="../../_images/687218db39c2caca2d4a1770ece61956f8dabf254b1f581b20062276599e1f20.svg" />
 </div>
 </div>
+<section id="targeted-per-element-style-overrides">
+<h3>Targeted per-element style overrides<a class="headerlink" href="#targeted-per-element-style-overrides" title="Link to this heading">#</a></h3>
+<p>When you only need to style specific elements, pass sparse mappings via <code class="docutils literal notranslate"><span class="pre">custom_edge_attr</span></code> and <code class="docutils literal notranslate"><span class="pre">custom_vertex_attr</span></code> instead of full vectors.</p>
+<p>Edge keys are edge indices; vertex keys are vertex names (or consistent vertex identifiers).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Highlight exactly one edge and one vertex</span>
+<span class="n">G</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">custom_edge_attr</span><span class="o">=</span><span class="p">{</span><span class="mi">2</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;purple&quot;</span><span class="p">,</span> <span class="s2">&quot;penwidth&quot;</span><span class="p">:</span> <span class="s2">&quot;5&quot;</span><span class="p">}},</span>
+    <span class="n">custom_vertex_attr</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;B&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;goldenrod&quot;</span><span class="p">,</span> <span class="s2">&quot;penwidth&quot;</span><span class="p">:</span> <span class="s2">&quot;3&quot;</span><span class="p">}},</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/3714fefcea76585538695d3d413d3a1296e7d2a7b1986575df49bc14cdb33489.svg" src="../../_images/3714fefcea76585538695d3d413d3a1296e7d2a7b1986575df49bc14cdb33489.svg" />
+</div>
+</div>
+</section>
 </section>
 <section id="presets-for-common-workflows">
 <h2>3. Presets for common workflows<a class="headerlink" href="#presets-for-common-workflows" title="Link to this heading">#</a></h2>
@@ -738,10 +757,10 @@ This keeps the plotting API generic while allowing method-specific defaults.</p>
 </div>
 <div class="cell_output docutils container">
 <div class="output text_html"></div><div class="output text_html"><iframe srcdoc='
-    &lt;div id=&quot;container-c141f7f8-b0f2-42ef-b006-6e8d20524dd6&quot; style=&quot;overflow:auto&quot;&gt;&lt;/div&gt;
+    &lt;div id=&quot;container-dc5b9a6e-d4df-4a05-b6d7-ac5d4975483c&quot; style=&quot;overflow:auto&quot;&gt;&lt;/div&gt;
     &lt;script type=&quot;module&quot;&gt;
     (async () =&gt; {
-      const target = document.getElementById(&quot;container-c141f7f8-b0f2-42ef-b006-6e8d20524dd6&quot;);
+      const target = document.getElementById(&quot;container-dc5b9a6e-d4df-4a05-b6d7-ac5d4975483c&quot;);
       const setTargetHtml = (markup) =&gt; {
         if (target) {
           target.innerHTML = markup;
@@ -880,7 +899,10 @@ This keeps the plotting API generic while allowing method-specific defaults.</p>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-graph-visualization">1. Basic graph visualization</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#visual-encoding-from-values">2. Visual encoding from values</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#visual-encoding-from-values">2. Visual encoding from values</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#targeted-per-element-style-overrides">Targeted per-element style overrides</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#presets-for-common-workflows">3. Presets for common workflows</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metabolic-flux-visualization">Metabolic flux visualization</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#method-aware-presets-and-role-styling">Method-aware presets and role styling</a></li>
