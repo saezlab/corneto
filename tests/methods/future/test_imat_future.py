@@ -1,3 +1,5 @@
+"""Tests for the MultiSampleIMAT future API."""
+
 import os
 
 import numpy as np
@@ -246,8 +248,77 @@ def test_multi_sample_imat_different_expression(metabolic_network, backend):
     # Additional verification can be added here if needed
 
 
+def test_imat_multisample_support_vars_sparse_per_sample(metabolic_network, backend):
+    """IMAT should create nonzero support vars only for non-zero scored reactions."""
+    imat = MultiSampleIMAT(backend=backend, lambda_reg=0.0)
+    data = Data.from_cdict(
+        {
+            "sample1": {
+                "EX_biomass_e": {"role": "objective"},
+                "PGI": {"mapping": "edge", "value": 1000.0},
+                "TPI": {"mapping": "edge", "value": -1000.0},
+                "MDHm": {"mapping": "edge", "value": 0.0},
+            },
+            "sample2": {
+                "EX_biomass_e": {"role": "objective"},
+                "PGI": {"mapping": "edge", "value": -1000.0},
+                "MDHm": {"mapping": "edge", "value": 0.0},
+            },
+        }
+    )
+
+    problem = imat.build(metabolic_network, data)
+
+    # Full-size regularization indicator should remain available for cross-sample OR.
+    assert problem.expr.edge_has_flux.shape[0] == metabolic_network.num_edges
+    assert problem.expr.edge_has_flux.shape[1] == 2
+
+    # Sparse per-sample support vars: sample1 has 2 non-zero scores, sample2 has 1.
+    n_s1 = int(np.prod(problem.expr._flow_ipos_s0.shape))
+    n_s2 = int(np.prod(problem.expr._flow_ipos_s1.shape))
+    assert n_s1 == 2
+    assert n_s2 == 1
+    assert int(np.prod(problem.expr._flow_ineg_s0.shape)) == 2
+    assert int(np.prod(problem.expr._flow_ineg_s1.shape)) == 1
+
+    # Legacy full-size iMAT support vars should not be created anymore.
+    assert "_flow_ipos" not in problem.expr
+    assert "_flow_ineg" not in problem.expr
+
+
+def test_imat_multisample_sparse_support_with_regularization_solves(metabolic_network, backend):
+    """Different support-var sizes should still work with structured regularization."""
+    if isinstance(backend, PicosBackend):
+        pytest.skip("iMAT solve tests require CVXPY backend")
+
+    imat = MultiSampleIMAT(backend=backend, lambda_reg=1e-3)
+    data = Data.from_cdict(
+        {
+            "sample1": {
+                "EX_biomass_e": {"role": "objective"},
+                "PGI": {"mapping": "edge", "value": 1000.0},
+                "TPI": {"mapping": "edge", "value": -1000.0},
+            },
+            "sample2": {
+                "EX_biomass_e": {"role": "objective"},
+                "PGI": {"mapping": "edge", "value": -1000.0},
+            },
+        }
+    )
+
+    problem = imat.build(metabolic_network, data)
+    problem.solve(solver=SOLVER)
+
+    # Structured regularization expression should be built from edge_has_flux.
+    assert "edge_has_flux_OR" in problem.expr
+
+    bid = next(iter(metabolic_network.get_edges_by_attr("id", "EX_biomass_e")))
+    assert problem.expr.flow[bid, 0].value is not None
+    assert problem.expr.flow[bid, 1].value is not None
+
+
 def test_multi_sample_imat_mixed_expression_no_biomass(metabolic_network, backend):
-    """Test iMAT with multiple samples having mixed high/low expression - no biomass objective."""
+    """Test iMAT with mixed high/low expression and no biomass objective."""
     if isinstance(backend, PicosBackend):
         pytest.skip("iMAT tests require CVXPY backend")
     imat = MultiSampleIMAT(
@@ -304,7 +375,8 @@ def test_multi_sample_imat_mixed_expression_no_biomass(metabolic_network, backen
     tpi_rid = next(iter(metabolic_network.get_edges_by_attr("id", "TPI")))
     bid = next(iter(metabolic_network.get_edges_by_attr("id", "EX_biomass_e")))
 
-    # Check sample 1: PGI should be active (value=1000), TPI should be blocked (value=-1000)
+    # Check sample 1:
+    # PGI should be active (value=1000), TPI should be blocked (value=-1000).
     pgi_flux_s1 = problem.expr.flow[pgi_rid, 0].value
     tpi_flux_s1 = problem.expr.flow[tpi_rid, 0].value
     biomass_flux_s1 = problem.expr.flow[bid, 0].value
@@ -314,7 +386,8 @@ def test_multi_sample_imat_mixed_expression_no_biomass(metabolic_network, backen
     # No biomass objective, so biomass flux should be 0
     assert biomass_flux_s1 >= 0.0  # Should be non-negative
 
-    # Check sample 2: PGI should be blocked (value=-1000), TPI should be active (value=1000)
+    # Check sample 2:
+    # PGI should be blocked (value=-1000), TPI should be active (value=1000).
     pgi_flux_s2 = problem.expr.flow[pgi_rid, 1].value
     tpi_flux_s2 = problem.expr.flow[tpi_rid, 1].value
     biomass_flux_s2 = problem.expr.flow[bid, 1].value
