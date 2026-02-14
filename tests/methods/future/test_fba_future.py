@@ -43,6 +43,25 @@ def test_single_sample_standard_fba(metabolic_network, backend):
     assert np.isclose(P.expr.flow[rid].value, 100.8924, atol=1e-4)
 
 
+def test_single_sample_objective_name_uses_reaction_ids(metabolic_network, backend):
+    """Objective names should expose user-facing reaction IDs, not internal edge indices."""
+    fba = MultiSampleFBA(backend=backend)
+    data = Data.from_cdict(
+        {
+            "sample1": {
+                "EX_biomass_e": {
+                    "role": "objective",
+                },
+            }
+        }
+    )
+
+    P = fba.build(metabolic_network, data)
+    objective_names = {obj.name for obj in P.objectives if obj.name}
+
+    assert "objective_sample1__EX_biomass_e" in objective_names
+
+
 def test_two_samples_standard_fba_with_ko(metabolic_network, backend):
     """Test the standard FBA method with two samples."""
     fba = MultiSampleFBA(backend=backend)

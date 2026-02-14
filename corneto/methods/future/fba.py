@@ -230,6 +230,7 @@ class MultiSampleFBA(FlowMethod):
 
         for i, (sample_name, sample_data) in enumerate(data.samples.items()):
             rxn_objectives = []
+            rxn_objective_ids = []
             rxn_weights = []
             lb_rxn = []
             ub_rxn = []
@@ -247,6 +248,7 @@ class MultiSampleFBA(FlowMethod):
                 value = float(value) if value is not None else -1.0
                 # weight = metadata.get("weight", -1.0)
                 rxn_objectives.append(rxn_obj)
+                rxn_objective_ids.append(str(rxn_id))
                 rxn_weights.append(value)
 
             # TODO: the flow problem is already instantiated at this point with
@@ -286,7 +288,7 @@ class MultiSampleFBA(FlowMethod):
 
             # Add objectives for this sample
             if rxn_objectives:
-                ids_str = "_".join([str(o) for o in rxn_objectives])
+                ids_str = "_".join(rxn_objective_ids)
                 flow_problem.add_objective(
                     sample_flux[rxn_objectives].multiply(np.array(rxn_weights)).sum(),
                     name=f"objective_{sample_name}__{ids_str}",
