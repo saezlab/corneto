@@ -55,7 +55,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'guide/metabolism/multicondition-imat';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1771104108';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
@@ -262,6 +262,10 @@
   
 
   
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
 </div>
 
     </header>
@@ -464,9 +468,23 @@
                   
   <section class="tex2jax_ignore mathjax_ignore" id="multi-condition-imat">
 <h1>Multi-condition iMAT<a class="headerlink" href="#multi-condition-imat" title="Link to this heading">#</a></h1>
+<p>This notebook extends the single-sample iMAT example with a more structured
+multi-condition setup.</p>
+<p>The goal is to show when <code class="docutils literal notranslate"><span class="pre">MultiSampleIMAT</span></code> can differ from running iMAT
+separately per sample. We build a branched network where each condition weakly
+favors a different branch, then compare:</p>
+<ul class="simple">
+<li><p>multi-sample iMAT with no cross-sample regularization (<code class="docutils literal notranslate"><span class="pre">lambda_reg=0</span></code>)</p></li>
+<li><p>multi-sample iMAT with structured regularization (<code class="docutils literal notranslate"><span class="pre">lambda_reg=0.5</span></code>)</p></li>
+<li><p>two independent single-sample iMAT runs (<code class="docutils literal notranslate"><span class="pre">lambda_reg=0.5</span></code>)</p></li>
+</ul>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">corneto</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cn</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">corneto</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cn</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods.future.imat</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiSampleIMAT</span>
 
 <span class="n">cn</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
 </pre></div>
@@ -481,12 +499,658 @@
                    style="width:100%;max-width:100px;" />
             </td>
             <td>
-              <table><tr><td>Installed version:</td><td style='text-align:left'>v1.0.0b7.post5.dev0+b9e7c161</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.8.1, PICOS v2.6.2</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CVXOPT, GLPK, GLPK_MI, HIGHS, SCIP, SCIPY</td></tr><tr><td>Plot backend (default):</td><td style='text-align:left'>auto -> graphviz</td></tr><tr><td>Available plot backends:</td><td style='text-align:left'>graphviz v0.20.3; networkx v3.6.1+mpl v3.10.8; graphviz-wasm</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href="https://github.com/saezlab/corneto">https://github.com/saezlab/corneto</a></td></tr></table>
+              <table><tr><td>Installed version:</td><td style='text-align:left'>v1.0.0b7.post6.dev0+180be847</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.8.1, PICOS v2.6.2</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CVXOPT, GLPK, GLPK_MI, HIGHS, SCIP, SCIPY</td></tr><tr><td>Plot backend (default):</td><td style='text-align:left'>auto -> graphviz</td></tr><tr><td>Available plot backends:</td><td style='text-align:left'>graphviz v0.20.3; networkx v3.6.1+mpl v3.10.8; graphviz-wasm</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href="https://github.com/saezlab/corneto">https://github.com/saezlab/corneto</a></td></tr></table>
             </td>
           </tr>
         </table>
         </div></div>
 </div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">G</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+
+<span class="c1"># Uptake</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">((),</span> <span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;EX_A&quot;</span><span class="p">,</span> <span class="n">default_lb</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">default_ub</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="c1"># Branch 1</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;R_AB&quot;</span><span class="p">,</span> <span class="n">default_lb</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">default_ub</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;R_BC&quot;</span><span class="p">,</span> <span class="n">default_lb</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">default_ub</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+
+<span class="c1"># Branch 2</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;R_AD&quot;</span><span class="p">,</span> <span class="n">default_lb</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">default_ub</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;R_DC&quot;</span><span class="p">,</span> <span class="n">default_lb</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">default_ub</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+
+<span class="c1"># Shared trunk to objective</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="s2">&quot;E&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;R_CE&quot;</span><span class="p">,</span> <span class="n">default_lb</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">default_ub</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;E&quot;</span><span class="p">,</span> <span class="s2">&quot;F&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;R_EF&quot;</span><span class="p">,</span> <span class="n">default_lb</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">default_ub</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;F&quot;</span><span class="p">,</span> <span class="p">(),</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;BIOMASS&quot;</span><span class="p">,</span> <span class="n">default_lb</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">default_ub</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+
+<span class="c1"># Side drains to make the topology less trivial</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;R_BX&quot;</span><span class="p">,</span> <span class="n">default_lb</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">default_ub</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="p">(),</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;R_X_sink&quot;</span><span class="p">,</span> <span class="n">default_lb</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">default_ub</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;R_DY&quot;</span><span class="p">,</span> <span class="n">default_lb</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">default_ub</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="p">(),</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;R_Y_sink&quot;</span><span class="p">,</span> <span class="n">default_lb</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">default_ub</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+
+<span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;edge_index&quot;</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">num_edges</span><span class="p">),</span>
+        <span class="s2">&quot;reaction_id&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">G</span><span class="o">.</span><span class="n">get_attr_edge</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">num_edges</span><span class="p">)],</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>edge_index</th>
+      <th>reaction_id</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>EX_A</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1</td>
+      <td>R_AB</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2</td>
+      <td>R_BC</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>3</td>
+      <td>R_AD</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>4</td>
+      <td>R_DC</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>5</td>
+      <td>R_CE</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>6</td>
+      <td>R_EF</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>7</td>
+      <td>BIOMASS</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>8</td>
+      <td>R_BX</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>9</td>
+      <td>R_X_sink</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>10</td>
+      <td>R_DY</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>11</td>
+      <td>R_Y_sink</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">w</span> <span class="o">=</span> <span class="mf">0.2</span>  <span class="c1"># weak, conflicting evidence for alternative branches</span>
+
+<span class="n">scores_condition_1</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;R_AB&quot;</span><span class="p">:</span> <span class="o">+</span><span class="n">w</span><span class="p">,</span>
+    <span class="s2">&quot;R_BC&quot;</span><span class="p">:</span> <span class="o">+</span><span class="n">w</span><span class="p">,</span>
+    <span class="s2">&quot;R_AD&quot;</span><span class="p">:</span> <span class="o">-</span><span class="n">w</span><span class="p">,</span>
+    <span class="s2">&quot;R_DC&quot;</span><span class="p">:</span> <span class="o">-</span><span class="n">w</span><span class="p">,</span>
+    <span class="s2">&quot;R_BX&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">,</span>
+    <span class="s2">&quot;R_DY&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">scores_condition_2</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;R_AB&quot;</span><span class="p">:</span> <span class="o">-</span><span class="n">w</span><span class="p">,</span>
+    <span class="s2">&quot;R_BC&quot;</span><span class="p">:</span> <span class="o">-</span><span class="n">w</span><span class="p">,</span>
+    <span class="s2">&quot;R_AD&quot;</span><span class="p">:</span> <span class="o">+</span><span class="n">w</span><span class="p">,</span>
+    <span class="s2">&quot;R_DC&quot;</span><span class="p">:</span> <span class="o">+</span><span class="n">w</span><span class="p">,</span>
+    <span class="s2">&quot;R_BX&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">,</span>
+    <span class="s2">&quot;R_DY&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">sample_from_scores</span><span class="p">(</span><span class="n">scores</span><span class="p">):</span>
+    <span class="n">sample</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;BIOMASS&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;objective&quot;</span><span class="p">}}</span>
+    <span class="k">for</span> <span class="n">rid</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">scores</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">sample</span><span class="p">[</span><span class="n">rid</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;mapping&quot;</span><span class="p">:</span> <span class="s2">&quot;edge&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)}</span>
+    <span class="k">return</span> <span class="n">sample</span>
+
+
+<span class="n">multi_data</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Data</span><span class="o">.</span><span class="n">from_cdict</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;condition_1&quot;</span><span class="p">:</span> <span class="n">sample_from_scores</span><span class="p">(</span><span class="n">scores_condition_1</span><span class="p">),</span>
+        <span class="s2">&quot;condition_2&quot;</span><span class="p">:</span> <span class="n">sample_from_scores</span><span class="p">(</span><span class="n">scores_condition_2</span><span class="p">),</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+
+<span class="n">single_data_c1</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Data</span><span class="o">.</span><span class="n">from_cdict</span><span class="p">({</span><span class="s2">&quot;condition_1&quot;</span><span class="p">:</span> <span class="n">sample_from_scores</span><span class="p">(</span><span class="n">scores_condition_1</span><span class="p">)})</span>
+<span class="n">single_data_c2</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Data</span><span class="o">.</span><span class="n">from_cdict</span><span class="p">({</span><span class="s2">&quot;condition_2&quot;</span><span class="p">:</span> <span class="n">sample_from_scores</span><span class="p">(</span><span class="n">scores_condition_2</span><span class="p">)})</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Multi-sample without cross-sample coupling</span>
+<span class="n">imat_multi_uncoupled</span> <span class="o">=</span> <span class="n">MultiSampleIMAT</span><span class="p">(</span><span class="n">lambda_reg</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span>
+<span class="n">P_multi_uncoupled</span> <span class="o">=</span> <span class="n">imat_multi_uncoupled</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">multi_data</span><span class="p">)</span>
+<span class="n">P_multi_uncoupled</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;highs&quot;</span><span class="p">)</span>
+
+<span class="c1"># Multi-sample with structured regularization across samples</span>
+<span class="n">imat_multi_coupled</span> <span class="o">=</span> <span class="n">MultiSampleIMAT</span><span class="p">(</span><span class="n">lambda_reg</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span>
+<span class="n">P_multi_coupled</span> <span class="o">=</span> <span class="n">imat_multi_coupled</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">multi_data</span><span class="p">)</span>
+<span class="n">P_multi_coupled</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;highs&quot;</span><span class="p">)</span>
+
+<span class="c1"># Independent single-sample runs (same lambda as coupled run)</span>
+<span class="n">imat_single_c1</span> <span class="o">=</span> <span class="n">MultiSampleIMAT</span><span class="p">(</span><span class="n">lambda_reg</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span>
+<span class="n">P_single_c1</span> <span class="o">=</span> <span class="n">imat_single_c1</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">single_data_c1</span><span class="p">)</span>
+<span class="n">P_single_c1</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;highs&quot;</span><span class="p">)</span>
+
+<span class="n">imat_single_c2</span> <span class="o">=</span> <span class="n">MultiSampleIMAT</span><span class="p">(</span><span class="n">lambda_reg</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span>
+<span class="n">P_single_c2</span> <span class="o">=</span> <span class="n">imat_single_c2</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">single_data_c2</span><span class="p">)</span>
+<span class="n">P_single_c2</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;highs&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Problem(Minimize(Expression(AFFINE, UNKNOWN, ())), [Inequality(Constant(CONSTANT, ZERO, (12,))), Inequality(Variable((12,), _flow)), Equality(Expression(AFFINE, UNKNOWN, (8,)), Constant(CONSTANT, ZERO, ())), Inequality(Expression(AFFINE, ZERO, (12,))), Inequality(Variable((12,), _flow)), Inequality(Expression(AFFINE, NONNEGATIVE, (6,))), Equality(Expression(AFFINE, NONNEGATIVE, (6,)), Constant(CONSTANT, ZERO, ())), Inequality(Expression(AFFINE, NONNEGATIVE, (6,))), Inequality(Expression(AFFINE, UNKNOWN, (6,))), Inequality(Expression(AFFINE, NONNEGATIVE, (6,)))])
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">reactions</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;R_AB&quot;</span><span class="p">,</span> <span class="s2">&quot;R_BC&quot;</span><span class="p">,</span> <span class="s2">&quot;R_AD&quot;</span><span class="p">,</span> <span class="s2">&quot;R_DC&quot;</span><span class="p">,</span> <span class="s2">&quot;BIOMASS&quot;</span><span class="p">]</span>
+<span class="n">idx</span> <span class="o">=</span> <span class="p">{</span><span class="n">rid</span><span class="p">:</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">get_edges_by_attr</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="n">rid</span><span class="p">)))</span> <span class="k">for</span> <span class="n">rid</span> <span class="ow">in</span> <span class="n">reactions</span><span class="p">}</span>
+
+<span class="n">summary</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;reaction&quot;</span><span class="p">:</span> <span class="n">reactions</span><span class="p">,</span>
+        <span class="s2">&quot;multi_lambda0_c1&quot;</span><span class="p">:</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">P_multi_uncoupled</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="n">r</span><span class="p">],</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">reactions</span><span class="p">],</span>
+        <span class="s2">&quot;multi_lambda0_c2&quot;</span><span class="p">:</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">P_multi_uncoupled</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="n">r</span><span class="p">],</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">reactions</span><span class="p">],</span>
+        <span class="s2">&quot;multi_lambda0.5_c1&quot;</span><span class="p">:</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">P_multi_coupled</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="n">r</span><span class="p">],</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">reactions</span><span class="p">],</span>
+        <span class="s2">&quot;multi_lambda0.5_c2&quot;</span><span class="p">:</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">P_multi_coupled</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="n">r</span><span class="p">],</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">reactions</span><span class="p">],</span>
+        <span class="s2">&quot;single_c1_lambda0.5&quot;</span><span class="p">:</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">P_single_c1</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="n">r</span><span class="p">]]</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">reactions</span><span class="p">],</span>
+        <span class="s2">&quot;single_c2_lambda0.5&quot;</span><span class="p">:</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">P_single_c2</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="n">r</span><span class="p">]]</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">reactions</span><span class="p">],</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+
+<span class="n">summary</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>reaction</th>
+      <th>multi_lambda0_c1</th>
+      <th>multi_lambda0_c2</th>
+      <th>multi_lambda0.5_c1</th>
+      <th>multi_lambda0.5_c2</th>
+      <th>single_c1_lambda0.5</th>
+      <th>single_c2_lambda0.5</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>R_AB</td>
+      <td>10.0</td>
+      <td>-0.0</td>
+      <td>10.0</td>
+      <td>10.0</td>
+      <td>10.0</td>
+      <td>-0.0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>R_BC</td>
+      <td>10.0</td>
+      <td>0.0</td>
+      <td>10.0</td>
+      <td>10.0</td>
+      <td>10.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>R_AD</td>
+      <td>-0.0</td>
+      <td>10.0</td>
+      <td>-0.0</td>
+      <td>-0.0</td>
+      <td>-0.0</td>
+      <td>10.0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>R_DC</td>
+      <td>0.0</td>
+      <td>10.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>10.0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>BIOMASS</td>
+      <td>10.0</td>
+      <td>10.0</td>
+      <td>10.0</td>
+      <td>10.0</td>
+      <td>10.0</td>
+      <td>10.0</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">branch_label</span><span class="p">(</span><span class="n">ab_flux</span><span class="p">,</span> <span class="n">ad_flux</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">):</span>
+    <span class="n">ab_on</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">ab_flux</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">tol</span>
+    <span class="n">ad_on</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">ad_flux</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">tol</span>
+    <span class="k">if</span> <span class="n">ab_on</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">ad_on</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;branch_1 (A-&gt;B-&gt;C)&quot;</span>
+    <span class="k">if</span> <span class="n">ad_on</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">ab_on</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;branch_2 (A-&gt;D-&gt;C)&quot;</span>
+    <span class="k">if</span> <span class="n">ab_on</span> <span class="ow">and</span> <span class="n">ad_on</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;both&quot;</span>
+    <span class="k">return</span> <span class="s2">&quot;none&quot;</span>
+
+
+<span class="n">branch_usage</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;setting&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s2">&quot;multi lambda=0 (condition_1)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;multi lambda=0 (condition_2)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;multi lambda=0.5 (condition_1)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;multi lambda=0.5 (condition_2)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;single condition_1 lambda=0.5&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;single condition_2 lambda=0.5&quot;</span><span class="p">,</span>
+        <span class="p">],</span>
+        <span class="s2">&quot;selected_branch&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="n">branch_label</span><span class="p">(</span>
+                <span class="n">P_multi_uncoupled</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="s2">&quot;R_AB&quot;</span><span class="p">],</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">P_multi_uncoupled</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="s2">&quot;R_AD&quot;</span><span class="p">],</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
+            <span class="p">),</span>
+            <span class="n">branch_label</span><span class="p">(</span>
+                <span class="n">P_multi_uncoupled</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="s2">&quot;R_AB&quot;</span><span class="p">],</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">P_multi_uncoupled</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="s2">&quot;R_AD&quot;</span><span class="p">],</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
+            <span class="p">),</span>
+            <span class="n">branch_label</span><span class="p">(</span>
+                <span class="n">P_multi_coupled</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="s2">&quot;R_AB&quot;</span><span class="p">],</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">P_multi_coupled</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="s2">&quot;R_AD&quot;</span><span class="p">],</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
+            <span class="p">),</span>
+            <span class="n">branch_label</span><span class="p">(</span>
+                <span class="n">P_multi_coupled</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="s2">&quot;R_AB&quot;</span><span class="p">],</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">P_multi_coupled</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="s2">&quot;R_AD&quot;</span><span class="p">],</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
+            <span class="p">),</span>
+            <span class="n">branch_label</span><span class="p">(</span><span class="n">P_single_c1</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="s2">&quot;R_AB&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">P_single_c1</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="s2">&quot;R_AD&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
+            <span class="n">branch_label</span><span class="p">(</span><span class="n">P_single_c2</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="s2">&quot;R_AB&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">P_single_c2</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="s2">&quot;R_AD&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
+        <span class="p">],</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+
+<span class="n">single_c1_branch</span> <span class="o">=</span> <span class="n">branch_usage</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+    <span class="n">branch_usage</span><span class="p">[</span><span class="s2">&quot;setting&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;single condition_1 lambda=0.5&quot;</span><span class="p">,</span> <span class="s2">&quot;selected_branch&quot;</span>
+<span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+<span class="n">single_c2_branch</span> <span class="o">=</span> <span class="n">branch_usage</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+    <span class="n">branch_usage</span><span class="p">[</span><span class="s2">&quot;setting&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;single condition_2 lambda=0.5&quot;</span><span class="p">,</span> <span class="s2">&quot;selected_branch&quot;</span>
+<span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+<span class="n">multi_coupled_c1_branch</span> <span class="o">=</span> <span class="n">branch_usage</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+    <span class="n">branch_usage</span><span class="p">[</span><span class="s2">&quot;setting&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;multi lambda=0.5 (condition_1)&quot;</span><span class="p">,</span> <span class="s2">&quot;selected_branch&quot;</span>
+<span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+<span class="n">multi_coupled_c2_branch</span> <span class="o">=</span> <span class="n">branch_usage</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+    <span class="n">branch_usage</span><span class="p">[</span><span class="s2">&quot;setting&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;multi lambda=0.5 (condition_2)&quot;</span><span class="p">,</span> <span class="s2">&quot;selected_branch&quot;</span>
+<span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+
+<span class="c1"># Sanity checks for the tutorial narrative.</span>
+<span class="k">assert</span> <span class="n">single_c1_branch</span> <span class="o">!=</span> <span class="n">single_c2_branch</span><span class="p">,</span> <span class="s2">&quot;Single-sample runs should select different branches.&quot;</span>
+<span class="k">assert</span> <span class="n">multi_coupled_c1_branch</span> <span class="o">==</span> <span class="n">multi_coupled_c2_branch</span><span class="p">,</span> <span class="s2">&quot;Coupled multi-sample run should align branch usage.&quot;</span>
+
+<span class="n">branch_usage</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>setting</th>
+      <th>selected_branch</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>multi lambda=0 (condition_1)</td>
+      <td>branch_1 (A-&gt;B-&gt;C)</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>multi lambda=0 (condition_2)</td>
+      <td>branch_2 (A-&gt;D-&gt;C)</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>multi lambda=0.5 (condition_1)</td>
+      <td>branch_1 (A-&gt;B-&gt;C)</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>multi lambda=0.5 (condition_2)</td>
+      <td>branch_1 (A-&gt;B-&gt;C)</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>single condition_1 lambda=0.5</td>
+      <td>branch_1 (A-&gt;B-&gt;C)</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>single condition_2 lambda=0.5</td>
+      <td>branch_2 (A-&gt;D-&gt;C)</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>With weak and conflicting evidence, adding cross-sample structured
+regularization (<code class="docutils literal notranslate"><span class="pre">lambda_reg=0.5</span></code>) can favor a shared active subnetwork across
+conditions. Running each condition independently does not enforce this coupling,
+so single-sample runs can keep different branches.</p>
+<p>The assertions above make this expectation explicit in the tutorial.</p>
+<section id="per-condition-fit-and-shared-reactions">
+<h2>Per-Condition Fit And Shared Reactions<a class="headerlink" href="#per-condition-fit-and-shared-reactions" title="Link to this heading">#</a></h2>
+<p>We quantify iMAT fit per condition as weighted agreement with reaction evidence:</p>
+<ul class="simple">
+<li><p>positive score: better if reaction is active</p></li>
+<li><p>negative score: better if reaction is inactive</p></li>
+</ul>
+<p>Then we report shared and condition-specific active reactions.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">all_edge_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">G</span><span class="o">.</span><span class="n">get_attr_edge</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">num_edges</span><span class="p">)]</span>
+<span class="n">edge_index_by_id</span> <span class="o">=</span> <span class="p">{</span><span class="n">rid</span><span class="p">:</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">rid</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">all_edge_ids</span><span class="p">)}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">get_active_ids</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">condition</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">condition</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">flow</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">flow</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="o">.</span><span class="n">value</span><span class="p">)[:,</span> <span class="n">condition</span><span class="p">]</span>
+    <span class="n">active_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">flow</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">tol</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">all_edge_ids</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">active_idx</span><span class="p">}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">weighted_fit</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">scores</span><span class="p">,</span> <span class="n">condition</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">condition</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">flow</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">flow</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="o">.</span><span class="n">value</span><span class="p">)[:,</span> <span class="n">condition</span><span class="p">]</span>
+
+    <span class="n">total</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">matched</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="k">for</span> <span class="n">rid</span><span class="p">,</span> <span class="n">score</span> <span class="ow">in</span> <span class="n">scores</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="n">edge_index_by_id</span><span class="p">[</span><span class="n">rid</span><span class="p">]</span>
+        <span class="n">active</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">flow</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span> <span class="o">&gt;</span> <span class="n">tol</span>
+        <span class="n">weight</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">score</span><span class="p">))</span>
+        <span class="n">ok</span> <span class="o">=</span> <span class="p">(</span><span class="n">score</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">active</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">score</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">active</span><span class="p">)</span>
+        <span class="n">total</span> <span class="o">+=</span> <span class="n">weight</span>
+        <span class="k">if</span> <span class="n">ok</span><span class="p">:</span>
+            <span class="n">matched</span> <span class="o">+=</span> <span class="n">weight</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;matched_weight&quot;</span><span class="p">:</span> <span class="n">matched</span><span class="p">,</span>
+        <span class="s2">&quot;total_weight&quot;</span><span class="p">:</span> <span class="n">total</span><span class="p">,</span>
+        <span class="s2">&quot;fit_ratio&quot;</span><span class="p">:</span> <span class="n">matched</span> <span class="o">/</span> <span class="n">total</span> <span class="k">if</span> <span class="n">total</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span>
+    <span class="p">}</span>
+
+
+<span class="n">fit_rows</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">problem</span><span class="p">,</span> <span class="n">c1_idx</span><span class="p">,</span> <span class="n">c2_idx</span> <span class="ow">in</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s2">&quot;multi lambda=0&quot;</span><span class="p">,</span> <span class="n">P_multi_uncoupled</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;multi lambda=0.5&quot;</span><span class="p">,</span> <span class="n">P_multi_coupled</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;single lambda=0.5&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+<span class="p">]:</span>
+    <span class="k">if</span> <span class="n">problem</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">c1</span> <span class="o">=</span> <span class="n">weighted_fit</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">scores_condition_1</span><span class="p">,</span> <span class="n">condition</span><span class="o">=</span><span class="n">c1_idx</span><span class="p">)</span>
+        <span class="n">c2</span> <span class="o">=</span> <span class="n">weighted_fit</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">scores_condition_2</span><span class="p">,</span> <span class="n">condition</span><span class="o">=</span><span class="n">c2_idx</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">c1</span> <span class="o">=</span> <span class="n">weighted_fit</span><span class="p">(</span><span class="n">P_single_c1</span><span class="p">,</span> <span class="n">scores_condition_1</span><span class="p">)</span>
+        <span class="n">c2</span> <span class="o">=</span> <span class="n">weighted_fit</span><span class="p">(</span><span class="n">P_single_c2</span><span class="p">,</span> <span class="n">scores_condition_2</span><span class="p">)</span>
+
+    <span class="n">fit_rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;setting&quot;</span><span class="p">:</span> <span class="n">label</span><span class="p">,</span>
+            <span class="s2">&quot;condition_1_fit_ratio&quot;</span><span class="p">:</span> <span class="n">c1</span><span class="p">[</span><span class="s2">&quot;fit_ratio&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;condition_2_fit_ratio&quot;</span><span class="p">:</span> <span class="n">c2</span><span class="p">[</span><span class="s2">&quot;fit_ratio&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;mean_fit_ratio&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">c1</span><span class="p">[</span><span class="s2">&quot;fit_ratio&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">c2</span><span class="p">[</span><span class="s2">&quot;fit_ratio&quot;</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">)</span>
+
+<span class="n">fit_table</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">fit_rows</span><span class="p">)</span>
+<span class="n">fit_table</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>setting</th>
+      <th>condition_1_fit_ratio</th>
+      <th>condition_2_fit_ratio</th>
+      <th>mean_fit_ratio</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>multi lambda=0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>multi lambda=0.5</td>
+      <td>1.0</td>
+      <td>0.2</td>
+      <td>0.6</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>single lambda=0.5</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">shared_unique_summary</span><span class="p">(</span><span class="n">active_c1</span><span class="p">,</span> <span class="n">active_c2</span><span class="p">,</span> <span class="n">setting</span><span class="p">):</span>
+    <span class="n">shared</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">active_c1</span> <span class="o">&amp;</span> <span class="n">active_c2</span><span class="p">)</span>
+    <span class="n">only_c1</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">active_c1</span> <span class="o">-</span> <span class="n">active_c2</span><span class="p">)</span>
+    <span class="n">only_c2</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">active_c2</span> <span class="o">-</span> <span class="n">active_c1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;setting&quot;</span><span class="p">:</span> <span class="n">setting</span><span class="p">,</span>
+        <span class="s2">&quot;n_shared&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">shared</span><span class="p">),</span>
+        <span class="s2">&quot;shared&quot;</span><span class="p">:</span> <span class="n">shared</span><span class="p">,</span>
+        <span class="s2">&quot;only_condition_1&quot;</span><span class="p">:</span> <span class="n">only_c1</span><span class="p">,</span>
+        <span class="s2">&quot;only_condition_2&quot;</span><span class="p">:</span> <span class="n">only_c2</span><span class="p">,</span>
+    <span class="p">}</span>
+
+
+<span class="n">multi_coupled_active_c1</span> <span class="o">=</span> <span class="n">get_active_ids</span><span class="p">(</span><span class="n">P_multi_coupled</span><span class="p">,</span> <span class="n">condition</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">multi_coupled_active_c2</span> <span class="o">=</span> <span class="n">get_active_ids</span><span class="p">(</span><span class="n">P_multi_coupled</span><span class="p">,</span> <span class="n">condition</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">single_active_c1</span> <span class="o">=</span> <span class="n">get_active_ids</span><span class="p">(</span><span class="n">P_single_c1</span><span class="p">)</span>
+<span class="n">single_active_c2</span> <span class="o">=</span> <span class="n">get_active_ids</span><span class="p">(</span><span class="n">P_single_c2</span><span class="p">)</span>
+
+<span class="n">shared_table</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="n">shared_unique_summary</span><span class="p">(</span><span class="n">multi_coupled_active_c1</span><span class="p">,</span> <span class="n">multi_coupled_active_c2</span><span class="p">,</span> <span class="s2">&quot;multi lambda=0.5&quot;</span><span class="p">),</span>
+        <span class="n">shared_unique_summary</span><span class="p">(</span><span class="n">single_active_c1</span><span class="p">,</span> <span class="n">single_active_c2</span><span class="p">,</span> <span class="s2">&quot;single lambda=0.5&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">shared_table</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>setting</th>
+      <th>n_shared</th>
+      <th>shared</th>
+      <th>only_condition_1</th>
+      <th>only_condition_2</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>multi lambda=0.5</td>
+      <td>6</td>
+      <td>[BIOMASS, EX_A, R_AB, R_BC, R_CE, R_EF]</td>
+      <td>[]</td>
+      <td>[]</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>single lambda=0.5</td>
+      <td>4</td>
+      <td>[BIOMASS, EX_A, R_CE, R_EF]</td>
+      <td>[R_AB, R_BC]</td>
+      <td>[R_AD, R_DC]</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Optional plotting if Graphviz is available</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">active_multi_c1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">P_multi_coupled</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="o">.</span><span class="n">value</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mf">1e-6</span>
+    <span class="n">active_multi_c2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">P_multi_coupled</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="o">.</span><span class="n">value</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mf">1e-6</span>
+
+    <span class="n">G</span><span class="o">.</span><span class="n">edge_subgraph</span><span class="p">(</span><span class="n">active_multi_c1</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">graph_attr</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;rankdir&quot;</span><span class="p">:</span> <span class="s2">&quot;LR&quot;</span><span class="p">,</span> <span class="s2">&quot;center&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">})</span>
+    <span class="n">G</span><span class="o">.</span><span class="n">edge_subgraph</span><span class="p">(</span><span class="n">active_multi_c2</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">graph_attr</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;rankdir&quot;</span><span class="p">:</span> <span class="s2">&quot;LR&quot;</span><span class="p">,</span> <span class="s2">&quot;center&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">})</span>
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Plot skipped: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
 </section>
 
 
@@ -523,6 +1187,24 @@
             </div>
             
             
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#per-condition-fit-and-shared-reactions">Per-Condition Fit And Shared Reactions</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>
