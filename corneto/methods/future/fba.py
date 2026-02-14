@@ -197,10 +197,10 @@ class MultiSampleFBA(FlowMethod):
                 row = row_of.get(feature.id)
                 if row is None:
                     continue
-                # if (lb_val := feature.data.get("lower_bound")) is not None:
-                #    lb[row, col] = lb_val
-                # if (ub_val := feature.data.get("upper_bound")) is not None:
-                #    ub[row, col] = ub_val
+                if (lb_val := feature.data.get("lower_bound")) is not None:
+                    lb[row, col] = float(lb_val)
+                if (ub_val := feature.data.get("upper_bound")) is not None:
+                    ub[row, col] = float(ub_val)
 
         # squeeze back to 1-D for single-sample cases
         if n_samples == 1:
@@ -232,8 +232,6 @@ class MultiSampleFBA(FlowMethod):
             rxn_objectives = []
             rxn_objective_ids = []
             rxn_weights = []
-            lb_rxn = []
-            ub_rxn = []
             sample_flux = F[:, i] if len(F.shape) > 1 else F
 
             # Process objective reactions
@@ -250,41 +248,6 @@ class MultiSampleFBA(FlowMethod):
                 rxn_objectives.append(rxn_obj)
                 rxn_objective_ids.append(str(rxn_id))
                 rxn_weights.append(value)
-
-            # TODO: the flow problem is already instantiated at this point with
-            # explicit bounds, so adding new bounds here might not work, unless
-            # all bounds of the flow problem are lb=-inf and ub=+inf.
-
-            # Process reaction-specific bounds
-            # for rxn_id, metadata in sample_data.features.items():
-            for feature in sample_data.features:
-                rxn_id = feature.id
-                if not list(graph.get_edges_by_attr("id", rxn_id)):
-                    continue
-                lower_bound = feature.data.get("lower_bound", None)
-                upper_bound = feature.data.get("upper_bound", None)
-                rid = next(iter(graph.get_edges_by_attr("id", rxn_id)))
-                if rid is None:
-                    raise ValueError(f"Reaction ID {rxn_id} not found in the graph edges.")
-                if lower_bound is not None:
-                    lb_rxn.append((rid, float(lower_bound)))
-                if upper_bound is not None:
-                    ub_rxn.append((rid, float(upper_bound)))
-                # rid = next(iter(graph.get_edges_by_attr("id", rxn_id)))
-                # if metadata.get("lower_bound", None) is not None:
-                #    lb_rxn.append((rid, float(metadata["lower_bound"])))
-                # if metadata.get("upper_bound", None) is not None:
-                #    ub_rxn.append((rid, float(metadata["upper_bound"])))
-
-            # Add lower bound constraints
-            if lb_rxn:
-                lb_rxn_id, lb_vals = map(list, zip(*lb_rxn))
-                flow_problem += sample_flux[lb_rxn_id] >= np.array(lb_vals)
-
-            # Add upper bound constraints
-            if ub_rxn:
-                ub_rxn_id, ub_vals = map(list, zip(*ub_rxn))
-                flow_problem += sample_flux[ub_rxn_id] <= np.array(ub_vals)
 
             # Add objectives for this sample
             if rxn_objectives:

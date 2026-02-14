@@ -1351,9 +1351,18 @@ class Backend(abc.ABC):
         I = self.Variable(name, S.shape, 0, 1, vartype=VarType.BINARY)
         blocked = np.isclose(ub, 0) & np.isclose(lb, 0)
         if np.sum(blocked) > 0:
-            # indexing compatible with CVXPY and PICOS
-            idx = np.where(blocked)[0]
-            c += [I[idx] == 0, S[idx] == 0]
+            if blocked.ndim == 0:
+                c += [I == 0, S == 0]
+            elif blocked.ndim == 1:
+                idx = np.where(blocked)[0]
+                c += [I[idx] == 0, S[idx] == 0]
+            elif blocked.ndim == 2:
+                for col in range(blocked.shape[1]):
+                    idx = np.where(blocked[:, col])[0]
+                    if len(idx) > 0:
+                        c += [I[idx, col] == 0, S[idx, col] == 0]
+            else:
+                raise ValueError(f"Unsupported indicator bounds dimensionality: {blocked.ndim}")
         # Add constraint: lb * I <= V <= ub * I
         if V._provided_lb is None or V._provided_ub is None:
             raise ValueError(f"The continuous variable {V.name} is unbounded, indicators cannot be created.")
@@ -1410,9 +1419,33 @@ class Backend(abc.ABC):
 
         # Disable infeasible binary indicators based on bounds
         if np.sum(ub <= 0) > 0:
-            c += [I_pos[np.where(ub <= 0)[0]] == 0]
+            mask = ub <= 0
+            if mask.ndim == 0:
+                c += [I_pos == 0]
+            elif mask.ndim == 1:
+                idx = np.where(mask)[0]
+                c += [I_pos[idx] == 0]
+            elif mask.ndim == 2:
+                for col in range(mask.shape[1]):
+                    idx = np.where(mask[:, col])[0]
+                    if len(idx) > 0:
+                        c += [I_pos[idx, col] == 0]
+            else:
+                raise ValueError(f"Unsupported NonZeroIndicator ub dimensionality: {mask.ndim}")
         if np.sum(lb >= 0) > 0:
-            c += [I_neg[np.where(lb >= 0)[0]] == 0]
+            mask = lb >= 0
+            if mask.ndim == 0:
+                c += [I_neg == 0]
+            elif mask.ndim == 1:
+                idx = np.where(mask)[0]
+                c += [I_neg[idx] == 0]
+            elif mask.ndim == 2:
+                for col in range(mask.shape[1]):
+                    idx = np.where(mask[:, col])[0]
+                    if len(idx) > 0:
+                        c += [I_neg[idx, col] == 0]
+            else:
+                raise ValueError(f"Unsupported NonZeroIndicator lb dimensionality: {mask.ndim}")
 
         # Add constraints to enforce variable behavior depending on the indicator activation:
         # If I_pos = 1 and I_neg = 0: V >= tol AND V <= ub

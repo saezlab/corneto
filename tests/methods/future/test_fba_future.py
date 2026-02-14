@@ -90,6 +90,39 @@ def test_two_samples_standard_fba_with_ko(metabolic_network, backend):
     assert np.isclose(P.expr.flow[rid, 1].value, 27.88, atol=1e-2)
 
 
+def test_ko_bounds_enforced_in_indicator_variables(metabolic_network, backend):
+    """Blocked reactions (lb=ub=0) must force indicator variables to zero."""
+    fba = MultiSampleFBA(backend=backend)
+    data = Data.from_cdict(
+        {
+            "sample1": {
+                "EX_biomass_e": {
+                    "role": "objective",
+                },
+            },
+            "sample2": {
+                "EX_biomass_e": {
+                    "role": "objective",
+                },
+                "MDHm": {
+                    "lower_bound": 0,
+                    "upper_bound": 0,
+                },
+            },
+        }
+    )
+
+    P = fba.build(metabolic_network, data)
+    mdhm_rid = next(iter(metabolic_network.get_edges_by_attr("id", "MDHm")))
+
+    # Try to force the KO reaction to be "active". This must remain impossible.
+    P.add_objective(-P.expr.edge_has_flux[mdhm_rid, 1], name="maximize_mdhm_indicator")
+    P.solve()
+
+    assert np.isclose(P.expr.flow[mdhm_rid, 1].value, 0.0, atol=1e-9)
+    assert np.isclose(P.expr.edge_has_flux[mdhm_rid, 1].value, 0.0, atol=1e-9)
+
+
 def test_single_sample_sparse_fba(metabolic_network, backend):
     """Test the sparse FBA method with a single sample."""
     if isinstance(backend, PicosBackend):
