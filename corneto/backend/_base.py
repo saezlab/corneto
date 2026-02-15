@@ -1048,8 +1048,8 @@ class Backend(abc.ABC):
             if In is not None:
                 # NOTE: Negative flows eq. to reversed directed edge
                 # Get edges s->t that can have a positive flow
-                if hasattr(In, "lb"):
-                    e_neg = [(i, g.get_edge(i)) for i in np.flatnonzero(In.lb < 0)]
+                if hasattr(In, "ub"):
+                    e_neg = [(i, g.get_edge(i)) for i in np.flatnonzero(In.ub > 0)]
                     e_ix = np.array([i for i, (s, t) in e_neg if len(s) > 0 and len(t) > 0])
                 else:
                     e_ix = np.array([i for i, (s, t) in enumerate(g.E) if len(s) > 0 and len(t) > 0])
@@ -1192,9 +1192,9 @@ class Backend(abc.ABC):
 
             if In is not None:
                 # Negative flows are handled as reversed directed edges.
-                if hasattr(In, "lb"):
-                    lb = In.lb if len(In.shape) == 1 else In.lb[:, i_sample]
-                    e_neg = [(i, g.get_edge(i)) for i in np.flatnonzero(lb < 0)]
+                if hasattr(In, "ub"):
+                    ub = In.ub if len(In.shape) == 1 else In.ub[:, i_sample]
+                    e_neg = [(i, g.get_edge(i)) for i in np.flatnonzero(ub > 0)]
                     e_ix = np.array([i for i, (s, t) in e_neg if s and t])
                 else:
                     e_ix = np.array([i for i, (s, t) in enumerate(g.E) if s and t])
