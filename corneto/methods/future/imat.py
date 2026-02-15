@@ -243,7 +243,7 @@ class MultiSampleIMAT(MultiSampleFBA):
 
         # Process weights for each sample
         n_samples = len(data.samples)
-        for i, sample_data in enumerate(data.samples.values()):
+        for i, (sample_name, sample_data) in enumerate(data.samples.items()):
             weights = []
             rxn_ids = []
 
@@ -305,18 +305,29 @@ class MultiSampleIMAT(MultiSampleFBA):
                 unblocked_sample = sample_active
 
             # Add objectives for highly expressed reactions
+            sample_name_str = str(sample_name).replace(" ", "_")
+
             if len(idx_pos) > 0:
                 pos_weights = scored_weights[idx_pos]
-                flow_problem.add_objectives(pos_weights @ (1 - sample_active[idx_pos]))
+                flow_problem.add_objective(
+                    pos_weights @ (1 - sample_active[idx_pos]),
+                    name=f"imat_fit_pos_{sample_name_str}_{i}",
+                )
 
             # Add objectives for lowly expressed reactions
             if len(idx_neg) > 0:
                 neg_weights = scored_weights[idx_neg]
                 if self.use_bigm_constraints:
                     # 1 if the reactions is unblocked (can have positive/negative flux)
-                    flow_problem.add_objectives(np.abs(neg_weights) @ unblocked_sample[idx_neg])
+                    flow_problem.add_objective(
+                        np.abs(neg_weights) @ unblocked_sample[idx_neg],
+                        name=f"imat_fit_neg_{sample_name_str}_{i}",
+                    )
                 else:
-                    flow_problem.add_objectives(np.abs(neg_weights) @ sample_active[idx_neg])
+                    flow_problem.add_objective(
+                        np.abs(neg_weights) @ sample_active[idx_neg],
+                        name=f"imat_fit_neg_{sample_name_str}_{i}",
+                    )
 
         return flow_problem
 

@@ -317,6 +317,34 @@ def test_imat_multisample_sparse_support_with_regularization_solves(metabolic_ne
     assert problem.expr.flow[bid, 1].value is not None
 
 
+def test_imat_multisample_fit_objectives_are_named(metabolic_network, backend):
+    """IMAT fit objectives should have explicit names per sample and sign."""
+    imat = MultiSampleIMAT(backend=backend, lambda_reg=1e-3)
+    data = Data.from_cdict(
+        {
+            "condition_1": {
+                "EX_biomass_e": {"role": "objective"},
+                "PGI": {"mapping": "edge", "value": 1000.0},
+                "TPI": {"mapping": "edge", "value": -1000.0},
+            },
+            "condition_2": {
+                "EX_biomass_e": {"role": "objective"},
+                "PGI": {"mapping": "edge", "value": -1000.0},
+                "TPI": {"mapping": "edge", "value": 1000.0},
+            },
+        }
+    )
+
+    problem = imat.build(metabolic_network, data)
+    objective_names = {obj.name for obj in problem.objectives}
+
+    assert "imat_fit_pos_condition_1_0" in objective_names
+    assert "imat_fit_neg_condition_1_0" in objective_names
+    assert "imat_fit_pos_condition_2_1" in objective_names
+    assert "imat_fit_neg_condition_2_1" in objective_names
+    assert "" not in objective_names
+
+
 def test_multi_sample_imat_mixed_expression_no_biomass(metabolic_network, backend):
     """Test iMAT with mixed high/low expression and no biomass objective."""
     if isinstance(backend, PicosBackend):
