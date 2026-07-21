@@ -100,6 +100,32 @@
   },
   {
    "cell_type": "markdown",
+   "id": "49ef8327",
+   "metadata": {},
+   "source": [
+    "### Targeted per-element style overrides\n",
+    "\n",
+    "When you only need to style specific elements, pass sparse mappings via `custom_edge_attr` and `custom_vertex_attr` instead of full vectors.\n",
+    "\n",
+    "Edge keys are edge indices; vertex keys are vertex names (or consistent vertex identifiers).\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "6faf8c19",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Highlight exactly one edge and one vertex\n",
+    "G.plot(\n",
+    "    custom_edge_attr={2: {\"color\": \"purple\", \"penwidth\": \"5\"}},\n",
+    "    custom_vertex_attr={\"B\": {\"color\": \"goldenrod\", \"penwidth\": \"3\"}},\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
    "id": "7623eae2785240b9bd12b16a66d81610",
    "metadata": {},
    "source": [

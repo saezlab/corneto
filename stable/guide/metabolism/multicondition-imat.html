@@ -27,39 +27,50 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=53e23fa6" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
-    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-Z263GN2PKK"></script>
     <script>
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){ dataLayer.push(arguments); }
+                gtag('consent', 'default', {
+                    'ad_storage': 'denied',
+                    'ad_user_data': 'denied',
+                    'ad_personalization': 'denied',
+                    'analytics_storage': 'denied'
+                });
+            </script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-Z263GN2PKK"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
                 gtag('js', new Date());
                 gtag('config', 'G-Z263GN2PKK');
             </script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'guide/metabolism/multicondition-imat';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1784641508';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'stable';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://saezlab.github.io/corneto/guide/metabolism/multicondition-imat.html" />
     <link rel="icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -69,20 +80,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
-
+  <body data-default-mode="light">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -108,7 +125,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -240,11 +257,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
     </div>
     
@@ -261,6 +285,10 @@
     </div>
   
 
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
   
 </div>
 
@@ -341,18 +369,33 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
       </div>
     
   </div>
   
     <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
         <div class="sidebar-primary-item">
+
 <nav class="bd-docs-nav bd-links"
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
@@ -395,6 +438,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../interoperability/decoupler.html">Decoupler: Ensemble of methods to infer biological activities</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../interoperability/omnipath.html">Omnipath: intra- &amp; intercellular signaling knowledge</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../interoperability/networkx.html">NetworkX: Network Analysis in Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../interoperability/annnet.html">AnnNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../interoperability/cvxpy.html">CVXPY: Convex optimization, for everyone</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../interoperability/picos.html">PICOS: A Python interface to conic optimization solvers</a></li>
 </ul>
@@ -464,9 +508,17 @@
                   
   <section class="tex2jax_ignore mathjax_ignore" id="multi-condition-imat">
 <h1>Multi-condition iMAT<a class="headerlink" href="#multi-condition-imat" title="Link to this heading">#</a></h1>
+<p>This tutorial shows how to use the multi-condition iMAT method.</p>
+<p>We use a branched network with weak and conflicting evidence across two
+conditions to illustrate how structured regularization can align solutions
+across samples.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">corneto</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cn</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">corneto</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cn</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods.future.imat</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiSampleIMAT</span>
 
 <span class="n">cn</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
 </pre></div>
@@ -481,12 +533,897 @@
                    style="width:100%;max-width:100px;" />
             </td>
             <td>
-              <table><tr><td>Installed version:</td><td style='text-align:left'>v1.0.0b7</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.8.1, PICOS v2.6.2</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>CVXOPT, GLPK, GLPK_MI, HIGHS, SCIP, SCIPY</td></tr><tr><td>Plot backend (default):</td><td style='text-align:left'>auto -> graphviz</td></tr><tr><td>Available plot backends:</td><td style='text-align:left'>graphviz v0.20.3; networkx v3.6.1+mpl v3.10.8; graphviz-wasm</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href="https://github.com/saezlab/corneto">https://github.com/saezlab/corneto</a></td></tr></table>
+              <table><tr><td>Installed version:</td><td style='text-align:left'>v1.0.0b7.post16.dev0+99e0b8aa</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.9.2, PICOS v2.6.2</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>GLPK, GLPK_MI, CVXOPT, SCIP, SCIPY, HIGHS</td></tr><tr><td>Plot backend (default):</td><td style='text-align:left'>auto -> graphviz</td></tr><tr><td>Available plot backends:</td><td style='text-align:left'>graphviz v0.20.3; networkx v3.6.1+mpl v3.11.1; graphviz-wasm</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href="https://github.com/saezlab/corneto">https://github.com/saezlab/corneto</a></td></tr></table>
             </td>
           </tr>
         </table>
         </div></div>
 </div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">G</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+
+<span class="c1"># Uptake</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">((),</span> <span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;EX_A&quot;</span><span class="p">,</span> <span class="n">default_lb</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">default_ub</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="c1"># Branch 1</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;R_AB&quot;</span><span class="p">,</span> <span class="n">default_lb</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">default_ub</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;R_BC&quot;</span><span class="p">,</span> <span class="n">default_lb</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">default_ub</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+
+<span class="c1"># Branch 2</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;R_AD&quot;</span><span class="p">,</span> <span class="n">default_lb</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">default_ub</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;R_DC&quot;</span><span class="p">,</span> <span class="n">default_lb</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">default_ub</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+
+<span class="c1"># Shared pathway to objective</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="s2">&quot;E&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;R_CE&quot;</span><span class="p">,</span> <span class="n">default_lb</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">default_ub</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;E&quot;</span><span class="p">,</span> <span class="s2">&quot;F&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;R_EF&quot;</span><span class="p">,</span> <span class="n">default_lb</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">default_ub</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;F&quot;</span><span class="p">,</span> <span class="p">(),</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;BIOMASS&quot;</span><span class="p">,</span> <span class="n">default_lb</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">default_ub</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+
+<span class="c1"># Side drains</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;R_BX&quot;</span><span class="p">,</span> <span class="n">default_lb</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">default_ub</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="p">(),</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;R_X_sink&quot;</span><span class="p">,</span> <span class="n">default_lb</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">default_ub</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;R_DY&quot;</span><span class="p">,</span> <span class="n">default_lb</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">default_ub</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="p">(),</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;R_Y_sink&quot;</span><span class="p">,</span> <span class="n">default_lb</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">default_ub</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+
+<span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;edge_index&quot;</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">num_edges</span><span class="p">),</span>
+        <span class="s2">&quot;reaction_id&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">G</span><span class="o">.</span><span class="n">get_attr_edge</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">num_edges</span><span class="p">)],</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>edge_index</th>
+      <th>reaction_id</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>EX_A</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1</td>
+      <td>R_AB</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2</td>
+      <td>R_BC</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>3</td>
+      <td>R_AD</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>4</td>
+      <td>R_DC</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>5</td>
+      <td>R_CE</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>6</td>
+      <td>R_EF</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>7</td>
+      <td>BIOMASS</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>8</td>
+      <td>R_BX</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>9</td>
+      <td>R_X_sink</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>10</td>
+      <td>R_DY</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>11</td>
+      <td>R_Y_sink</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">G</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/412b4d7bd154876ccf6dfda37f77597185abbec3f8b0d0a9454555d18dfd8ff8.svg" src="../../_images/412b4d7bd154876ccf6dfda37f77597185abbec3f8b0d0a9454555d18dfd8ff8.svg" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">w</span> <span class="o">=</span> <span class="mf">0.2</span>
+
+<span class="n">scores_condition_1</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;R_AB&quot;</span><span class="p">:</span> <span class="o">+</span><span class="n">w</span><span class="p">,</span>
+    <span class="s2">&quot;R_BC&quot;</span><span class="p">:</span> <span class="o">+</span><span class="n">w</span><span class="p">,</span>
+    <span class="s2">&quot;R_AD&quot;</span><span class="p">:</span> <span class="o">-</span><span class="n">w</span><span class="p">,</span>
+    <span class="s2">&quot;R_DC&quot;</span><span class="p">:</span> <span class="o">-</span><span class="n">w</span><span class="p">,</span>
+    <span class="s2">&quot;R_BX&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">,</span>
+    <span class="s2">&quot;R_DY&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">scores_condition_2</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;R_AB&quot;</span><span class="p">:</span> <span class="o">-</span><span class="n">w</span><span class="p">,</span>
+    <span class="s2">&quot;R_BC&quot;</span><span class="p">:</span> <span class="o">-</span><span class="n">w</span><span class="p">,</span>
+    <span class="s2">&quot;R_AD&quot;</span><span class="p">:</span> <span class="o">+</span><span class="n">w</span><span class="p">,</span>
+    <span class="s2">&quot;R_DC&quot;</span><span class="p">:</span> <span class="o">+</span><span class="n">w</span><span class="p">,</span>
+    <span class="s2">&quot;R_BX&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">,</span>
+    <span class="s2">&quot;R_DY&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">sample_from_scores</span><span class="p">(</span><span class="n">scores</span><span class="p">):</span>
+    <span class="n">sample</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;BIOMASS&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;objective&quot;</span><span class="p">}}</span>
+    <span class="k">for</span> <span class="n">rid</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">scores</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">sample</span><span class="p">[</span><span class="n">rid</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;mapping&quot;</span><span class="p">:</span> <span class="s2">&quot;edge&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)}</span>
+    <span class="k">return</span> <span class="n">sample</span>
+
+
+<span class="n">multi_data</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Data</span><span class="o">.</span><span class="n">from_cdict</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;condition_1&quot;</span><span class="p">:</span> <span class="n">sample_from_scores</span><span class="p">(</span><span class="n">scores_condition_1</span><span class="p">),</span>
+        <span class="s2">&quot;condition_2&quot;</span><span class="p">:</span> <span class="n">sample_from_scores</span><span class="p">(</span><span class="n">scores_condition_2</span><span class="p">),</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+
+<span class="n">single_data_c1</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Data</span><span class="o">.</span><span class="n">from_cdict</span><span class="p">({</span><span class="s2">&quot;condition_1&quot;</span><span class="p">:</span> <span class="n">sample_from_scores</span><span class="p">(</span><span class="n">scores_condition_1</span><span class="p">)})</span>
+<span class="n">single_data_c2</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Data</span><span class="o">.</span><span class="n">from_cdict</span><span class="p">({</span><span class="s2">&quot;condition_2&quot;</span><span class="p">:</span> <span class="n">sample_from_scores</span><span class="p">(</span><span class="n">scores_condition_2</span><span class="p">)})</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">imat_multi_uncoupled</span> <span class="o">=</span> <span class="n">MultiSampleIMAT</span><span class="p">(</span><span class="n">lambda_reg</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span>
+<span class="n">P_multi_uncoupled</span> <span class="o">=</span> <span class="n">imat_multi_uncoupled</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">multi_data</span><span class="p">)</span>
+<span class="n">P_multi_uncoupled</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;highs&quot;</span><span class="p">)</span>
+
+<span class="n">imat_multi_coupled</span> <span class="o">=</span> <span class="n">MultiSampleIMAT</span><span class="p">(</span><span class="n">lambda_reg</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span>
+<span class="n">P_multi_coupled</span> <span class="o">=</span> <span class="n">imat_multi_coupled</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">multi_data</span><span class="p">)</span>
+<span class="n">P_multi_coupled</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;highs&quot;</span><span class="p">)</span>
+
+<span class="n">imat_single_c1</span> <span class="o">=</span> <span class="n">MultiSampleIMAT</span><span class="p">(</span><span class="n">lambda_reg</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span>
+<span class="n">P_single_c1</span> <span class="o">=</span> <span class="n">imat_single_c1</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">single_data_c1</span><span class="p">)</span>
+<span class="n">P_single_c1</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;highs&quot;</span><span class="p">)</span>
+
+<span class="n">imat_single_c2</span> <span class="o">=</span> <span class="n">MultiSampleIMAT</span><span class="p">(</span><span class="n">lambda_reg</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span>
+<span class="n">P_single_c2</span> <span class="o">=</span> <span class="n">imat_single_c2</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">single_data_c2</span><span class="p">)</span>
+<span class="n">P_single_c2</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;highs&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Problem(Minimize(Expression(AFFINE, UNKNOWN, ())), [Inequality(Constant(CONSTANT, ZERO, (12,))), Inequality(Variable((12,), _flow)), Equality(Expression(AFFINE, UNKNOWN, (8,)), Constant(CONSTANT, ZERO, ())), Inequality(Expression(AFFINE, ZERO, (12,))), Inequality(Variable((12,), _flow)), Inequality(Expression(AFFINE, NONNEGATIVE, (6,))), Equality(Expression(AFFINE, NONNEGATIVE, (6,)), Constant(CONSTANT, ZERO, ())), Inequality(Expression(AFFINE, NONNEGATIVE, (6,))), Inequality(Expression(AFFINE, UNKNOWN, (6,))), Inequality(Expression(AFFINE, NONNEGATIVE, (6,)))])
+</pre></div>
+</div>
+</div>
+</div>
+<section id="objective-values">
+<h2>Objective values<a class="headerlink" href="#objective-values" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">P.objectives</span></code> provides the solved objective terms and values directly.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">objectives_table</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">setting</span><span class="p">):</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">weight</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">objectives</span><span class="p">,</span> <span class="n">problem</span><span class="o">.</span><span class="n">weights</span><span class="p">)):</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">name</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;unnamed_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">weight</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">weight</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">weight</span><span class="p">)</span>
+        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;setting&quot;</span><span class="p">:</span> <span class="n">setting</span><span class="p">,</span>
+                <span class="s2">&quot;term_index&quot;</span><span class="p">:</span> <span class="n">i</span><span class="p">,</span>
+                <span class="s2">&quot;term_name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+                <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
+                <span class="s2">&quot;weight&quot;</span><span class="p">:</span> <span class="n">w</span><span class="p">,</span>
+                <span class="s2">&quot;weighted_value&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="o">*</span> <span class="n">w</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span>
+
+
+<span class="n">obj_table</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="n">objectives_table</span><span class="p">(</span><span class="n">P_multi_uncoupled</span><span class="p">,</span> <span class="s2">&quot;multi lambda=0&quot;</span><span class="p">),</span>
+        <span class="n">objectives_table</span><span class="p">(</span><span class="n">P_multi_coupled</span><span class="p">,</span> <span class="s2">&quot;multi lambda=0.5&quot;</span><span class="p">),</span>
+        <span class="n">objectives_table</span><span class="p">(</span><span class="n">P_single_c1</span><span class="p">,</span> <span class="s2">&quot;single c1 lambda=0.5&quot;</span><span class="p">),</span>
+        <span class="n">objectives_table</span><span class="p">(</span><span class="n">P_single_c2</span><span class="p">,</span> <span class="s2">&quot;single c2 lambda=0.5&quot;</span><span class="p">),</span>
+    <span class="p">],</span>
+    <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">obj_table</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>setting</th>
+      <th>term_index</th>
+      <th>term_name</th>
+      <th>value</th>
+      <th>weight</th>
+      <th>weighted_value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>multi lambda=0</td>
+      <td>0</td>
+      <td>objective_condition_1__BIOMASS</td>
+      <td>-10.0</td>
+      <td>1.0</td>
+      <td>-10.0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>multi lambda=0</td>
+      <td>1</td>
+      <td>objective_condition_2__BIOMASS</td>
+      <td>-10.0</td>
+      <td>1.0</td>
+      <td>-10.0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>multi lambda=0</td>
+      <td>2</td>
+      <td>imat_fit_pos_condition_1_0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>multi lambda=0</td>
+      <td>3</td>
+      <td>imat_fit_neg_condition_1_0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>multi lambda=0</td>
+      <td>4</td>
+      <td>imat_fit_pos_condition_2_1</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>multi lambda=0</td>
+      <td>5</td>
+      <td>imat_fit_neg_condition_2_1</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>multi lambda=0</td>
+      <td>6</td>
+      <td>regularization_edge_has_flux_OR</td>
+      <td>10.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>multi lambda=0.5</td>
+      <td>0</td>
+      <td>objective_condition_1__BIOMASS</td>
+      <td>-10.0</td>
+      <td>1.0</td>
+      <td>-10.0</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>multi lambda=0.5</td>
+      <td>1</td>
+      <td>objective_condition_2__BIOMASS</td>
+      <td>-10.0</td>
+      <td>1.0</td>
+      <td>-10.0</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>multi lambda=0.5</td>
+      <td>2</td>
+      <td>imat_fit_pos_condition_1_0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>multi lambda=0.5</td>
+      <td>3</td>
+      <td>imat_fit_neg_condition_1_0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>multi lambda=0.5</td>
+      <td>4</td>
+      <td>imat_fit_pos_condition_2_1</td>
+      <td>0.4</td>
+      <td>1.0</td>
+      <td>0.4</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>multi lambda=0.5</td>
+      <td>5</td>
+      <td>imat_fit_neg_condition_2_1</td>
+      <td>0.4</td>
+      <td>1.0</td>
+      <td>0.4</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>multi lambda=0.5</td>
+      <td>6</td>
+      <td>regularization_edge_has_flux_OR</td>
+      <td>6.0</td>
+      <td>0.5</td>
+      <td>3.0</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>single c1 lambda=0.5</td>
+      <td>0</td>
+      <td>objective_condition_1__BIOMASS</td>
+      <td>-10.0</td>
+      <td>1.0</td>
+      <td>-10.0</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>single c1 lambda=0.5</td>
+      <td>1</td>
+      <td>imat_fit_pos_condition_1_0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>single c1 lambda=0.5</td>
+      <td>2</td>
+      <td>imat_fit_neg_condition_1_0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>single c1 lambda=0.5</td>
+      <td>3</td>
+      <td>regularization_edge_has_flux</td>
+      <td>6.0</td>
+      <td>0.5</td>
+      <td>3.0</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>single c2 lambda=0.5</td>
+      <td>0</td>
+      <td>objective_condition_2__BIOMASS</td>
+      <td>-10.0</td>
+      <td>1.0</td>
+      <td>-10.0</td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>single c2 lambda=0.5</td>
+      <td>1</td>
+      <td>imat_fit_pos_condition_2_0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>single c2 lambda=0.5</td>
+      <td>2</td>
+      <td>imat_fit_neg_condition_2_0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>21</th>
+      <td>single c2 lambda=0.5</td>
+      <td>3</td>
+      <td>regularization_edge_has_flux</td>
+      <td>6.0</td>
+      <td>0.5</td>
+      <td>3.0</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">fit_penalty_for_sample</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">sample_name</span><span class="p">):</span>
+    <span class="n">sample_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">sample_name</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span>
+    <span class="n">sample_marker</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;_</span><span class="si">{</span><span class="n">sample_name</span><span class="si">}</span><span class="s2">_&quot;</span>
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span>
+        <span class="nb">sum</span><span class="p">(</span>
+            <span class="nb">float</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">problem</span><span class="o">.</span><span class="n">objectives</span>
+            <span class="k">if</span> <span class="n">o</span><span class="o">.</span><span class="n">name</span> <span class="ow">and</span> <span class="n">o</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;imat_fit_&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">sample_marker</span> <span class="ow">in</span> <span class="n">o</span><span class="o">.</span><span class="n">name</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+
+<span class="n">fit_table</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;setting&quot;</span><span class="p">:</span> <span class="s2">&quot;multi lambda=0&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;condition_1_penalty&quot;</span><span class="p">:</span> <span class="n">fit_penalty_for_sample</span><span class="p">(</span><span class="n">P_multi_uncoupled</span><span class="p">,</span> <span class="s2">&quot;condition_1&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;condition_2_penalty&quot;</span><span class="p">:</span> <span class="n">fit_penalty_for_sample</span><span class="p">(</span><span class="n">P_multi_uncoupled</span><span class="p">,</span> <span class="s2">&quot;condition_2&quot;</span><span class="p">),</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;setting&quot;</span><span class="p">:</span> <span class="s2">&quot;multi lambda=0.5&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;condition_1_penalty&quot;</span><span class="p">:</span> <span class="n">fit_penalty_for_sample</span><span class="p">(</span><span class="n">P_multi_coupled</span><span class="p">,</span> <span class="s2">&quot;condition_1&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;condition_2_penalty&quot;</span><span class="p">:</span> <span class="n">fit_penalty_for_sample</span><span class="p">(</span><span class="n">P_multi_coupled</span><span class="p">,</span> <span class="s2">&quot;condition_2&quot;</span><span class="p">),</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;setting&quot;</span><span class="p">:</span> <span class="s2">&quot;single lambda=0.5&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;condition_1_penalty&quot;</span><span class="p">:</span> <span class="n">fit_penalty_for_sample</span><span class="p">(</span><span class="n">P_single_c1</span><span class="p">,</span> <span class="s2">&quot;condition_1&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;condition_2_penalty&quot;</span><span class="p">:</span> <span class="n">fit_penalty_for_sample</span><span class="p">(</span><span class="n">P_single_c2</span><span class="p">,</span> <span class="s2">&quot;condition_2&quot;</span><span class="p">),</span>
+        <span class="p">},</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">fit_table</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>setting</th>
+      <th>condition_1_penalty</th>
+      <th>condition_2_penalty</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>multi lambda=0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>multi lambda=0.5</td>
+      <td>0.0</td>
+      <td>0.8</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>single lambda=0.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="shared-reactions">
+<h2>Shared reactions<a class="headerlink" href="#shared-reactions" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">idx</span> <span class="o">=</span> <span class="p">{</span><span class="n">rid</span><span class="p">:</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">get_edges_by_attr</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="n">rid</span><span class="p">)))</span> <span class="k">for</span> <span class="n">rid</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;R_AB&quot;</span><span class="p">,</span> <span class="s2">&quot;R_AD&quot;</span><span class="p">]}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">branch_label</span><span class="p">(</span><span class="n">ab_flux</span><span class="p">,</span> <span class="n">ad_flux</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">):</span>
+    <span class="n">ab_on</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">ab_flux</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">tol</span>
+    <span class="n">ad_on</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">ad_flux</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">tol</span>
+    <span class="k">if</span> <span class="n">ab_on</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">ad_on</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;branch_1 (A-&gt;B-&gt;C)&quot;</span>
+    <span class="k">if</span> <span class="n">ad_on</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">ab_on</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;branch_2 (A-&gt;D-&gt;C)&quot;</span>
+    <span class="k">if</span> <span class="n">ab_on</span> <span class="ow">and</span> <span class="n">ad_on</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;both&quot;</span>
+    <span class="k">return</span> <span class="s2">&quot;none&quot;</span>
+
+
+<span class="n">branch_usage</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;setting&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s2">&quot;multi lambda=0 (condition_1)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;multi lambda=0 (condition_2)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;multi lambda=0.5 (condition_1)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;multi lambda=0.5 (condition_2)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;single condition_1 lambda=0.5&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;single condition_2 lambda=0.5&quot;</span><span class="p">,</span>
+        <span class="p">],</span>
+        <span class="s2">&quot;selected_branch&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="n">branch_label</span><span class="p">(</span>
+                <span class="n">P_multi_uncoupled</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="s2">&quot;R_AB&quot;</span><span class="p">],</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">P_multi_uncoupled</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="s2">&quot;R_AD&quot;</span><span class="p">],</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
+            <span class="p">),</span>
+            <span class="n">branch_label</span><span class="p">(</span>
+                <span class="n">P_multi_uncoupled</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="s2">&quot;R_AB&quot;</span><span class="p">],</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">P_multi_uncoupled</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="s2">&quot;R_AD&quot;</span><span class="p">],</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
+            <span class="p">),</span>
+            <span class="n">branch_label</span><span class="p">(</span>
+                <span class="n">P_multi_coupled</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="s2">&quot;R_AB&quot;</span><span class="p">],</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">P_multi_coupled</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="s2">&quot;R_AD&quot;</span><span class="p">],</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
+            <span class="p">),</span>
+            <span class="n">branch_label</span><span class="p">(</span>
+                <span class="n">P_multi_coupled</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="s2">&quot;R_AB&quot;</span><span class="p">],</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">P_multi_coupled</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="s2">&quot;R_AD&quot;</span><span class="p">],</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
+            <span class="p">),</span>
+            <span class="n">branch_label</span><span class="p">(</span><span class="n">P_single_c1</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="s2">&quot;R_AB&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">P_single_c1</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="s2">&quot;R_AD&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
+            <span class="n">branch_label</span><span class="p">(</span><span class="n">P_single_c2</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="s2">&quot;R_AB&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">P_single_c2</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="s2">&quot;R_AD&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
+        <span class="p">],</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+
+<span class="n">single_c1_branch</span> <span class="o">=</span> <span class="n">branch_usage</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+    <span class="n">branch_usage</span><span class="p">[</span><span class="s2">&quot;setting&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;single condition_1 lambda=0.5&quot;</span><span class="p">,</span> <span class="s2">&quot;selected_branch&quot;</span>
+<span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+<span class="n">single_c2_branch</span> <span class="o">=</span> <span class="n">branch_usage</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+    <span class="n">branch_usage</span><span class="p">[</span><span class="s2">&quot;setting&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;single condition_2 lambda=0.5&quot;</span><span class="p">,</span> <span class="s2">&quot;selected_branch&quot;</span>
+<span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+<span class="n">multi_c1_branch</span> <span class="o">=</span> <span class="n">branch_usage</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+    <span class="n">branch_usage</span><span class="p">[</span><span class="s2">&quot;setting&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;multi lambda=0.5 (condition_1)&quot;</span><span class="p">,</span> <span class="s2">&quot;selected_branch&quot;</span>
+<span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+<span class="n">multi_c2_branch</span> <span class="o">=</span> <span class="n">branch_usage</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+    <span class="n">branch_usage</span><span class="p">[</span><span class="s2">&quot;setting&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;multi lambda=0.5 (condition_2)&quot;</span><span class="p">,</span> <span class="s2">&quot;selected_branch&quot;</span>
+<span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+
+<span class="k">assert</span> <span class="n">single_c1_branch</span> <span class="o">!=</span> <span class="n">single_c2_branch</span><span class="p">,</span> <span class="s2">&quot;Single-sample runs should select different branches.&quot;</span>
+<span class="k">assert</span> <span class="n">multi_c1_branch</span> <span class="o">==</span> <span class="n">multi_c2_branch</span><span class="p">,</span> <span class="s2">&quot;Coupled multi-sample run should align branch usage.&quot;</span>
+
+<span class="n">branch_usage</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>setting</th>
+      <th>selected_branch</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>multi lambda=0 (condition_1)</td>
+      <td>branch_1 (A-&gt;B-&gt;C)</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>multi lambda=0 (condition_2)</td>
+      <td>branch_2 (A-&gt;D-&gt;C)</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>multi lambda=0.5 (condition_1)</td>
+      <td>branch_1 (A-&gt;B-&gt;C)</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>multi lambda=0.5 (condition_2)</td>
+      <td>branch_1 (A-&gt;B-&gt;C)</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>single condition_1 lambda=0.5</td>
+      <td>branch_1 (A-&gt;B-&gt;C)</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>single condition_2 lambda=0.5</td>
+      <td>branch_2 (A-&gt;D-&gt;C)</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">all_edge_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">G</span><span class="o">.</span><span class="n">get_attr_edge</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">num_edges</span><span class="p">)]</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">active_ids</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">condition</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">):</span>
+    <span class="n">flow</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">condition</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">flow</span> <span class="o">=</span> <span class="n">flow</span><span class="p">[:,</span> <span class="n">condition</span><span class="p">]</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">all_edge_ids</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">flow</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">tol</span><span class="p">)[</span><span class="mi">0</span><span class="p">]}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">shared_unique</span><span class="p">(</span><span class="n">active_c1</span><span class="p">,</span> <span class="n">active_c2</span><span class="p">,</span> <span class="n">setting</span><span class="p">):</span>
+    <span class="n">shared</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">active_c1</span> <span class="o">&amp;</span> <span class="n">active_c2</span><span class="p">)</span>
+    <span class="n">only_c1</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">active_c1</span> <span class="o">-</span> <span class="n">active_c2</span><span class="p">)</span>
+    <span class="n">only_c2</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">active_c2</span> <span class="o">-</span> <span class="n">active_c1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;setting&quot;</span><span class="p">:</span> <span class="n">setting</span><span class="p">,</span>
+        <span class="s2">&quot;n_shared&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">shared</span><span class="p">),</span>
+        <span class="s2">&quot;shared&quot;</span><span class="p">:</span> <span class="n">shared</span><span class="p">,</span>
+        <span class="s2">&quot;only_condition_1&quot;</span><span class="p">:</span> <span class="n">only_c1</span><span class="p">,</span>
+        <span class="s2">&quot;only_condition_2&quot;</span><span class="p">:</span> <span class="n">only_c2</span><span class="p">,</span>
+    <span class="p">}</span>
+
+
+<span class="n">shared_table</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="n">shared_unique</span><span class="p">(</span><span class="n">active_ids</span><span class="p">(</span><span class="n">P_multi_coupled</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">active_ids</span><span class="p">(</span><span class="n">P_multi_coupled</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="s2">&quot;multi lambda=0.5&quot;</span><span class="p">),</span>
+        <span class="n">shared_unique</span><span class="p">(</span><span class="n">active_ids</span><span class="p">(</span><span class="n">P_single_c1</span><span class="p">),</span> <span class="n">active_ids</span><span class="p">(</span><span class="n">P_single_c2</span><span class="p">),</span> <span class="s2">&quot;single lambda=0.5&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">shared_table</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>setting</th>
+      <th>n_shared</th>
+      <th>shared</th>
+      <th>only_condition_1</th>
+      <th>only_condition_2</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>multi lambda=0.5</td>
+      <td>6</td>
+      <td>[BIOMASS, EX_A, R_AB, R_BC, R_CE, R_EF]</td>
+      <td>[]</td>
+      <td>[]</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>single lambda=0.5</td>
+      <td>4</td>
+      <td>[BIOMASS, EX_A, R_CE, R_EF]</td>
+      <td>[R_AB, R_BC]</td>
+      <td>[R_AD, R_DC]</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">active_multi_c1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">P_multi_coupled</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="o">.</span><span class="n">value</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mf">1e-6</span>
+<span class="n">active_multi_c2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">P_multi_coupled</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="o">.</span><span class="n">value</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mf">1e-6</span>
+
+<span class="n">G</span><span class="o">.</span><span class="n">edge_subgraph</span><span class="p">(</span><span class="n">active_multi_c1</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">graph_attr</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;rankdir&quot;</span><span class="p">:</span> <span class="s2">&quot;LR&quot;</span><span class="p">,</span> <span class="s2">&quot;center&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">})</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/d8689313af2331976b93c6958794052838d04806522eb97d3f560c6054971f6d.svg" src="../../_images/d8689313af2331976b93c6958794052838d04806522eb97d3f560c6054971f6d.svg" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">G</span><span class="o">.</span><span class="n">edge_subgraph</span><span class="p">(</span><span class="n">active_multi_c2</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">graph_attr</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;rankdir&quot;</span><span class="p">:</span> <span class="s2">&quot;LR&quot;</span><span class="p">,</span> <span class="s2">&quot;center&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">})</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/d8689313af2331976b93c6958794052838d04806522eb97d3f560c6054971f6d.svg" src="../../_images/d8689313af2331976b93c6958794052838d04806522eb97d3f560c6054971f6d.svg" />
+</div>
+</div>
+</section>
+<section id="manual-check-of-objectives-per-condition">
+<h2>Manual check of objectives per condition<a class="headerlink" href="#manual-check-of-objectives-per-condition" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">edge_index_by_id</span> <span class="o">=</span> <span class="p">{</span><span class="n">rid</span><span class="p">:</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">rid</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">all_edge_ids</span><span class="p">)}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">manual_fit_ratio</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">scores</span><span class="p">,</span> <span class="n">condition</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">):</span>
+    <span class="n">flow</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">condition</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">flow</span> <span class="o">=</span> <span class="n">flow</span><span class="p">[:,</span> <span class="n">condition</span><span class="p">]</span>
+
+    <span class="n">matched</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">total</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="k">for</span> <span class="n">rid</span><span class="p">,</span> <span class="n">score</span> <span class="ow">in</span> <span class="n">scores</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="n">edge_index_by_id</span><span class="p">[</span><span class="n">rid</span><span class="p">]</span>
+        <span class="n">active</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">flow</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span> <span class="o">&gt;</span> <span class="n">tol</span>
+        <span class="n">weight</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">score</span><span class="p">))</span>
+        <span class="n">ok</span> <span class="o">=</span> <span class="p">(</span><span class="n">score</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">active</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">score</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">active</span><span class="p">)</span>
+        <span class="n">total</span> <span class="o">+=</span> <span class="n">weight</span>
+        <span class="k">if</span> <span class="n">ok</span><span class="p">:</span>
+            <span class="n">matched</span> <span class="o">+=</span> <span class="n">weight</span>
+    <span class="k">return</span> <span class="n">matched</span> <span class="o">/</span> <span class="n">total</span> <span class="k">if</span> <span class="n">total</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+
+
+<span class="n">manual_fit_table</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;setting&quot;</span><span class="p">:</span> <span class="s2">&quot;multi lambda=0&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;condition_1_ratio&quot;</span><span class="p">:</span> <span class="n">manual_fit_ratio</span><span class="p">(</span><span class="n">P_multi_uncoupled</span><span class="p">,</span> <span class="n">scores_condition_1</span><span class="p">,</span> <span class="n">condition</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+            <span class="s2">&quot;condition_2_ratio&quot;</span><span class="p">:</span> <span class="n">manual_fit_ratio</span><span class="p">(</span><span class="n">P_multi_uncoupled</span><span class="p">,</span> <span class="n">scores_condition_2</span><span class="p">,</span> <span class="n">condition</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;setting&quot;</span><span class="p">:</span> <span class="s2">&quot;multi lambda=0.5&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;condition_1_ratio&quot;</span><span class="p">:</span> <span class="n">manual_fit_ratio</span><span class="p">(</span><span class="n">P_multi_coupled</span><span class="p">,</span> <span class="n">scores_condition_1</span><span class="p">,</span> <span class="n">condition</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+            <span class="s2">&quot;condition_2_ratio&quot;</span><span class="p">:</span> <span class="n">manual_fit_ratio</span><span class="p">(</span><span class="n">P_multi_coupled</span><span class="p">,</span> <span class="n">scores_condition_2</span><span class="p">,</span> <span class="n">condition</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;setting&quot;</span><span class="p">:</span> <span class="s2">&quot;single lambda=0.5&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;condition_1_ratio&quot;</span><span class="p">:</span> <span class="n">manual_fit_ratio</span><span class="p">(</span><span class="n">P_single_c1</span><span class="p">,</span> <span class="n">scores_condition_1</span><span class="p">),</span>
+            <span class="s2">&quot;condition_2_ratio&quot;</span><span class="p">:</span> <span class="n">manual_fit_ratio</span><span class="p">(</span><span class="n">P_single_c2</span><span class="p">,</span> <span class="n">scores_condition_2</span><span class="p">),</span>
+        <span class="p">},</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">manual_fit_table</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>setting</th>
+      <th>condition_1_ratio</th>
+      <th>condition_2_ratio</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>multi lambda=0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>multi lambda=0.5</td>
+      <td>1.0</td>
+      <td>0.2</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>single lambda=0.5</td>
+      <td>1.0</td>
+      <td>1.0</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
 </section>
 
 
@@ -524,6 +1461,26 @@
             
             
               
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#objective-values">Objective values</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#shared-reactions">Shared reactions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#manual-check-of-objectives-per-condition">Manual check of objectives per condition</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
             
           </div>
           <footer class="bd-footer-content">
@@ -535,8 +1492,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -562,7 +1519,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>
