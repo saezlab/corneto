@@ -20,8 +20,12 @@ def test_milp_carnival_is_public_and_builds(backend):
         beta_weight=1e-3,
         backend=backend,
     )
+    result = problem.solve()
 
     assert milp_carnival is module_milp_carnival
+    assert result.status == "optimal"
+    assert np.allclose(problem.expr.vertex_values.value, [1, 1])
+    assert np.allclose(problem.expr.edge_values.value, [1])
     assert "vertex_values" in problem.expr
     assert "edge_values" in problem.expr
 

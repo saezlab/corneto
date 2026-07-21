@@ -19,7 +19,11 @@ from corneto.methods.imat import MultiSampleIMAT
 from corneto.methods.pcst import PrizeCollectingSteinerTree
 
 # Import Shortest Path Methods
-from corneto.methods.shortest_path import shortest_path, solve_shortest_path
+from corneto.methods.shortest_path import (
+    create_multisample_shortest_path,
+    shortest_path,
+    solve_shortest_path,
+)
 from corneto.methods.steiner import SteinerTreeFlow
 
 __all__ = [
@@ -29,6 +33,7 @@ __all__ = [
     "MultiSampleIMAT",
     "PrizeCollectingSteinerTree",
     "SteinerTreeFlow",
+    "create_multisample_shortest_path",
     "milp_carnival",
     "shortest_path",
     "solve_shortest_path",

@@ -1,3 +1,5 @@
+"""Optimization backends and the runtime-selected defaults."""
+
 import corneto._settings as s
 from corneto.backend._base import (
     Backend,
@@ -9,10 +11,19 @@ from corneto.backend._picos_backend import PicosBackend
 
 supported_backends = [CvxpyBackend(), PicosBackend()]
 
-__all__ = ["Backend", "CvxpyBackend", "PicosBackend", "VarType", "s"]
+__all__ = [
+    "DEFAULT_BACKEND",
+    "DEFAULT_SOLVER",
+    "Backend",
+    "CvxpyBackend",
+    "PicosBackend",
+    "VarType",
+    "available_backends",
+]
 
 
 def available_backends():
+    """Return the installed and usable optimization backends."""
     return [b for b in supported_backends if b.is_available()]
 
 

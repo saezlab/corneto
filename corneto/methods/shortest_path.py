@@ -9,6 +9,12 @@ from corneto.backend import DEFAULT_BACKEND, Backend
 from corneto.backend._base import DEFAULT_UB, Indicator
 from corneto.graph import BaseGraph
 
+__all__ = [
+    "create_multisample_shortest_path",
+    "shortest_path",
+    "solve_shortest_path",
+]
+
 
 def create_multisample_shortest_path(
     G: BaseGraph,

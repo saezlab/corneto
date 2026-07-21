@@ -20,12 +20,11 @@ def milp_carnival(
     disable_acyclicity=False,
     backend=cn.DEFAULT_BACKEND,
 ):
-    """Improved port of the original Carnival R method.
+    """Build the supported single-condition CARNIVAL ILP formulation.
 
-    This implementation uses the CORNETO backend capabilities to create a ILP problem.
-    However, it does not use the flow formulation and multi-sample capabilities of the
-    novel method implemented in CORNETO. This method is kept for compatibility with the
-    original Carnival R method and for comparison purposes.
+    This simple formulation accepts one perturbation and measurement mapping. Use
+    :class:`CarnivalILP` for the general multi-condition formulation, or
+    :class:`CarnivalFlow` when a flow-based multi-condition model is required.
 
     NOTE: Since the method is decoupled from specific solvers, the default pool of
     solutions generated using CPLEX is not available.

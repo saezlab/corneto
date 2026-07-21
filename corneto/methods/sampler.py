@@ -1,3 +1,5 @@
+"""Sampling utilities for alternative near-optimal solutions."""
+
 import logging
 import re
 from collections.abc import Sequence
@@ -6,6 +8,8 @@ from typing import Dict, List, Union
 import numpy as np
 
 logger = logging.getLogger(__name__)
+
+__all__ = ["sample_alternative_solutions"]
 
 
 def sample_alternative_solutions(
@@ -183,7 +187,8 @@ def sample_alternative_solutions(
                 if logger.isEnabledFor(logging.DEBUG):  # Log only if DEBUG is enabled
                     logger.debug(
                         f"Objective '{o.name}' rel.err={rel_err_val:.4f} "
-                        f"not checked against tol={rel_opt_tol} due to exclusion pattern '{exclude_objectives_pattern}'."
+                        f"not checked against tol={rel_opt_tol} due to exclusion "
+                        f"pattern '{exclude_objectives_pattern}'."
                     )
 
         # Check tolerance only on non-excluded objectives
@@ -226,7 +231,8 @@ def sample_alternative_solutions(
             # More detailed rejection message
             violated_name, violated_err = violated
             logger.info(
-                f"[{trial}/{max_samples}] rejected (tol={rel_opt_tol} violated by '{violated_name}' with rel.err={violated_err:.4f}) "
+                f"[{trial}/{max_samples}] rejected (tol={rel_opt_tol} violated by "
+                f"'{violated_name}' with rel.err={violated_err:.4f}) "
                 f"(total rejected={n_reject}) -> {detail_msg}"
             )
 
