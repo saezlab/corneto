@@ -60,7 +60,7 @@ CORNETO (Constraint-based Optimization for the Reconstruction of NETworks from O
 To install CORNETO, we recommend creating a conda environment and installing the research flavor:
 
 ```bash
-conda create -n corneto python>=3.10
+conda create -n corneto python>=3.11
 conda activate corneto
 conda install python-graphviz
 pip install corneto[research]

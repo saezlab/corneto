@@ -171,15 +171,21 @@ Before releasing, run comprehensive quality checks:
 # Tests
 poetry run pytest
 
-# Linting
-poetry run ruff check corneto --exclude tests
+# Linting and formatting
+poetry run ruff check corneto tests
+poetry run ruff format --check corneto tests
 
-# Formatting
-poetry run ruff check corneto --exclude tests --fix
-poetry run ruff format corneto --exclude tests
+# Package metadata
+poetry check
 
-# Type checking
+# Advisory type-checking baseline (309 errors in Pyrefly 0.60.0 for RC1)
+# This report is tracked but is not an RC blocker.
 poetry run pyrefly check corneto
+
+# Documentation and distributions
+poetry run sphinx-build -E -a -W --keep-going -b html docs docs/_build/html
+poetry build
+poetry run twine check dist/*
 ```
 
 ## Development Workflow

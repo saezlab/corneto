@@ -12,7 +12,7 @@ Classes
 - :class:`GraphData`: A serializable graph and data bundle
 
 Key Features
------------
+------------
 - Rich metadata support for data features
 - Flexible data import/export methods
 - Conversion between different data formats
@@ -20,7 +20,7 @@ Key Features
 - Data manipulation and transformation utilities
 
 Examples:
---------
+---------
 Basic usage with Data and Sample classes:
 
 .. code-block:: python

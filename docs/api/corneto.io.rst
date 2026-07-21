@@ -7,15 +7,6 @@ This page documents the public API for the corneto.io package.
 .. automodule:: corneto.io
     :no-members:
 
-Graphs
-----------
-
-.. autosummary::
-    :toctree: generated/
-
-    load_graph_from_sif
-    load_graph_from_sif_tuples
-
 Metabolism
 ----------
 

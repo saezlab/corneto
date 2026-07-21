@@ -10,7 +10,6 @@ Here is a list of some of the extensions we are developing for CORNETO to expand
 :maxdepth: 2
 
 cobrapy.ipynb
-miom.ipynb
 liana
 decoupler.ipynb
 omnipath.ipynb

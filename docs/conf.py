@@ -66,6 +66,8 @@ def _get_docs_base_url():
 
 
 def _switcher_url_with_ts():
+    if not os.environ.get("DOCS_BASE_URL"):
+        return None
     base = f"{_get_docs_base_url()}/switcher.json"
     ts = int(datetime.utcnow().timestamp())
     return f"{base}?ts={ts}"
@@ -122,11 +124,12 @@ nb_output_stderr = "remove"
 nb_execution_mode = "cache"
 nb_execution_timeout = 300
 nb_merge_streams = True
-execution_excludepatterns = [
+nb_execution_excludepatterns = [
     "**/kpnn-with-sc.ipynb",  # very slow, requires jax, keras
-    "tutorials/**/*.ipynb",  # tutorials are independent and slow, use cached versions
+    "tutorials/**/*.ipynb",  # one directory below tutorials
+    "tutorials/**/**/*.ipynb",  # contributed tutorials nested two levels deep
 ]
-execution_allow_errors = False
+nb_execution_allow_errors = False
 
 # Formatting for typehints in the documentation.
 typehints_defaults = "braces"
@@ -152,6 +155,7 @@ exclude_patterns = [
     "**/.pixi/**",
     "**/build/**",
     "**/.venv/**",
+    "tutorials/README.md",
 ]
 
 # Autosummary and autodoc settings.
@@ -201,8 +205,8 @@ html_show_sourcelink = False
 autosectionlabel_prefix_document = True
 
 
-# Note: switcher.json is generated during CI and deployed to the docs root.
-# It is not copied into the build output here.
+# The deployment workflow sets DOCS_BASE_URL after generating switcher.json.
+# Local and validation builds leave it unset so they remain network-independent.
 
 # Theme-specific options.
 html_theme_options = {
@@ -210,20 +214,19 @@ html_theme_options = {
     "header_links_before_dropdown": 4,
     "show_toc_level": 1,
     "navbar_align": "left",
-    "switcher": {
-        "json_url": _switcher_url_with_ts(),
-        # SPHINX_VERSION_MATCH: Environment variable to override version matching
-        # - In CI: Set to deployment folder name (e.g., "stable", "latest", "v1.0.0")
-        # - Locally: Defaults to corneto.__version__ for development
-        # Usage: SPHINX_VERSION_MATCH=stable sphinx-build -b html docs docs/_build/html
-        # This injects the variable in every web page of the docs
-        "version_match": os.environ.get("SPHINX_VERSION_MATCH", corneto.__version__),
-    },
-    "navbar_start": ["navbar-logo", "version-switcher"],
+    "navbar_start": ["navbar-logo"],
     "analytics": {
         "google_analytics_id": "G-Z263GN2PKK",
     },
 }
+
+switcher_url = _switcher_url_with_ts()
+if switcher_url:
+    html_theme_options["switcher"] = {
+        "json_url": switcher_url,
+        "version_match": os.environ.get("SPHINX_VERSION_MATCH", corneto.__version__),
+    }
+    html_theme_options["navbar_start"].append("version-switcher")
 
 # Additional HTML context for templates.
 html_context = {
