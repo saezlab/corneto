@@ -1,6 +1,6 @@
 import numpy as np
 
-from corneto._graph import EdgeType, Graph
+from corneto.graph import EdgeType, Graph
 from corneto.backend import PicosBackend
 
 

@@ -1,6 +1,5 @@
 import abc
 import numbers
-import warnings
 from copy import copy as shallow_copy
 from numbers import Number
 from typing import Any, Callable, Dict, Iterable, List, Optional, Set, Tuple, Union
@@ -9,8 +8,8 @@ import numpy as np
 
 from corneto._constants import *
 from corneto._decorators import _delegate
-from corneto._graph import BaseGraph
 from corneto._settings import LOGGER, _get_matrix_builder
+from corneto.graph import BaseGraph
 from corneto.utils import Attributes
 
 
@@ -443,7 +442,6 @@ class ProblemDef:
         expressions: Optional[Dict[str, CExpression]] = None,
         weights: Optional[List[float]] = None,
         direction: Direction = Direction.MIN,
-        graph: Optional[BaseGraph] = None,  # TODO: decouple this from backend
     ) -> None:
         if objectives is None:
             objectives = []
@@ -463,18 +461,9 @@ class ProblemDef:
         self._expressions = dict()
         if expressions is not None:
             self._expressions.update(expressions)
-        # Create a new class of problems on top of a graph
-        # where edges/nodes have associated optimization variables
-        # TODO: check which use cases are using _graph
-        if graph is not None:
-            # Warn that this is deprecated
-            warnings.warn("The graph parameter is deprecated.", DeprecationWarning)
-            self._graph = graph
 
     @property
     def symbols(self) -> Dict[str, CSymbol]:
-        # show deprecated warning:
-        # warnings.warn("Use ProblemDef.expressions instead.", DeprecationWarning)
         return {s.name: s for s in Backend.get_symbols(self._constraints + self._objectives)}
 
     @property
@@ -1458,64 +1447,6 @@ class Backend(abc.ABC):
 
         return self.Problem(c)
 
-    # TODO: Remove function
-    def Indicators(
-        self,
-        V: CSymbol,
-        tolerance=1e-3,
-        positive=True,
-        negative=True,
-        suffix_pos="_ipos",
-        suffix_neg="_ineg",
-    ) -> ProblemDef:
-        # SHow a deprecated
-        warnings.warn(
-            "The Indicators method is deprecated, use Indicator instead",
-            DeprecationWarning,
-        )
-
-        # Get upper/lower bounds for flow variables
-        constraints = []
-        if not (positive or negative):
-            raise ValueError("At least one of positive or negative must be True.")
-        if positive:
-            I_pos = self.Variable(V.name + suffix_pos, V.shape, 0, 1, vartype=VarType.BINARY)
-            if np.sum(V.ub <= 0) > 0:
-                constraints.append(I_pos[np.where(V.ub <= 0)[0]] == 0)
-        if negative:
-            I_neg = self.Variable(V.name + suffix_neg, V.shape, 0, 1, vartype=VarType.BINARY)
-            if np.sum(V.lb >= 0) > 0:
-                constraints.append(I_neg[np.where(V.lb >= 0)[0]] == 0)
-        if positive and negative:
-            constraints.append(I_pos + I_neg <= 1)
-
-        # lower bound constraints: F >= F_lb * I_neg + eps * I_pos
-        # TODO: Use better constraints to avoid precision errors
-        # by multiplying tolerance * indicator
-        I_LBN = I_neg.multiply(V.lb) if negative else V.lb
-        I_LBP = tolerance * I_pos if positive else 0
-        LB = I_LBN + I_LBP
-        constraints.append(V >= LB)
-        # upper bound constraints: F <= F_ub * I_pos - eps * I_neg
-        I_UBN = I_pos.multiply(V.ub) if positive else V.ub
-        I_UBP = tolerance * I_neg if negative else 0
-        UB = I_UBN - I_UBP
-        constraints.append(V <= UB)
-        return self.Problem(constraints)
-
-    def Xor(self, x: CExpression, y: CExpression, varname="_xor"):
-        # Deprecated
-        warnings.warn("The Xor method is deprecated, use linear_xor instead", DeprecationWarning)
-        if isinstance(x, CSymbol) and x._vartype != VarType.BINARY:
-            raise ValueError(f"Variable x has type {x._vartype} instead of BINARY")
-        if isinstance(y, CSymbol) and y._vartype != VarType.BINARY:
-            raise ValueError(f"Variable x has type {y._vartype} instead of BINARY")
-        if x.shape != y.shape:
-            raise ValueError(f"Shape of x ({x.shape}) is different from y ({y.shape})")
-        # Create a new binary variable to compute xor(x,y)
-        xor = self.Variable(varname, x.shape, 0, 1, vartype=VarType.BINARY)
-        return self.Problem([xor >= x - y, xor >= y - x, xor <= x + y, xor <= 2 - x - y])
-
     def linear_or(
         self,
         x: CExpression,
@@ -1688,34 +1619,6 @@ class NonZeroIndicator(ProblemBuilder):
             suffix_neg=self._suffix_neg,
             tolerance=self._tolerance,
             indexes=self._indexes,
-        )
-
-
-class Indicators(ProblemBuilder):
-    def __init__(
-        self,
-        var_name: Optional[str] = None,
-        tolerance: float = 1e-3,
-        positive: bool = True,
-        negative: bool = False,
-    ) -> None:
-        # Probably there is some missing component which is not a problemdef
-        super().__init__()
-        self.var_name = var_name
-        self._tol = tolerance
-        self._pos = positive
-        self._neg = negative
-
-    def _build_problem(self, other: ProblemDef):
-        if other._backend is None:
-            raise ValueError("Cannot combine empty grammars")
-        if self.var_name is None:
-            self.var_name = _find_continuous_var(other)
-        return other._backend.Indicators(
-            other.get_symbol(self.var_name),
-            tolerance=self._tol,
-            positive=self._pos,
-            negative=self._neg,
         )
 
 

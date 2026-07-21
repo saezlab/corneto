@@ -16,7 +16,6 @@ from typing import (
 
 import numpy as np
 
-from corneto._io import import_cobra_model
 from corneto._types import CobraModel, Edge, NxDiGraph, NxGraph
 
 from ._base import Attr, Attributes, BaseGraph, EdgeType
@@ -751,7 +750,7 @@ class Graph(BaseGraph):
         Returns:
             New Graph loaded from SIF file
         """
-        from corneto._io import _read_sif_iter
+        from corneto.io._signaling import _read_sif_iter
 
         if column_order is None:
             column_order = (0, 1, 2)
@@ -789,7 +788,9 @@ class Graph(BaseGraph):
         Returns:
             New Graph representing the metabolic network
         """
-        S, R, M = import_cobra_model(model)
+        from corneto.io._metabolism import parse_cobra_model
+
+        S, R, M = parse_cobra_model(model)
         G = Graph.from_vertex_incidence(S, M["id"], R["id"])
         # Add metadata to the graph, such as default lb/ub for reactions
         for i in range(G.num_edges):
@@ -810,7 +811,7 @@ class Graph(BaseGraph):
             New Graph representing the metabolic network
         """
         if isinstance(model, str):
-            from corneto._io import _load_compressed_gem
+            from corneto.io._metabolism import _load_compressed_gem
 
             S, R, M = _load_compressed_gem(model)
         else:

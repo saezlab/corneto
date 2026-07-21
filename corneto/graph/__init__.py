@@ -6,10 +6,11 @@ from corneto.graph._random import (
 )
 
 __all__ = [
+    "Attr",
     "Attributes",
     "BaseGraph",
     "EdgeType",
     "Graph",
     "duplication_divergence_network",
-    "preferential_attachment_networkAttr",
+    "preferential_attachment_network",
 ]

@@ -1,3 +1,5 @@
+"""Utilities for metabolic-network methods."""
+
 from corneto.methods.metabolism._utils import (
     evaluate_gpr_expression,
     evaluate_gpr_rules,

@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Iterable, List, Optional, Tuple, Union
+from typing import Iterable, Optional, Sequence, Tuple, Union
 
 from corneto._types import TupleSIF
 from corneto.graph import Graph
@@ -10,8 +10,8 @@ def _read_sif(
     delimiter: str = "\t",
     has_header: bool = False,
     discard_self_loops: Optional[bool] = True,
-    column_order: List[int] = [0, 1, 2],  # source interaction target
-) -> List[TupleSIF]:
+    column_order: Sequence[int] = (0, 1, 2),
+) -> list[TupleSIF]:
     import csv
 
     reactions = set()
@@ -29,13 +29,35 @@ def _read_sif(
     return list(reactions)
 
 
-@staticmethod
+def _read_sif_iter(
+    sif_file: Union[str, Path],
+    delimiter: str = "\t",
+    has_header: bool = False,
+    discard_self_loops: Optional[bool] = True,
+    column_order: Sequence[int] = (0, 1, 2),
+) -> Iterable[TupleSIF]:
+    """Yield source, interaction, and target tuples from a SIF file."""
+    import csv
+
+    with open(sif_file, "r") as f:
+        reader = csv.reader(f, delimiter=delimiter)
+        for i, line in enumerate(reader):
+            if has_header and i == 0:
+                continue
+            if len(line) <= max(column_order):
+                raise ValueError(f"Invalid SIF line: {line}: expected at least 3 columns")
+            source, interaction, target = [line[idx] for idx in column_order]
+            if discard_self_loops and source == target:
+                continue
+            yield source, int(interaction), target
+
+
 def load_graph_from_sif(
     sif_file: str,
     delimiter: str = "\t",
     has_header: bool = False,
     discard_self_loops: Optional[bool] = True,
-    column_order: List[int] = [0, 1, 2],
+    column_order: Sequence[int] = (0, 1, 2),
 ):
     """Create graph from Simple Interaction Format (SIF) file.
 
@@ -49,8 +71,6 @@ def load_graph_from_sif(
     Returns:
         New Graph loaded from SIF file
     """
-    from corneto._io import _read_sif_iter
-
     it = _read_sif_iter(
         sif_file,
         delimiter=delimiter,

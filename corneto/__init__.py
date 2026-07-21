@@ -1,35 +1,16 @@
-import logging
+"""Public CORNETO API."""
+
 import sys
 import warnings
 
 from corneto import _plotting as pl
-from corneto._constants import *
-from corneto._data import Data, Feature, GraphData, Sample
+from corneto._constants import Direction, VarType
 from corneto._logging import disable_logging, enable_logging, set_verbosity
 from corneto._util import info, suppress_output
 from corneto.backend import DEFAULT_BACKEND, DEFAULT_SOLVER, available_backends
-
-# from corneto.backend import DEFAULT_BACKEND as K  # deprecate
-# from corneto.backend import DEFAULT_BACKEND as ops  # deprecate
 from corneto.backend import DEFAULT_BACKEND as opt
-from corneto.backend._base import HammingLoss as hamming_loss
-from corneto.backend._base import Indicator, NonZeroIndicator
-
-# from corneto._graph import Attr, Attributes, EdgeType, Graph
+from corneto.data import Data, Feature, GraphData, Sample
 from corneto.graph import Attr, Attributes, EdgeType, Graph
-from corneto.io import load_graph_from_sif
-
-# from corneto._core import GReNet as Graph
-from corneto.methods import (
-    create_flow_graph,
-    default_sign_loss,
-    signaling,
-    signflow_constraints,
-)
-from corneto.utils import Attr, Attributes
-
-# logger = logging.getLogger(__name__)
-# logger.addHandler(logging.NullHandler())
 
 
 def get_version():
@@ -49,44 +30,49 @@ def get_version():
     raise RuntimeError("Version not found in pyproject.toml.")
 
 
-class DeprecatedBackend:
-    def __init__(self, backend):
-        self._backend = backend
+_DEPRECATED_BACKEND_ALIASES = {"K", "ops"}
 
-    def __getattr__(self, attr):
+
+def __getattr__(name):
+    if name in _DEPRECATED_BACKEND_ALIASES:
         warnings.warn(
-            "'corneto.K' and 'corneto.ops' are deprecated and will be removed in a future version. Use 'corneto.opt' instead.",
-            DeprecationWarning,
+            f"corneto.{name} is deprecated since CORNETO 1.0.0rc1; use "
+            "corneto.opt instead. The alias will be removed in CORNETO 2.0.",
+            FutureWarning,
             stacklevel=2,
         )
-        return getattr(self._backend, attr)
+        return opt
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
-# This way of accessing the backend is deprecated
-K = DeprecatedBackend(opt)
-ops = DeprecatedBackend(opt)
+def __dir__():
+    return sorted(set(globals()) | _DEPRECATED_BACKEND_ALIASES)
 
 
 __all__ = [
     "DEFAULT_BACKEND",
+    "DEFAULT_SOLVER",
     "Attr",
     "Attributes",
     "Data",
+    "Direction",
     "EdgeType",
     "Feature",
     "Graph",
     "GraphData",
-    "K",  # deprecated
+    "K",
     "Sample",
+    "VarType",
     "available_backends",
+    "disable_logging",
+    "enable_logging",
     "info",
     "ops",
+    "opt",
+    "pl",
+    "set_verbosity",
     "suppress_output",
 ]
-
-
-# import_sif = Graph.from_sif
-import_sif = load_graph_from_sif
 
 try:
     # Python 3.8 and newer

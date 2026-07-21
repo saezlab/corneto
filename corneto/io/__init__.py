@@ -21,7 +21,6 @@ __all__ = [
     "load_corneto_graph",
     "load_graph_from_sif",
     "load_graph_from_sif_tuples",
-    "load_sif_from_tuples",
     "parse_cobra_model",
     "save_corneto_graph",
 ]

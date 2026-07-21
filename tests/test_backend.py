@@ -4,13 +4,13 @@ import cvxpy as cp
 import numpy as np
 import pytest
 
-from corneto._graph import Graph
+from corneto.graph import Graph
 from corneto.backend import CvxpyBackend, PicosBackend, VarType
 
 
 @pytest.fixture
 def mitocore_small():
-    from corneto._io import _load_compressed_gem
+    from corneto.io._metabolism import _load_compressed_gem
 
     file = pathlib.Path(__file__).parent.joinpath("gem", "mitocore_small.xz")
     S, R, M = _load_compressed_gem(file)
@@ -626,7 +626,7 @@ def test_complex_chaining_with_indexing(backend):
 
 
 def test_undirected_flow_unbounded(backend):
-    from corneto._graph import Graph
+    from corneto.graph import Graph
 
     g = Graph()
     g.add_edges([((), "A"), ("A", "B"), ("A", "C"), ("B", "D"), ("C", "D"), ("D", ())])
