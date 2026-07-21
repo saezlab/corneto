@@ -101,7 +101,23 @@ Useful options:
 ```bash
 poetry run release v1.0.0-beta.4 --dry-run  # validate only
 poetry run release v1.0.0-beta.4 --yes      # skip confirmation prompt
+poetry run release v1.0.0-beta.4 --remote public  # use an explicit release remote
 ```
+
+The remote defaults to `origin`, which is appropriate for a normal clone of
+the public CORNETO repository. In a private development workbench where
+`origin` points to a private mirror, configure a separate release-only remote
+for the public repository and pass it explicitly:
+
+```bash
+git remote add public https://github.com/saezlab/corneto.git
+poetry run release v1.0.0-beta.8 --remote public --dry-run
+poetry run release v1.0.0-beta.8 --remote public
+```
+
+Before tagging, publish selected private changes through a clean branch and a
+pull request into public `dev`, followed by a release pull request from public
+`dev` into public `main`. Never release a private development branch directly.
 
 ### Customizing Release Notes
 
