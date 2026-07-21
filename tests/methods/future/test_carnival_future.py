@@ -63,6 +63,28 @@ def test_carnivalflow_large_dataset_one_sample(backend, large_dataset):
     assert np.isclose(P.objectives[0].value, 32.6251, atol=1e-4)
 
 
+def test_carnivalflow_bfs_heuristic_keeps_sample_inputs(backend):
+    G = Graph()
+    G.add_edges([("A", "B"), ("A", "C"), ("C", "D")])
+    data = Data.from_cdict(
+        {
+            "sample_1": {
+                "A": {"value": 1, "mapping": "vertex", "role": "input"},
+                "B": {"value": 1, "mapping": "vertex", "role": "output"},
+            },
+            "sample_2": {
+                "B": {"value": 1, "mapping": "vertex", "role": "input"},
+                "C": {"value": 1, "mapping": "vertex", "role": "input"},
+                "D": {"value": 1, "mapping": "vertex", "role": "output"},
+            },
+        }
+    )
+    carnival = CarnivalFlow(backend=backend)
+    P = carnival.build(G, data)
+    result = P.solve()
+    assert result.status == "optimal"
+
+
 def test_carnivalflow_two_samples_inverse(backend, graph_two_samples):
     G, samples = graph_two_samples
     samples["s1"]["r1"]["value"] = 0

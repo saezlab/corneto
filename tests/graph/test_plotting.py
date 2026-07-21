@@ -158,6 +158,31 @@ def test_plot_networkx_renderer(monkeypatch):
     assert obj is sentinel_fig
 
 
+def test_plot_values_uses_plot_renderer_path(monkeypatch):
+    g = Graph()
+    g.add_edge("A", "B")
+    sentinel = object()
+    calls = {}
+
+    def _fake_plot(self, renderer="auto", **kwargs):
+        del self
+        calls["renderer"] = renderer
+        calls["kwargs"] = kwargs
+        return sentinel
+
+    monkeypatch.setattr(Graph, "plot", _fake_plot)
+    obj = g.plot_values(
+        vertex_values=[1.0, 2.0],
+        edge_values=[3.0],
+        renderer="wasm",
+    )
+
+    assert obj is sentinel
+    assert calls["renderer"] == "wasm"
+    assert "custom_vertex_attr" in calls["kwargs"]
+    assert "custom_edge_attr" in calls["kwargs"]
+
+
 def test_supports_html_true_when_marimo_loaded(monkeypatch):
     monkeypatch.setitem(sys.modules, "marimo", object())
     monkeypatch.delitem(sys.modules, "IPython", raising=False)

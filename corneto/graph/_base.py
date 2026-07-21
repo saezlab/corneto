@@ -961,6 +961,8 @@ class BaseGraph(abc.ABC):
         vertex_props=None,
         edge_props=None,
         edge_indexes=None,
+        renderer: str = "auto",
+        **kwargs,
     ):
         from corneto._plotting import (
             create_graphviz_edge_attributes,
@@ -982,10 +984,12 @@ class BaseGraph(abc.ABC):
             if hasattr(edge_values, "value"):
                 edge_values = edge_values.value
             edge_drawing_props = create_graphviz_edge_attributes(edge_values=edge_values, **edge_props)
-        return self.to_dot(
+        return self.plot(
             custom_edge_attr=edge_drawing_props,
             custom_vertex_attr=vertex_drawing_props,
             edge_indexes=edge_indexes,
+            renderer=renderer,
+            **kwargs,
         )
 
     def to_graphviz(self, **kwargs):

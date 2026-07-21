@@ -943,3 +943,105 @@ def test_variable_matrix_bounds(backend):
     for i in range(n_rows):
         diff_msg = f"v[{i}, 0] = {v.value[i, 0]} should differ from v[{i}, 1] = {v.value[i, 1]}"
         assert not np.isclose(v.value[i, 0], v.value[i, 1]), diff_msg
+
+
+def test_indicator_matrix_bounds_block_per_entry(backend):
+    """Indicator constraints should honor blocked entries per (row, col) in 2D bounds."""
+    lb = np.array(
+        [
+            [-5.0, -5.0],
+            [0.0, -5.0],
+            [-5.0, 0.0],
+        ]
+    )
+    ub = np.array(
+        [
+            [5.0, 5.0],
+            [0.0, 5.0],
+            [5.0, 0.0],
+        ]
+    )
+
+    v = backend.Variable("v_ind", shape=lb.shape, lb=lb, ub=ub)
+    P = backend.Problem()
+    P += backend.Indicator(v, name="v_ind_i")
+    I = P.expr.v_ind_i
+
+    # Maximize number of active indicators: all unblocked entries should be 1.
+    P.add_objectives(-I.sum())
+    P.solve()
+
+    I_val = np.asarray(I.value)
+    v_val = np.asarray(v.value)
+
+    # Blocked entries (lb=ub=0) must be inactive and fixed to zero.
+    assert np.isclose(I_val[1, 0], 0.0, atol=1e-9)
+    assert np.isclose(I_val[2, 1], 0.0, atol=1e-9)
+    assert np.isclose(v_val[1, 0], 0.0, atol=1e-9)
+    assert np.isclose(v_val[2, 1], 0.0, atol=1e-9)
+
+    # Unblocked entries should be active under the maximizing objective.
+    assert np.isclose(I_val[0, 0], 1.0, atol=1e-9)
+    assert np.isclose(I_val[0, 1], 1.0, atol=1e-9)
+    assert np.isclose(I_val[1, 1], 1.0, atol=1e-9)
+    assert np.isclose(I_val[2, 0], 1.0, atol=1e-9)
+
+
+def test_nonzero_indicator_matrix_bounds_block_and_sign_per_entry(backend):
+    """NonZeroIndicator should respect blocked and sign-restricted entries in 2D bounds."""
+    tol = 1e-3
+    lb = np.array(
+        [
+            [0.0, -5.0],
+            [-5.0, 0.0],
+            [-5.0, 0.0],
+        ]
+    )
+    ub = np.array(
+        [
+            [0.0, 5.0],
+            [0.0, 5.0],
+            [5.0, 0.0],
+        ]
+    )
+
+    v = backend.Variable("v_nz", shape=lb.shape, lb=lb, ub=ub)
+    P = backend.Problem()
+    P += backend.NonZeroIndicator(v, tolerance=tol)
+
+    I_pos = P.expr.v_nz_ipos
+    I_neg = P.expr.v_nz_ineg
+    I_tot = I_pos + I_neg
+
+    # Maximize activity to force all feasible indicators on.
+    P.add_objectives(-I_tot.sum())
+    P.solve()
+
+    pos_val = np.asarray(I_pos.value)
+    neg_val = np.asarray(I_neg.value)
+    tot_val = np.asarray(I_tot.value)
+    v_val = np.asarray(v.value)
+
+    # Blocked entries.
+    assert np.isclose(pos_val[0, 0], 0.0, atol=1e-9)
+    assert np.isclose(neg_val[0, 0], 0.0, atol=1e-9)
+    assert np.isclose(v_val[0, 0], 0.0, atol=1e-9)
+
+    assert np.isclose(pos_val[2, 1], 0.0, atol=1e-9)
+    assert np.isclose(neg_val[2, 1], 0.0, atol=1e-9)
+    assert np.isclose(v_val[2, 1], 0.0, atol=1e-9)
+
+    # Sign-constrained entries.
+    # ub <= 0 => positive indicator disabled.
+    assert np.isclose(pos_val[1, 0], 0.0, atol=1e-9)
+    assert np.isclose(neg_val[1, 0], 1.0, atol=1e-9)
+    assert v_val[1, 0] <= -tol + 1e-8
+
+    # lb >= 0 => negative indicator disabled.
+    assert np.isclose(neg_val[1, 1], 0.0, atol=1e-9)
+    assert np.isclose(pos_val[1, 1], 1.0, atol=1e-9)
+    assert v_val[1, 1] >= tol - 1e-8
+
+    # Free entries should have exactly one active sign indicator.
+    assert np.isclose(tot_val[0, 1], 1.0, atol=1e-9)
+    assert np.isclose(tot_val[2, 0], 1.0, atol=1e-9)

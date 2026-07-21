@@ -101,7 +101,23 @@ Useful options:
 ```bash
 poetry run release v1.0.0-beta.4 --dry-run  # validate only
 poetry run release v1.0.0-beta.4 --yes      # skip confirmation prompt
+poetry run release v1.0.0-beta.4 --remote public  # use an explicit release remote
 ```
+
+The remote defaults to `origin`, which is appropriate for a normal clone of
+the public CORNETO repository. In a private development workbench where
+`origin` points to a private mirror, configure a separate release-only remote
+for the public repository and pass it explicitly:
+
+```bash
+git remote add public https://github.com/saezlab/corneto.git
+poetry run release v1.0.0-beta.8 --remote public --dry-run
+poetry run release v1.0.0-beta.8 --remote public
+```
+
+Before tagging, publish selected private changes through a clean branch and a
+pull request into public `dev`, followed by a release pull request from public
+`dev` into public `main`. Never release a private development branch directly.
 
 ### Customizing Release Notes
 
@@ -236,13 +252,6 @@ The version switcher uses a **single, centrally-updated file hosted on GitHub Pa
    - Each docs build replaces only its own folder (`latest/`, `stable/`, or `vX.Y.Z/`) on the `gh-pages` branch.
    - This ensures clean regeneration for a given version (no mixing of old/new files) while leaving other versions untouched.
    - The root redirect is deployed with `keep_files: true` so it doesn’t delete any versioned folders.
-
-#### Benefits of This Approach
-
-- **Central Management**: One `switcher.json` serves all deployed documentation versions
-- **Automatic Updates**: Old deployed docs automatically show new versions in the switcher dropdown
-- **No Regeneration Needed**: Previously deployed documentation doesn't need to be rebuilt to show new versions
-- **Consistency**: All documentation versions display the same version list
 
 #### Manual Switcher Updates
 

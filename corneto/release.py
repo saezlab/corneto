@@ -23,7 +23,11 @@ def _run(cmd: Sequence[str], *, check: bool = True) -> str:
         check=False,
     )
     if check and result.returncode != 0:
-        raise ReleaseError(f"Command failed: {' '.join(cmd)}\nstdout:\n{result.stdout}\nstderr:\n{result.stderr}")
+        raise ReleaseError(
+            f"Command failed: {' '.join(cmd)}\n"
+            f"stdout:\n{result.stdout}\n"
+            f"stderr:\n{result.stderr}"
+        )
     return result.stdout.strip()
 
 
@@ -32,7 +36,10 @@ def _normalize_version(raw: str) -> str:
     if not version.startswith("v"):
         version = f"v{version}"
     if not VERSION_RE.match(version):
-        raise ReleaseError("Invalid version format. Use vX.Y.Z or vX.Y.Z-(alpha|beta|rc).N (example: v1.0.0-beta.4).")
+        raise ReleaseError(
+            "Invalid version format. Use vX.Y.Z or "
+            "vX.Y.Z-(alpha|beta|rc).N (example: v1.0.0-beta.4)."
+        )
     return version
 
 
@@ -48,49 +55,67 @@ def _ensure_on_main() -> None:
         raise ReleaseError(f"Current branch is '{branch}', expected 'main'.")
 
 
-def _ensure_up_to_date_with_origin_main() -> None:
-    _run(["git", "fetch", "origin", "main", "dev"], check=True)
+def _ensure_remote_exists(remote: str) -> None:
+    if remote.startswith("-"):
+        raise ReleaseError(f"Invalid remote name: {remote}")
+    _run(["git", "remote", "get-url", remote], check=True)
+
+
+def _ensure_up_to_date_with_remote_main(remote: str) -> None:
+    _run(["git", "fetch", remote, "main", "dev"], check=True)
     head = _run(["git", "rev-parse", "HEAD"], check=True)
-    origin_main = _run(["git", "rev-parse", "origin/main"], check=True)
-    if head != origin_main:
-        raise ReleaseError("HEAD is not at origin/main. Pull main after merging dev -> main.")
+    remote_main = _run(["git", "rev-parse", f"{remote}/main"], check=True)
+    if head != remote_main:
+        raise ReleaseError(
+            f"HEAD is not at {remote}/main. Pull main after merging dev -> main."
+        )
 
 
-def _ensure_dev_is_merged() -> None:
+def _ensure_dev_is_merged(remote: str) -> None:
     # `merge-base --is-ancestor A B` succeeds when A is reachable from B.
     result = subprocess.run(
-        ["git", "merge-base", "--is-ancestor", "origin/dev", "HEAD"],
+        ["git", "merge-base", "--is-ancestor", f"{remote}/dev", "HEAD"],
         text=True,
         capture_output=True,
         check=False,
     )
     if result.returncode != 0:
-        raise ReleaseError("origin/dev is not merged into current main commit yet. Merge dev -> main before releasing.")
+        raise ReleaseError(
+            f"{remote}/dev is not merged into current main commit yet. "
+            "Merge dev -> main before releasing."
+        )
 
 
-def _ensure_tag_does_not_exist(version: str) -> None:
+def _ensure_tag_does_not_exist(version: str, remote: str) -> None:
     local_tags = _run(["git", "tag", "--list", version], check=True)
     if local_tags:
         raise ReleaseError(f"Tag already exists locally: {version}")
 
-    remote_tags = _run(["git", "ls-remote", "--tags", "origin", version], check=True)
+    remote_tags = _run(["git", "ls-remote", "--tags", remote, version], check=True)
     if remote_tags:
-        raise ReleaseError(f"Tag already exists on origin: {version}")
+        raise ReleaseError(f"Tag already exists on {remote}: {version}")
 
 
-def _create_and_push_tag(version: str) -> None:
+def _create_and_push_tag(version: str, remote: str) -> None:
     _run(["git", "tag", "-a", version, "-m", version], check=True)
-    _run(["git", "push", "origin", version], check=True)
+    _run(["git", "push", remote, version], check=True)
 
 
 def parse_args(argv: Sequence[str]) -> argparse.Namespace:
+    """Parse release command-line arguments."""
     parser = argparse.ArgumentParser(
         prog="release",
         description=(
-            "Create and push an annotated release tag with safety checks. Example: poetry run release v1.0.0-beta.4"
+            "Create and push an annotated release tag with safety checks. "
+            "Example: poetry run release v1.0.0-beta.4"
         ),
     )
     parser.add_argument("version", help="Release version tag (with or without 'v').")
+    parser.add_argument(
+        "--remote",
+        default="origin",
+        help="Git remote containing the release main/dev branches (default: origin).",
+    )
     parser.add_argument(
         "--yes",
         action="store_true",
@@ -105,14 +130,16 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
 
 
 def main(argv: Sequence[str] | None = None) -> int:
+    """Validate release state, then create and push the requested tag."""
     args = parse_args(sys.argv[1:] if argv is None else argv)
     try:
         version = _normalize_version(args.version)
+        _ensure_remote_exists(args.remote)
         _ensure_clean_tree()
         _ensure_on_main()
-        _ensure_up_to_date_with_origin_main()
-        _ensure_dev_is_merged()
-        _ensure_tag_does_not_exist(version)
+        _ensure_up_to_date_with_remote_main(args.remote)
+        _ensure_dev_is_merged(args.remote)
+        _ensure_tag_does_not_exist(version, args.remote)
 
         if args.dry_run:
             print(f"[dry-run] All checks passed. Would create and push tag: {version}")
@@ -124,15 +151,18 @@ def main(argv: Sequence[str] | None = None) -> int:
                 print("Aborted.")
                 return 1
 
-        _create_and_push_tag(version)
-        print(f"Release tag pushed: {version}")
+        _create_and_push_tag(version, args.remote)
+        print(f"Release tag pushed to {args.remote}: {version}")
         print("GitHub Actions will now build, publish, and create the GitHub release.")
         print("Post-release sync reminder:")
         print("  git checkout dev")
-        print("  git pull --ff-only origin dev")
-        print("  git merge --ff-only origin/main")
-        print("  git push origin dev")
-        print("This keeps dev aligned with the latest release tag ancestry for dynamic versioning.")
+        print(f"  git pull --ff-only {args.remote} dev")
+        print(f"  git merge --ff-only {args.remote}/main")
+        print(f"  git push {args.remote} dev")
+        print(
+            "This keeps dev aligned with the latest release tag ancestry "
+            "for dynamic versioning."
+        )
         return 0
     except ReleaseError as exc:
         print(f"Release aborted: {exc}", file=sys.stderr)

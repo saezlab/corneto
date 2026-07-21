@@ -226,7 +226,7 @@ class CarnivalFlow(FlowMethod):
                 # Get the distance between inputs and outputs
                 dist_dict = graph.bfs(sample_inputs, sample_outputs)
                 pruned_g = graph.prune(sample_inputs, sample_outputs)
-                unreachable = graph_vertices - set(pruned_g.V)
+                unreachable = graph_vertices - set(pruned_g.V) - sample_inputs
                 print(f"Unreachable vertices for sample: {len(unreachable)}")
                 lb_dist.append(dist_dict)
                 unreachable_vertices_per_sample_idx.append([vertex_idx[v] for v in unreachable])
