@@ -1,0 +1,357 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "mc_sfba_01",
+   "metadata": {},
+   "source": [
+    "# Multi-condition sparse FBA\n",
+    "\n",
+    "This tutorial extends the sparse FBA workflow from `flux-balance-analysis.ipynb` to multiple conditions. We first solve standard multi-condition FBA to get each condition's optimal biomass. Then, as in single-condition sparse FBA, we constrain biomass to at least 90% of optimum and minimize the number of active reactions.\n",
+    "\n",
+    "To make the effect visible, we use a toy network where each condition has a small preference for a different branch."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "mc_sfba_02",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import numpy as np\n",
+    "import pandas as pd\n",
+    "\n",
+    "import corneto as cn\n",
+    "from corneto.methods.future import MultiSampleFBA\n",
+    "\n",
+    "cn.info()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "mc_sfba_03",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "G = cn.Graph()\n",
+    "\n",
+    "# Uptake\n",
+    "G.add_edge((), \"A\", id=\"EX_A\", default_lb=0, default_ub=10)\n",
+    "\n",
+    "# Two alternative branches\n",
+    "G.add_edge(\"A\", \"B\", id=\"R_AB\", default_lb=0, default_ub=100)\n",
+    "G.add_edge(\"B\", \"C\", id=\"R_BC\", default_lb=0, default_ub=100)\n",
+    "G.add_edge(\"A\", \"D\", id=\"R_AD\", default_lb=0, default_ub=100)\n",
+    "G.add_edge(\"D\", \"C\", id=\"R_DC\", default_lb=0, default_ub=100)\n",
+    "\n",
+    "# Shared pathway to biomass\n",
+    "G.add_edge(\"C\", \"E\", id=\"R_CE\", default_lb=0, default_ub=100)\n",
+    "G.add_edge(\"E\", \"F\", id=\"R_EF\", default_lb=0, default_ub=100)\n",
+    "G.add_edge(\"F\", (), id=\"BIOMASS\", default_lb=0, default_ub=100)\n",
+    "\n",
+    "pd.DataFrame(\n",
+    "    {\n",
+    "        \"edge_index\": range(G.num_edges),\n",
+    "        \"reaction_id\": [G.get_attr_edge(i).get(\"id\") for i in range(G.num_edges)],\n",
+    "    }\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "mc_sfba_04",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "G.plot()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "mc_sfba_05",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def make_condition(preferred_branch):\n",
+    "    # Main objective: maximize biomass (negative value because objectives are minimized).\n",
+    "    sample = {\"BIOMASS\": {\"role\": \"objective\", \"value\": -1.0}}\n",
+    "    # Small condition-specific preference for one branch.\n",
+    "    sample[preferred_branch] = {\"role\": \"objective\", \"value\": -0.01}\n",
+    "    return sample\n",
+    "\n",
+    "\n",
+    "condition_specs = {\n",
+    "    \"condition_1\": make_condition(\"R_BC\"),\n",
+    "    \"condition_2\": make_condition(\"R_DC\"),\n",
+    "}\n",
+    "\n",
+    "multi_data = cn.Data.from_cdict(condition_specs)\n",
+    "sample_names = list(condition_specs)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "mc_sfba_06",
+   "metadata": {},
+   "source": [
+    "## Standard multi-condition FBA\n",
+    "\n",
+    "We start with regular multi-condition FBA to obtain the maximal biomass in each condition. These values are later used as lower bounds for sparse FBA."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "mc_sfba_07",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "idx = {rid: next(iter(G.get_edges_by_attr(\"id\", rid))) for rid in [\"BIOMASS\", \"R_AB\", \"R_AD\"]}\n",
+    "\n",
+    "P_opt = MultiSampleFBA(lambda_reg=0.0).build(G, multi_data)\n",
+    "P_opt.solve(solver=\"highs\")\n",
+    "\n",
+    "biomass_opt = {name: float(P_opt.expr.flow[idx[\"BIOMASS\"], i].value) for i, name in enumerate(sample_names)}\n",
+    "\n",
+    "pd.DataFrame(\n",
+    "    {\n",
+    "        \"condition\": sample_names,\n",
+    "        \"optimal_biomass\": [biomass_opt[name] for name in sample_names],\n",
+    "    }\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "mc_sfba_08",
+   "metadata": {},
+   "source": [
+    "## Sparse FBA per condition (independent runs)\n",
+    "\n",
+    "This mirrors the single-condition sparse FBA pattern from `flux-balance-analysis.ipynb`:\n",
+    "\n",
+    "1. Solve standard FBA to get optimum biomass.\n",
+    "2. Add a biomass lower bound (90% of optimum).\n",
+    "3. Solve sparse FBA (`lambda_reg > 0`)."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "mc_sfba_09",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "lambda_sparse = 0.15\n",
+    "biomass_fraction = 0.90\n",
+    "biomass_targets = {name: biomass_fraction * biomass_opt[name] for name in sample_names}\n",
+    "\n",
+    "single_sparse = {}\n",
+    "for name in sample_names:\n",
+    "    d = cn.Data.from_cdict({name: condition_specs[name]})\n",
+    "    P = MultiSampleFBA(lambda_reg=lambda_sparse).build(G, d)\n",
+    "    P += P.expr.flow[idx[\"BIOMASS\"]] >= biomass_targets[name]\n",
+    "    P.solve(solver=\"highs\")\n",
+    "    single_sparse[name] = P"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "mc_sfba_10",
+   "metadata": {},
+   "source": [
+    "## Coupled multi-condition sparse FBA\n",
+    "\n",
+    "Now we solve both conditions together with structured sparsity. The same biomass lower bounds are enforced, but regularization is applied jointly across conditions."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "mc_sfba_11",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "P_multi_sparse = MultiSampleFBA(lambda_reg=lambda_sparse).build(G, multi_data)\n",
+    "for i, name in enumerate(sample_names):\n",
+    "    P_multi_sparse += P_multi_sparse.expr.flow[idx[\"BIOMASS\"], i] >= biomass_targets[name]\n",
+    "P_multi_sparse.solve(solver=\"highs\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "mc_sfba_12",
+   "metadata": {},
+   "source": [
+    "## Compare independent vs coupled sparse solutions"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "mc_sfba_13",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "edge_ids = [G.get_attr_edge(i).get(\"id\") for i in range(G.num_edges)]\n",
+    "\n",
+    "\n",
+    "def active_ids(problem, condition=None, tol=1e-6):\n",
+    "    flow = np.asarray(problem.expr.flow.value)\n",
+    "    if condition is not None:\n",
+    "        flow = flow[:, condition]\n",
+    "    return {edge_ids[i] for i in np.where(np.abs(flow) > tol)[0]}\n",
+    "\n",
+    "\n",
+    "def branch_label(ab_flux, ad_flux, tol=1e-6):\n",
+    "    ab_on = abs(float(ab_flux)) > tol\n",
+    "    ad_on = abs(float(ad_flux)) > tol\n",
+    "    if ab_on and not ad_on:\n",
+    "        return \"branch_1 (A->B->C)\"\n",
+    "    if ad_on and not ab_on:\n",
+    "        return \"branch_2 (A->D->C)\"\n",
+    "    if ab_on and ad_on:\n",
+    "        return \"both\"\n",
+    "    return \"none\"\n",
+    "\n",
+    "\n",
+    "rows = []\n",
+    "for i, name in enumerate(sample_names):\n",
+    "    P_single = single_sparse[name]\n",
+    "    rows.append(\n",
+    "        {\n",
+    "            \"setting\": f\"single sparse ({name})\",\n",
+    "            \"selected_branch\": branch_label(\n",
+    "                P_single.expr.flow[idx[\"R_AB\"]].value, P_single.expr.flow[idx[\"R_AD\"]].value\n",
+    "            ),\n",
+    "            \"biomass\": float(P_single.expr.flow[idx[\"BIOMASS\"]].value),\n",
+    "            \"active_reactions\": len(active_ids(P_single)),\n",
+    "        }\n",
+    "    )\n",
+    "    rows.append(\n",
+    "        {\n",
+    "            \"setting\": f\"multi sparse coupled ({name})\",\n",
+    "            \"selected_branch\": branch_label(\n",
+    "                P_multi_sparse.expr.flow[idx[\"R_AB\"], i].value, P_multi_sparse.expr.flow[idx[\"R_AD\"], i].value\n",
+    "            ),\n",
+    "            \"biomass\": float(P_multi_sparse.expr.flow[idx[\"BIOMASS\"], i].value),\n",
+    "            \"active_reactions\": len(active_ids(P_multi_sparse, condition=i)),\n",
+    "        }\n",
+    "    )\n",
+    "\n",
+    "comparison = pd.DataFrame(rows)\n",
+    "comparison"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "mc_sfba_14",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "single_union = set().union(*(active_ids(single_sparse[name]) for name in sample_names))\n",
+    "multi_union = set().union(*(active_ids(P_multi_sparse, condition=i) for i in range(len(sample_names))))\n",
+    "\n",
+    "summary = pd.DataFrame(\n",
+    "    [\n",
+    "        {\n",
+    "            \"single_sparse_union\": len(single_union),\n",
+    "            \"multi_sparse_union\": len(multi_union),\n",
+    "            \"union_reduction\": len(single_union) - len(multi_union),\n",
+    "        }\n",
+    "    ]\n",
+    ")\n",
+    "\n",
+    "# Expected in this setup: coupled sparse FBA uses fewer reactions in the union across conditions.\n",
+    "assert len(multi_union) < len(single_union)\n",
+    "\n",
+    "summary"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "mc_sfba_15",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "pd.DataFrame(\n",
+    "    {\n",
+    "        \"single_sparse_union\": pd.Series(sorted(single_union)),\n",
+    "        \"multi_sparse_union\": pd.Series(sorted(multi_union)),\n",
+    "    }\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "mc_sfba_16",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "active_multi_c1 = np.abs(P_multi_sparse.expr.flow.value[:, 0]) > 1e-6\n",
+    "active_multi_c2 = np.abs(P_multi_sparse.expr.flow.value[:, 1]) > 1e-6\n",
+    "\n",
+    "G.edge_subgraph(active_multi_c1).plot(graph_attr={\"rankdir\": \"LR\", \"center\": \"1\"})"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "mc_sfba_17",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "G.edge_subgraph(active_multi_c2).plot(graph_attr={\"rankdir\": \"LR\", \"center\": \"1\"})"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "mc_sfba_18",
+   "metadata": {},
+   "source": [
+    "In this toy example, independent sparse runs choose different branches, while the coupled multi-condition sparse run aligns branch usage and reduces the union of active reactions across conditions."
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.11.4"
+  },
+  "toc": {
+   "base_numbering": 1,
+   "nav_menu": {},
+   "number_sections": true,
+   "sideBar": true,
+   "skip_h1_title": false,
+   "title_cell": "Table of Contents",
+   "title_sidebar": "Contents",
+   "toc_cell": false,
+   "toc_position": {},
+   "toc_section_display": true,
+   "toc_window_display": false
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
