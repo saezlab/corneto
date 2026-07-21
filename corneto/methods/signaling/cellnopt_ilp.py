@@ -1,7 +1,7 @@
+"""CellNOpt integer-linear programming method and visualization helpers."""
+
 import re
 from typing import Literal, Optional
-
-"""CellNOpt integer-linear programming method and visualization helpers."""
 
 import numpy as np
 
@@ -18,6 +18,7 @@ from corneto.backend._base import EXPR_NAME_FLOW
 
 
 def clip_quantiles(arr, q):
+    """Clip an array to its lower and upper quantiles."""
     if q < 0 or q > 1:
         raise ValueError(f"Clipping value must be between 0 and 1, got {q}")
     # compute the quantiles at clipping and 1-clipping and clip the flow
@@ -37,6 +38,7 @@ def cno_style(
     clip_quantil: Optional[float] = 0.05,
     iexp=0,
 ):
+    """Return graph-plotting attributes derived from a CellNOpt solution."""
     flow = np.array(P.expr[flow_name].value)[:, iexp]
     flow[np.abs(flow) < zero_flow_threshold] = 0
     if scale is not None:
@@ -57,9 +59,7 @@ def cno_style(
         else:
             edge_width = min_edge_width
         if scale is not None:
-            edge_width = min_edge_width + (max_edge_width - min_edge_width) * abs(
-                v / max_flow
-            )
+            edge_width = min_edge_width + (max_edge_width - min_edge_width) * abs(v / max_flow)
         # bound = P.expr[flow_name].ub[i] if v >= 0 else P.expr[flow_name].lb[i]
         edge_attrs[i] = {"penwidth": str(edge_width)}
         if flow[i] > 0:
@@ -125,7 +125,7 @@ def get_egdes_with_head(G):
     Returns:
         edges_with_head (array): An array containing the indices of edges with a head node.
     """
-    At, Ah = get_incidence_matrices_of_edges(G)
+    _At, Ah = get_incidence_matrices_of_edges(G)
     edges_with_head = np.flatnonzero(np.sum(np.abs(Ah), axis=0) > 0)
     return edges_with_head
 
@@ -167,12 +167,8 @@ def presolve_report(G, exp_list):
 def expand_graph_for_flows(G, exp_list):
     """Expand the graph G with the perturbations and measurements from the experiments in exp_list."""
     G1 = G.copy()
-    output_names = list(
-        {key for exp in exp_list.values() for key in exp["output"].keys()}
-    )
-    input_names = list(
-        {key for exp in exp_list.values() for key in exp["input"].keys()}
-    )
+    output_names = list({key for exp in exp_list.values() for key in exp["output"].keys()})
+    input_names = list({key for exp in exp_list.values() for key in exp["input"].keys()})
 
     output_names = list(set(output_names))
     input_names = list(set(input_names))
@@ -190,20 +186,14 @@ def check_exp_graph_consistency(G, exp_list):
     for exp in exp_list:
         for node in exp_list[exp]["input"]:
             if node not in G.V:
-                raise ValueError(
-                    f"Node {node} in experiment {exp} is not in the graph."
-                )
+                raise ValueError(f"Node {node} in experiment {exp} is not in the graph.")
         for node in exp_list[exp]["output"]:
             if node not in G.V:
-                raise ValueError(
-                    f"Node {node} in experiment {exp} is not in the graph."
-                )
+                raise ValueError(f"Node {node} in experiment {exp} is not in the graph.")
         if "inhibition" in exp_list[exp]:
             for node in exp_list[exp]["inhibition"]:
                 if node not in G.V:
-                    raise ValueError(
-                        f"Node {node} in experiment {exp} is not in the graph."
-                    )
+                    raise ValueError(f"Node {node} in experiment {exp} is not in the graph.")
 
 
 def cellnoptILP(G, exp_list, solver=None, alpha_flow=1e-3, verbose=False, backend=None):
@@ -235,20 +225,14 @@ def cellnoptILP(G, exp_list, solver=None, alpha_flow=1e-3, verbose=False, backen
     P = backend.AcyclicFlow(G)
 
     # vertex value is binary (0 and 1)
-    V = backend.Variable(
-        "vertex_value", (G.num_vertices, len(exp_list)), vartype=cn.VarType.BINARY
-    )
+    V = backend.Variable("vertex_value", (G.num_vertices, len(exp_list)), vartype=cn.VarType.BINARY)
     # edge activation is also binary:
-    Eact = backend.Variable(
-        "edge_activates", (G.num_edges, len(exp_list)), vartype=cn.VarType.BINARY
-    )
+    Eact = backend.Variable("edge_activates", (G.num_edges, len(exp_list)), vartype=cn.VarType.BINARY)
 
     M = 100  # a large number, so sum(incoming edges)/M is always less than 1
 
     # Dummy variable for the linearization of the absolute deviation objective function
-    Z = backend.Variable(
-        "dummy", (G.num_vertices, len(exp_list)), vartype=cn.VarType.CONTINUOUS
-    )
+    Z = backend.Variable("dummy", (G.num_vertices, len(exp_list)), vartype=cn.VarType.CONTINUOUS)
     P += Z >= 0
 
     # some basic constraints
@@ -259,25 +243,21 @@ def cellnoptILP(G, exp_list, solver=None, alpha_flow=1e-3, verbose=False, backen
     for exp, iexp in zip(exp_list, range(len(exp_list))):
         P += Eact[:, iexp] <= P.expr.with_flow
 
-        # Rule 2: The edges can take the value of the upstream vertex, if the sign is 1. If the sign is -1, then they take the value of 1 - upstream vertex
+        # Rule 2: Edges take the upstream value for a positive sign and its
+        # complement for a negative sign.
         for exp, iexp in zip(exp_list, range(len(exp_list))):
             # this should keep Eact in [0,1] interval:
 
             # signed value of source/head node for an edge:
-            V_head = (Ah.T @ V)[edges_with_head, iexp].multiply(
-                (interaction[edges_with_head] > 0).astype(int)
-            ) + (1 - (Ah.T @ V)[edges_with_head, iexp]).multiply(
-                (interaction[edges_with_head] < 0).astype(int)
-            )
+            V_head = (Ah.T @ V)[edges_with_head, iexp].multiply((interaction[edges_with_head] > 0).astype(int)) + (
+                1 - (Ah.T @ V)[edges_with_head, iexp]
+            ).multiply((interaction[edges_with_head] < 0).astype(int))
             # an edge is active if there is flow AND there head node is also active
             # logical AND is translated to ILP as:
             # y >= x1 + x2 - 1  ; y <= x1 ; y <= x2
-            P += (
-                Eact[edges_with_head, iexp]
-                >= P.expr.with_flow[edges_with_head] + V_head - 1
-            )
+            P += Eact[edges_with_head, iexp] >= P.expr.with_flow[edges_with_head] + V_head - 1
             P += Eact[edges_with_head, iexp] <= V_head
-            # P += Eact[edges_with_head,iexp] <=  P.expr.with_flow[edges_with_head] - we dont need this, see Rule 1
+            # The with-flow upper bound is already enforced by Rule 1.
 
     # Rule 3: propagate the active edges to the vertices
 
@@ -300,8 +280,9 @@ def cellnoptILP(G, exp_list, solver=None, alpha_flow=1e-3, verbose=False, backen
     # AND relation expressed as follows:
     # - we only define these constraints for the AND gates
     # - we count the sum of flows (selected edges) and sum of activated edges
-    # - if sum of flow equal to the sum of incoming edge activation, i.e. all edge are activated, then the vertex is activated:
-    # - to ensure that the AND gate is not active when there is no flow (an no active edge), we add the second constraint:
+    # - if flow equals incoming-edge activation, all edges are activated and so
+    #   is the vertex;
+    # - a second constraint prevents activation when no flow is present.
     if V_is_and.any():
         # and_idx = np.flatnonzero(V_is_and)
         sum_of_flow = At[and_idx, :] @ P.expr.with_flow
@@ -309,10 +290,7 @@ def cellnoptILP(G, exp_list, solver=None, alpha_flow=1e-3, verbose=False, backen
 
         #  (sum_of_flow - sum_of_edge_activation)/M is always less than 1 and it is 0 if  all edges are activated.
         for exp, iexp in zip(exp_list, range(len(exp_list))):
-            P += (
-                V[and_idx, iexp]
-                <= 1 - (sum_of_flow - sum_of_edge_activation[:, iexp]) / M
-            )
+            P += V[and_idx, iexp] <= 1 - (sum_of_flow - sum_of_edge_activation[:, iexp]) / M
             P += V[and_idx, iexp] <= sum_of_flow
 
         P.register("sum_of_flow", sum_of_flow)
@@ -362,9 +340,7 @@ def report_solution_tables(G, exp_list, P):
 
 
 def plot_solution_network_active_edges(G, P, iexp):
-    G.plot(
-        custom_edge_attr=cno_style(P, flow_name="edge_activates", scale=None, iexp=iexp)
-    )
+    G.plot(custom_edge_attr=cno_style(P, flow_name="edge_activates", scale=None, iexp=iexp))
 
 
 def plot_fitness(G, exp_list, P, measured_only=False, **kwargs):
@@ -392,14 +368,12 @@ def plot_fitness(G, exp_list, P, measured_only=False, **kwargs):
 
     # Collect the input and output variables
     input_matrix, input_vars = collect_field_into_matrix(exp_list, "input")
-    output_matrix, output_vars = collect_field_into_matrix(exp_list, "output")
+    _output_matrix, _output_vars = collect_field_into_matrix(exp_list, "output")
 
     # Check if inhibition is present in any of the experiments
     inhibition_present = any("inhibition" in exp for exp in exp_list.values())
     if inhibition_present:
-        inhibition_matrix, inhibition_vars = collect_field_into_matrix(
-            exp_list, "inhibition"
-        )
+        inhibition_matrix, inhibition_vars = collect_field_into_matrix(exp_list, "inhibition")
         perturbation_matrix = np.hstack((input_matrix, inhibition_matrix))
         perturbation_vars = input_vars + inhibition_vars
     else:
@@ -413,15 +387,11 @@ def plot_fitness(G, exp_list, P, measured_only=False, **kwargs):
         perturbation_colors += ["red"] * len(inhibition_vars)
 
     N_nodes = len(G.V)
-    output_names = list(
-        {key for exp in exp_list.values() for key in exp["output"].keys()}
-    )
+    output_names = list({key for exp in exp_list.values() for key in exp["output"].keys()})
 
     # depending on the flag measured_only, we can plot only the measured nodes or all nodes
     if measured_only:
-        fig, axs = plt.subplots(
-            N_exps - 1, len(output_names) + 1, squeeze=False, **kwargs
-        )
+        fig, axs = plt.subplots(N_exps - 1, len(output_names) + 1, squeeze=False, **kwargs)
     else:
         fig, axs = plt.subplots(N_exps - 1, N_nodes + 1, squeeze=False, **kwargs)
 
@@ -587,9 +557,7 @@ def plot_data(exp_list):
     # Check if inhibition is present in any of the experiments
     inhibition_present = any("inhibition" in exp for exp in exp_list.values())
     if inhibition_present:
-        inhibition_matrix, inhibition_vars = collect_field_into_matrix(
-            exp_list, "inhibition"
-        )
+        inhibition_matrix, inhibition_vars = collect_field_into_matrix(exp_list, "inhibition")
         perturbation_matrix = np.hstack((input_matrix, inhibition_matrix))
         perturbation_vars = input_vars + inhibition_vars
     else:
@@ -640,9 +608,7 @@ def plot_data(exp_list):
         )
         if iexp == N_exps - 1:
             axs[iexp - 1, len(output_vars)].set_xticks(range(len(perturbation_vars)))
-            axs[iexp - 1, len(output_vars)].set_xticklabels(
-                perturbation_vars, rotation=45
-            )
+            axs[iexp - 1, len(output_vars)].set_xticklabels(perturbation_vars, rotation=45)
         else:
             # No xtick label
             axs[iexp - 1, len(output_vars)].set_xticks([])

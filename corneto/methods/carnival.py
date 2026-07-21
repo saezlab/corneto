@@ -47,18 +47,10 @@ def milp_carnival(
     max_dist = G.num_vertices if max_dist is None else max_dist
 
     # The problem uses 2*|V| + 2*|E| binary variables + |V| continuous variables
-    V_act = backend.Variable(
-        "vertex_activated", shape=(len(G.V),), vartype=cn.VarType.BINARY
-    )
-    V_inh = backend.Variable(
-        "vertex_inhibited", shape=(len(G.V),), vartype=cn.VarType.BINARY
-    )
-    E_act = backend.Variable(
-        "edge_activating", shape=(len(G.E),), vartype=cn.VarType.BINARY
-    )
-    E_inh = backend.Variable(
-        "edge_inhibiting", shape=(len(G.E),), vartype=cn.VarType.BINARY
-    )
+    V_act = backend.Variable("vertex_activated", shape=(len(G.V),), vartype=cn.VarType.BINARY)
+    V_inh = backend.Variable("vertex_inhibited", shape=(len(G.V),), vartype=cn.VarType.BINARY)
+    E_act = backend.Variable("edge_activating", shape=(len(G.E),), vartype=cn.VarType.BINARY)
+    E_inh = backend.Variable("edge_inhibiting", shape=(len(G.E),), vartype=cn.VarType.BINARY)
     V_pos = backend.Variable(
         "vertex_position",
         shape=(len(G.V),),
@@ -143,12 +135,8 @@ def milp_carnival(
             P += sum(in_edges_selected) <= 1
         # And the value of the target vertex equals the value of the selected edge
         # If no edge is selected, then the value is 0]
-        incoming_activating = (
-            sum(E_act[j] for j in in_edges_idx) if len(in_edges_idx) > 0 else 0
-        )
-        incoming_inhibiting = (
-            sum(E_inh[j] for j in in_edges_idx) if len(in_edges_idx) > 0 else 0
-        )
+        incoming_activating = sum(E_act[j] for j in in_edges_idx) if len(in_edges_idx) > 0 else 0
+        incoming_inhibiting = sum(E_inh[j] for j in in_edges_idx) if len(in_edges_idx) > 0 else 0
         P += V_act[i] <= int(perturbed) + incoming_activating
         P += V_inh[i] <= int(perturbed) + incoming_inhibiting
         # If perturbed but value is 0, then perturbation can take any value,

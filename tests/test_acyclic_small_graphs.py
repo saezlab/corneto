@@ -1,7 +1,7 @@
 import numpy as np
 
-from corneto.graph import EdgeType, Graph
 from corneto.backend import PicosBackend
+from corneto.graph import EdgeType, Graph
 
 
 def _build_acyclic_problem(backend, graph, lb, ub):

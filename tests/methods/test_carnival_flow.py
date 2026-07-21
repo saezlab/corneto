@@ -94,8 +94,8 @@ def test_carnivalflow_two_samples_inverse(backend, graph_two_samples):
     P.solve()
     sol1 = np.array(P.expr.edge_value.value[:, 0]).flatten()
     sol2 = np.array(P.expr.edge_value.value[:, 1]).flatten()
-    gsol1 = carnival.processed_graph.edge_subgraph(np.flatnonzero(sol1))
-    gsol2 = carnival.processed_graph.edge_subgraph(np.flatnonzero(sol2))
+    carnival.processed_graph.edge_subgraph(np.flatnonzero(sol1))
+    carnival.processed_graph.edge_subgraph(np.flatnonzero(sol2))
     vertex_values_s1 = {
         carnival.processed_graph.V[i]: P.expr.vertex_value.value[i, 0] for i in range(P.expr.vertex_value.shape[0])
     }

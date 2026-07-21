@@ -34,9 +34,7 @@ class Method(ABC):
         if backend is None:
             backend = DEFAULT_BACKEND
         self._backend = backend
-        self.lambda_reg_param = backend.Parameter(
-            name="lambda_reg_param", value=lambda_reg
-        )
+        self.lambda_reg_param = backend.Parameter(name="lambda_reg_param", value=lambda_reg)
         self._reg_varname = reg_varname
         self._reg_varname_suffix = reg_varname_suffix
         self.problem = None
@@ -78,16 +76,10 @@ class Method(ABC):
                 "_reg_varname_suffix",
             ]:
                 # Skip initially unset problem and processed input attributes.
-                if (
-                    attr_name in ["problem", "processed_data", "processed_graph"]
-                    and attr_value is None
-                ):
+                if attr_name in ["problem", "processed_data", "processed_graph"] and attr_value is None:
                     continue
                 # Skip complex objects that aren't useful for a summary
-                if (
-                    isinstance(attr_value, (list, dict, tuple))
-                    and len(str(attr_value)) > 100
-                ):
+                if isinstance(attr_value, (list, dict, tuple)) and len(str(attr_value)) > 100:
                     continue
                 # Format the parameter name (remove leading underscore if present)
                 param_name = attr_name[1:] if attr_name.startswith("_") else attr_name
@@ -196,11 +188,7 @@ class Method(ABC):
                 newvar_name = self._reg_varname + self._reg_varname_suffix
                 ax = 0 if len(reg_var.shape) == 1 else 1
                 # A 1D vector can be summed directly without a linear OR.
-                if (
-                    len(reg_var.shape) == 1
-                    or reg_var.shape[1] == 1
-                    or reg_var.shape[0] == 1
-                ):
+                if len(reg_var.shape) == 1 or reg_var.shape[1] == 1 or reg_var.shape[0] == 1:
                     self.problem.add_objective(
                         reg_var.sum(),
                         weight=self.lambda_reg_param,
@@ -208,19 +196,14 @@ class Method(ABC):
                     )
                 else:
                     # Structured sparsity regularization
-                    self.problem += self._backend.linear_or(
-                        reg_var, axis=ax, varname=newvar_name
-                    )
+                    self.problem += self._backend.linear_or(reg_var, axis=ax, varname=newvar_name)
                     self.problem.add_objective(
                         self.problem.expr[newvar_name].sum(),
                         weight=self.lambda_reg_param,
                         name=f"regularization_{newvar_name}",
                     )
             else:
-                raise ValueError(
-                    "Parameter lambda_reg > 0 but no regularization variable "
-                    "name provided"
-                )
+                raise ValueError("Parameter lambda_reg > 0 but no regularization variable name provided")
         return self.problem
 
     @staticmethod

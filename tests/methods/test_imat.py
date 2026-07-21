@@ -286,9 +286,7 @@ def test_imat_multisample_support_vars_sparse_per_sample(metabolic_network, back
     assert "_flow_ineg" not in problem.expr
 
 
-def test_imat_multisample_sparse_support_with_regularization_solves(
-    metabolic_network, backend
-):
+def test_imat_multisample_sparse_support_with_regularization_solves(metabolic_network, backend):
     """Different support-var sizes should still work with structured regularization."""
     if isinstance(backend, PicosBackend):
         pytest.skip("iMAT solve tests require CVXPY backend")
@@ -412,9 +410,7 @@ def test_multi_sample_imat_mixed_expression_no_biomass(metabolic_network, backen
     biomass_flux_s1 = problem.expr.flow[bid, 0].value
 
     assert abs(pgi_flux_s1) > 0.01  # PGI should be active with large positive value
-    assert np.isclose(tpi_flux_s1, 0.0, atol=1e-6), (
-        f"TPI flux should be 0 with large penalty: {tpi_flux_s1}"
-    )
+    assert np.isclose(tpi_flux_s1, 0.0, atol=1e-6), f"TPI flux should be 0 with large penalty: {tpi_flux_s1}"
     # No biomass objective, so biomass flux should be 0
     assert biomass_flux_s1 >= 0.0  # Should be non-negative
 
@@ -424,9 +420,7 @@ def test_multi_sample_imat_mixed_expression_no_biomass(metabolic_network, backen
     tpi_flux_s2 = problem.expr.flow[tpi_rid, 1].value
     biomass_flux_s2 = problem.expr.flow[bid, 1].value
 
-    assert np.isclose(pgi_flux_s2, 0.0, atol=1e-6), (
-        f"PGI flux should be 0 with large penalty: {pgi_flux_s2}"
-    )
+    assert np.isclose(pgi_flux_s2, 0.0, atol=1e-6), f"PGI flux should be 0 with large penalty: {pgi_flux_s2}"
     assert abs(tpi_flux_s2) > 0.01  # TPI should be active with large positive value
     # No biomass objective, so biomass flux should be 0
     assert biomass_flux_s2 >= 0.0  # Should be non-negative
@@ -703,12 +697,8 @@ def test_imat_zero_to_positive_growth_transition(metabolic_network, backend):
     assert biomass2 >= 0, "Condition 2 should produce valid biomass"
 
     # 2. Glucose bounds are respected
-    assert glucose1 >= -5 and glucose1 <= 0, (
-        f"Glucose condition 1 should respect bounds: {glucose1}"
-    )
-    assert glucose2 >= -10 and glucose2 <= 0, (
-        f"Glucose condition 2 should respect bounds: {glucose2}"
-    )
+    assert glucose1 >= -5 and glucose1 <= 0, f"Glucose condition 1 should respect bounds: {glucose1}"
+    assert glucose2 >= -10 and glucose2 <= 0, f"Glucose condition 2 should respect bounds: {glucose2}"
 
 
 def test_fba_vs_imat_bounds_consistency(metabolic_network, backend):
@@ -852,9 +842,7 @@ def test_imat_expression_with_bounds_override(metabolic_network, backend):
     # The test is primarily about bounds override working
     # If we have positive biomass, the bounds override is working
     # The specific glucose uptake may vary depending on the model and conditions
-    assert biomass1 > 0.01 or biomass2 > 0.01, (
-        "At least one condition should achieve growth"
-    )
+    assert biomass1 > 0.01 or biomass2 > 0.01, "At least one condition should achieve growth"
 
     # Restore original bounds
     for edge_idx, (orig_lb, orig_ub) in original_bounds.items():
@@ -910,8 +898,6 @@ def test_imat_bounds_handling_critical_case(metabolic_network, backend):
 
     # Verify bounds are respected
     assert -5 <= glucose_fba <= 0, f"FBA glucose should respect bounds: {glucose_fba}"
-    assert -5 <= glucose_imat <= 0, (
-        f"IMAT glucose should respect bounds: {glucose_imat}"
-    )
+    assert -5 <= glucose_imat <= 0, f"IMAT glucose should respect bounds: {glucose_imat}"
     assert -5 <= oxygen_fba <= 0, f"FBA oxygen should respect bounds: {oxygen_fba}"
     assert -5 <= oxygen_imat <= 0, f"IMAT oxygen should respect bounds: {oxygen_imat}"

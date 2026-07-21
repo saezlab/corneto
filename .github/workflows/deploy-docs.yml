@@ -1,5 +1,9 @@
 name: Build and Deploy Docs
 
+env:
+  POETRY_VERSION: "2.4.1"
+  POETRY_DYNAMIC_VERSIONING_VERSION: "1.9.1"
+
 on:
   push:
     branches:
@@ -66,8 +70,8 @@ jobs:
         env:
           POETRY_DYNAMIC_VERSIONING_COMMANDS: install,build
         run: |
-          pip install poetry
-          poetry self add "poetry-dynamic-versioning[plugin]"
+          pip install "poetry==${POETRY_VERSION}"
+          poetry self add "poetry-dynamic-versioning[plugin]==${POETRY_DYNAMIC_VERSIONING_VERSION}"
           poetry install --with dev --extras docs
 
       - name: Debug Git state and version
@@ -113,7 +117,7 @@ jobs:
         env:
           SPHINX_VERSION_MATCH: ${{ steps.set_version.outputs.version_folder }}
           DOCS_BASE_URL: https://corneto.org
-        run: poetry run sphinx-build -b html docs docs/_build/html
+        run: poetry run sphinx-build -W --keep-going -b html docs docs/_build/html
 
       - name: Deploy “latest” docs
         if: ${{ steps.set_version.outputs.version_folder == 'latest' }}

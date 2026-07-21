@@ -4,8 +4,8 @@ import cvxpy as cp
 import numpy as np
 import pytest
 
-from corneto.graph import Graph
 from corneto.backend import CvxpyBackend, PicosBackend, VarType
+from corneto.graph import Graph
 
 
 @pytest.fixture
@@ -26,7 +26,7 @@ def test_picos_convex():
     P += sum(x) == 1, x >= 0
     # Convex optimization problem
     P.add_objectives(abs(A @ x - b), inplace=True)
-    bp = P.solve(solver="cvxopt", verbosity=1)
+    P.solve(solver="cvxopt", verbosity=1)
     assert np.all(np.array(x.value).T < np.array([1e-6, 0.64, 0.37, 1e-6, 1e-6]))
     assert np.all(np.array(x.value).T > np.array([-1e-6, 0.62, 0.36, -1e-6, -1e-6]))
 
@@ -40,7 +40,7 @@ def test_cvxpy_convex():
     P += sum(x) == 1, x >= 0  # type: ignore
     # Convex optimization problem
     P.add_objectives(cp.sum_squares((A @ x - b).e), inplace=True)  # TODO: add sum squares
-    bp = P.solve(solver="cvxopt", verbosity=1)
+    P.solve(solver="cvxopt", verbosity=1)
     assert np.all(np.array(x.value) < np.array([1e-6, 0.64, 0.37, 1e-6, 1e-6]))
     assert np.all(np.array(x.value) > np.array([-1e-6, 0.62, 0.36, -1e-6, -1e-6]))
 
@@ -616,8 +616,8 @@ def test_complex_chaining_with_indexing(backend):
     idx = [0, 2]
     # Matrix multiplication Ah.T (3x4) @ V (4x3) -> (3x3) matrix
     # X is converted to a 2x3 matrix
-    I = Int[idx, :] < 1  # This creates issues in PICOS
-    X = (Ah.T @ V)[idx, :].multiply(I.astype(int))
+    indicator = Int[idx, :] < 1  # This creates issues in PICOS
+    X = (Ah.T @ V)[idx, :].multiply(indicator.astype(int))
     P = backend.Problem()
     P += X >= 0
     P.add_objectives(sum(sum(X)))
@@ -884,7 +884,7 @@ def test_acyclic_unfeasible_loop(backend):
         P.solve(solver="glpk", primals=False)
     else:
         P.solve()
-    assert np.all(P.expr.flow.value == None)
+    assert np.all(P.expr.flow.value is None)
 
 
 def test_l2_norm(backend):
@@ -965,26 +965,26 @@ def test_indicator_matrix_bounds_block_per_entry(backend):
     v = backend.Variable("v_ind", shape=lb.shape, lb=lb, ub=ub)
     P = backend.Problem()
     P += backend.Indicator(v, name="v_ind_i")
-    I = P.expr.v_ind_i
+    indicator = P.expr.v_ind_i
 
     # Maximize number of active indicators: all unblocked entries should be 1.
-    P.add_objectives(-I.sum())
+    P.add_objectives(-indicator.sum())
     P.solve()
 
-    I_val = np.asarray(I.value)
+    indicator_value = np.asarray(indicator.value)
     v_val = np.asarray(v.value)
 
     # Blocked entries (lb=ub=0) must be inactive and fixed to zero.
-    assert np.isclose(I_val[1, 0], 0.0, atol=1e-9)
-    assert np.isclose(I_val[2, 1], 0.0, atol=1e-9)
+    assert np.isclose(indicator_value[1, 0], 0.0, atol=1e-9)
+    assert np.isclose(indicator_value[2, 1], 0.0, atol=1e-9)
     assert np.isclose(v_val[1, 0], 0.0, atol=1e-9)
     assert np.isclose(v_val[2, 1], 0.0, atol=1e-9)
 
     # Unblocked entries should be active under the maximizing objective.
-    assert np.isclose(I_val[0, 0], 1.0, atol=1e-9)
-    assert np.isclose(I_val[0, 1], 1.0, atol=1e-9)
-    assert np.isclose(I_val[1, 1], 1.0, atol=1e-9)
-    assert np.isclose(I_val[2, 0], 1.0, atol=1e-9)
+    assert np.isclose(indicator_value[0, 0], 1.0, atol=1e-9)
+    assert np.isclose(indicator_value[0, 1], 1.0, atol=1e-9)
+    assert np.isclose(indicator_value[1, 1], 1.0, atol=1e-9)
+    assert np.isclose(indicator_value[2, 0], 1.0, atol=1e-9)
 
 
 def test_nonzero_indicator_matrix_bounds_block_and_sign_per_entry(backend):

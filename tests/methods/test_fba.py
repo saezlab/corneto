@@ -3,8 +3,8 @@ import os
 import numpy as np
 import pytest
 
-from corneto.data import Data
 from corneto.backend import PicosBackend
+from corneto.data import Data
 from corneto.io import import_miom_model
 from corneto.methods.fba import MultiSampleFBA
 

@@ -23,11 +23,7 @@ def _run(cmd: Sequence[str], *, check: bool = True) -> str:
         check=False,
     )
     if check and result.returncode != 0:
-        raise ReleaseError(
-            f"Command failed: {' '.join(cmd)}\n"
-            f"stdout:\n{result.stdout}\n"
-            f"stderr:\n{result.stderr}"
-        )
+        raise ReleaseError(f"Command failed: {' '.join(cmd)}\nstdout:\n{result.stdout}\nstderr:\n{result.stderr}")
     return result.stdout.strip()
 
 
@@ -36,10 +32,7 @@ def _normalize_version(raw: str) -> str:
     if not version.startswith("v"):
         version = f"v{version}"
     if not VERSION_RE.match(version):
-        raise ReleaseError(
-            "Invalid version format. Use vX.Y.Z or "
-            "vX.Y.Z-(alpha|beta|rc).N (example: v1.0.0-beta.4)."
-        )
+        raise ReleaseError("Invalid version format. Use vX.Y.Z or vX.Y.Z-(alpha|beta|rc).N (example: v1.0.0-beta.4).")
     return version
 
 
@@ -66,9 +59,7 @@ def _ensure_up_to_date_with_remote_main(remote: str) -> None:
     head = _run(["git", "rev-parse", "HEAD"], check=True)
     remote_main = _run(["git", "rev-parse", f"{remote}/main"], check=True)
     if head != remote_main:
-        raise ReleaseError(
-            f"HEAD is not at {remote}/main. Pull main after merging dev -> main."
-        )
+        raise ReleaseError(f"HEAD is not at {remote}/main. Pull main after merging dev -> main.")
 
 
 def _ensure_dev_is_merged(remote: str) -> None:
@@ -81,8 +72,7 @@ def _ensure_dev_is_merged(remote: str) -> None:
     )
     if result.returncode != 0:
         raise ReleaseError(
-            f"{remote}/dev is not merged into current main commit yet. "
-            "Merge dev -> main before releasing."
+            f"{remote}/dev is not merged into current main commit yet. Merge dev -> main before releasing."
         )
 
 
@@ -106,8 +96,7 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         prog="release",
         description=(
-            "Create and push an annotated release tag with safety checks. "
-            "Example: poetry run release v1.0.0-beta.4"
+            "Create and push an annotated release tag with safety checks. Example: poetry run release v1.0.0-beta.4"
         ),
     )
     parser.add_argument("version", help="Release version tag (with or without 'v').")
@@ -159,10 +148,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         print(f"  git pull --ff-only {args.remote} dev")
         print(f"  git merge --ff-only {args.remote}/main")
         print(f"  git push {args.remote} dev")
-        print(
-            "This keeps dev aligned with the latest release tag ancestry "
-            "for dynamic versioning."
-        )
+        print("This keeps dev aligned with the latest release tag ancestry for dynamic versioning.")
         return 0
     except ReleaseError as exc:
         print(f"Release aborted: {exc}", file=sys.stderr)

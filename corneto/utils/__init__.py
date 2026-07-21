@@ -1,3 +1,5 @@
+"""General public utility helpers."""
+
 import importlib
 import re
 from functools import wraps
@@ -14,8 +16,27 @@ from corneto.utils._citations import (
 )
 from corneto.utils._solvers import check_gurobi
 
+__all__ = [
+    "Attr",
+    "Attributes",
+    "OptionalModule",
+    "OptionalNumba",
+    "check_gurobi",
+    "format_authors",
+    "get_bibtex_from_keys",
+    "get_library_version",
+    "import_optional_module",
+    "numba",
+    "parse_bibtex",
+    "render_references_html",
+    "show_bibtex",
+    "show_references",
+]
+
 
 class OptionalModule:
+    """Load an optional module or return no-op attribute placeholders."""
+
     def __init__(self, module_name):
         self.module_name = module_name
         self.module = None
@@ -38,6 +59,8 @@ class OptionalModule:
 
 
 class OptionalNumba(OptionalModule):
+    """Provide no-op decorators when Numba is unavailable."""
+
     def __init__(self):
         super().__init__("numba")
 
@@ -71,6 +94,7 @@ numba = OptionalModule("numba")
 
 
 def get_library_version(lib_name):
+    """Return the configured version constraint for an optional dependency."""
     pyproject_path = Path(__file__).resolve().parent.parent.parent / "pyproject.toml"
     try:
         with pyproject_path.open("r", encoding="utf-8") as f:
@@ -101,13 +125,20 @@ def get_library_version(lib_name):
 
 
 def import_optional_module(module_name):
+    """Import an optional dependency with an installation-oriented error."""
     try:
         module = importlib.import_module(module_name)
         return module
     except ImportError as e:
         expected_version = get_library_version(module_name)
         if expected_version:
-            error_msg = f"{module_name} version {expected_version} is required. Install it with 'pip install {module_name}' or 'pip install corneto[{module_name}]'"
+            error_msg = (
+                f"{module_name} version {expected_version} is required. Install it with "
+                f"'pip install {module_name}' or 'pip install corneto[{module_name}]'"
+            )
         else:
-            error_msg = f"{module_name} is not installed and no version specification found in pyproject.toml. It may be an optional dependency not configured."
+            error_msg = (
+                f"{module_name} is not installed and no version specification was "
+                "found in pyproject.toml. It may be an unconfigured optional dependency."
+            )
         raise ImportError(error_msg) from e

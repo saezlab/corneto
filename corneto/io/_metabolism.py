@@ -25,6 +25,7 @@ def import_cobra_model(path: str, quiet: bool = True) -> Graph:
 
     Args:
         path: Path to SBML file
+        quiet: Suppress output from the COBRApy reader.
 
     Returns:
         Graph: A CORNETO graph representing the metabolic network
@@ -90,7 +91,7 @@ def _index_reactions(list_reactions: List[Tuple[str, int, str]]):
             rxn_id = t
         if rxn_id is None:
             rxn_id = f"{s}--({d})--{t}"
-        rxn[rxn_id] = rxn.get(rxn_id, []) + [(s, d, t)]
+        rxn[rxn_id] = [*rxn.get(rxn_id, []), (s, d, t)]
     return rxn
 
 

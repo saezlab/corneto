@@ -23,10 +23,7 @@ def resolve_pattern(pattern=None, pattern_mode=DEFAULT_PATTERN_MODE):
     if pattern is not None:
         return pattern
     if pattern_mode not in GENE_PATTERN_PRESETS:
-        raise ValueError(
-            f"Unknown pattern_mode={pattern_mode!r}. "
-            f"Available: {sorted(GENE_PATTERN_PRESETS)}"
-        )
+        raise ValueError(f"Unknown pattern_mode={pattern_mode!r}. Available: {sorted(GENE_PATTERN_PRESETS)}")
     return GENE_PATTERN_PRESETS[pattern_mode]
 
 
@@ -42,9 +39,7 @@ def _or(a, b):
     return max(a, b)
 
 
-def get_genes_from_gpr(
-    gpr_expression, regex=_pattern, pattern_mode=DEFAULT_PATTERN_MODE
-):
+def get_genes_from_gpr(gpr_expression, regex=_pattern, pattern_mode=DEFAULT_PATTERN_MODE):
     if not isinstance(gpr_expression, str) or not gpr_expression.strip():
         return set()
     pattern = resolve_pattern(pattern=regex, pattern_mode=pattern_mode)
@@ -131,9 +126,7 @@ def _eval_gpr(node, context, func_and, func_or, expression=None, default_value=0
             return float(node.value)
         return default_value
     else:
-        LOGGER.warning(
-            f"Unsupported AST node: {type(node).__name__}, expression = {expression}"
-        )
+        LOGGER.warning(f"Unsupported AST node: {type(node).__name__}, expression = {expression}")
         return default_value
 
 

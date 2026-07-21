@@ -35,9 +35,7 @@ def create_multisample_shortest_path(
         if t not in outflow_edges:
             outflow_edges[t] = Gc.add_edge(t, ())
     if edge_weights is None:
-        edge_weights = np.array(
-            [Gc.get_attr_edge(i).get("weight", 0) for i in range(Gc.ne)]
-        )
+        edge_weights = np.array([Gc.get_attr_edge(i).get("weight", 0) for i in range(Gc.ne)])
         # The number of samples equals the number of source-target pairs.
         # We need to duplicate the edge weights for each sample.
         edge_weights = np.tile(edge_weights, (len(source_target_nodes), 1))
@@ -45,15 +43,10 @@ def create_multisample_shortest_path(
         # Verify that the number of edge weights is correct
         edge_weights = np.array(edge_weights)
         if edge_weights.shape[0] != len(source_target_nodes):
-            raise ValueError(
-                "The number of edge weights must equal the number of "
-                "source-target pairs."
-            )
+            raise ValueError("The number of edge weights must equal the number of source-target pairs.")
         # Add the weights for the extra edges, to be 0
         n_extra_edges = Gc.ne - G.ne
-        edge_weights = np.concatenate(
-            [edge_weights, np.zeros((len(source_target_nodes), n_extra_edges))], axis=1
-        )
+        edge_weights = np.concatenate([edge_weights, np.zeros((len(source_target_nodes), n_extra_edges))], axis=1)
     P = backend.Flow(Gc, lb=0, ub=DEFAULT_UB, n_flows=len(source_target_nodes))
     # Now we add the objective and constraints for each sample
     for i, (s, t) in enumerate(source_target_nodes):
@@ -74,12 +67,8 @@ def create_multisample_shortest_path(
                 P += P.expr.flow[outflow_edges[node], i] == 0
     # Add reg
     if lam > 0:
-        P += backend.linear_or(
-            P.expr.flow, axis=1, ignore_type=True, varname="active_edge"
-        )
-        P.add_objective(
-            P.expr.active_edge.sum(), weight=lam, name="shared_edge_regularization"
-        )
+        P += backend.linear_or(P.expr.flow, axis=1, ignore_type=True, varname="active_edge")
+        P.add_objective(P.expr.active_edge.sum(), weight=lam, name="shared_edge_regularization")
     return P, Gc
 
 
@@ -102,19 +91,13 @@ def shortest_path(
         Gc = G
         e_start, (tail, head) = next(iter(Gc.in_edges(s)))
         if tail != ():
-            raise ValueError(
-                f"Node {s} is not a source node. It has an incoming edge from {tail}."
-            )
+            raise ValueError(f"Node {s} is not a source node. It has an incoming edge from {tail}.")
 
         e_end, (tail, head) = next(iter(Gc.out_edges(t)))
         if head != ():
-            raise ValueError(
-                f"Node {t} is not a sink node. It has an outgoing edge to {head}."
-            )
+            raise ValueError(f"Node {t} is not a sink node. It has an outgoing edge to {head}.")
     if edge_weights is None:
-        edge_weights = np.array(
-            [Gc.get_attr_edge(i).get("weight", 0) for i in range(Gc.ne)]
-        )
+        edge_weights = np.array([Gc.get_attr_edge(i).get("weight", 0) for i in range(Gc.ne)])
     else:
         edge_weights = np.array(edge_weights)
         # Add the weights for the extra edges, to be 0
@@ -165,13 +148,10 @@ def solve_shortest_path(
     solution = np.where(sol >= (1 - integer_tolerance))[0]
     if not np.all(almost_integral):
         LOGGER.warning(
-            "Number of non-integral edges: %d. Solving again with integral "
-            "constraints.",
+            "Number of non-integral edges: %d. Solving again with integral constraints.",
             np.sum(~almost_integral),
         )
-        P, Gc = shortest_path(
-            Gc, s, t, create_flow_graph=False, integral_path=True, backend=backend
-        )
+        P, Gc = shortest_path(Gc, s, t, create_flow_graph=False, integral_path=True, backend=backend)
         P.solve(solver=solver, warm_start=True, **solver_kwargs)
         flow_indicator = P.symbols["_flow_i"]
         solution = np.where(flow_indicator.value > 0.5)[0]

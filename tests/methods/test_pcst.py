@@ -2,8 +2,8 @@ import os
 
 import pytest
 
-from corneto.data import Data, GraphData
 from corneto.backend import PicosBackend
+from corneto.data import Data, GraphData
 from corneto.graph import Graph
 from corneto.methods.pcst import PrizeCollectingSteinerTree
 from corneto.methods.steiner import SteinerTreeFlow

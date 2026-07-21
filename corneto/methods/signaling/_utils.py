@@ -117,17 +117,11 @@ def check_exp_graph_consistency(G, exp_list):
     for exp in exp_list:
         for node in exp_list[exp]["input"]:
             if node not in G.V:
-                raise ValueError(
-                    f"Node {node} in experiment {exp} is not in the graph."
-                )
+                raise ValueError(f"Node {node} in experiment {exp} is not in the graph.")
         for node in exp_list[exp]["output"]:
             if node not in G.V:
-                raise ValueError(
-                    f"Node {node} in experiment {exp} is not in the graph."
-                )
+                raise ValueError(f"Node {node} in experiment {exp} is not in the graph.")
         if "inhibition" in exp_list[exp]:
             for node in exp_list[exp]["inhibition"]:
                 if node not in G.V:
-                    raise ValueError(
-                        f"Node {node} in experiment {exp} is not in the graph."
-                    )
+                    raise ValueError(f"Node {node} in experiment {exp} is not in the graph.")

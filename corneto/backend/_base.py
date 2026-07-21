@@ -6,7 +6,18 @@ from typing import Any, Callable, Dict, Iterable, List, Optional, Set, Tuple, Un
 
 import numpy as np
 
-from corneto._constants import *
+from corneto._constants import (
+    DEFAULT_UB,
+    EXPR_NAME_FLOW,
+    EXPR_NAME_FLOW_INEG,
+    EXPR_NAME_FLOW_IPOS,
+    EXPR_NAME_FLOW_NZI,
+    VAR_DAG,
+    VAR_FLOW,
+    Direction,
+    Solver,
+    VarType,
+)
 from corneto._decorators import _delegate
 from corneto._settings import LOGGER, _get_matrix_builder
 from corneto.graph import BaseGraph
@@ -976,13 +987,13 @@ class Backend(abc.ABC):
         if indicator_positive_var_name is not None and indicator_negative_var_name is not None:
             Ip = P.expressions[indicator_positive_var_name]
             In = P.expressions[indicator_negative_var_name]
-            I = Ip + In
+            indicator = Ip + In
         elif indicator_positive_var_name is not None:
             Ip = P.expressions[indicator_positive_var_name]
-            I = Ip
+            indicator = Ip
         elif indicator_negative_var_name is not None:
             In = P.expressions[indicator_negative_var_name]
-            I = In
+            indicator = In
         else:
             raise ValueError("At least one indicator variable name is required")
 
@@ -993,12 +1004,12 @@ class Backend(abc.ABC):
                 edges_idx = [i for i, _ in g.in_edges(v)]
                 if len(edges_idx) > 0:
                     # Sum selected parent edges
-                    P += np.ones((len(edges_idx),)) @ I[edges_idx] <= max
+                    P += np.ones((len(edges_idx),)) @ indicator[edges_idx] <= max
         # detect the number of DAG layers to add
-        if len(I.shape) == 1:
+        if len(indicator.shape) == 1:
             n_samples = 1
         else:
-            n_samples = I.shape[1]
+            n_samples = indicator.shape[1]
 
         # Create a DAG layer num for each vertex
         L = self.Variable(acyclic_var_name, (g.num_vertices, n_samples), 0, g.num_vertices - 1)
@@ -1025,8 +1036,8 @@ class Backend(abc.ABC):
                     e_ix = np.array([i for i, (s, t) in enumerate(g.E) if len(s) > 0 and len(t) > 0])
                 edges = [g.get_edge(i) for i in e_ix]
                 # Get the index of the source / target vertices of the edge
-                s_idx = np.array([vix[list(s)[0]] for (s, _) in edges])
-                t_idx = np.array([vix[list(t)[0]] for (_, t) in edges])
+                s_idx = np.array([vix[next(iter(s))] for (s, _) in edges])
+                t_idx = np.array([vix[next(iter(t))] for (_, t) in edges])
                 # The layer position in a DAG of the target vertex of the edge
                 # has to be greater than the source vertex, otherwise Ip (pos flow) has to be 0
                 if len(e_ix) > 0:
@@ -1044,8 +1055,8 @@ class Backend(abc.ABC):
                     e_ix = np.array([i for i, (s, t) in enumerate(g.E) if len(s) > 0 and len(t) > 0])
                 edges = [g.get_edge(i) for i in e_ix]
                 # Get the index of the source / target vertices of the edge
-                s_idx = np.array([vix[list(s)[0]] for (s, _) in edges])
-                t_idx = np.array([vix[list(t)[0]] for (_, t) in edges])
+                s_idx = np.array([vix[next(iter(s))] for (s, _) in edges])
+                t_idx = np.array([vix[next(iter(t))] for (_, t) in edges])
                 if len(e_ix) > 0:
                     P += L[s_idx, i_sample] - L[t_idx, i_sample] >= In_i_order[e_ix] + (1 - g.num_vertices) * (
                         1 - In_i_order[e_ix]
@@ -1121,13 +1132,13 @@ class Backend(abc.ABC):
         if indicator_positive_var_name is not None and indicator_negative_var_name is not None:
             Ip = P.expressions[indicator_positive_var_name]
             In = P.expressions[indicator_negative_var_name]
-            I = Ip + In
+            indicator = Ip + In
         elif indicator_positive_var_name is not None:
             Ip = P.expressions[indicator_positive_var_name]
-            I = Ip
+            indicator = Ip
         elif indicator_negative_var_name is not None:
             In = P.expressions[indicator_negative_var_name]
-            I = In
+            indicator = In
         else:
             raise ValueError("At least one indicator variable name is required")
 
@@ -1137,13 +1148,13 @@ class Backend(abc.ABC):
                 edges_idx = [i for i, _ in g.in_edges(v)]
                 if edges_idx:
                     # Sum selected parent edges
-                    P += np.ones((len(edges_idx),)) @ I[edges_idx] <= max_val
+                    P += np.ones((len(edges_idx),)) @ indicator[edges_idx] <= max_val
 
-        # Determine number of samples (if I is 1D, assume 1 sample)
-        if len(I.shape) == 1:
+        # Determine number of samples (if the indicator is 1D, assume 1 sample)
+        if len(indicator.shape) == 1:
             n_samples = 1
         else:
-            n_samples = I.shape[1]
+            n_samples = indicator.shape[1]
 
         # Create a DAG layer variable for each vertex, one per sample.
         L = self.Variable(acyclic_var_name, (g.num_vertices, n_samples), 0, g.num_vertices - 1)
@@ -1171,8 +1182,8 @@ class Backend(abc.ABC):
                 else:
                     e_ix = np.array([i for i, (s, t) in enumerate(g.E) if s and t])
                 edges = [g.get_edge(i) for i in e_ix]
-                s_idx = np.array([vix[list(s)[0]] for (s, _) in edges])
-                t_idx = np.array([vix[list(t)[0]] for (_, t) in edges])
+                s_idx = np.array([vix[next(iter(s))] for (s, _) in edges])
+                t_idx = np.array([vix[next(iter(t))] for (_, t) in edges])
                 if len(e_ix) > 0:
                     P += L[t_idx, i_sample] - L[s_idx, i_sample] >= Ip_i_order[e_ix] + (1 - g.num_vertices) * (
                         1 - Ip_i_order[e_ix]
@@ -1188,8 +1199,8 @@ class Backend(abc.ABC):
                 else:
                     e_ix = np.array([i for i, (s, t) in enumerate(g.E) if s and t])
                 edges = [g.get_edge(i) for i in e_ix]
-                s_idx = np.array([vix[list(s)[0]] for (s, _) in edges])
-                t_idx = np.array([vix[list(t)[0]] for (_, t) in edges])
+                s_idx = np.array([vix[next(iter(s))] for (s, _) in edges])
+                t_idx = np.array([vix[next(iter(t))] for (_, t) in edges])
                 if len(e_ix) > 0:
                     P += L[s_idx, i_sample] - L[t_idx, i_sample] >= In_i_order[e_ix] + (1 - g.num_vertices) * (
                         1 - In_i_order[e_ix]
@@ -1269,11 +1280,11 @@ class Backend(abc.ABC):
         Ip = P.get_symbol(varname + "_ipos") if any(ub > 0) else None
         In = P.get_symbol(varname + "_ineg") if any(lb < 0) else None
         if Ip is not None and In is not None:
-            I = Ip + In
+            indicator = Ip + In
         elif Ip is not None:
-            I = Ip
+            indicator = Ip
         elif In is not None:
-            I = In
+            indicator = In
         else:
             raise ValueError()
         # Limit the number of parents per node, if requested
@@ -1283,7 +1294,7 @@ class Backend(abc.ABC):
                 edges_idx = [i for i, _ in g.in_edges(v)]
                 if len(edges_idx) > 0:
                     # Sum selected parent edges
-                    P += np.ones((len(edges_idx),)) @ I[edges_idx] <= max
+                    P += np.ones((len(edges_idx),)) @ indicator[edges_idx] <= max
         # Create a DAG layer num for each vertex
         L = self.Variable("_dag_layer_pos", (g.num_vertices,), 0, g.num_vertices - 1)
         vix = {v: i for i, v in enumerate(g.vertices)}
@@ -1337,25 +1348,25 @@ class Backend(abc.ABC):
             name = V.name + suffix
         # TODO: Add option to create shared indicators for n_flows > 1, so if
         # I_i = 0 => V_1i, ..., V_ni = 0, if I_i = 1, LB <= V_1i, ..., V_ni <= UB
-        I = self.Variable(name, S.shape, 0, 1, vartype=VarType.BINARY)
+        indicator = self.Variable(name, S.shape, 0, 1, vartype=VarType.BINARY)
         blocked = np.isclose(ub, 0) & np.isclose(lb, 0)
         if np.sum(blocked) > 0:
             if blocked.ndim == 0:
-                c += [I == 0, S == 0]
+                c += [indicator == 0, S == 0]
             elif blocked.ndim == 1:
                 idx = np.where(blocked)[0]
-                c += [I[idx] == 0, S[idx] == 0]
+                c += [indicator[idx] == 0, S[idx] == 0]
             elif blocked.ndim == 2:
                 for col in range(blocked.shape[1]):
                     idx = np.where(blocked[:, col])[0]
                     if len(idx) > 0:
-                        c += [I[idx, col] == 0, S[idx, col] == 0]
+                        c += [indicator[idx, col] == 0, S[idx, col] == 0]
             else:
                 raise ValueError(f"Unsupported indicator bounds dimensionality: {blocked.ndim}")
         # Add constraint: lb * I <= V <= ub * I
         if V._provided_lb is None or V._provided_ub is None:
             raise ValueError(f"The continuous variable {V.name} is unbounded, indicators cannot be created.")
-        c += [S >= I.multiply(lb), S <= I.multiply(ub)]
+        c += [S >= indicator.multiply(lb), S <= indicator.multiply(ub)]
         return self.Problem(c)
 
     def NonZeroIndicator(
@@ -1403,8 +1414,8 @@ class Backend(abc.ABC):
         c = []
         I_pos = self.Variable(V.name + suffix_pos, S.shape, 0, 1, vartype=VarType.BINARY)
         I_neg = self.Variable(V.name + suffix_neg, S.shape, 0, 1, vartype=VarType.BINARY)
-        I = I_pos + I_neg
-        c += [I <= 1]  # Ensure mutual exclusivity
+        indicator = I_pos + I_neg
+        c += [indicator <= 1]  # Ensure mutual exclusivity
 
         # Disable infeasible binary indicators based on bounds
         if np.sum(ub <= 0) > 0:

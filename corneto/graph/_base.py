@@ -857,7 +857,8 @@ class BaseGraph(abc.ABC):
 
         Args:
             values: Whether to include edge values in the matrix.
-            sparse: If True, returns the matrix as a sparse CSR matrix (default is False, which returns a dense NumPy array).
+            sparse: If True, return a sparse CSR matrix. By default, return a
+                dense NumPy array.
 
         Returns:
             Vertex incidence matrix as a numpy array or a sparse matrix.
@@ -1043,7 +1044,7 @@ class BaseGraph(abc.ABC):
         Returns:
             Tuple of (compression_type, updated_filepath)
         """
-        base, ext = os.path.splitext(filepath)
+        _base, ext = os.path.splitext(filepath)
 
         # Auto-detect compression from file extension if requested
         if compression == "auto":
@@ -1133,7 +1134,7 @@ class BaseGraph(abc.ABC):
             Loaded graph instance
         """
         # Determine compression type based on file extension
-        base, ext = os.path.splitext(filename)
+        _base, ext = os.path.splitext(filename)
 
         # Auto-detect compression from file extension if requested
         if compression == "auto":

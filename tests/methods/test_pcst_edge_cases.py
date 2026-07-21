@@ -1,10 +1,9 @@
 import numpy as np
 import pytest
 
-from corneto.data import Data
-from corneto.graph import EdgeType
 from corneto.backend import PicosBackend
-from corneto.graph import Graph
+from corneto.data import Data
+from corneto.graph import EdgeType, Graph
 from corneto.methods.pcst import PrizeCollectingSteinerTree
 from corneto.methods.steiner import SteinerTreeFlow
 

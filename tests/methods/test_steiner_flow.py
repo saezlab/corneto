@@ -3,8 +3,8 @@ import os
 import numpy as np
 import pytest
 
-from corneto.data import Data
 from corneto.backend import PicosBackend
+from corneto.data import Data
 from corneto.graph import Graph
 from corneto.methods.steiner import SteinerTreeFlow
 

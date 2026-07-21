@@ -140,33 +140,22 @@ class MultiSampleIMAT(MultiSampleFBA):
             for feature in sample.features:
                 # Check if this is a gene feature (mapping="none")
                 if feature.mapping == "none":
-                    gene_scores[feature.id] = (
-                        float(feature.value) if feature.value is not None else 0.0
-                    )
+                    gene_scores[feature.id] = float(feature.value) if feature.value is not None else 0.0
 
             if not gene_scores:
                 continue
 
             # Check if thresholds are provided (non-None values)
-            use_thresholds = (
-                self.high_expression_threshold is not None
-                or self.low_expression_threshold is not None
-            )
+            use_thresholds = self.high_expression_threshold is not None or self.low_expression_threshold is not None
 
             # Process gene scores - either apply thresholds or use directly
             processed_gene_scores = {}
             if use_thresholds:
                 # Apply thresholds to gene scores before GPR evaluation
                 for gene, score in gene_scores.items():
-                    if (
-                        self.high_expression_threshold is not None
-                        and score >= self.high_expression_threshold
-                    ):
+                    if self.high_expression_threshold is not None and score >= self.high_expression_threshold:
                         processed_gene_scores[gene] = 1.0
-                    elif (
-                        self.low_expression_threshold is not None
-                        and score <= self.low_expression_threshold
-                    ):
+                    elif self.low_expression_threshold is not None and score <= self.low_expression_threshold:
                         processed_gene_scores[gene] = -1.0
                     # Genes with expressions between thresholds are not included
             else:
@@ -196,9 +185,7 @@ class MultiSampleIMAT(MultiSampleFBA):
 
                 # Filter for genes we have scores for
                 relevant_genes = {
-                    g: processed_gene_scores.get(g, 0.0)
-                    for g in rule_genes
-                    if g in processed_gene_scores
+                    g: processed_gene_scores.get(g, 0.0) for g in rule_genes if g in processed_gene_scores
                 }
 
                 if not relevant_genes:
@@ -251,9 +238,7 @@ class MultiSampleIMAT(MultiSampleFBA):
         # Keep the full-size edge_has_flux indicator from the parent class for
         # structured regularization across samples. iMAT-specific nonzero
         # support vars are added only for scored reactions per sample below.
-        unblocked = (
-            flow_problem.expr.edge_has_flux if self.use_bigm_constraints else None
-        )
+        unblocked = flow_problem.expr.edge_has_flux if self.use_bigm_constraints else None
 
         # Process weights for each sample
         n_samples = len(data.samples)
@@ -271,12 +256,7 @@ class MultiSampleIMAT(MultiSampleFBA):
                 continue
 
             # Convert reaction IDs to indices
-            rxn_indices = np.array(
-                [
-                    next(iter(graph.get_edges_by_attr("id", rxn_id)))
-                    for rxn_id in rxn_ids
-                ]
-            )
+            rxn_indices = np.array([next(iter(graph.get_edges_by_attr("id", rxn_id))) for rxn_id in rxn_ids])
             weights = np.array(weights, dtype=float)
 
             # Scale weights if requested
@@ -309,10 +289,7 @@ class MultiSampleIMAT(MultiSampleFBA):
                 suffix_neg=suffix_neg,
             )
 
-            sample_active = (
-                flow_problem.expr[f"{F.name}{suffix_neg}"]
-                + flow_problem.expr[f"{F.name}{suffix_pos}"]
-            )
+            sample_active = flow_problem.expr[f"{F.name}{suffix_neg}"] + flow_problem.expr[f"{F.name}{suffix_pos}"]
 
             # Split into highly and lowly expressed reactions
             idx_pos = np.where(scored_weights > 0)[0]

@@ -48,6 +48,7 @@ def corneto_graph_to_networkx(
     graph_class: Optional[Callable] = None,
     copy_attributes: bool = True,
 ):
+    """Convert a CORNETO graph to a NetworkX graph."""
     nx = import_optional_module("networkx")
     if graph_class is not None:
         Gx = graph_class()

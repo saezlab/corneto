@@ -19,9 +19,7 @@ from corneto.methods.signaling._utils import (
 )
 
 
-def create_flow_graph(
-    G: BaseGraph, inputs: Iterable[Any], outputs: Iterable[Any]
-) -> BaseGraph:
+def create_flow_graph(G: BaseGraph, inputs: Iterable[Any], outputs: Iterable[Any]) -> BaseGraph:
     """Add flow edges to perturbed and measured nodes in graph ``G``."""
     G1 = G.copy()
     for v in unique_iter(outputs):
@@ -67,13 +65,9 @@ def prune_graph(
     reachable_outputs = set()
 
     for sample in data.samples.values():
-        sample_inputs = sample.query.select(
-            lambda f: f.data[property_key] == input_key
-        ).pluck()
+        sample_inputs = sample.query.select(lambda f: f.data[property_key] == input_key).pluck()
 
-        sample_outputs = sample.query.select(
-            lambda f: f.data[property_key] == output_key
-        ).pluck()
+        sample_outputs = sample.query.select(lambda f: f.data[property_key] == output_key).pluck()
 
         # Intersect with the current graph's vertices
         inputs_in_graph = graph_vertices & sample_inputs
@@ -92,9 +86,7 @@ def prune_graph(
     return pruned_graph, pruned_data
 
 
-def create_signed_error_expression(
-    P, values, index_of_vertices=None, condition_index=None, vertex_variable=None
-):
+def create_signed_error_expression(P, values, index_of_vertices=None, condition_index=None, vertex_variable=None):
     # If variable not provided, assumes we have the expected variables in the problem
     if vertex_variable is None:
         if "vertex_value" not in P.expr:
@@ -108,23 +100,12 @@ def create_signed_error_expression(
         raise ValueError("vertex_variable must be 1D or 2D")
     if len(vertex_variable.shape) == 2:
         if condition_index is None:
-            raise ValueError(
-                "condition_index must be provided if there are more than one sample"
-            )
-        return (
-            1
-            - vertex_variable[index_of_vertices, condition_index].multiply(
-                np.sign(values)
-            )
-        ).multiply(abs(values))
+            raise ValueError("condition_index must be provided if there are more than one sample")
+        return (1 - vertex_variable[index_of_vertices, condition_index].multiply(np.sign(values))).multiply(abs(values))
     else:
         if condition_index is not None and condition_index > 0:
-            raise ValueError(
-                "condition_index must be None or 0 if there is only one single sample"
-            )
-        return (
-            1 - vertex_variable[index_of_vertices].multiply(np.sign(values))
-        ).multiply(abs(values))
+            raise ValueError("condition_index must be None or 0 if there is only one single sample")
+        return (1 - vertex_variable[index_of_vertices].multiply(np.sign(values))).multiply(abs(values))
 
 
 class CarnivalFlow(FlowMethod):
@@ -242,9 +223,7 @@ class CarnivalFlow(FlowMethod):
                 # )
                 # sample_inputs = list(sample_inputs.keys())
                 # sample_outputs = list(sample_outputs.keys())
-                sample_inputs = sample.query.select(
-                    lambda f: f.data[self.data_type_key] == self.data_input_key
-                ).pluck()
+                sample_inputs = sample.query.select(lambda f: f.data[self.data_type_key] == self.data_input_key).pluck()
                 sample_outputs = sample.query.select(
                     lambda f: f.data[self.data_type_key] == self.data_output_key
                 ).pluck()
@@ -255,9 +234,7 @@ class CarnivalFlow(FlowMethod):
                 unreachable = graph_vertices - set(pruned_g.V) - sample_inputs
                 print(f"Unreachable vertices for sample: {len(unreachable)}")
                 lb_dist.append(dist_dict)
-                unreachable_vertices_per_sample_idx.append(
-                    [vertex_idx[v] for v in unreachable]
-                )
+                unreachable_vertices_per_sample_idx.append([vertex_idx[v] for v in unreachable])
             self.vertex_lb_dist = lb_dist
 
         # Alias for convenience and extract key constants
@@ -270,12 +247,8 @@ class CarnivalFlow(FlowMethod):
         interaction = get_interactions(graph)
 
         # Create binary variables for edge activations and inhibitions
-        Eact = self.backend.Variable(
-            "edge_activates", (graph.num_edges, num_experiments), vartype=VarType.BINARY
-        )
-        Einh = self.backend.Variable(
-            "edge_inhibits", (graph.num_edges, num_experiments), vartype=VarType.BINARY
-        )
+        Eact = self.backend.Variable("edge_activates", (graph.num_edges, num_experiments), vartype=VarType.BINARY)
+        Einh = self.backend.Variable("edge_inhibits", (graph.num_edges, num_experiments), vartype=VarType.BINARY)
         # Prevent an edge from activating and inhibiting simultaneously
         problem += Eact + Einh <= 1
 
@@ -290,9 +263,7 @@ class CarnivalFlow(FlowMethod):
 
         # Unreachable vertices are set to 0 (if heuristics are used)
         if self.use_heuristic_bfs:
-            for sample_idx, unreachable in enumerate(
-                unreachable_vertices_per_sample_idx
-            ):
+            for sample_idx, unreachable in enumerate(unreachable_vertices_per_sample_idx):
                 if len(unreachable) == 0:
                     continue
                 problem += V[unreachable, sample_idx] == 0
@@ -340,16 +311,12 @@ class CarnivalFlow(FlowMethod):
         # Constrain activations based on upstream signals
         cond_act = (Int[edges_with_head, :] > 0).astype(int)
         cond_inh = (Int[edges_with_head, :] < 0).astype(int)
-        problem += Eact[edges_with_head, :] <= upstream_Va.multiply(
-            cond_act
-        ) + upstream_Vi.multiply(cond_inh)
+        problem += Eact[edges_with_head, :] <= upstream_Va.multiply(cond_act) + upstream_Vi.multiply(cond_inh)
 
         # Constrain inhibitions (swapping conditions)
         cond_act_inv = (Int[edges_with_head, :] < 0).astype(int)
         cond_inh_inv = (Int[edges_with_head, :] > 0).astype(int)
-        problem += Einh[edges_with_head, :] <= upstream_Va.multiply(
-            cond_act_inv
-        ) + upstream_Vi.multiply(cond_inh_inv)
+        problem += Einh[edges_with_head, :] <= upstream_Va.multiply(cond_act_inv) + upstream_Vi.multiply(cond_inh_inv)
 
         # Pre-collect all input features for use in designated perturbation constraints
         # all_inputs = data.collect_features(self.data_type_key, self.data_input_key)
@@ -363,9 +330,9 @@ class CarnivalFlow(FlowMethod):
             #    self.data_type_key, self.data_input_key
             # )
             sample_inputs = dict(
-                sample.query.select(
-                    lambda f: f.data[self.data_type_key] == self.data_input_key
-                ).pluck(lambda f: (f.id, f.value))
+                sample.query.select(lambda f: f.data[self.data_type_key] == self.data_input_key).pluck(
+                    lambda f: (f.id, f.value)
+                )
             )
 
             # For multiple experiments, activate only designated perturbation inputs.
@@ -375,10 +342,7 @@ class CarnivalFlow(FlowMethod):
                 p_nodes_set = set(sample_inputs.keys())
                 other_inputs = all_inputs - p_nodes_set
                 other_input_edges = [
-                    idx
-                    for v in other_inputs
-                    for (idx, _) in graph.in_edges(v)
-                    if len(graph.get_edge(idx)[0]) == 0
+                    idx for v in other_inputs for (idx, _) in graph.in_edges(v) if len(graph.get_edge(idx)[0]) == 0
                 ]
                 if other_input_edges:
                     problem += Eact[other_input_edges, i] == 0
@@ -389,9 +353,7 @@ class CarnivalFlow(FlowMethod):
             p_values = list(sample_inputs.values())
             p_positions = [graph.V.index(node) for node in p_nodes]
             # Filter out zero perturbations and only use nonzero signals
-            nonzero_positions = [
-                pos for pos, val in zip(p_positions, p_values) if val != 0
-            ]
+            nonzero_positions = [pos for pos, val in zip(p_positions, p_values) if val != 0]
             nonzero_signs = [np.sign(val) for val in p_values if val != 0]
             if nonzero_positions:
                 problem += V[np.array(nonzero_positions), i] == np.array(nonzero_signs)
@@ -401,9 +363,9 @@ class CarnivalFlow(FlowMethod):
             #    self.data_type_key, self.data_output_key
             # )
             sample_outputs = dict(
-                sample.query.select(
-                    lambda f: f.data[self.data_type_key] == self.data_output_key
-                ).pluck(lambda f: (f.id, f.value))
+                sample.query.select(lambda f: f.data[self.data_type_key] == self.data_output_key).pluck(
+                    lambda f: (f.id, f.value)
+                )
             )
 
             m_nodes = list(sample_outputs.keys())
@@ -495,9 +457,7 @@ class CarnivalILP(Method):
         data_output_key: str = "output",
         backend: Optional[Backend] = None,
     ):
-        super().__init__(
-            lambda_reg=0, backend=backend, disable_structured_sparsity=True
-        )
+        super().__init__(lambda_reg=0, backend=backend, disable_structured_sparsity=True)
         self.beta_weight = beta_weight
         self.max_dist = max_dist
         self.penalize = penalize
@@ -611,13 +571,9 @@ class CarnivalILP(Method):
             # inhibit it (E_act=0, E_inh=1), or do nothing (E_act=0, E_inh=0)
             si = V_index[s]
             ti = V_index[t]
-            interaction = int(
-                graph.get_attr_edge(edge_index).get(self.interaction_graph_attribute)
-            )
+            interaction = int(graph.get_attr_edge(edge_index).get(self.interaction_graph_attribute))
             if interaction not in {-1, 1}:
-                raise ValueError(
-                    f"Invalid interaction value for edge {edge_index}: {interaction}"
-                )
+                raise ValueError(f"Invalid interaction value for edge {edge_index}: {interaction}")
             for condition in range(num_conditions):
                 edge_activates = at_condition(E_act, edge_index, condition)
                 edge_inhibits = at_condition(E_inh, edge_index, condition)
@@ -635,20 +591,18 @@ class CarnivalILP(Method):
                     edge_selected = edge_activates + edge_inhibits
                     source_position = at_condition(V_pos, si, condition)
                     target_position = at_condition(V_pos, ti, condition)
-                    P += target_position - source_position >= 1 - max_dist * (
-                        1 - edge_selected
-                    )
+                    P += target_position - source_position >= 1 - max_dist * (1 - edge_selected)
 
         for condition, (sample_name, sample) in enumerate(data.samples.items()):
             perturbations = dict(
-                sample.query.select(
-                    lambda f: f.data[self.data_type_key] == self.data_input_key
-                ).pluck(lambda f: (f.id, f.value))
+                sample.query.select(lambda f: f.data[self.data_type_key] == self.data_input_key).pluck(
+                    lambda f: (f.id, f.value)
+                )
             )
             measurements = dict(
-                sample.query.select(
-                    lambda f: f.data[self.data_type_key] == self.data_output_key
-                ).pluck(lambda f: (f.id, f.value))
+                sample.query.select(lambda f: f.data[self.data_type_key] == self.data_output_key).pluck(
+                    lambda f: (f.id, f.value)
+                )
             )
 
             for vertex in graph.V:
@@ -656,14 +610,8 @@ class CarnivalILP(Method):
                 vertex_index = V_index[vertex]
                 vertex_activated = at_condition(V_act, vertex_index, condition)
                 vertex_inhibited = at_condition(V_inh, vertex_index, condition)
-                incoming_activating = sum(
-                    at_condition(E_act, edge_index, condition)
-                    for edge_index in in_edge_indices
-                )
-                incoming_inhibiting = sum(
-                    at_condition(E_inh, edge_index, condition)
-                    for edge_index in in_edge_indices
-                )
+                incoming_activating = sum(at_condition(E_act, edge_index, condition) for edge_index in in_edge_indices)
+                incoming_inhibiting = sum(at_condition(E_inh, edge_index, condition) for edge_index in in_edge_indices)
                 if in_edge_indices:
                     P += incoming_activating + incoming_inhibiting <= 1
 
@@ -686,9 +634,7 @@ class CarnivalILP(Method):
             error_terms = []
             for vertex, value in objective_data.items():
                 vertex_index = V_index[vertex]
-                prediction = at_condition(
-                    V_act, vertex_index, condition
-                ) - at_condition(V_inh, vertex_index, condition)
+                prediction = at_condition(V_act, vertex_index, condition) - at_condition(V_inh, vertex_index, condition)
                 sign = np.sign(value)
                 if sign > 0:
                     error_terms.append(np.abs(value) * (sign - prediction))
@@ -705,9 +651,7 @@ class CarnivalILP(Method):
                 reg = V_act.sum() + V_inh.sum() + E_act.sum() + E_inh.sum()
             else:
                 raise ValueError("penalize must be 'nodes', 'edges', or 'both'")
-            P.add_objective(
-                reg, weight=self.beta_weight, name=f"regularization_{self.penalize}"
-            )
+            P.add_objective(reg, weight=self.beta_weight, name=f"regularization_{self.penalize}")
 
         # Finally, register some aliases for convenience
         P.register("vertex_values", V_act - V_inh)

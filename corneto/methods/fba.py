@@ -244,9 +244,9 @@ class MultiSampleFBA(FlowMethod):
             # Process objective reactions
             # objs = sample_data.filter_by("type", "objective")
             objs = dict(
-                sample_data.query.filter(
-                    lambda f: f.data.get("role", None) == "objective"
-                ).pluck(lambda f: (f.id, f.value))
+                sample_data.query.filter(lambda f: f.data.get("role", None) == "objective").pluck(
+                    lambda f: (f.id, f.value)
+                )
             )
             for rxn_id, value in objs.items():
                 rxn_obj = next(iter(graph.get_edges_by_attr("id", rxn_id)))

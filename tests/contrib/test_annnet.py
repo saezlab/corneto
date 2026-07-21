@@ -74,10 +74,7 @@ def test_undirected_hyperedge_is_canonicalized_to_member_set():
 
     restored = from_annnet(converted)
     assert restored.get_edge(0) == (members, members)
-    assert (
-        restored.get_attr_edge(0).get_attr(Attr.EDGE_TYPE)
-        == EdgeType.UNDIRECTED.value
-    )
+    assert restored.get_attr_edge(0).get_attr(Attr.EDGE_TYPE) == EdgeType.UNDIRECTED.value
 
 
 def test_non_string_vertex_ids_are_converted_to_strings():

@@ -3,7 +3,7 @@ from typing import Any, List, Optional, Set, Tuple, Union
 
 import numpy as np
 
-from corneto._constants import *
+from corneto._constants import Direction, Solver, VarType
 from corneto._settings import _numpy_array
 from corneto.backend._base import (
     Backend,
@@ -212,7 +212,7 @@ class PicosBackend(Backend):
         p: ProblemDef,
         objective: Optional[CExpression] = None,
         solver: Optional[Union[str, Solver]] = None,
-        max_seconds: int = None,
+        max_seconds: Optional[int] = None,
         warm_start: bool = False,
         verbosity: int = 0,
         **options,

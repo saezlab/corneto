@@ -107,9 +107,7 @@ def to_annnet(graph: BaseGraph, *, copy_attributes: bool = True) -> "AnnNet":
     for vertex in graph.V:
         vertex_id = str(vertex)
         if vertex_id in used_ids:
-            raise ValueError(
-                f"Multiple CORNETO vertices map to AnnNet vertex {vertex_id!r}."
-            )
+            raise ValueError(f"Multiple CORNETO vertices map to AnnNet vertex {vertex_id!r}.")
         used_ids.add(vertex_id)
         vertex_ids[vertex] = vertex_id
         attributes = {}
@@ -127,22 +125,17 @@ def to_annnet(graph: BaseGraph, *, copy_attributes: bool = True) -> "AnnNet":
     for index, (source, target) in graph.edges():
         if not source or not target:
             raise ValueError(
-                f"AnnNet conversion requires both endpoint sets; CORNETO edge {index} "
-                "has an empty source or target."
+                f"AnnNet conversion requires both endpoint sets; CORNETO edge {index} has an empty source or target."
             )
 
         edge_attributes = graph.get_attr_edge(index)
         edge_type = edge_attributes.get(Attr.EDGE_TYPE.value, EdgeType.DIRECTED)
         directed = edge_type in {EdgeType.DIRECTED, EdgeType.DIRECTED.value}
-        annnet_edge_id = str(
-            edge_attributes.get(_ANNNET_EDGE_ID, f"corneto_edge_{index}")
-        )
+        annnet_edge_id = str(edge_attributes.get(_ANNNET_EDGE_ID, f"corneto_edge_{index}"))
         attributes = {}
         if copy_attributes:
             ordinary_attributes = {
-                key: value
-                for key, value in edge_attributes.items()
-                if key not in _CORNETO_EDGE_RESERVED
+                key: value for key, value in edge_attributes.items() if key not in _CORNETO_EDGE_RESERVED
             }
             attributes = _copy_supported_attributes(
                 ordinary_attributes,
@@ -181,16 +174,8 @@ def to_annnet(graph: BaseGraph, *, copy_attributes: bool = True) -> "AnnNet":
             source_arg = annnet_source[0] if len(annnet_source) == 1 else annnet_source
             target_arg = annnet_target[0] if len(annnet_target) == 1 else annnet_target
         else:
-            source_arg = {
-                vertex_ids[v]: -_endpoint_magnitude(
-                    edge_attributes, Attr.SOURCE_ATTR, v
-                )
-                for v in source
-            }
-            target_arg = {
-                vertex_ids[v]: _endpoint_magnitude(edge_attributes, Attr.TARGET_ATTR, v)
-                for v in target
-            }
+            source_arg = {vertex_ids[v]: -_endpoint_magnitude(edge_attributes, Attr.SOURCE_ATTR, v) for v in source}
+            target_arg = {vertex_ids[v]: _endpoint_magnitude(edge_attributes, Attr.TARGET_ATTR, v) for v in target}
 
         result.add_edges(
             source_arg,
@@ -263,31 +248,16 @@ def from_annnet(graph: "AnnNet", *, copy_attributes: bool = True) -> Graph:
             attributes[_ANNNET_EDGE_ID] = edge_id
 
         if directed:
-            corneto_source = {
-                vertex: _edge_coefficient(matrix, row_by_vertex, edge_index, vertex)
-                for vertex in source
-            }
-            corneto_target = {
-                vertex: _edge_coefficient(matrix, row_by_vertex, edge_index, vertex)
-                for vertex in target
-            }
+            corneto_source = {vertex: _edge_coefficient(matrix, row_by_vertex, edge_index, vertex) for vertex in source}
+            corneto_target = {vertex: _edge_coefficient(matrix, row_by_vertex, edge_index, vertex) for vertex in target}
         else:
             members = sorted(set(source) | set(target), key=str)
             if len(members) == 2:
-                corneto_source = {
-                    members[0]: _edge_coefficient(
-                        matrix, row_by_vertex, edge_index, members[0]
-                    )
-                }
-                corneto_target = {
-                    members[1]: _edge_coefficient(
-                        matrix, row_by_vertex, edge_index, members[1]
-                    )
-                }
+                corneto_source = {members[0]: _edge_coefficient(matrix, row_by_vertex, edge_index, members[0])}
+                corneto_target = {members[1]: _edge_coefficient(matrix, row_by_vertex, edge_index, members[1])}
             else:
                 corneto_source = {
-                    vertex: _edge_coefficient(matrix, row_by_vertex, edge_index, vertex)
-                    for vertex in members
+                    vertex: _edge_coefficient(matrix, row_by_vertex, edge_index, vertex) for vertex in members
                 }
                 corneto_target = dict(corneto_source)
 
