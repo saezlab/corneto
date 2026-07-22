@@ -103,7 +103,7 @@ def parse_version_key(tag: str) -> Tuple[int, int, int, int, int]:
 
     # Fallback: extract up to 3 numeric components; treat as stable
     nums = [int(x) for x in re.findall(r"\d+", s)]
-    nums = (nums + [0, 0, 0])[:3]
+    nums = [*nums, 0, 0, 0][:3]
     return (nums[0], nums[1], nums[2], 0, 0)
 
 
@@ -153,7 +153,6 @@ def format_release_date(published_at: Optional[str]) -> str:
 def generate_release_markdown(release: Dict) -> str:
     """Generate Sphinx-compatible markdown for a release."""
     tag_name = release["tag_name"]
-    name = release.get("name") or tag_name
     published_at = format_release_date(release.get("published_at"))
     body = clean_release_body(release.get("body"))
     html_url = release.get("html_url", "")
@@ -224,13 +223,27 @@ def update_releases_index(releases: List[Dict], releases_dir: Path, *, sort_by: 
     """Update the releases index.md file.
 
     The toctree is written in the desired order (newest first). We do not rely on
-    the ``:reversed:`` option.
+    the ``:reversed:`` option. Locally maintained pages that do not correspond to
+    a published GitHub release are preserved in the index.
     """
     sorted_releases = sort_releases(releases, sort_by=sort_by)
+    release_pages = [safe_filename_from_tag(release["tag_name"]) for release in sorted_releases]
+    release_page_set = set(release_pages)
+    local_pages = {
+        path.stem for path in releases_dir.glob("*.md") if path.stem != "index" and path.stem not in release_page_set
+    }
+    local_version_pages = sorted(
+        (page for page in local_pages if _version_re.match(page)),
+        key=parse_version_key,
+        reverse=True,
+    )
+    local_guide_pages = sorted(local_pages - set(local_version_pages))
+    toctree_pages = local_version_pages + local_guide_pages + release_pages
 
     content = """# Release Notes
 
-This section contains detailed release notes for CORNETO versions, documenting new features, improvements, bug fixes, and breaking changes.
+This section contains detailed release notes for CORNETO versions, documenting new features,
+improvements, bug fixes, and breaking changes.
 
 ## Recent Releases
 
@@ -239,10 +252,8 @@ This section contains detailed release notes for CORNETO versions, documenting n
 
 """
 
-    # Add each release to the toctree in already-sorted order
-    for release in sorted_releases:
-        tag_name = release["tag_name"]
-        content += f"{safe_filename_from_tag(tag_name)}\n"
+    for page in toctree_pages:
+        content += f"{page}\n"
 
     content += """```
 
@@ -263,7 +274,9 @@ CORNETO follows [semantic versioning](https://semver.org/) with the following re
 
 ## Contributing to Releases
 
-For information on contributing to CORNETO and the release process, see our [contributing guidelines](https://github.com/saezlab/corneto/blob/main/CONTRIBUTING.md) and [release documentation](https://github.com/saezlab/corneto/blob/main/RELEASE.md).
+For information on contributing to CORNETO and the release process, see our
+[contributing guidelines](https://github.com/saezlab/corneto/blob/main/CONTRIBUTING.md) and
+[release documentation](https://github.com/saezlab/corneto/blob/main/RELEASE.md).
 """
 
     index_file = releases_dir / "index.md"

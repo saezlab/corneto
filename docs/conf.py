@@ -126,6 +126,7 @@ nb_execution_timeout = 300
 nb_merge_streams = True
 nb_execution_excludepatterns = [
     "**/kpnn-with-sc.ipynb",  # very slow, requires jax, keras
+    "**/multi-pcst-grb.ipynb",  # requires Gurobi and a valid license
     "tutorials/**/*.ipynb",  # one directory below tutorials
     "tutorials/**/**/*.ipynb",  # contributed tutorials nested two levels deep
 ]
