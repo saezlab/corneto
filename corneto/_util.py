@@ -360,7 +360,7 @@ class Info:
         """
 
     def _mime_(self):
-        # Marimo’s #1 hook for rich HTML
+        # Marimo's #1 hook for rich HTML
         return "text/html", self._html
 
     def _repr_html_(self):
@@ -368,7 +368,7 @@ class Info:
         return self._html
 
     def __repr__(self):
-        # Plain‑text fallback
+        # Plain-text fallback
         return "\n".join(f"{v['title']}: {v['message']}" for v in self.info.values())
 
 

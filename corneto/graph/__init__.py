@@ -1,3 +1,5 @@
+"""Graph data structures and generators."""
+
 from corneto.graph._base import BaseGraph, EdgeType
 from corneto.graph._graph import Attr, Attributes, Graph
 from corneto.graph._random import (
@@ -6,10 +8,11 @@ from corneto.graph._random import (
 )
 
 __all__ = [
+    "Attr",
     "Attributes",
     "BaseGraph",
     "EdgeType",
     "Graph",
     "duplication_divergence_network",
-    "preferential_attachment_networkAttr",
+    "preferential_attachment_network",
 ]

@@ -1,5 +1,9 @@
 name: Publish Python Package
 
+env:
+  POETRY_VERSION: "2.4.1"
+  POETRY_DYNAMIC_VERSIONING_VERSION: "1.9.1"
+
 on:
   push:
     tags:
@@ -27,11 +31,11 @@ jobs:
         with:
           python-version: '3.11'
 
-      # 3. Install Poetry (latest 1.x) into .venv
+      # 3. Install the same pinned Poetry toolchain used by the release gate
       - name: Install Poetry
         uses: snok/install-poetry@v1
         with:
-          version: 'latest'
+          version: '2.4.1'
           virtualenvs-create: true
           virtualenvs-in-project: true
 
@@ -46,7 +50,9 @@ jobs:
 
       # 5. Install dependencies
       - name: Install dependencies
-        run: poetry install --no-interaction --no-root
+        run: |
+          poetry self add "poetry-dynamic-versioning[plugin]==${POETRY_DYNAMIC_VERSIONING_VERSION}"
+          poetry install --no-interaction --no-root
 
       # 6. Validate tag and determine if should publish
       - name: Validate tag for publishing
@@ -79,7 +85,9 @@ jobs:
       # 7. Build source & wheel (only if should publish)
       - name: Build package
         if: steps.validate_tag.outputs.should_publish == 'true'
-        run: poetry build
+        run: |
+          poetry build
+          poetry run twine check dist/*
 
       # 8. Create GitHub Release with automated notes
       - name: Create GitHub Release

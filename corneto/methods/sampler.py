@@ -1,3 +1,5 @@
+"""Sampling utilities for alternative near-optimal solutions."""
+
 import logging
 import re
 from collections.abc import Sequence
@@ -6,6 +8,16 @@ from typing import Dict, List, Union
 import numpy as np
 
 logger = logging.getLogger(__name__)
+
+__all__ = ["sample_alternative_solutions"]
+
+
+def _objective_value(value) -> float:
+    """Normalize a scalar objective value across backend array conventions."""
+    array = np.asarray(value)
+    if array.size != 1:
+        raise ValueError(f"Expected a scalar objective value, got shape {array.shape}")
+    return float(array.item())
 
 
 def sample_alternative_solutions(
@@ -53,10 +65,9 @@ def sample_alternative_solutions(
         rng (np.random.Generator | int | None, optional): Random number
             generator or seed for reproducibility. Defaults to `None`.
         collect_vars (Sequence[str] | None, optional): Names of the variables whose
-            values you want returned.
-            - If `None` (default), collect *every* variable in `problem.expr`.
-            - If empty list `[]`, collect *none* (method runs but returns an empty dict).
-            - Otherwise, collect only the named variables.
+            values you want returned. If `None`, collect every variable in
+            `problem.expr`. An empty list collects none; otherwise, collect only
+            the named variables.
         exclude_objectives_pattern (str | None, optional): A regular-expression
             pattern. Objectives whose names match this pattern will be excluded
             from the relative-error tolerance check. If `None`, no objectives are
@@ -70,13 +81,13 @@ def sample_alternative_solutions(
     Returns:
         dict[str, np.ndarray]:
             A mapping from each collected variable name to a NumPy array of shape
-            `(n_samples, *variable.shape)`, where:
+            `(n_samples, ...)`, where the remaining axes match the variable shape:
             - `n_samples ≥ 1` counts the incumbent plus every accepted perturbation
             - the remaining dimensions match the variable's own shape
 
             Example:
                 out = sample_alternative_solutions(problem, "x", collect_vars=["x", "y"])
-                x_stack = out["x"]        # shape (n_samples, *x.shape)
+                x_stack = out["x"]        # leading axis indexes samples
                 incumbent_x = x_stack[0]  # first slice is always the baseline
 
     Raises:
@@ -113,7 +124,7 @@ def sample_alternative_solutions(
     # 1) original solve
     logger.debug("Solving original model …")
     problem.solve(**solver_kwargs, verbosity=0)
-    baseline_obj = {o.name: float(o.value) for o in problem.objectives}
+    baseline_obj = {o.name: _objective_value(o.value) for o in problem.objectives}
     logger.debug("Baseline objectives: " + ", ".join(f"{k}={v:.6g}" for k, v in baseline_obj.items()))
 
     for v in collect_vars:
@@ -165,7 +176,7 @@ def sample_alternative_solutions(
                 )
                 continue
 
-            val = float(o.value)
+            val = _objective_value(o.value)
             current_vals[o.name] = val
             denom = max(abs(baseline_obj[o.name]), 1e-9)
             rel_err_val = abs(val - baseline_obj[o.name]) / denom
@@ -183,7 +194,8 @@ def sample_alternative_solutions(
                 if logger.isEnabledFor(logging.DEBUG):  # Log only if DEBUG is enabled
                     logger.debug(
                         f"Objective '{o.name}' rel.err={rel_err_val:.4f} "
-                        f"not checked against tol={rel_opt_tol} due to exclusion pattern '{exclude_objectives_pattern}'."
+                        f"not checked against tol={rel_opt_tol} due to exclusion "
+                        f"pattern '{exclude_objectives_pattern}'."
                     )
 
         # Check tolerance only on non-excluded objectives
@@ -226,7 +238,8 @@ def sample_alternative_solutions(
             # More detailed rejection message
             violated_name, violated_err = violated
             logger.info(
-                f"[{trial}/{max_samples}] rejected (tol={rel_opt_tol} violated by '{violated_name}' with rel.err={violated_err:.4f}) "
+                f"[{trial}/{max_samples}] rejected (tol={rel_opt_tol} violated by "
+                f"'{violated_name}' with rel.err={violated_err:.4f}) "
                 f"(total rejected={n_reject}) -> {detail_msg}"
             )
 

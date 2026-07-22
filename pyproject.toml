@@ -7,12 +7,13 @@ authors = [
     { name = "Attila Gabor", email = "attila.gabor@uni-heidelberg.de"},
     { name = "Julio Saez-Rodriguez", email = "saez@ebi.ac.uk"},
 ]
-license = { text = "GPL-3.0-or-later" }
+license = "GPL-3.0-or-later"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 dynamic = ["version", "classifiers"]
 dependencies = [
     "cvxpy-base>=1.5.1",
+    "numpy>=1.25",
     "scipy>=1.14.1"
 ]
 
@@ -78,22 +79,21 @@ packages = [
 ]
 exclude = ["**/tests", "**/docs"]
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Scientific/Engineering :: Bio-Informatics",
     "Topic :: Scientific/Engineering :: Mathematics",
-    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
-    "Programming Language :: Python :: 3"
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13"
 ]
 version = "0.0.0"
 
-[tool.poetry.scripts]
-release = "corneto.release:main"
-
 [tool.poetry.dependencies]
-python = ">=3.10"
+python = ">=3.11"
 numpy = ">=1.25"
 cvxpy-base = ">=1.5.1"
 scipy = ">=1.14.1"
@@ -142,7 +142,9 @@ jax = "^0.6.1"
 omnipath = "^1.0.10"
 decoupler = "^2.0.2"
 papermill = "^2.6.0"
-pyrefly = "^0.26.0"
+pyrefly = "0.60.0"
+ruff = "0.15.17"
+twine = "6.2.0"
 
 
 [tool.poetry-dynamic-versioning]
@@ -154,9 +156,9 @@ tagged-metadata  = false
 
 [tool.ruff]
 fix = true
+line-length = 120
 
 [tool.ruff.lint]
-ignore-init-module-imports = true
 select = [
     "E",
     "F",
@@ -174,12 +176,16 @@ ignore = [
     "D415",
 ]
 
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["D100", "D101", "D102", "D103", "D104"]
+
 [tool.ruff.lint.pydocstyle]
 convention = "google"
 
 [tool.poetry.requires-plugins]
-poetry-plugin-export = ">=1.8"
+poetry-dynamic-versioning = "1.9.1"
+poetry-plugin-export = "1.10.0"
 
 [build-system]
-requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning>=1.0.0,<2.0.0"]
+requires = ["poetry-core==2.4.1", "poetry-dynamic-versioning==1.9.1"]
 build-backend = "poetry_dynamic_versioning.backend"

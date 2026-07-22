@@ -1,16 +1,18 @@
 """Data handling utilities for CORNETO
 ======================================
 
-This module provides data handling capabilities to define input data
-for CORNETO's methods and algorithms. It provides:
+This module provides the feature-aware data containers used by CORNETO's
+methods and algorithms.
 
 Classes
 -------
-- :class:`Data`: Main data container that maps sample IDs to Sample objects
-- :class:`Sample`: Container for sample features and their associated metadata
+- :class:`Data`: Main data container that maps sample IDs to samples
+- :class:`Sample`: Container for feature objects and their metadata
+- :class:`Feature`: A value and its graph mapping metadata
+- :class:`GraphData`: A serializable graph and data bundle
 
 Key Features
------------
+------------
 - Rich metadata support for data features
 - Flexible data import/export methods
 - Conversion between different data formats
@@ -18,22 +20,24 @@ Key Features
 - Data manipulation and transformation utilities
 
 Examples:
---------
+---------
 Basic usage with Data and Sample classes:
 
 .. code-block:: python
 
-    >>> from corneto.data import Data, Sample
-    >>> # Create a dataset and add samples with features
-    >>> dataset = Data()
-    >>> dataset.add_sample("patient1", {"age": 45, "treatment": {"value": "drugA", "dose": "high"}})
+    >>> from corneto.data import Data
+    >>> dataset = Data.from_cdict({
+    ...     "patient1": {
+    ...         "treatment": {"value": "drugA", "mapping": "vertex", "dose": "high"}
+    ...     }
+    ... })
     >>> print(dataset)
-    Dataset(num_samples=1)
+    Data(n_samples=1, n_feats=[1])
 
     >>> # Convert to dictionary format
     >>> data_dict = dataset.to_dict()
-    >>> print(data_dict["patient1"]["treatment"])
-    {'value': 'drugA', 'dose': 'high'}
+    >>> print(data_dict["patient1"]["features"][0]["value"])
+    drugA
 
 Utilities
 ---------
@@ -48,6 +52,6 @@ The package also provides utility functions for generating random data:
     >>> print(f"Generated network with {len(network)} edges")
 """
 
-from ._base import Data, Sample
+from ._base import Data, Feature, GraphData, Sample
 
-__all__ = ["Data", "Sample"]
+__all__ = ["Data", "Feature", "GraphData", "Sample"]

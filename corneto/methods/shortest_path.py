@@ -1,41 +1,19 @@
+"""Shortest-path formulations for one or multiple conditions."""
+
 from typing import Any, List, Optional
 
 import numpy as np
 
-from corneto._graph import BaseGraph
 from corneto._settings import LOGGER
 from corneto.backend import DEFAULT_BACKEND, Backend
 from corneto.backend._base import DEFAULT_UB, Indicator
+from corneto.graph import BaseGraph
 
-"""
-class ShortestPath(CornetoMethod):
-    def __init__(self, backend=DEFAULT_BACKEND):
-        super().__init__(backend=backend)
-
-    def create_problem(self, source_target_pairs: list, lambd: float = 0.0):
-        P = self._backend.Flow(Gc, lb=0, ub=DEFAULT_UB, n_flows=len(source_target_nodes))
-        # Now we add the objective and constraints for each sample
-        for i, (s, t) in enumerate(source_target_pairs):
-            weights = edge_weights[i, :]
-            P.add_objectives(P.expr.flow[:, i] @ weights)
-            # Now we inject/extract 1 unit flow from s to t
-            P += P.expr.flow[inflow_edges[s]] == 1
-            P += P.expr.flow[outflow_edges[t]] == 1
-            # For the rest of inflow/outflow edges, we set the flow to 0
-            for node in inflow_edges:
-                if node != s:
-                    P += P.expr.flow[inflow_edges[node]] == 0
-            for node in outflow_edges:
-                if node != t:
-                    P += P.expr.flow[outflow_edges[node]] == 0
-        # Add reg
-        if lambd > 0:
-            P += self._backend.linear_or(
-                P.expr.flow, axis=1, ignore_type=True, varname="active_edge"
-            )
-            P.add_objectives(sum(P.expr.active_edge), weights=lambd)
-
-"""
+__all__ = [
+    "create_multisample_shortest_path",
+    "shortest_path",
+    "solve_shortest_path",
+]
 
 
 def create_multisample_shortest_path(
@@ -46,6 +24,7 @@ def create_multisample_shortest_path(
     backend: Backend = DEFAULT_BACKEND,
     lam: float = 0.0,
 ):
+    """Build one shortest-path flow per source-target condition."""
     # Transform the graph into a flow problem
     Gc = G.copy()
     inflow_edges = dict()
@@ -64,7 +43,7 @@ def create_multisample_shortest_path(
         # Verify that the number of edge weights is correct
         edge_weights = np.array(edge_weights)
         if edge_weights.shape[0] != len(source_target_nodes):
-            raise ValueError("The number of edge weights must be equal to the number of source-target pairs.")
+            raise ValueError("The number of edge weights must equal the number of source-target pairs.")
         # Add the weights for the extra edges, to be 0
         n_extra_edges = Gc.ne - G.ne
         edge_weights = np.concatenate([edge_weights, np.zeros((len(source_target_nodes), n_extra_edges))], axis=1)
@@ -72,21 +51,24 @@ def create_multisample_shortest_path(
     # Now we add the objective and constraints for each sample
     for i, (s, t) in enumerate(source_target_nodes):
         weights = edge_weights[i, :]
-        P.add_objectives(P.expr.flow[:, i] @ weights)
+        P.add_objective(
+            P.expr.flow[:, i].multiply(weights).sum(),
+            name=f"path_cost_{i}",
+        )
         # Now we inject/extract 1 unit flow from s to t
-        P += P.expr.flow[inflow_edges[s]] == 1
-        P += P.expr.flow[outflow_edges[t]] == 1
+        P += P.expr.flow[inflow_edges[s], i] == 1
+        P += P.expr.flow[outflow_edges[t], i] == 1
         # For the rest of inflow/outflow edges, we set the flow to 0
         for node in inflow_edges:
             if node != s:
-                P += P.expr.flow[inflow_edges[node]] == 0
+                P += P.expr.flow[inflow_edges[node], i] == 0
         for node in outflow_edges:
             if node != t:
-                P += P.expr.flow[outflow_edges[node]] == 0
+                P += P.expr.flow[outflow_edges[node], i] == 0
     # Add reg
     if lam > 0:
         P += backend.linear_or(P.expr.flow, axis=1, ignore_type=True, varname="active_edge")
-        P.add_objectives(sum(P.expr.active_edge), weights=lam)
+        P.add_objective(P.expr.active_edge.sum(), weight=lam, name="shared_edge_regularization")
     return P, Gc
 
 
@@ -99,6 +81,7 @@ def shortest_path(
     create_flow_graph: bool = True,
     backend: Backend = DEFAULT_BACKEND,
 ):
+    """Build a shortest-path optimization problem between two vertices."""
     # Transform to a flow problem
     if create_flow_graph:
         Gc = G.copy()
@@ -106,11 +89,11 @@ def shortest_path(
         e_end = Gc.add_edge(t, ())
     else:
         Gc = G
-        e_start, (tail, head) = list(Gc.in_edges(s))[0]
+        e_start, (tail, head) = next(iter(Gc.in_edges(s)))
         if tail != ():
             raise ValueError(f"Node {s} is not a source node. It has an incoming edge from {tail}.")
 
-        e_end, (tail, head) = list(Gc.out_edges(t))[0]
+        e_end, (tail, head) = next(iter(Gc.out_edges(t)))
         if head != ():
             raise ValueError(f"Node {t} is not a sink node. It has an outgoing edge to {head}.")
     if edge_weights is None:
@@ -143,6 +126,7 @@ def solve_shortest_path(
     integer_tolerance: float = 1e-6,
     solver_kwargs: Optional[dict] = None,
 ):
+    """Solve a shortest-path problem and return its selected edge indices."""
     P, Gc = shortest_path(
         G,
         s,
@@ -163,11 +147,12 @@ def solve_shortest_path(
     almost_integral = almost_zero | almost_one
     solution = np.where(sol >= (1 - integer_tolerance))[0]
     if not np.all(almost_integral):
-        LOGGER.warn(
-            f"Number of non integral edges: {np.sum(~almost_integral)}. Solving again with integral constraints."
+        LOGGER.warning(
+            "Number of non-integral edges: %d. Solving again with integral constraints.",
+            np.sum(~almost_integral),
         )
         P, Gc = shortest_path(Gc, s, t, create_flow_graph=False, integral_path=True, backend=backend)
         P.solve(solver=solver, warm_start=True, **solver_kwargs)
-        I = P.symbols["_flow_i"]
-        solution = np.where(I.value > 0.5)[0]
+        flow_indicator = P.symbols["_flow_i"]
+        solution = np.where(flow_indicator.value > 0.5)[0]
     return solution, P, Gc

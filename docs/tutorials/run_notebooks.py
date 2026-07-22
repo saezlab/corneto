@@ -62,14 +62,17 @@ def process_tutorial(
 
 def discover_tutorials(tutorials_dir: Path):
     """Find subdirs that look like tutorials (have pixi.toml and at least one .ipynb)."""
-    return [
-        p.resolve()
-        for p in sorted(tutorials_dir.iterdir())
-        if p.is_dir() and (p / "pixi.toml").is_file() and any(p.glob("*.ipynb"))
-    ]
+    return sorted(
+        config.parent.resolve()
+        for config in tutorials_dir.rglob("pixi.toml")
+        if "build" not in config.parts
+        and not any(part.startswith(".") for part in config.relative_to(tutorials_dir).parts)
+        and any(config.parent.glob("*.ipynb"))
+    )
 
 
 def parse_args():
+    """Parse tutorial-runner command-line arguments."""
     examples = r"""Examples:
   # Run ALL tutorials (default when you don't pass any names/paths)
   ./run_notebooks.py
@@ -137,6 +140,7 @@ def parse_args():
 
 
 def main() -> int:
+    """Execute selected tutorial projects and return a process status."""
     tutorials_dir = Path(__file__).parent.resolve()
     args = parse_args()
 

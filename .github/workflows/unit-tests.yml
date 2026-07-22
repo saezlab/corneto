@@ -5,8 +5,11 @@ name: Unit tests
 
 on:
   push:
-    branches:
-      - "*"
+  pull_request:
+
+env:
+  POETRY_VERSION: "2.4.1"
+  POETRY_DYNAMIC_VERSIONING_VERSION: "1.9.1"
 
 jobs:
   build:
@@ -15,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.9', '3.10', '3.11']
+        python-version: ['3.11', '3.12', '3.13']
 
     steps:
     - uses: actions/checkout@v4
@@ -31,8 +34,8 @@ jobs:
         # enable version injection
         POETRY_DYNAMIC_VERSIONING_COMMANDS: install,build
       run: |
-        pip install poetry
-        poetry self add "poetry-dynamic-versioning[plugin]"
+        pip install "poetry==${POETRY_VERSION}"
+        poetry self add "poetry-dynamic-versioning[plugin]==${POETRY_DYNAMIC_VERSIONING_VERSION}"
         poetry install
     - name: Validate pinned wasm-graphviz checksum
       run: |
@@ -40,3 +43,50 @@ jobs:
     - name: Test with pytest
       run: |
         poetry run pytest
+
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        fetch-tags: true
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    - uses: ts-graphviz/setup-graphviz@v2
+    - name: Install release-gate dependencies
+      run: |
+        pip install "poetry==${POETRY_VERSION}"
+        poetry self add "poetry-dynamic-versioning[plugin]==${POETRY_DYNAMIC_VERSIONING_VERSION}"
+        poetry install --extras docs
+    - name: Check metadata and style
+      run: |
+        poetry check
+        poetry run ruff check corneto tests
+        poetry run ruff format --check corneto tests
+    - name: Build documentation with warnings as errors
+      run: poetry run sphinx-build -W --keep-going -b html docs docs/_build/html
+
+  package:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        fetch-tags: true
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    - name: Install pinned build tools
+      run: |
+        pip install "poetry==${POETRY_VERSION}" "poetry-dynamic-versioning[plugin]==${POETRY_DYNAMIC_VERSIONING_VERSION}" "twine==6.2.0"
+    - name: Build and inspect distributions
+      run: |
+        poetry build
+        twine check dist/*
+    - name: Smoke-test the clean wheel
+      run: |
+        python -m venv /tmp/corneto-wheel-smoke
+        /tmp/corneto-wheel-smoke/bin/pip install dist/*.whl
+        /tmp/corneto-wheel-smoke/bin/python -c 'import corneto; print(corneto.__version__)'

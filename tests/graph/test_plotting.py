@@ -3,7 +3,6 @@ from types import ModuleType
 
 import pytest
 
-from corneto._data import Data
 from corneto._plotting import to_dot_source
 from corneto._util import supports_html
 from corneto.contrib._util import (
@@ -11,6 +10,7 @@ from corneto.contrib._util import (
     GraphRender,
     dot_wasm_html,
 )
+from corneto.data import Data
 from corneto.graph import Graph
 
 
