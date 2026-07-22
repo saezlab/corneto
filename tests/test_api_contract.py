@@ -59,6 +59,7 @@ def test_methods_api_surface_and_identity():
         "CarnivalILP",
         "MultiSampleFBA",
         "MultiSampleIMAT",
+        "PHONEMeS",
         "PrizeCollectingSteinerTree",
         "SteinerTreeFlow",
         "create_multisample_shortest_path",

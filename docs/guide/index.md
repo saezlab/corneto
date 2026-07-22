@@ -15,6 +15,7 @@ The library is designed with minimal dependencies and is easily extendable, maki
 ```{toctree}
 :maxdepth: 3
 
+method-inputs
 intro/index
 networks/index
 metabolism/index

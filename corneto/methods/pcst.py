@@ -9,6 +9,17 @@ from corneto.backend._base import Backend, ProblemDef
 from corneto.data import Data
 from corneto.graph import Attr, BaseGraph, EdgeType
 from corneto.methods._base import FlowMethod
+from corneto.methods._flow_utils import add_acyclic_flow_selection
+from corneto.methods._input_utils import (
+    DEFAULT_CONDITION,
+    data_from_features,
+    legacy_data,
+    require_mapping,
+    validate_condition_keys,
+    validate_edge_costs,
+    validate_vertex_collection,
+    validate_vertices,
+)
 
 
 class PrizeCollectingSteinerTree(FlowMethod):
@@ -80,6 +91,73 @@ class PrizeCollectingSteinerTree(FlowMethod):
             self._root_vertex = root_vertex
 
         self._selected_roots: List[Any] = []
+
+    def build(
+        self,
+        graph: BaseGraph,
+        data: Optional[Data] = None,
+        *,
+        prizes=None,
+        terminals=None,
+        edge_costs=None,
+    ):
+        """Build a single-condition PCST problem from explicit inputs."""
+        old_data = legacy_data(data, method=self.__class__.__name__)
+        if old_data is not None:
+            if any(value is not None for value in (prizes, terminals, edge_costs)):
+                raise TypeError("Do not combine a Data object with explicit scientific inputs.")
+            return self.build_from_data(graph, old_data)
+        if prizes is None:
+            raise TypeError("build() requires prizes=.")
+        return self.build_many(
+            graph,
+            prizes={DEFAULT_CONDITION: prizes},
+            terminals=None if terminals is None else {DEFAULT_CONDITION: terminals},
+            edge_costs=None if edge_costs is None else {DEFAULT_CONDITION: edge_costs},
+        )
+
+    def build_many(self, graph: BaseGraph, *, prizes, terminals=None, edge_costs=None):
+        """Build a multi-condition PCST problem from named condition mappings."""
+        conditions = validate_condition_keys(prizes=prizes, terminals=terminals, edge_costs=edge_costs)
+        features_by_condition = {}
+        for condition in conditions:
+            prize_values = validate_vertices(
+                graph,
+                require_mapping(prizes[condition], argument="prizes", condition=condition),
+                argument="prizes",
+                condition=condition,
+            )
+            for identifier, value in prize_values.items():
+                if value <= 0:
+                    raise ValueError(
+                        f"Prize for vertex {identifier!r} in condition {condition!r} "
+                        f"must be greater than zero, got {value}."
+                    )
+            terminal_values = validate_vertex_collection(
+                graph,
+                [] if terminals is None else terminals[condition],
+                argument="terminals",
+                condition=condition,
+            )
+            cost_values = validate_edge_costs(
+                graph,
+                {}
+                if edge_costs is None
+                else require_mapping(edge_costs[condition], argument="edge_costs", condition=condition),
+                condition=condition,
+            )
+            feature_data = {
+                identifier: {"mapping": "vertex", "value": value, "role": "prize"}
+                for identifier, value in prize_values.items()
+            }
+            for identifier in terminal_values:
+                feature_data.setdefault(identifier, {"mapping": "vertex"})["role"] = "terminal"
+            features = [{"id": identifier, **attributes} for identifier, attributes in feature_data.items()]
+            features.extend(
+                {"id": identifier, "mapping": "edge", "value": value} for identifier, value in cost_values.items()
+            )
+            features_by_condition[condition] = features
+        return self.build_from_data(graph, data_from_features(features_by_condition))
 
     def preprocess(self, graph: BaseGraph, data: Data) -> Tuple[BaseGraph, Data]:
         """Preprocess the graph and data."""
@@ -242,16 +320,16 @@ class PrizeCollectingSteinerTree(FlowMethod):
         edge_ids = list(set(range(graph.num_edges)) - set(flow_edge_ids))
 
         if self.strict_acyclic:
-            flow_problem += self.backend.NonZeroIndicator(flow_problem.expr._flow, tolerance=self.epsilon)
-            flow_problem += self.backend.Acyclic(
-                graph,
+            with_flow = add_acyclic_flow_selection(
+                self.backend,
                 flow_problem,
-                indicator_negative_var_name="_flow_ineg",
-                indicator_positive_var_name="_flow_ipos",
+                graph,
+                epsilon=self.epsilon,
             )
-            with_flow = flow_problem.expr._flow_ipos + flow_problem.expr._flow_ineg
         else:
-            flow_problem += self.backend.Indicator(flow_problem.expr._flow, indexes=edge_ids)
+            flow_variable = flow_problem.expr._flow
+            indicator_indexes = edge_ids if len(flow_variable.shape) == 1 else (edge_ids, slice(None))
+            flow_problem += self.backend.Indicator(flow_variable, indexes=indicator_indexes)
             with_flow = flow_problem.expr._flow_i
 
         flow_problem.register("with_flow", with_flow)
@@ -361,38 +439,23 @@ class PrizeCollectingSteinerTree(FlowMethod):
                             prized_vertices.append(prized)
                 if prized_idx:
                     prizes = np.array([prized_terminals[prized] for prized in prized_vertices])
-
                     if self.strict_acyclic:
-                        selected_for_prizes = flow_problem.expr._flow_ipos + flow_problem.expr._flow_ineg
-                        selected_for_prizes = (
-                            selected_for_prizes if len(selected_for_prizes.shape) == 1 else selected_for_prizes[:, i]
-                        )
+                        selected_for_prizes = with_flow if len(with_flow.shape) == 1 else with_flow[:, i]
                         selected_prized_flow_edges = selected_for_prizes[prized_idx]
                     else:
-                        indicator_terminal_pos = self.flow_name + f"_terminal_pos_{i}"
-                        indicator_terminal_neg = self.flow_name + f"_terminal_neg_{i}"
-
-                        if sample_selected_root is None:
-                            flow_edges_idxs = vertices_edgeflow_idx
-                            indices_in_indicator = [flow_edges_idxs.index(idx) for idx in prized_idx]
-                            selected_vec = (
-                                flow_problem.expr[indicator_terminal_pos] + flow_problem.expr[indicator_terminal_neg]
-                            )
-                            selected_vec = selected_vec if len(selected_vec.shape) == 1 else selected_vec[:, i]
-                            selected_prized_flow_edges = selected_vec[indices_in_indicator]
-                        else:
-                            flow_problem += self.backend.NonZeroIndicator(
-                                F,
-                                prized_idx,
-                                i,
-                                tolerance=self.epsilon,
-                                suffix_pos=f"_prize_pos_{i}",
-                                suffix_neg=f"_prize_neg_{i}",
-                            )
-                            selected_prized_flow_edges = (
-                                flow_problem.expr[f"{self.flow_name}_prize_pos_{i}"]
-                                + flow_problem.expr[f"{self.flow_name}_prize_neg_{i}"]
-                            )
+                        flow_variable = flow_problem.expr._flow
+                        indicator_args = (prized_idx,) if len(flow_variable.shape) == 1 else (prized_idx, i)
+                        flow_problem += self.backend.NonZeroIndicator(
+                            flow_variable,
+                            *indicator_args,
+                            tolerance=self.epsilon,
+                            suffix_pos=f"_prize_pos_{i}",
+                            suffix_neg=f"_prize_neg_{i}",
+                        )
+                        selected_prized_flow_edges = (
+                            flow_problem.expr[f"{self.flow_name}_prize_pos_{i}"]
+                            + flow_problem.expr[f"{self.flow_name}_prize_neg_{i}"]
+                        )
 
                     flow_problem.register(f"selected_prized_flow_edges_{i}", selected_prized_flow_edges)
                     flow_problem.add_objective(prizes @ selected_prized_flow_edges, weight=-1, name="prizes")

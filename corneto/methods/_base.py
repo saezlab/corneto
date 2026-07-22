@@ -157,7 +157,7 @@ class Method(ABC):
         """
         pass
 
-    def build(self, graph: BaseGraph, data: Optional[Data] = None) -> ProblemDef:
+    def build_from_data(self, graph: BaseGraph, data: Optional[Data] = None) -> ProblemDef:
         """Build the complete optimization problem.
 
         The process involves:
@@ -205,6 +205,15 @@ class Method(ABC):
             else:
                 raise ValueError("Parameter lambda_reg > 0 but no regularization variable name provided")
         return self.problem
+
+    def build(self, graph: BaseGraph, data: Optional[Data] = None) -> ProblemDef:
+        """Build from a :class:`~corneto.data.Data` object.
+
+        This compatibility entry point is retained for custom ``Method``
+        subclasses. Public CORNETO methods provide method-specific ``build``
+        signatures and expose this generic path as :meth:`build_from_data`.
+        """
+        return self.build_from_data(graph, data)
 
     @staticmethod
     def name() -> str:

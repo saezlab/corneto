@@ -12,7 +12,15 @@ import numpy as np
 from corneto.backend._base import Backend
 from corneto.data import Data, Feature
 from corneto.graph import BaseGraph
-from corneto.methods.fba import MultiSampleFBA
+from corneto.methods._input_utils import (
+    DEFAULT_CONDITION,
+    legacy_data,
+    require_mapping,
+    validate_condition_keys,
+    validate_numeric,
+    validate_reaction_values,
+)
+from corneto.methods.fba import MultiSampleFBA, _fba_data
 from corneto.methods.metabolism import evaluate_gpr_expression, get_genes_from_gpr
 
 
@@ -79,6 +87,100 @@ class MultiSampleIMAT(MultiSampleFBA):
         self.use_mean_for_missing_reactions = use_mean_for_missing_reactions
         self.use_bigm_constraints = use_bigm_constraints
 
+    def build(
+        self,
+        model: BaseGraph,
+        data: Optional[Data] = None,
+        *,
+        gene_expression=None,
+        reaction_scores=None,
+        objectives=None,
+        reaction_bounds=None,
+    ):
+        """Build a single-condition iMAT problem from explicit inputs."""
+        old_data = legacy_data(data, method=self.__class__.__name__)
+        if old_data is not None:
+            if any(value is not None for value in (gene_expression, reaction_scores, objectives, reaction_bounds)):
+                raise TypeError("Do not combine a Data object with explicit scientific inputs.")
+            return self.build_from_data(model, old_data)
+        return self.build_many(
+            model,
+            gene_expression=None if gene_expression is None else {DEFAULT_CONDITION: gene_expression},
+            reaction_scores=None if reaction_scores is None else {DEFAULT_CONDITION: reaction_scores},
+            objectives={DEFAULT_CONDITION: objectives or {}},
+            reaction_bounds={DEFAULT_CONDITION: reaction_bounds or {}},
+        )
+
+    def build_many(
+        self,
+        model: BaseGraph,
+        *,
+        gene_expression=None,
+        reaction_scores=None,
+        objectives=None,
+        reaction_bounds=None,
+    ):
+        """Build a multi-condition iMAT problem from named condition mappings."""
+        if (gene_expression is None) == (reaction_scores is None):
+            raise ValueError("Provide exactly one of gene_expression or reaction_scores.")
+        conditions = validate_condition_keys(
+            gene_expression=gene_expression,
+            reaction_scores=reaction_scores,
+            objectives=objectives,
+            reaction_bounds=reaction_bounds,
+        )
+        data = _fba_data(model, conditions, objectives, reaction_bounds)
+
+        if gene_expression is not None:
+            known_genes = set()
+            for attributes in model.get_attr_edges():
+                rule = attributes.get(self.gpr_field, "")
+                if rule:
+                    known_genes.update(get_genes_from_gpr(rule))
+            for condition in conditions:
+                values = require_mapping(
+                    gene_expression[condition], argument="gene_expression", condition=condition
+                )
+                for identifier, value in values.items():
+                    if identifier not in known_genes:
+                        raise ValueError(
+                            f"Unknown gene {identifier!r} in gene_expression for condition {condition!r}."
+                        )
+                    score = validate_numeric(
+                        value,
+                        argument="gene_expression",
+                        identifier=identifier,
+                        condition=condition,
+                    )
+                    data.samples[condition].add(
+                        Feature(id=identifier, value=score, mapping="none", role="expression")
+                    )
+        else:
+            for condition in conditions:
+                values = require_mapping(
+                    reaction_scores[condition], argument="reaction_scores", condition=condition
+                )
+                scores = validate_reaction_values(
+                    model,
+                    values,
+                    argument="reaction_scores",
+                    condition=condition,
+                )
+                existing = {feature.id: feature for feature in data.samples[condition].features}
+                for identifier, score in scores.items():
+                    if identifier in existing:
+                        feature = existing[identifier]
+                        if feature.data.get("role") == "objective":
+                            feature.data["imat_score"] = score
+                        else:
+                            feature.data["value"] = score
+                            feature.data["role"] = "expression"
+                    else:
+                        data.samples[condition].add(
+                            Feature(id=identifier, value=score, mapping="edge", role="expression")
+                        )
+        return self.build_from_data(model, data)
+
     def preprocess(self, graph: BaseGraph, data: Data) -> Tuple[BaseGraph, Data]:
         """Preprocess the graph and data before solving.
 
@@ -104,7 +206,9 @@ class MultiSampleIMAT(MultiSampleFBA):
 
             # Count features with mapping="edge"
             for feature in sample.features:
-                if feature.mapping == "edge":
+                if feature.mapping == "edge" and (
+                    feature.data.get("role") != "objective" or "imat_score" in feature.data
+                ):
                     edge_features_count += 1
 
             # Check if we have a significant number of edge features
@@ -139,7 +243,7 @@ class MultiSampleIMAT(MultiSampleFBA):
             gene_scores = {}
             for feature in sample.features:
                 # Check if this is a gene feature (mapping="none")
-                if feature.mapping == "none":
+                if feature.mapping == "none" and feature.data.get("role") in {None, "expression"}:
                     gene_scores[feature.id] = float(feature.value) if feature.value is not None else 0.0
 
             if not gene_scores:
@@ -198,17 +302,25 @@ class MultiSampleIMAT(MultiSampleFBA):
 
             # Add reaction features to the result data
             if rxn_scores:
+                existing = {feature.id: feature for feature in result_data.samples[sample_name].features}
                 for rxn_id, score in rxn_scores.items():
-                    # TODO: Before adding, check if there is already
-                    # a feature for that edge, if so, update the
-                    # value and warn.
-                    result_data.samples[sample_name].add(
-                        Feature(
-                            id=rxn_id,
-                            value=score,
-                            mapping="edge",
+                    if rxn_id in existing:
+                        feature = existing[rxn_id]
+                        if feature.data.get("role") == "objective":
+                            feature.data["imat_score"] = score
+                        else:
+                            feature.data["value"] = score
+                            feature.data["mapping"] = "edge"
+                            feature.data["role"] = "expression"
+                    else:
+                        result_data.samples[sample_name].add(
+                            Feature(
+                                id=rxn_id,
+                                value=score,
+                                mapping="edge",
+                                role="expression",
+                            )
                         )
-                    )
 
         return result_data
 
@@ -248,9 +360,13 @@ class MultiSampleIMAT(MultiSampleFBA):
 
             # Get reaction values from the data (features with mapping="edge")
             for feature in sample_data.features:
-                if feature.mapping == "edge" and feature.value is not None:
+                if (
+                    feature.mapping == "edge"
+                    and (feature.value is not None or "imat_score" in feature.data)
+                    and (feature.data.get("role") != "objective" or "imat_score" in feature.data)
+                ):
                     rxn_ids.append(feature.id)
-                    weights.append(float(feature.value))
+                    weights.append(float(feature.data.get("imat_score", feature.value)))
 
             if not rxn_ids:
                 continue

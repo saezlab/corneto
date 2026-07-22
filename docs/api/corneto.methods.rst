@@ -10,9 +10,10 @@ Signaling
 
 Network methods to infer signaling networks from omics data.
 
-``milp_carnival`` is the simple single-condition formulation.
-``CarnivalILP`` is the general formulation for one or more conditions, while
-``CarnivalFlow`` provides the flow-based multi-condition alternative.
+``CarnivalILP.build`` and ``CarnivalFlow.build`` accept explicit perturbation
+and transcription-factor mappings for one condition. Their ``build_many``
+methods accept named conditions. ``milp_carnival`` remains as a compatibility
+formulation.
 
 .. autosummary::
     :toctree: generated/
@@ -20,6 +21,7 @@ Network methods to infer signaling networks from omics data.
 
     CarnivalFlow
     CarnivalILP
+    PHONEMeS
     milp_carnival
     signaling.cellnopt_ilp.cellnoptILP
 
@@ -27,6 +29,8 @@ Metabolism
 ----------
 
 Network methods for flux balance analysis in metabolic networks.
+Use ``build`` with explicit objectives, bounds, or expression values;
+``build_from_data`` provides the advanced generic-data interface.
 
 .. autosummary::
     :toctree: generated/

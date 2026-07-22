@@ -17,6 +17,7 @@ from corneto.methods.carnival import (
 from corneto.methods.fba import MultiSampleFBA
 from corneto.methods.imat import MultiSampleIMAT
 from corneto.methods.pcst import PrizeCollectingSteinerTree
+from corneto.methods.phonemes import PHONEMeS
 
 # Import Shortest Path Methods
 from corneto.methods.shortest_path import (
@@ -31,6 +32,7 @@ __all__ = [
     "CarnivalILP",
     "MultiSampleFBA",
     "MultiSampleIMAT",
+    "PHONEMeS",
     "PrizeCollectingSteinerTree",
     "SteinerTreeFlow",
     "create_multisample_shortest_path",

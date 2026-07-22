@@ -13,6 +13,13 @@ from corneto.graph import BaseGraph
 
 # from corneto.methods import expand_graph_for_flows
 from corneto.methods._base import FlowMethod, Method
+from corneto.methods._input_utils import (
+    DEFAULT_CONDITION,
+    data_from_features,
+    legacy_data,
+    validate_condition_maps,
+    validate_vertices,
+)
 from corneto.methods.signaling._utils import (
     get_incidence_matrices_of_edges,
     get_interactions,
@@ -108,7 +115,71 @@ def create_signed_error_expression(P, values, index_of_vertices=None, condition_
         return (1 - vertex_variable[index_of_vertices].multiply(np.sign(values))).multiply(abs(values))
 
 
-class CarnivalFlow(FlowMethod):
+def _carnival_data(graph, perturbations, transcription_factors) -> Data:
+    conditions = validate_condition_maps(
+        perturbations=perturbations,
+        transcription_factors=transcription_factors,
+    )
+    features_by_condition = {}
+    for condition in conditions["perturbations"]:
+        inputs = validate_vertices(
+            graph,
+            conditions["perturbations"][condition],
+            argument="perturbations",
+            condition=condition,
+        )
+        outputs = validate_vertices(
+            graph,
+            conditions["transcription_factors"][condition],
+            argument="transcription_factors",
+            condition=condition,
+        )
+        overlap = inputs.keys() & outputs.keys()
+        if overlap:
+            raise ValueError(
+                f"Vertices cannot be both perturbations and transcription_factors "
+                f"in condition {condition!r}: {sorted(overlap, key=repr)!r}."
+            )
+        features_by_condition[condition] = [
+            {"id": identifier, "value": value, "mapping": "vertex", "role": "input"}
+            for identifier, value in inputs.items()
+        ] + [
+            {"id": identifier, "value": value, "mapping": "vertex", "role": "output"}
+            for identifier, value in outputs.items()
+        ]
+    return data_from_features(features_by_condition)
+
+
+class _CarnivalUserInputs:
+    """User-facing input conversion shared by CARNIVAL formulations."""
+
+    def build(
+        self,
+        pkn: BaseGraph,
+        data: Optional[Data] = None,
+        *,
+        perturbations=None,
+        transcription_factors=None,
+    ):
+        old_data = legacy_data(data, method=self.__class__.__name__)
+        if old_data is not None:
+            if perturbations is not None or transcription_factors is not None:
+                raise TypeError("Do not combine a Data object with explicit scientific inputs.")
+            return self.build_from_data(pkn, old_data)
+        if perturbations is None or transcription_factors is None:
+            raise TypeError("build() requires perturbations= and transcription_factors=.")
+        return self.build_many(
+            pkn,
+            perturbations={DEFAULT_CONDITION: perturbations},
+            transcription_factors={DEFAULT_CONDITION: transcription_factors},
+        )
+
+    def build_many(self, pkn: BaseGraph, *, perturbations, transcription_factors):
+        data = _carnival_data(pkn, perturbations, transcription_factors)
+        return self.build_from_data(pkn, data)
+
+
+class CarnivalFlow(_CarnivalUserInputs, FlowMethod):
     """Flow-base, multi-sample CARNIVAL method for intracellular signaling.
 
     Implements multi-sample intracellular network inference using
@@ -425,7 +496,7 @@ class CarnivalFlow(FlowMethod):
         )
 
 
-class CarnivalILP(Method):
+class CarnivalILP(_CarnivalUserInputs, Method):
     """Multi-condition implementation of the CARNIVAL ILP formulation.
 
     Each sample in :class:`corneto.data.Data` receives an independent signaling
