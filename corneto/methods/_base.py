@@ -5,6 +5,7 @@ from corneto import DEFAULT_BACKEND
 from corneto.backend._base import Backend, ProblemDef
 from corneto.data import Data
 from corneto.graph import BaseGraph
+from corneto.methods._optimization_utils import add_condition_union
 
 
 class Method(ABC):
@@ -186,7 +187,6 @@ class Method(ABC):
             if self._reg_varname is not None:
                 reg_var = self.problem.expr[self._reg_varname]
                 newvar_name = self._reg_varname + self._reg_varname_suffix
-                ax = 0 if len(reg_var.shape) == 1 else 1
                 # A 1D vector can be summed directly without a linear OR.
                 if len(reg_var.shape) == 1 or reg_var.shape[1] == 1 or reg_var.shape[0] == 1:
                     self.problem.add_objective(
@@ -196,9 +196,14 @@ class Method(ABC):
                     )
                 else:
                     # Structured sparsity regularization
-                    self.problem += self._backend.linear_or(reg_var, axis=ax, varname=newvar_name)
+                    reg_var_any = add_condition_union(
+                        self._backend,
+                        self.problem,
+                        reg_var,
+                        name=newvar_name,
+                    )
                     self.problem.add_objective(
-                        self.problem.expr[newvar_name].sum(),
+                        reg_var_any.sum(),
                         weight=self.lambda_reg_param,
                         name=f"regularization_{newvar_name}",
                     )

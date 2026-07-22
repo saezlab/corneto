@@ -9,7 +9,7 @@ from corneto.backend._base import Backend, ProblemDef
 from corneto.data import Data
 from corneto.graph import Attr, BaseGraph, EdgeType
 from corneto.methods._base import FlowMethod
-from corneto.methods._flow_utils import add_acyclic_flow_selection
+from corneto.methods._flow_utils import add_selected_flow
 from corneto.methods._input_utils import (
     DEFAULT_CONDITION,
     data_from_features,
@@ -20,6 +20,7 @@ from corneto.methods._input_utils import (
     validate_vertex_collection,
     validate_vertices,
 )
+from corneto.methods._network_utils import augment_with_boundaries
 
 
 class PrizeCollectingSteinerTree(FlowMethod):
@@ -169,7 +170,6 @@ class PrizeCollectingSteinerTree(FlowMethod):
         self.prized_flow_edges = dict()
         self._candidate_vertices_per_sample = []
 
-        flow_graph = graph.copy()
         graph_vertices = tuple(graph.V)
         all_vertices = tuple(
             data.query.filter_features(
@@ -273,15 +273,16 @@ class PrizeCollectingSteinerTree(FlowMethod):
         if any(r is None for r in selected_roots):
             out_type = EdgeType.UNDIRECTED
 
-        # Create only in-edges potentially needed by fixed-root samples.
-        for v in in_vertices:
-            idx_in = flow_graph.add_edge((), v, type=in_type)
-            self.flow_edges_in[v] = idx_in
-
-        # Create only out-edges potentially needed by any sample.
-        for v in out_vertices:
-            idx_out = flow_graph.add_edge(v, (), type=out_type)
-            self.flow_edges_out[v] = idx_out
+        layout = augment_with_boundaries(
+            graph,
+            inflow_vertices=in_vertices,
+            outflow_vertices=out_vertices,
+            inflow_type=in_type,
+            outflow_type=out_type,
+        )
+        flow_graph = layout.graph
+        self.flow_edges_in = layout.inflow_edges
+        self.flow_edges_out = layout.outflow_edges
 
         # Backward-compatible alias used by some callers; map to out-edges.
         self.flow_edges = self.flow_edges_out.copy()
@@ -319,18 +320,15 @@ class PrizeCollectingSteinerTree(FlowMethod):
         flow_edge_ids = list(set(self.flow_edges_in.values()) | set(self.flow_edges_out.values()))
         edge_ids = list(set(range(graph.num_edges)) - set(flow_edge_ids))
 
-        if self.strict_acyclic:
-            with_flow = add_acyclic_flow_selection(
-                self.backend,
-                flow_problem,
-                graph,
-                epsilon=self.epsilon,
-            )
-        else:
-            flow_variable = flow_problem.expr._flow
-            indicator_indexes = edge_ids if len(flow_variable.shape) == 1 else (edge_ids, slice(None))
-            flow_problem += self.backend.Indicator(flow_variable, indexes=indicator_indexes)
-            with_flow = flow_problem.expr._flow_i
+        selected_flow = add_selected_flow(
+            self.backend,
+            flow_problem,
+            graph,
+            biological_edge_indices=edge_ids,
+            epsilon=self.epsilon,
+            acyclic=self.strict_acyclic,
+        )
+        with_flow = selected_flow.all_edges
 
         flow_problem.register("with_flow", with_flow)
         self._reg_varname = "with_flow"

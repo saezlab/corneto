@@ -7,12 +7,14 @@ from typing import Any, Optional
 
 import numpy as np
 
-from corneto._constants import VarType
 from corneto.backend._base import Backend, ProblemDef
 from corneto.data import Data
 from corneto.graph import Attr, BaseGraph, EdgeType
 from corneto.methods._base import FlowMethod
-from corneto.methods._flow_utils import add_acyclic_flow_selection
+from corneto.methods._flow_utils import (
+    add_selected_flow,
+    add_vertex_selection,
+)
 from corneto.methods._input_utils import (
     DEFAULT_CONDITION,
     data_from_features,
@@ -23,6 +25,8 @@ from corneto.methods._input_utils import (
     validate_vertex_collection,
     validate_vertices,
 )
+from corneto.methods._network_utils import augment_with_boundaries
+from corneto.methods._optimization_utils import add_condition_union
 
 _ROLE_PERTURBATION = "perturbation"
 _ROLE_PHOSPHOSITE = "phosphosite"
@@ -253,17 +257,16 @@ class PHONEMeS(FlowMethod):
                 f"max_flow ({self._flow_max:g}) must be greater than or equal to epsilon ({self.epsilon:g})."
             )
 
-        flow_graph = graph.copy()
         target_union = target_mask.any(axis=1)
         measured_union = measured_mask.any(axis=1)
-        self._target_inflow_edges = {}
-        self._phosphosite_outflow_edges = {}
-        for vertex, include in zip(vertices, target_union):
-            if include:
-                self._target_inflow_edges[vertex] = flow_graph.add_edge((), vertex, type=EdgeType.DIRECTED)
-        for vertex, include in zip(vertices, measured_union):
-            if include:
-                self._phosphosite_outflow_edges[vertex] = flow_graph.add_edge(vertex, (), type=EdgeType.DIRECTED)
+        layout = augment_with_boundaries(
+            graph,
+            inflow_vertices=(vertex for vertex, include in zip(vertices, target_union) if include),
+            outflow_vertices=(vertex for vertex, include in zip(vertices, measured_union) if include),
+        )
+        flow_graph = layout.graph
+        self._target_inflow_edges = layout.inflow_edges
+        self._phosphosite_outflow_edges = layout.outflow_edges
 
         flow_lb = np.zeros((flow_graph.num_edges, num_conditions), dtype=float)
         flow_ub = np.full((flow_graph.num_edges, num_conditions), self._flow_max, dtype=float)
@@ -323,56 +326,38 @@ class PHONEMeS(FlowMethod):
 
     def create_flow_based_problem(self, flow_problem: ProblemDef, graph: BaseGraph, data: Data):
         """Add vectorized PHONEMeS selection, role, and objective terms."""
-        selected_augmented = add_acyclic_flow_selection(
+        selected_flow = add_selected_flow(
             self.backend,
             flow_problem,
             graph,
+            biological_edge_indices=range(self._original_num_edges),
             epsilon=self.epsilon,
+            acyclic=True,
         )
-        edge_selected = selected_augmented[: self._original_num_edges, :]
+        edge_selected = selected_flow.biological_edges
         flow_problem.register("edge_selected", edge_selected)
-        flow_problem.register("dag_layer", flow_problem.expr._dag_layer)
+        flow_problem.register("dag_layer", selected_flow.dag_layer)
 
-        num_vertices = graph.num_vertices
-        num_conditions = len(self._condition_names)
-        vertex_selected = self.backend.Variable(
-            "vertex_selected",
-            (num_vertices, num_conditions),
-            vartype=VarType.BINARY,
-        )
-
-        incidence = graph.vertex_incidence_matrix(sparse=True)[:, : self._original_num_edges]
-        outgoing_incidence = (incidence < 0).astype(float)
-        incoming_incidence = (incidence > 0).astype(float)
-        outgoing = self.backend.Constant(outgoing_incidence) @ edge_selected
-        incoming = self.backend.Constant(incoming_incidence) @ edge_selected
-
-        out_degree = np.asarray(outgoing_incidence.sum(axis=1)).reshape(-1, 1)
-        in_degree = np.asarray(incoming_incidence.sum(axis=1)).reshape(-1, 1)
-        out_degree = np.tile(out_degree, (1, num_conditions))
-        in_degree = np.tile(in_degree, (1, num_conditions))
         internal_mask = ~(self._target_mask | self._measured_mask)
         require_outgoing = (internal_mask | self._target_mask).astype(float)
         require_incoming = (internal_mask | self._measured_mask).astype(float)
-
-        flow_problem += outgoing <= vertex_selected.multiply(out_degree)
-        flow_problem += incoming <= vertex_selected.multiply(in_degree)
-        flow_problem += vertex_selected >= self._target_mask.astype(float)
-        flow_problem += vertex_selected.multiply(require_outgoing) <= outgoing
-        flow_problem += vertex_selected.multiply(require_incoming) <= incoming
-
-        if num_conditions == 1:
-            edge_selected_any = edge_selected[:, 0]
-            flow_problem.register("edge_selected_any", edge_selected_any)
-        else:
-            edge_selected_any = self.backend.Variable(
-                "edge_selected_any",
-                (self._original_num_edges,),
-                vartype=VarType.BINARY,
-            )
-            selected_count = edge_selected.sum(axis=1)
-            flow_problem += edge_selected_any >= selected_count / num_conditions
-            flow_problem += edge_selected_any <= selected_count
+        vertex_selection = add_vertex_selection(
+            self.backend,
+            flow_problem,
+            graph,
+            edge_selected,
+            edge_indices=range(self._original_num_edges),
+            force_selected=self._target_mask,
+            require_outgoing=require_outgoing,
+            require_incoming=require_incoming,
+        )
+        vertex_selected = vertex_selection.selected
+        edge_selected_any = add_condition_union(
+            self.backend,
+            flow_problem,
+            edge_selected,
+            name="edge_selected_any",
+        )
 
         flow_problem.add_objective(
             vertex_selected.multiply(self._node_scores).sum(),

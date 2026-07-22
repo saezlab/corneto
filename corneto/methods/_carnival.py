@@ -20,20 +20,20 @@ from corneto.methods._input_utils import (
     validate_condition_maps,
     validate_vertices,
 )
-from corneto.methods.signaling._utils import (
-    get_incidence_matrices_of_edges,
-    get_interactions,
-)
+from corneto.methods._network_utils import augment_with_boundaries, directed_incidence
+from corneto.methods._signal_utils import add_signed_edge_state
+from corneto.methods.signaling._utils import get_interactions
 
 
 def create_flow_graph(G: BaseGraph, inputs: Iterable[Any], outputs: Iterable[Any]) -> BaseGraph:
     """Add flow edges to perturbed and measured nodes in graph ``G``."""
-    G1 = G.copy()
-    for v in unique_iter(outputs):
-        G1.add_edge(v, ())
-    for v in unique_iter(inputs):
-        G1.add_edge((), v)
-    return G1
+    layout = augment_with_boundaries(
+        G,
+        inflow_vertices=unique_iter(inputs),
+        outflow_vertices=unique_iter(outputs),
+        boundary_order=("outflow", "inflow"),
+    )
+    return layout.graph
 
 
 def prune_graph(
@@ -314,14 +314,20 @@ class CarnivalFlow(_CarnivalUserInputs, FlowMethod):
         ones = np.ones((1, num_experiments))
 
         # Get incidence matrices and interactions from the graph
-        At, Ah = get_incidence_matrices_of_edges(graph, sparse=True)
+        incidence = directed_incidence(graph)
+        At, Ah = incidence.incoming, incidence.outgoing
         interaction = get_interactions(graph)
 
-        # Create binary variables for edge activations and inhibitions
-        Eact = self.backend.Variable("edge_activates", (graph.num_edges, num_experiments), vartype=VarType.BINARY)
-        Einh = self.backend.Variable("edge_inhibits", (graph.num_edges, num_experiments), vartype=VarType.BINARY)
-        # Prevent an edge from activating and inhibiting simultaneously
-        problem += Eact + Einh <= 1
+        edge_state = add_signed_edge_state(
+            self.backend,
+            problem,
+            (graph.num_edges, num_experiments),
+            positive_name="edge_activates",
+            negative_name="edge_inhibits",
+            value_alias="edge_value",
+            selected_alias="edge_has_signal",
+        )
+        Eact, Einh = edge_state.positive, edge_state.negative
 
         # PICOS requires a constant for a sparse matrix on the
         # left hand side, otherwise it fails.
@@ -349,8 +355,6 @@ class CarnivalFlow(_CarnivalUserInputs, FlowMethod):
         problem.register("vertex_value", V)
         problem.register("vertex_activated", Va)
         problem.register("vertex_inhibited", Vi)
-        problem.register("edge_value", Eact - Einh)
-        problem.register("edge_has_signal", Eact + Einh)
 
         # Add acyclic constraints to prevent cycles in signal propagation
         problem = self.backend.Acyclic(
@@ -581,11 +585,6 @@ class CarnivalILP(_CarnivalUserInputs, Method):
         def condition_shape(size):
             return (size, num_conditions) if is_multicondition else (size,)
 
-        def at_condition(variable, index, condition):
-            if is_multicondition:
-                return variable[index, condition]
-            return variable[index]
-
         # Create the problem
         P = self.backend.Problem()
 
@@ -602,16 +601,14 @@ class CarnivalILP(_CarnivalUserInputs, Method):
             shape=condition_shape(len(graph.V)),
             vartype=VarType.BINARY,
         )
-        E_act = self.backend.Variable(
-            "edge_activating",
-            shape=condition_shape(len(graph.E)),
-            vartype=VarType.BINARY,
+        edge_state = add_signed_edge_state(
+            self.backend,
+            P,
+            condition_shape(len(graph.E)),
+            positive_name="edge_activating",
+            negative_name="edge_inhibiting",
         )
-        E_inh = self.backend.Variable(
-            "edge_inhibiting",
-            shape=condition_shape(len(graph.E)),
-            vartype=VarType.BINARY,
-        )
+        E_act, E_inh = edge_state.positive, edge_state.negative
         V_pos = self.backend.Variable(
             "vertex_position",
             shape=condition_shape(len(graph.V)),
@@ -624,47 +621,59 @@ class CarnivalILP(_CarnivalUserInputs, Method):
 
         # A vertex can be activated or inhibited, but not both
         P += V_act + V_inh <= 1
-        # An edge can activate or inhibit, but not both
-        P += E_act + E_inh <= 1
 
-        for edge_index, (s, t) in enumerate(graph.E):
-            s = list(s)
-            t = list(t)
-            if len(s) == 0:
-                continue
-            if len(s) > 1:
-                raise ValueError("Only one source vertex allowed")
-            if len(t) > 1:
-                raise ValueError("Only one target vertex allowed")
-            s = s[0]
-            t = t[0]
-            # An edge can activate its downstream (target vertex) (E_act=1, E_inh=0),
-            # inhibit it (E_act=0, E_inh=1), or do nothing (E_act=0, E_inh=0)
-            si = V_index[s]
-            ti = V_index[t]
-            interaction = int(graph.get_attr_edge(edge_index).get(self.interaction_graph_attribute))
-            if interaction not in {-1, 1}:
-                raise ValueError(f"Invalid interaction value for edge {edge_index}: {interaction}")
-            for condition in range(num_conditions):
-                edge_activates = at_condition(E_act, edge_index, condition)
-                edge_inhibits = at_condition(E_inh, edge_index, condition)
-                source_activated = at_condition(V_act, si, condition)
-                source_inhibited = at_condition(V_inh, si, condition)
+        V_act_matrix = V_act
+        V_inh_matrix = V_inh
+        E_act_matrix = E_act
+        E_inh_matrix = E_inh
+        V_pos_matrix = V_pos
 
-                if interaction == 1:
-                    P += edge_activates <= source_activated
-                    P += edge_inhibits <= source_inhibited
-                else:
-                    P += edge_activates <= source_inhibited
-                    P += edge_inhibits <= source_activated
+        incidence = directed_incidence(graph)
+        if np.any(incidence.source_indices < 0) or np.any(incidence.target_indices < 0):
+            raise ValueError("CarnivalILP requires internal edges with one source and one target.")
+        outgoing = self.backend.Constant(incidence.outgoing)
+        incoming = self.backend.Constant(incidence.incoming)
+        source_activated = outgoing.T @ V_act_matrix
+        source_inhibited = outgoing.T @ V_inh_matrix
+        incoming_activating = incoming @ E_act_matrix
+        incoming_inhibiting = incoming @ E_inh_matrix
 
-                if not self.disable_acyclicity:
-                    edge_selected = edge_activates + edge_inhibits
-                    source_position = at_condition(V_pos, si, condition)
-                    target_position = at_condition(V_pos, ti, condition)
-                    P += target_position - source_position >= 1 - max_dist * (1 - edge_selected)
+        interactions = np.asarray(
+            graph.get_attr_from_edges(self.interaction_graph_attribute),
+            dtype=float,
+        )
+        invalid_interactions = np.flatnonzero(~np.isin(interactions, (-1, 1)))
+        if invalid_interactions.size:
+            edge_index = int(invalid_interactions[0])
+            raise ValueError(f"Invalid interaction value for edge {edge_index}: {interactions[edge_index]}")
+        activating = np.broadcast_to(
+            (interactions > 0).reshape(-1, 1) if is_multicondition else interactions > 0,
+            condition_shape(graph.num_edges),
+        ).astype(float)
+        inhibiting = np.broadcast_to(
+            (interactions < 0).reshape(-1, 1) if is_multicondition else interactions < 0,
+            condition_shape(graph.num_edges),
+        ).astype(float)
+        P += E_act_matrix <= source_activated.multiply(activating) + source_inhibited.multiply(inhibiting)
+        P += E_inh_matrix <= source_inhibited.multiply(activating) + source_activated.multiply(inhibiting)
+        P += incoming_activating + incoming_inhibiting <= 1
 
-        for condition, (sample_name, sample) in enumerate(data.samples.items()):
+        edge_selected = E_act_matrix + E_inh_matrix
+        if not self.disable_acyclicity:
+            if is_multicondition:
+                source_position = V_pos_matrix[incidence.source_indices, :]
+                target_position = V_pos_matrix[incidence.target_indices, :]
+            else:
+                source_position = V_pos_matrix[incidence.source_indices]
+                target_position = V_pos_matrix[incidence.target_indices]
+            P += target_position - source_position >= 1 - max_dist * (1 - edge_selected)
+
+        perturbed_mask = np.zeros(condition_shape(graph.num_vertices), dtype=float)
+        positive_perturbation = np.zeros_like(perturbed_mask)
+        negative_perturbation = np.zeros_like(perturbed_mask)
+        condition_inputs = []
+        condition_measurements = []
+        for condition, sample in enumerate(data.samples.values()):
             perturbations = dict(
                 sample.query.select(lambda f: f.data[self.data_type_key] == self.data_input_key).pluck(
                     lambda f: (f.id, f.value)
@@ -675,43 +684,35 @@ class CarnivalILP(_CarnivalUserInputs, Method):
                     lambda f: (f.id, f.value)
                 )
             )
-
-            for vertex in graph.V:
-                in_edge_indices = [i for i, _ in graph.in_edges(vertex)]
+            condition_inputs.append(perturbations)
+            condition_measurements.append(measurements)
+            for vertex, value in perturbations.items():
                 vertex_index = V_index[vertex]
-                vertex_activated = at_condition(V_act, vertex_index, condition)
-                vertex_inhibited = at_condition(V_inh, vertex_index, condition)
-                incoming_activating = sum(at_condition(E_act, edge_index, condition) for edge_index in in_edge_indices)
-                incoming_inhibiting = sum(at_condition(E_inh, edge_index, condition) for edge_index in in_edge_indices)
-                if in_edge_indices:
-                    P += incoming_activating + incoming_inhibiting <= 1
+                index = (vertex_index, condition) if is_multicondition else vertex_index
+                perturbed_mask[index] = 1
+                positive_perturbation[index] = value > 0
+                negative_perturbation[index] = value < 0
 
-                perturbed = vertex in perturbations
-                P += vertex_activated <= int(perturbed) + incoming_activating
-                P += vertex_inhibited <= int(perturbed) + incoming_inhibiting
+        P += V_act_matrix <= perturbed_mask + incoming_activating
+        P += V_inh_matrix <= perturbed_mask + incoming_inhibiting
+        P += V_act_matrix >= positive_perturbation
+        P += V_inh_matrix >= negative_perturbation
 
-                perturbed_value = np.sign(perturbations.get(vertex, 0))
-                if perturbed_value > 0:
-                    P += vertex_activated == 1
-                    P += vertex_inhibited == 0
-                elif perturbed_value < 0:
-                    P += vertex_activated == 0
-                    P += vertex_inhibited == 1
-
-            objective_data = measurements.copy()
+        vertex_value_matrix = V_act_matrix - V_inh_matrix
+        for condition, sample_name in enumerate(data.samples):
+            objective_data = condition_measurements[condition].copy()
             if self.use_perturbation_weights:
-                objective_data.update(perturbations)
-
-            error_terms = []
-            for vertex, value in objective_data.items():
-                vertex_index = V_index[vertex]
-                prediction = at_condition(V_act, vertex_index, condition) - at_condition(V_inh, vertex_index, condition)
-                sign = np.sign(value)
-                if sign > 0:
-                    error_terms.append(np.abs(value) * (sign - prediction))
-                elif sign < 0:
-                    error_terms.append(np.abs(value) * (prediction - sign))
-            P.add_objective(sum(error_terms), name=f"error_{sample_name}")
+                objective_data.update(condition_inputs[condition])
+            positions = [V_index[vertex] for vertex in objective_data]
+            values = np.asarray(list(objective_data.values()))
+            error_expr = create_signed_error_expression(
+                P,
+                values,
+                index_of_vertices=positions,
+                condition_index=condition,
+                vertex_variable=vertex_value_matrix,
+            )
+            P.add_objective(error_expr.sum(), name=f"error_{sample_name}")
 
         if self.beta_weight > 0:
             if self.penalize == "nodes":
@@ -726,7 +727,7 @@ class CarnivalILP(_CarnivalUserInputs, Method):
 
         # Finally, register some aliases for convenience
         P.register("vertex_values", V_act - V_inh)
-        P.register("edge_values", E_act - E_inh)
+        P.register("edge_values", edge_state.value)
 
         return P
 
