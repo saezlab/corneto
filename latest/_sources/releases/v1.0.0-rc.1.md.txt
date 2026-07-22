@@ -1,0 +1,34 @@
+# CORNETO 1.0.0 RC1
+
+CORNETO 1.0.0 RC1 freezes the intended 1.0 public API for final validation.
+It requires Python 3.11 or newer and is tested on Python 3.11, 3.12, and 3.13.
+
+## Highlights
+
+- Canonical graph, data, I/O, optimization-backend, and method APIs now have
+  explicit contract tests.
+- `CarnivalILP`, `CarnivalFlow`, `MultiSampleFBA`, `MultiSampleIMAT`, and the
+  multisample shortest-path formulation follow the shared multi-condition data
+  convention.
+- `milp_carnival` remains supported as the compact single-condition CARNIVAL
+  formulation.
+- Knowledge-primed neural-network helpers are public under `corneto.ml`.
+- The indexed sampling tutorials continue to use
+  `corneto.methods.sampler.sample_alternative_solutions`.
+- The release gate now requires tests, Ruff, formatting, metadata validation,
+  warning-free documentation, distribution checks, and clean-wheel installation.
+
+## Compatibility window
+
+Imports through `corneto.methods.future`, `corneto.methods.signal`, and the root
+`corneto.K` and `corneto.ops` aliases continue to work with `FutureWarning`
+through the CORNETO 1.x line. They are scheduled for removal in CORNETO 2.0.
+
+See the [1.0 migration guide](migration-1.0.md) for canonical mappings and
+intentional removals.
+
+## Release-candidate policy
+
+RC1 must soak for at least seven days. During the soak, only bug fixes,
+documentation corrections, and packaging fixes are accepted. Any public API
+change requires RC2 and restarts the seven-day soak.

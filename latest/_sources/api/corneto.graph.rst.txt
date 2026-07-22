@@ -10,7 +10,9 @@ Base classes
 
     BaseGraph
     Graph
-    EdgeType
+
+.. autoclass:: EdgeType
+    :no-members:
 
 Random networks
 ---------------

@@ -119,7 +119,7 @@
     }
    ],
    "source": [
-    "from corneto.methods.future.imat import MultiSampleIMAT\n",
+    "from corneto.methods.imat import MultiSampleIMAT\n",
     "\n",
     "MultiSampleIMAT.show_references()"
    ]
@@ -974,7 +974,7 @@
    ],
    "source": [
     "# Create a dataset (here we only have 1 sample, which is the mean of the four measurements)\n",
-    "from corneto._data import Data\n",
+    "from corneto.data import Data\n",
     "\n",
     "feats = dict()\n",
     "for edge, val in zip(G.get_attr_from_edges(\"id\"), e):\n",
@@ -3189,88 +3189,6 @@
    ],
    "source": [
     "G_ctx.plot(layout=\"neato\")"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "id": "63d76a3e-fcfb-402c-a850-d1b4ab801e71",
-   "metadata": {
-    "papermill": {
-     "duration": 0.003372,
-     "end_time": "2025-06-27T21:19:26.319746",
-     "exception": false,
-     "start_time": "2025-06-27T21:19:26.316374",
-     "status": "completed"
-    },
-    "tags": []
-   },
-   "source": [
-    "## Old version\n",
-    "\n",
-    "Original experiments in the manuscript used the old `multicondition_imat`:"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 21,
-   "id": "de52b303-52fc-4e6c-b1c2-7f3ec6ded637",
-   "metadata": {
-    "execution": {
-     "iopub.execute_input": "2025-06-27T21:19:26.334802Z",
-     "iopub.status.busy": "2025-06-27T21:19:26.334229Z",
-     "iopub.status.idle": "2025-06-27T21:19:26.407750Z",
-     "shell.execute_reply": "2025-06-27T21:19:26.407421Z"
-    },
-    "papermill": {
-     "duration": 0.083956,
-     "end_time": "2025-06-27T21:19:26.408719",
-     "exception": false,
-     "start_time": "2025-06-27T21:19:26.324763",
-     "status": "completed"
-    },
-    "tags": []
-   },
-   "outputs": [],
-   "source": [
-    "from corneto.methods.metabolism.fba import multicondition_imat\n",
-    "\n",
-    "P = multicondition_imat(G, np.array(e), alpha=1e-3, eps=eps)\n",
-    "P.solve(solver=\"scipy\");"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 22,
-   "id": "997b942d-cf11-4fe2-bcbc-2c179be3f9e4",
-   "metadata": {
-    "execution": {
-     "iopub.execute_input": "2025-06-27T21:19:26.416173Z",
-     "iopub.status.busy": "2025-06-27T21:19:26.416042Z",
-     "iopub.status.idle": "2025-06-27T21:19:26.418170Z",
-     "shell.execute_reply": "2025-06-27T21:19:26.417949Z"
-    },
-    "papermill": {
-     "duration": 0.006498,
-     "end_time": "2025-06-27T21:19:26.418825",
-     "exception": false,
-     "start_time": "2025-06-27T21:19:26.412327",
-     "status": "completed"
-    },
-    "tags": []
-   },
-   "outputs": [
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "2.0\n",
-      "60.0\n"
-     ]
-    }
-   ],
-   "source": [
-    "for o in P.objectives:\n",
-    "    print(o.value)"
    ]
   },
   {

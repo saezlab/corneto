@@ -67,7 +67,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'guide/networks/pcst';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1784707705';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
@@ -422,7 +422,6 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../metabolism/index.html">Metabolism</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../metabolism/flux-balance-analysis.html">Flux Balance Analysis (FBA)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../metabolism/multicondition-sfba.html">Multi-condition sparse FBA</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../metabolism/imat.html">Context-specific models (iMAT)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../metabolism/multicondition-imat.html">Multi-condition iMAT</a></li>
 </ul>
 </details></li>
@@ -542,7 +541,7 @@
                    style="width:100%;max-width:100px;" />
             </td>
             <td>
-              <table><tr><td>Installed version:</td><td style='text-align:left'>v1.0.0b8</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.9.2, PICOS v2.6.2</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>GLPK, GLPK_MI, CVXOPT, SCIP, SCIPY, HIGHS</td></tr><tr><td>Plot backend (default):</td><td style='text-align:left'>auto -> graphviz</td></tr><tr><td>Available plot backends:</td><td style='text-align:left'>graphviz v0.20.3; networkx v3.6.1+mpl v3.11.1; graphviz-wasm</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href="https://github.com/saezlab/corneto">https://github.com/saezlab/corneto</a></td></tr></table>
+              <table><tr><td>Installed version:</td><td style='text-align:left'>v1.0.0b8.post7.dev0+ed17e428</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.9.2, PICOS v2.6.2</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>GLPK, GLPK_MI, CVXOPT, SCIP, SCIPY, HIGHS</td></tr><tr><td>Plot backend (default):</td><td style='text-align:left'>auto -> graphviz</td></tr><tr><td>Available plot backends:</td><td style='text-align:left'>graphviz v0.20.3; networkx v3.6.1+mpl v3.11.1; graphviz-wasm</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href="https://github.com/saezlab/corneto">https://github.com/saezlab/corneto</a></td></tr></table>
             </td>
           </tr>
         </table>
@@ -768,7 +767,7 @@
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto._data</span><span class="w"> </span><span class="kn">import</span> <span class="n">Data</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">Data</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">get_data</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
@@ -800,7 +799,7 @@
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods.future.pcst</span><span class="w"> </span><span class="kn">import</span> <span class="n">PrizeCollectingSteinerTree</span> <span class="k">as</span> <span class="n">PCST</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods.pcst</span><span class="w"> </span><span class="kn">import</span> <span class="n">PrizeCollectingSteinerTree</span> <span class="k">as</span> <span class="n">PCST</span>
 
 <span class="n">m</span> <span class="o">=</span> <span class="n">PCST</span><span class="p">(</span><span class="n">lambda_reg</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">strict_acyclic</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">P</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">Gc</span><span class="p">,</span> <span class="n">D</span><span class="p">)</span>
@@ -929,7 +928,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/b738873adb59f9378e6753028c71ba676e4d042aa78fec45c871fdced582dfce.png" src="../../_images/b738873adb59f9378e6753028c71ba676e4d042aa78fec45c871fdced582dfce.png" />
+<img alt="../../_images/f30dde8f207d396adbaeb646f69d692cc1bf355c07448621c7ba61541b9b86f3.png" src="../../_images/f30dde8f207d396adbaeb646f69d692cc1bf355c07448621c7ba61541b9b86f3.png" />
 </div>
 </div>
 <section id="directed">
@@ -954,8 +953,8 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_flow&#39;: _flow: Variable((1028,), _flow),
- &#39;_flow_ineg&#39;: _flow_ineg: Variable((1028,), _flow_ineg, boolean=True),
  &#39;_flow_ipos&#39;: _flow_ipos: Variable((1028,), _flow_ipos, boolean=True),
+ &#39;_flow_ineg&#39;: _flow_ineg: Variable((1028,), _flow_ineg, boolean=True),
  &#39;_dag_layer&#39;: _dag_layer: Variable((100, 1), _dag_layer),
  &#39;_flow_terminal_neg_0&#39;: _flow_terminal_neg_0: Variable((6,), _flow_terminal_neg_0, boolean=True),
  &#39;_flow_terminal_pos_0&#39;: _flow_terminal_pos_0: Variable((6,), _flow_terminal_pos_0, boolean=True),

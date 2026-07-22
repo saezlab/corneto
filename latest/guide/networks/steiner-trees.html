@@ -65,7 +65,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'guide/networks/steiner-trees';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1784707705';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
@@ -420,7 +420,6 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../metabolism/index.html">Metabolism</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../metabolism/flux-balance-analysis.html">Flux Balance Analysis (FBA)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../metabolism/multicondition-sfba.html">Multi-condition sparse FBA</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../metabolism/imat.html">Context-specific models (iMAT)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../metabolism/multicondition-imat.html">Multi-condition iMAT</a></li>
 </ul>
 </details></li>
@@ -566,7 +565,7 @@
                    style="width:100%;max-width:100px;" />
             </td>
             <td>
-              <table><tr><td>Installed version:</td><td style='text-align:left'>v1.0.0b8</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.9.2, PICOS v2.6.2</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>GLPK, GLPK_MI, CVXOPT, SCIP, SCIPY, HIGHS</td></tr><tr><td>Plot backend (default):</td><td style='text-align:left'>auto -> graphviz</td></tr><tr><td>Available plot backends:</td><td style='text-align:left'>graphviz v0.20.3; networkx v3.6.1+mpl v3.11.1; graphviz-wasm</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href="https://github.com/saezlab/corneto">https://github.com/saezlab/corneto</a></td></tr></table>
+              <table><tr><td>Installed version:</td><td style='text-align:left'>v1.0.0b8.post7.dev0+ed17e428</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.9.2, PICOS v2.6.2</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>GLPK, GLPK_MI, CVXOPT, SCIP, SCIPY, HIGHS</td></tr><tr><td>Plot backend (default):</td><td style='text-align:left'>auto -> graphviz</td></tr><tr><td>Available plot backends:</td><td style='text-align:left'>graphviz v0.20.3; networkx v3.6.1+mpl v3.11.1; graphviz-wasm</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href="https://github.com/saezlab/corneto">https://github.com/saezlab/corneto</a></td></tr></table>
             </td>
           </tr>
         </table>
@@ -648,7 +647,7 @@ Total cost of the Steiner tree: 38.8896
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/24fc88ddc908b60d2fdaffea08b5e5ab22f9a5f89cc75de1578fb8a70813bdcf.png" src="../../_images/24fc88ddc908b60d2fdaffea08b5e5ab22f9a5f89cc75de1578fb8a70813bdcf.png" />
+<img alt="../../_images/6bc4395ec58155fce607d295106b39dbfc1594067cb0697d7d8d47134cb9e563.png" src="../../_images/6bc4395ec58155fce607d295106b39dbfc1594067cb0697d7d8d47134cb9e563.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -685,7 +684,7 @@ Total cost of the Steiner tree: 38.8896
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto._data</span><span class="w"> </span><span class="kn">import</span> <span class="n">Data</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">Data</span>
 
 <span class="n">features</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -736,7 +735,7 @@ Total cost of the Steiner tree: 38.8896
 <h2>Solving the problem with the exact steiner tree<a class="headerlink" href="#solving-the-problem-with-the-exact-steiner-tree" title="Link to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods.future.steiner</span><span class="w"> </span><span class="kn">import</span> <span class="n">SteinerTreeFlow</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods.steiner</span><span class="w"> </span><span class="kn">import</span> <span class="n">SteinerTreeFlow</span>
 
 <span class="c1"># We create a SteinerTreeFlow problem. If edges do not have data, we</span>
 <span class="c1"># assume the cost is 1 (in this case, every edge in our data object has</span>
@@ -838,7 +837,7 @@ Total cost of the Steiner tree: 38.8896
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/ade3fac8646bac3e2cd7e4d465a0ef49d2bc1eb4dc84cc81932ecf8c2a4006a2.png" src="../../_images/ade3fac8646bac3e2cd7e4d465a0ef49d2bc1eb4dc84cc81932ecf8c2a4006a2.png" />
+<img alt="../../_images/10d346377b2ed877ac0bba0fcb4a370356afec96b2d068a45c4d2b2c088bc043.png" src="../../_images/10d346377b2ed877ac0bba0fcb4a370356afec96b2d068a45c4d2b2c088bc043.png" />
 </div>
 </div>
 </section>

@@ -65,7 +65,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/fba/context-specific-metabolic-omics';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1784707705';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
@@ -501,7 +501,7 @@
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods.future.imat</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiSampleIMAT</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods.imat</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiSampleIMAT</span>
 
 <span class="n">MultiSampleIMAT</span><span class="o">.</span><span class="n">show_references</span><span class="p">()</span>
 </pre></div>
@@ -1025,7 +1025,7 @@
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a dataset (here we only have 1 sample, which is the mean of the four measurements)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">corneto._data</span><span class="w"> </span><span class="kn">import</span> <span class="n">Data</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">corneto.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">Data</span>
 
 <span class="n">feats</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
 <span class="k">for</span> <span class="n">edge</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">get_attr_from_edges</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">),</span> <span class="n">e</span><span class="p">):</span>
@@ -1243,34 +1243,6 @@
 </div>
 </div>
 </section>
-<section id="old-version">
-<h2>Old version<a class="headerlink" href="#old-version" title="Link to this heading">#</a></h2>
-<p>Original experiments in the manuscript used the old <code class="docutils literal notranslate"><span class="pre">multicondition_imat</span></code>:</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods.metabolism.fba</span><span class="w"> </span><span class="kn">import</span> <span class="n">multicondition_imat</span>
-
-<span class="n">P</span> <span class="o">=</span> <span class="n">multicondition_imat</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">e</span><span class="p">),</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="n">eps</span><span class="p">)</span>
-<span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;scipy&quot;</span><span class="p">);</span>
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">P</span><span class="o">.</span><span class="n">objectives</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2.0
-60.0
-</pre></div>
-</div>
-</div>
-</div>
-</section>
 <section id="citations">
 <h2>Citations<a class="headerlink" href="#citations" title="Link to this heading">#</a></h2>
 <div class="cell docutils container">
@@ -1333,7 +1305,6 @@
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loading-data-from-cobra">Loading data from COBRA</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mapping-data-using-gene-protein-reaction-gpr-rules">Mapping data using Gene-Protein-Reaction (GPR) rules</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#context-specific-network-inference">Context-specific network inference</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#old-version">Old version</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#citations">Citations</a></li>
 </ul>
   </nav></div>
