@@ -14,7 +14,7 @@
 For most users, we recommend creating a conda environment and installing the research flavor:
 
 ```bash
-conda create -n corneto python>=3.10
+conda create -n corneto python>=3.11
 conda activate corneto
 conda install python-graphviz
 pip install corneto[research]
@@ -97,7 +97,7 @@ The stable version used by [LIANA+](https://liana-py.readthedocs.io/) and [Netwo
 
 If you run into installation problems:
 
-1. ✅ Make sure you're using **Python 3.10 or higher**
+1. ✅ Make sure you're using **Python 3.11 or higher**
 2. 🧱 Check that you have at least one solver backend installed (CVXPY is recommended)
 3. 🔑 For Gurobi users, verify that your **license is properly installed**
 
@@ -110,7 +110,7 @@ check_gurobi()
 
 This will perform a series of checks to ensure that Gurobi is correctly installed and configured. You should see:
 
-```plain
+```text
 Gurobipy successfully imported.
 Gurobi environment started successfully.
 Starting optimization of the test model...

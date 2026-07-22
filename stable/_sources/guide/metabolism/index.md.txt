@@ -7,6 +7,5 @@ CORNETO supports flux balance analysis workflows while adding modeling flexibili
 
 flux-balance-analysis.ipynb
 multicondition-sfba.ipynb
-imat.ipynb
 multicondition-imat.ipynb
 ```

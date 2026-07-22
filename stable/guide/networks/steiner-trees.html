@@ -65,7 +65,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'guide/networks/steiner-trees';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1784710358';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'stable';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
@@ -420,7 +420,6 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../metabolism/index.html">Metabolism</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../metabolism/flux-balance-analysis.html">Flux Balance Analysis (FBA)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../metabolism/multicondition-sfba.html">Multi-condition sparse FBA</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../metabolism/imat.html">Context-specific models (iMAT)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../metabolism/multicondition-imat.html">Multi-condition iMAT</a></li>
 </ul>
 </details></li>
@@ -566,7 +565,7 @@
                    style="width:100%;max-width:100px;" />
             </td>
             <td>
-              <table><tr><td>Installed version:</td><td style='text-align:left'>v1.0.0b8</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.9.2, PICOS v2.6.2</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>GLPK, GLPK_MI, CVXOPT, SCIP, SCIPY, HIGHS</td></tr><tr><td>Plot backend (default):</td><td style='text-align:left'>auto -> graphviz</td></tr><tr><td>Available plot backends:</td><td style='text-align:left'>graphviz v0.20.3; networkx v3.6.1+mpl v3.11.1; graphviz-wasm</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href="https://github.com/saezlab/corneto">https://github.com/saezlab/corneto</a></td></tr></table>
+              <table><tr><td>Installed version:</td><td style='text-align:left'>v1.0.0b8.post10.dev0+6ad286c0</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.9.2, PICOS v2.6.2</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>GLPK, GLPK_MI, CVXOPT, SCIP, SCIPY, HIGHS</td></tr><tr><td>Plot backend (default):</td><td style='text-align:left'>auto -> graphviz</td></tr><tr><td>Available plot backends:</td><td style='text-align:left'>graphviz v0.20.3; networkx v3.6.1+mpl v3.11.1; graphviz-wasm</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href="https://github.com/saezlab/corneto">https://github.com/saezlab/corneto</a></td></tr></table>
             </td>
           </tr>
         </table>
@@ -648,7 +647,7 @@ Total cost of the Steiner tree: 38.8896
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/dd0c8fa8181a722669fc9c69da4f63bbd9c07f1a2c7f472d9b5cca62657542ab.png" src="../../_images/dd0c8fa8181a722669fc9c69da4f63bbd9c07f1a2c7f472d9b5cca62657542ab.png" />
+<img alt="../../_images/2e5af03ad52e8f45d4a179b86fa5c1c26a5f17aa75591e3ffd3fb14a69e5339e.png" src="../../_images/2e5af03ad52e8f45d4a179b86fa5c1c26a5f17aa75591e3ffd3fb14a69e5339e.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -685,7 +684,7 @@ Total cost of the Steiner tree: 38.8896
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto._data</span><span class="w"> </span><span class="kn">import</span> <span class="n">Data</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">Data</span>
 
 <span class="n">features</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -736,7 +735,7 @@ Total cost of the Steiner tree: 38.8896
 <h2>Solving the problem with the exact steiner tree<a class="headerlink" href="#solving-the-problem-with-the-exact-steiner-tree" title="Link to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods.future.steiner</span><span class="w"> </span><span class="kn">import</span> <span class="n">SteinerTreeFlow</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods.steiner</span><span class="w"> </span><span class="kn">import</span> <span class="n">SteinerTreeFlow</span>
 
 <span class="c1"># We create a SteinerTreeFlow problem. If edges do not have data, we</span>
 <span class="c1"># assume the cost is 1 (in this case, every edge in our data object has</span>
@@ -749,8 +748,8 @@ Total cost of the Steiner tree: 38.8896
 </div>
 <div class="cell_output docutils container">
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_flow&#39;: _flow: Variable((521,), _flow),
- &#39;_flow_ineg&#39;: _flow_ineg: Variable((521,), _flow_ineg, boolean=True),
  &#39;_flow_ipos&#39;: _flow_ipos: Variable((521,), _flow_ipos, boolean=True),
+ &#39;_flow_ineg&#39;: _flow_ineg: Variable((521,), _flow_ineg, boolean=True),
  &#39;_dag_layer&#39;: _dag_layer: Variable((100, 1), _dag_layer),
  &#39;flow&#39;: _flow: Variable((521,), _flow),
  &#39;with_flow&#39;: Expression(AFFINE, NONNEGATIVE, (521,))}
@@ -838,7 +837,7 @@ Total cost of the Steiner tree: 38.8896
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/e1e3a4c4f58ec22adc71f6af43a1cb0f969780fb8227344202db8a3fe0794b75.png" src="../../_images/e1e3a4c4f58ec22adc71f6af43a1cb0f969780fb8227344202db8a3fe0794b75.png" />
+<img alt="../../_images/d6137ad38d445007ff7457f26d842933efab6e52f48f2b5e49c605f308256957.png" src="../../_images/d6137ad38d445007ff7457f26d842933efab6e52f48f2b5e49c605f308256957.png" />
 </div>
 </div>
 </section>
