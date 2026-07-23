@@ -8,9 +8,10 @@ inputs are:
 - one or more perturbed proteins, such as drug targets or inhibited kinases;
 - a score for each measured phosphosite.
 
-CORNETO expects the PKN and scores to be prepared beforehand. It does not
-perform differential-expression analysis, map phosphosites to proteins, or
-construct the PKN.
+CORNETO expects differential-analysis results and a PKN to be prepared
+beforehand. It provides a helper for converting p-values and fold changes into
+PHONEMeS scores, but it does not perform differential analysis, map
+phosphosites to proteins, or construct the PKN.
 
 ## Understanding phosphosite scores
 
@@ -37,6 +38,55 @@ Every dictionary key identifies a measured phosphosite, including keys whose
 value is `0.0`. A positively scored site may still appear when it is needed as
 an intermediate node on a better overall path.
 
+## Computing scores from differential results
+
+`compute_phonemes_scores` converts p-values into the signed weights expected by
+PHONEMeS:
+
+\[
+r_v = \log_2\left(\frac{p_v}{p_{\mathrm{threshold}}}\right).
+\]
+
+Sites satisfying the selected evidence criteria receive \(-|r_v|\), rewarding
+their inclusion. Other sites receive \(+|r_v|\), penalizing their inclusion.
+By default, positive and negative scores are scaled separately to the intervals
+\([0,1]\) and \([-1,0]\).
+
+For one condition, pass ordinary mappings:
+
+```python
+from corneto.methods import compute_phonemes_scores
+
+scores = compute_phonemes_scores(
+    {
+        "ERK1_S123": 0.001,
+        "AKT1_S473": 0.20,
+    },
+    fold_changes={
+        "ERK1_S123": 2.1,
+        "AKT1_S473": 0.3,
+    },
+    pvalue_threshold=0.05,
+    fold_change_threshold=1.0,
+    direction="both",
+)
+```
+
+Nested condition mappings are handled by the same function. If pandas is
+available in the user's workflow, a `Series` represents one condition and a
+`DataFrame` represents phosphosites by conditions:
+
+```python
+scores = compute_phonemes_scores(
+    pvalue_matrix,       # rows: phosphosites; columns: conditions
+    fold_changes=fold_change_matrix,
+)
+```
+
+The returned object preserves pandas labels and can be passed directly to
+`build` or `build_many`. Pandas remains optional and is not required by
+CORNETO.
+
 ## Inferring a network for one condition
 
 ```python
@@ -61,6 +111,12 @@ perturbation is treated as a required starting point in the inferred network.
 `phosphosite_scores` must contain at least one measured PKN vertex. The method
 chooses a connected explanation by balancing the phosphosite scores against
 the cost of including interactions.
+
+Before constructing the optimization problem, CORNETO removes vertices and
+interactions that cannot lie on a directed path from a perturbation to a
+measured phosphosite. Unreachable measurements are omitted from
+`method.processed_data`. A perturbation that cannot reach any measured site is
+reported as an input error.
 
 ## Controlling network size with edge costs
 
@@ -108,12 +164,18 @@ selected_edge_mask = problem.expr.edge_selected.value[:, 0] > 0.5
 selected_vertex_mask = problem.expr.vertex_selected.value[:, 0] > 0.5
 
 selected_edge_indices = np.flatnonzero(selected_edge_mask)
-selected_vertices = np.asarray(pkn.V, dtype=object)[selected_vertex_mask]
-inferred_network = pkn.edge_subgraph(selected_edge_indices)
+selected_vertices = np.asarray(
+    method.processed_graph.V,
+    dtype=object,
+)[selected_vertex_mask]
+inferred_network = method.processed_graph.edge_subgraph(selected_edge_indices)
 ```
 
-`inferred_network` contains only original PKN interactions. It can be inspected
-or plotted with the same graph operations used elsewhere in CORNETO.
+`inferred_network` contains only retained biological PKN interactions. The
+selection arrays are indexed against `method.processed_graph`, following the
+same convention as other CORNETO methods. Internal boundary interactions occur
+after all rows of `edge_selected` and therefore cannot appear in this
+subnetwork.
 
 Because several subnetworks may have the same optimum, different solvers or
 solver settings can return different but equally good interaction sets.
@@ -151,7 +213,9 @@ condition_names = tuple(method.processed_data.samples)
 
 for column, condition in enumerate(condition_names):
     selected = problem.expr.edge_selected.value[:, column] > 0.5
-    condition_network = pkn.edge_subgraph(np.flatnonzero(selected))
+    condition_network = method.processed_graph.edge_subgraph(
+        np.flatnonzero(selected)
+    )
 ```
 
 ### How joint fitting shares interactions
@@ -188,9 +252,9 @@ CORNETO's optimization framework. It is not necessary for routine use.
 
 ### Mathematical formulation
 
-For original PKN edges, let \(Z_{ec}\) indicate whether edge \(e\) is selected
-in condition \(c\), and let \(X_{vc}\) indicate whether vertex \(v\) is
-selected. The objective is
+For retained biological PKN edges, let \(Z_{ec}\) indicate whether edge \(e\)
+is selected in condition \(c\), and let \(X_{vc}\) indicate whether vertex
+\(v\) is selected. The objective is
 
 \[
 \min \sum_{v,c} s_{vc}X_{vc} + \sum_e c_eY_e,
@@ -219,9 +283,9 @@ The registered expressions are:
 
 | Expression | Meaning |
 | --- | --- |
-| `problem.expr.edge_selected` | Original PKN interactions selected per condition |
-| `problem.expr.vertex_selected` | Original PKN vertices selected per condition |
-| `problem.expr.edge_selected_any` | Union of selected PKN interactions |
+| `problem.expr.edge_selected` | Retained PKN interactions selected per condition |
+| `problem.expr.vertex_selected` | Retained PKN vertices selected per condition |
+| `problem.expr.edge_selected_any` | Union of selected retained interactions |
 | `problem.expr.flow` | Internal connectivity flow on PKN and boundary edges |
 | `problem.expr.dag_layer` | Internal acyclicity layer for each vertex |
 
@@ -268,13 +332,13 @@ agree; they cannot be used to define condition-specific edge costs.
 The test suite includes a compact conversion of the MTOR inhibition example in
 `inst/PHONEMeS_example/Cluster/data4cluster_3.RData` from the original
 PHONEMeS-ILP repository. It contains a prepared 229-edge PKN, the `MTOR_HUMAN`
-perturbation, and 17 phosphosite scores. The test checks the optimum, selected
-interaction count, and reachability from the perturbation with both supported
-backends. The converted fixture also records the reference commit and source
-checksum.
+perturbation, and 17 phosphosite scores. The test checks the objective at a
+solver-appropriate precision and verifies reachability from the perturbation
+with both supported backends. The converted fixture also records the reference
+commit and source checksum.
 
-This implementation covers the optimization core. Score preprocessing, PKN
-construction, downsampling, and solver-specific solution pools remain separate
-workflows. See the original
+This implementation covers score construction, exact connectivity pruning, and
+the optimization core. Differential analysis, PKN construction, downsampling,
+and solver-specific solution pools remain separate workflows. See the original
 [PHONEMeS publication](https://doi.org/10.1038/ncomms9033) and
 [reference implementation](https://github.com/saezlab/PHONEMeS-ILP).

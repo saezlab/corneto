@@ -22,6 +22,7 @@ formulation.
     CarnivalFlow
     CarnivalILP
     PHONEMeS
+    compute_phonemes_scores
     milp_carnival
     signaling.cellnopt_ilp.cellnoptILP
 

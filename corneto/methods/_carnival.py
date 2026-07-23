@@ -20,7 +20,11 @@ from corneto.methods._input_utils import (
     validate_condition_maps,
     validate_vertices,
 )
-from corneto.methods._network_utils import augment_with_boundaries, directed_incidence
+from corneto.methods._network_utils import (
+    augment_with_boundaries,
+    directed_incidence,
+    prune_to_paths,
+)
 from corneto.methods._signal_utils import add_signed_edge_state
 from corneto.methods.signaling._utils import get_interactions
 
@@ -47,11 +51,9 @@ def prune_graph(
 
     Steps:
     1. For each condition in dataset:
-       - Find relevant vertices (graph vertices ∩ condition inputs/outputs)
-       - Prune subgraph using relevant vertices
-       - Collect remaining input/output keys
-    2. Collect pruned input/output vertices across conditions
-    3. Prune original graph using all collected vertices
+       - Find graph vertices on a directed path from an input to an output
+    2. Return the union of the condition-specific path subgraphs
+    3. Remove data features outside the retained graph
 
     Args:
         G: Graph-like object with:
@@ -68,26 +70,18 @@ def prune_graph(
             - The pruned dataset with pruned vertices
     """
     graph_vertices: Set[Any] = set(G.V)
-    reachable_inputs = set()
-    reachable_outputs = set()
+    sources = {}
+    targets = {}
+    for condition, sample in data.samples.items():
+        sources[condition] = graph_vertices & sample.query.select(
+            lambda f: f.data[property_key] == input_key
+        ).pluck()
+        targets[condition] = graph_vertices & sample.query.select(
+            lambda f: f.data[property_key] == output_key
+        ).pluck()
 
-    for sample in data.samples.values():
-        sample_inputs = sample.query.select(lambda f: f.data[property_key] == input_key).pluck()
-
-        sample_outputs = sample.query.select(lambda f: f.data[property_key] == output_key).pluck()
-
-        # Intersect with the current graph's vertices
-        inputs_in_graph = graph_vertices & sample_inputs
-        outputs_in_graph = graph_vertices & sample_outputs
-
-        # Prune the graph based on relevant inputs and outputs
-        sub_graph = G.prune(list(inputs_in_graph), list(outputs_in_graph))
-        subgraph_vertices = set(sub_graph.V)
-        reachable_inputs.update(inputs_in_graph & subgraph_vertices)
-        reachable_outputs.update(outputs_in_graph & subgraph_vertices)
-
-    # Prune the original graph with all collected inputs/outputs
-    pruned_graph = G.prune(list(reachable_inputs), list(reachable_outputs))
+    pruning = prune_to_paths(G, sources=sources, targets=targets)
+    pruned_graph = pruning.graph
     pruned_data = data.query.filter_features(lambda f: f.id in pruned_graph.V).collect()
     # pruned_data = data.subset(feature_predicate=lambda f: f.id in pruned_graph.V)
     return pruned_graph, pruned_data

@@ -87,10 +87,11 @@ def test_phonemes_matches_reference_mtor_case(backend):
     assert len(fixture["phosphosite_scores"]) == 17
     assert fixture["provenance"]["commit"] == "1117662a0128454a66e250100c613e6caf34dd69"
 
-    problem = PHONEMeS(
+    method = PHONEMeS(
         default_edge_cost=fixture["edge_cost"],
         backend=backend,
-    ).build(
+    )
+    problem = method.build(
         graph,
         perturbations=[fixture["target"]],
         phosphosite_scores=fixture["phosphosite_scores"],
@@ -102,7 +103,14 @@ def test_phonemes_matches_reference_mtor_case(backend):
     assert selected.any()
 
     reachable = {fixture["target"]}
-    selected_edges = [edge for edge, is_selected in zip(fixture["edges"], selected) if is_selected]
+    selected_edges = [
+        (next(iter(source)), next(iter(target)))
+        for (source, target), is_selected in zip(
+            method.processed_graph.E[: len(selected)],
+            selected,
+        )
+        if is_selected
+    ]
     while True:
         previous_size = len(reachable)
         reachable.update(target for source, target in selected_edges if source in reachable)
@@ -177,7 +185,8 @@ def test_internal_nodes_cannot_extract_flow(backend):
     )
     _solve(problem)
 
-    assert np.asarray(problem.expr.edge_selected.value)[1, 0] == pytest.approx(0)
+    assert problem.expr.edge_selected.shape[0] == 1
+    assert "dead" not in method.processed_graph.V
     assert "dead" not in method._phosphosite_outflow_edges
 
 

@@ -51,7 +51,8 @@ phonemes_problem = PHONEMeS().build(
 ```
 
 See the [PHONEMeS guide](networks/phonemes.md) for score interpretation, edge
-costs, and extracting the inferred subnetwork.
+costs, computing scores from differential results, optional pandas inputs, and
+extracting the inferred subnetwork.
 
 ## Multiple named conditions
 

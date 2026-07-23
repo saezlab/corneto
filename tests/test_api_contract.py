@@ -62,14 +62,17 @@ def test_methods_api_surface_and_identity():
         "PHONEMeS",
         "PrizeCollectingSteinerTree",
         "SteinerTreeFlow",
+        "compute_phonemes_scores",
         "create_multisample_shortest_path",
         "milp_carnival",
         "shortest_path",
         "solve_shortest_path",
     ]
 
+    from corneto.methods.phonemes import compute_phonemes_scores
     from corneto.methods.shortest_path import create_multisample_shortest_path
 
+    assert methods.compute_phonemes_scores is compute_phonemes_scores
     assert methods.create_multisample_shortest_path is create_multisample_shortest_path
 
 
