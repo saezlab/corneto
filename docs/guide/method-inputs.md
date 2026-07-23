@@ -36,8 +36,9 @@ tree_problem = SteinerTreeFlow().build(
 )
 ```
 
-PHONEMeS uses perturbation targets and signed phosphosite scores. The keys in
-`phosphosite_scores` identify measured sites even when their score is zero:
+PHONEMeS uses perturbation targets and signed phosphosite scores. Because the
+method minimizes its objective, negative scores favor including a site and
+positive scores discourage it; zero-valued keys still identify measured sites:
 
 ```python
 from corneto.methods import PHONEMeS
@@ -48,6 +49,9 @@ phonemes_problem = PHONEMeS().build(
     phosphosite_scores={"ERK1_S123": -2.4, "AKT1_S473": 0.0},
 )
 ```
+
+See the [PHONEMeS guide](networks/phonemes.md) for score interpretation, edge
+costs, and extracting the inferred subnetwork.
 
 ## Multiple named conditions
 
@@ -72,8 +76,10 @@ validates condition names, graph identifiers, numeric values, bounds, and edge
 indices before constructing the optimization problem.
 
 PHONEMeS also uses named mappings for `perturbations` and
-`phosphosite_scores`, while its optional `edge_costs` mapping is global because
-an interaction is charged once across the union of conditions.
+`phosphosite_scores`. It infers one subnetwork per condition but charges edge
+costs over their combined network: an interaction used by one or several
+conditions is charged once. For this reason, `edge_costs` is one global mapping
+rather than a mapping per condition.
 
 ## Advanced data interface
 
