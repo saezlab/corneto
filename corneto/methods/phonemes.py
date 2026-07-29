@@ -39,6 +39,70 @@ _ROLE_PHOSPHOSITE = "phosphosite"
 _ROLE_BOTH = "perturbation_phosphosite"
 
 
+def _data_from_phonemes_inputs(
+    pkn: BaseGraph,
+    *,
+    primary_inputs,
+    phosphosite_scores,
+    edge_costs,
+    primary_argument: str,
+    primary_role: str,
+    overlap_role: str,
+):
+    """Validate explicit PHONEMeS-family inputs and construct shared Data."""
+    conditions = validate_condition_keys(
+        **{
+            primary_argument: primary_inputs,
+            "phosphosite_scores": phosphosite_scores,
+        }
+    )
+    cost_values = validate_edge_costs(
+        pkn,
+        {} if edge_costs is None else require_mapping(edge_costs, argument="edge_costs"),
+        condition="all conditions",
+    )
+    features_by_condition = {}
+    for condition in conditions:
+        primary_vertices = validate_vertex_collection(
+            pkn,
+            primary_inputs[condition],
+            argument=primary_argument,
+            condition=condition,
+            required=True,
+        )
+        scores = validate_vertices(
+            pkn,
+            require_mapping(
+                phosphosite_scores[condition],
+                argument="phosphosite_scores",
+                condition=condition,
+            ),
+            argument="phosphosite_scores",
+            condition=condition,
+        )
+        if not scores:
+            raise ValueError(f"phosphosite_scores for condition {condition!r} must not be empty.")
+
+        primary_set = set(primary_vertices)
+        measured_set = set(scores)
+        features = []
+        for vertex in dict.fromkeys([*primary_vertices, *scores]):
+            is_primary = vertex in primary_set
+            is_measured = vertex in measured_set
+            role = overlap_role if is_primary and is_measured else (primary_role if is_primary else _ROLE_PHOSPHOSITE)
+            features.append(
+                {
+                    "id": vertex,
+                    "mapping": "vertex",
+                    "role": role,
+                    "value": scores[vertex] if is_measured else None,
+                }
+            )
+        features.extend({"id": edge, "mapping": "edge", "value": cost} for edge, cost in cost_values.items())
+        features_by_condition[condition] = features
+    return data_from_features(features_by_condition)
+
+
 class PHONEMeS(FlowMethod):
     """Infer acyclic signaling networks from phosphoproteomic scores.
 
@@ -136,62 +200,16 @@ class PHONEMeS(FlowMethod):
             phosphosite_scores,
             many=True,
         )
-        conditions = validate_condition_keys(
-            perturbations=perturbations,
-            phosphosite_scores=phosphosite_scores,
-        )
-        cost_values = validate_edge_costs(
+        data = _data_from_phonemes_inputs(
             pkn,
-            {} if edge_costs is None else require_mapping(edge_costs, argument="edge_costs"),
-            condition="all conditions",
+            primary_inputs=perturbations,
+            phosphosite_scores=phosphosite_scores,
+            edge_costs=edge_costs,
+            primary_argument="perturbations",
+            primary_role=_ROLE_PERTURBATION,
+            overlap_role=_ROLE_BOTH,
         )
-
-        features_by_condition = {}
-        for condition in conditions:
-            targets = validate_vertex_collection(
-                pkn,
-                perturbations[condition],
-                argument="perturbations",
-                condition=condition,
-                required=True,
-            )
-            scores = validate_vertices(
-                pkn,
-                require_mapping(
-                    phosphosite_scores[condition],
-                    argument="phosphosite_scores",
-                    condition=condition,
-                ),
-                argument="phosphosite_scores",
-                condition=condition,
-            )
-            if not scores:
-                raise ValueError(f"phosphosite_scores for condition {condition!r} must not be empty.")
-
-            target_set = set(targets)
-            measured_set = set(scores)
-            vertex_order = list(dict.fromkeys([*targets, *scores]))
-            features = []
-            for vertex in vertex_order:
-                is_target = vertex in target_set
-                is_measured = vertex in measured_set
-                role = (
-                    _ROLE_BOTH
-                    if is_target and is_measured
-                    else (_ROLE_PERTURBATION if is_target else _ROLE_PHOSPHOSITE)
-                )
-                features.append(
-                    {
-                        "id": vertex,
-                        "mapping": "vertex",
-                        "role": role,
-                        "value": scores[vertex] if is_measured else None,
-                    }
-                )
-            features.extend({"id": edge, "mapping": "edge", "value": cost} for edge, cost in cost_values.items())
-            features_by_condition[condition] = features
-
-        return self.build_from_data(pkn, data_from_features(features_by_condition))
+        return self.build_from_data(pkn, data)
 
     def preprocess(self, graph: BaseGraph, data: Data):
         """Validate inputs, prune unreachable PKN regions, and add boundaries."""

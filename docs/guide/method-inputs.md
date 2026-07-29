@@ -50,9 +50,28 @@ phonemes_problem = PHONEMeS().build(
 )
 ```
 
-See the [PHONEMeS guide](networks/phonemes.md) for score interpretation, edge
+See the [PHONEMeS guide](networks/phonemes.ipynb) for score interpretation, edge
 costs, computing scores from differential results, optional pandas inputs, and
 extracting the inferred subnetwork.
+
+When the starting points are activity-derived regulated kinases rather than
+known experimental perturbations, use `BidirectionalPHONEMeS`. It optimizes
+upstream and downstream explanations together:
+
+```python
+from corneto.methods import BidirectionalPHONEMeS
+
+bidirectional_problem = BidirectionalPHONEMeS().build(
+    pkn,
+    regulated_kinases=["AKT1", "MTOR"],
+    phosphosite_scores={"AKT1_S473": -2.4, "RPS6_S235": -3.1},
+)
+```
+
+See the
+[global bidirectional PHONEMeS guide](networks/bidirectional-phonemes.ipynb) for
+anchor policies, directional results, and the distinction from the original
+post-hoc upside-down union.
 
 ## Multiple named conditions
 

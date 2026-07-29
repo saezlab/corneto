@@ -9,6 +9,7 @@ It is organized into several functional areas.
 """
 
 # Import Carnival Methods
+from corneto.methods.bidirectional_phonemes import BidirectionalPHONEMeS
 from corneto.methods.carnival import (
     CarnivalFlow,
     CarnivalILP,
@@ -28,6 +29,7 @@ from corneto.methods.shortest_path import (
 from corneto.methods.steiner import SteinerTreeFlow
 
 __all__ = [
+    "BidirectionalPHONEMeS",
     "CarnivalFlow",
     "CarnivalILP",
     "MultiSampleFBA",

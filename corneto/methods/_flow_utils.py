@@ -40,7 +40,7 @@ def add_acyclic_flow_selection(
 ):
     """Add flow indicators and DAG constraints, returning edge selection."""
     problem += backend.NonZeroIndicator(problem.expr._flow, tolerance=epsilon)
-    problem += backend.Acyclic(
+    backend.Acyclic(
         graph,
         problem,
         indicator_negative_var_name="_flow_ineg",
@@ -97,10 +97,11 @@ def add_vertex_selection(
     edge_selected,
     *,
     edge_indices: Iterable[int],
-    force_selected: np.ndarray,
+    force_selected: Any,
     require_incoming: np.ndarray,
     require_outgoing: np.ndarray,
     name: str = "vertex_selected",
+    reverse: bool = False,
 ) -> VertexSelection:
     """Link explicit vertex selection to selected directed biological edges."""
     incidence = directed_incidence(graph, edge_indices)
@@ -110,14 +111,21 @@ def add_vertex_selection(
         (graph.num_vertices, num_conditions),
         vartype=VarType.BINARY,
     )
-    outgoing = backend.Constant(incidence.outgoing) @ edge_selected
-    incoming = backend.Constant(incidence.incoming) @ edge_selected
-    out_degree = np.asarray(incidence.outgoing.sum(axis=1)).reshape(-1, 1)
-    in_degree = np.asarray(incidence.incoming.sum(axis=1)).reshape(-1, 1)
+    outgoing_incidence = incidence.incoming if reverse else incidence.outgoing
+    incoming_incidence = incidence.outgoing if reverse else incidence.incoming
+    outgoing = backend.Constant(outgoing_incidence) @ edge_selected
+    incoming = backend.Constant(incoming_incidence) @ edge_selected
+    out_degree = np.asarray(outgoing_incidence.sum(axis=1)).reshape(-1, 1)
+    in_degree = np.asarray(incoming_incidence.sum(axis=1)).reshape(-1, 1)
 
     problem += outgoing <= selected.multiply(np.broadcast_to(out_degree, selected.shape))
     problem += incoming <= selected.multiply(np.broadcast_to(in_degree, selected.shape))
-    problem += selected >= force_selected.astype(float)
+    forced = (
+        force_selected.astype(float)
+        if isinstance(force_selected, np.ndarray)
+        else force_selected
+    )
+    problem += selected >= forced
     problem += selected.multiply(require_outgoing.astype(float)) <= outgoing
     problem += selected.multiply(require_incoming.astype(float)) <= incoming
     return VertexSelection(selected=selected, outgoing=outgoing, incoming=incoming)

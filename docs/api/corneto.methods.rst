@@ -21,6 +21,7 @@ formulation.
 
     CarnivalFlow
     CarnivalILP
+    BidirectionalPHONEMeS
     PHONEMeS
     compute_phonemes_scores
     milp_carnival

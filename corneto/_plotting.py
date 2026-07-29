@@ -737,7 +737,9 @@ def _build_plot_model(
         v_t: List[str] = []
 
         def add_node(v_name: str, default_shape: str) -> None:
-            attrs = {"shape": default_shape}
+            attrs = {}
+            if default_shape != "circle" or "shape" not in node_defaults:
+                attrs["shape"] = default_shape
             if v_name in custom_vertex_attr_str:
                 attrs.update(custom_vertex_attr_str[v_name])
             nodes.append((v_name, attrs))

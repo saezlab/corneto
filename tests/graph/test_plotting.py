@@ -35,6 +35,26 @@ def test_to_dot_source_generates_basic_dot():
     assert 'arrowhead="normal"' in src
 
 
+def test_to_dot_source_honors_global_biological_node_shape():
+    g = Graph()
+    g.add_edge((), "A")
+    g.add_edge("A", "B")
+
+    src = to_dot_source(
+        g,
+        node_attr={
+            "fixedsize": "false",
+            "shape": "box",
+            "style": "rounded",
+        },
+    )
+
+    assert 'node [fixedsize="false", shape="box", style="rounded"]' in src
+    assert '"A" [shape="circle"]' not in src
+    assert '"B" [shape="circle"]' not in src
+    assert '"e_0_source" [shape="point"]' in src
+
+
 def test_dot_wasm_html_accepts_raw_dot_source():
     html = dot_wasm_html('digraph {"A" -> "B";}')
     assert DEFAULT_WASM_GRAPHVIZ_JS_URL in html
