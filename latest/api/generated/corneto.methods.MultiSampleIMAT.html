@@ -65,7 +65,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'api/generated/corneto.methods.MultiSampleIMAT';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1785346565';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
@@ -427,6 +427,9 @@
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../corneto.methods.html">Network inference (<code class="xref py py-mod docutils literal notranslate"><span class="pre">corneto.methods</span></code>)</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="corneto.methods.CarnivalFlow.html">corneto.methods.CarnivalFlow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="corneto.methods.CarnivalILP.html">corneto.methods.CarnivalILP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="corneto.methods.BidirectionalPHONEMeS.html">corneto.methods.BidirectionalPHONEMeS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="corneto.methods.PHONEMeS.html">corneto.methods.PHONEMeS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="corneto.methods.compute_phonemes_scores.html">corneto.methods.compute_phonemes_scores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="corneto.methods.milp_carnival.html">corneto.methods.milp_carnival</a></li>
 <li class="toctree-l2"><a class="reference internal" href="corneto.methods.signaling.cellnopt_ilp.cellnoptILP.html">corneto.methods.signaling.cellnopt_ilp.cellnoptILP</a></li>
 <li class="toctree-l2"><a class="reference internal" href="corneto.methods.MultiSampleFBA.html">corneto.methods.MultiSampleFBA</a></li>
@@ -591,8 +594,14 @@ If None, the default backend is used. Defaults to None.</p></li>
 <tr class="row-odd"><td><p><a class="reference internal" href="#corneto.methods.MultiSampleIMAT.__init__" title="corneto.methods.MultiSampleIMAT.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([lambda_reg, beta_reg, eps, scale, ...])</p></td>
 <td><p>Initialize a MultiSampleFBA instance.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">build</span></code>(graph[, data])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#corneto.methods.MultiSampleIMAT.build" title="corneto.methods.MultiSampleIMAT.build"><code class="xref py py-obj docutils literal notranslate"><span class="pre">build</span></code></a>(model[, data, gene_expression, ...])</p></td>
+<td><p>Build a single-condition iMAT problem from explicit inputs.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">build_from_data</span></code>(graph[, data])</p></td>
 <td><p>Build the complete optimization problem.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#corneto.methods.MultiSampleIMAT.build_many" title="corneto.methods.MultiSampleIMAT.build_many"><code class="xref py py-obj docutils literal notranslate"><span class="pre">build_many</span></code></a>(model, *[, gene_expression, ...])</p></td>
+<td><p>Build a multi-condition iMAT problem from named condition mappings.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#corneto.methods.MultiSampleIMAT.create_flow_based_problem" title="corneto.methods.MultiSampleIMAT.create_flow_based_problem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_flow_based_problem</span></code></a>(flow_problem, ...)</p></td>
 <td><p>Create the iMAT optimization problem.</p></td>
@@ -633,6 +642,31 @@ If None, the default backend is used. Defaults to None.</p></li>
 </tbody>
 </table>
 </div>
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.methods.MultiSampleIMAT.build">
+<span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">gene_expression</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reaction_scores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">objectives</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reaction_bounds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.MultiSampleIMAT.build" title="Link to this definition">#</a></dt>
+<dd><p>Build a single-condition iMAT problem from explicit inputs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<a class="reference internal" href="corneto.graph.BaseGraph.html#corneto.graph.BaseGraph" title="corneto.graph._base.BaseGraph"><em>BaseGraph</em></a>)</p></li>
+<li><p><strong>data</strong> (<a class="reference internal" href="corneto.data.Data.html#corneto.data.Data" title="corneto.data._base.Data"><em>Data</em></a><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.methods.MultiSampleIMAT.build_many">
+<span class="sig-name descname"><span class="pre">build_many</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">gene_expression</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reaction_scores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">objectives</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reaction_bounds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.MultiSampleIMAT.build_many" title="Link to this definition">#</a></dt>
+<dd><p>Build a multi-condition iMAT problem from named condition mappings.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>model</strong> (<a class="reference internal" href="corneto.graph.BaseGraph.html#corneto.graph.BaseGraph" title="corneto.graph._base.BaseGraph"><em>BaseGraph</em></a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="corneto.methods.MultiSampleIMAT.preprocess">
 <span class="sig-name descname"><span class="pre">preprocess</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.MultiSampleIMAT.preprocess" title="Link to this definition">#</a></dt>
@@ -736,6 +770,8 @@ optimization for highly and lowly expressed reactions.</p>
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.MultiSampleIMAT"><code class="docutils literal notranslate"><span class="pre">MultiSampleIMAT</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.MultiSampleIMAT.__init__"><code class="docutils literal notranslate"><span class="pre">MultiSampleIMAT.__init__</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.MultiSampleIMAT.build"><code class="docutils literal notranslate"><span class="pre">MultiSampleIMAT.build</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.MultiSampleIMAT.build_many"><code class="docutils literal notranslate"><span class="pre">MultiSampleIMAT.build_many</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.MultiSampleIMAT.preprocess"><code class="docutils literal notranslate"><span class="pre">MultiSampleIMAT.preprocess</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.MultiSampleIMAT.create_flow_based_problem"><code class="docutils literal notranslate"><span class="pre">MultiSampleIMAT.create_flow_based_problem</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.MultiSampleIMAT.references"><code class="docutils literal notranslate"><span class="pre">MultiSampleIMAT.references</span></code></a></li>

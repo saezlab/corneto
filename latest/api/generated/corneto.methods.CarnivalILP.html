@@ -65,7 +65,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'api/generated/corneto.methods.CarnivalILP';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1785346565';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
@@ -75,7 +75,7 @@
     <link rel="icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="corneto.methods.milp_carnival" href="corneto.methods.milp_carnival.html" />
+    <link rel="next" title="corneto.methods.BidirectionalPHONEMeS" href="corneto.methods.BidirectionalPHONEMeS.html" />
     <link rel="prev" title="corneto.methods.CarnivalFlow" href="corneto.methods.CarnivalFlow.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -427,6 +427,9 @@
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../corneto.methods.html">Network inference (<code class="xref py py-mod docutils literal notranslate"><span class="pre">corneto.methods</span></code>)</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="corneto.methods.CarnivalFlow.html">corneto.methods.CarnivalFlow</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">corneto.methods.CarnivalILP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="corneto.methods.BidirectionalPHONEMeS.html">corneto.methods.BidirectionalPHONEMeS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="corneto.methods.PHONEMeS.html">corneto.methods.PHONEMeS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="corneto.methods.compute_phonemes_scores.html">corneto.methods.compute_phonemes_scores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="corneto.methods.milp_carnival.html">corneto.methods.milp_carnival</a></li>
 <li class="toctree-l2"><a class="reference internal" href="corneto.methods.signaling.cellnopt_ilp.cellnoptILP.html">corneto.methods.signaling.cellnopt_ilp.cellnoptILP</a></li>
 <li class="toctree-l2"><a class="reference internal" href="corneto.methods.MultiSampleFBA.html">corneto.methods.MultiSampleFBA</a></li>
@@ -516,7 +519,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="corneto.methods.CarnivalILP">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">corneto.methods.</span></span><span class="sig-name descname"><span class="pre">CarnivalILP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beta_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_dist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">penalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'edges'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_perturbation_weights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interaction_graph_attribute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'interaction'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disable_acyclicity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_type_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'role'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_input_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'input'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_output_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'output'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.CarnivalILP" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Method</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">_CarnivalUserInputs</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Method</span></code></p>
 <p>Multi-condition implementation of the CARNIVAL ILP formulation.</p>
 <p>Each sample in <a class="reference internal" href="corneto.data.Data.html#corneto.data.Data" title="corneto.data.Data"><code class="xref py py-class docutils literal notranslate"><span class="pre">corneto.data.Data</span></code></a> receives an independent signaling
 state on a shared network. Binary variables and ILP constraints model signal
@@ -566,8 +569,14 @@ Default: ‘interaction’</p></li>
 <tr class="row-odd"><td><p><a class="reference internal" href="#corneto.methods.CarnivalILP.__init__" title="corneto.methods.CarnivalILP.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([beta_weight, max_dist, penalize, ...])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">build</span></code>(graph[, data])</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">build</span></code>(pkn[, data, perturbations, ...])</p></td>
+<td><p>Build from a <a class="reference internal" href="corneto.data.Data.html#corneto.data.Data" title="corneto.data.Data"><code class="xref py py-class docutils literal notranslate"><span class="pre">Data</span></code></a> object.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">build_from_data</span></code>(graph[, data])</p></td>
 <td><p>Build the complete optimization problem.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">build_many</span></code>(pkn, *, perturbations, ...)</p></td>
+<td><p></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#corneto.methods.CarnivalILP.create_problem" title="corneto.methods.CarnivalILP.create_problem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_problem</span></code></a>(graph, data)</p></td>
 <td><p>Create the ILP optimization problem.</p></td>
@@ -682,11 +691,11 @@ Default: ‘interaction’</p></li>
       </div>
     </a>
     <a class="right-next"
-       href="corneto.methods.milp_carnival.html"
+       href="corneto.methods.BidirectionalPHONEMeS.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">corneto.methods.milp_carnival</p>
+        <p class="prev-next-title">corneto.methods.BidirectionalPHONEMeS</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

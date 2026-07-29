@@ -65,7 +65,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'guide/networks/shortest-paths';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1785346565';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
@@ -400,6 +400,7 @@
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../method-inputs.html">Building method problems from explicit inputs</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../intro/index.html">Getting started</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../intro/prior-knowledge.html">Prior Knowledge and Graphs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../intro/data.html">Working with data</a></li>
@@ -426,6 +427,8 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../signaling/index.html">Signaling</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../signaling/carnival.html">CARNIVAL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../signaling/multisample-carnival.html">Multi-sample CARNIVAL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../signaling/phonemes.html">PHONEMeS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../signaling/bidirectional-phonemes.html">Global upstream and downstream PHONEMeS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../signaling/cellnopt_ILP.html">Acyclic boolean models of cell signaling (experimental)</a></li>
 
 
@@ -535,7 +538,7 @@
                    style="width:100%;max-width:100px;" />
             </td>
             <td>
-              <table><tr><td>Installed version:</td><td style='text-align:left'>v1.0.0b8.post9.dev0+2b09ecec</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.9.2, PICOS v2.6.2</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>GLPK, GLPK_MI, CVXOPT, SCIP, SCIPY, HIGHS</td></tr><tr><td>Plot backend (default):</td><td style='text-align:left'>auto -> graphviz</td></tr><tr><td>Available plot backends:</td><td style='text-align:left'>graphviz v0.20.3; networkx v3.6.1+mpl v3.11.1; graphviz-wasm</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href="https://github.com/saezlab/corneto">https://github.com/saezlab/corneto</a></td></tr></table>
+              <table><tr><td>Installed version:</td><td style='text-align:left'>v1.0.0rc1.post11.dev0+32a2d247</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.9.2, PICOS v2.6.2</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>GLPK, GLPK_MI, CVXOPT, SCIP, SCIPY, HIGHS</td></tr><tr><td>Plot backend (default):</td><td style='text-align:left'>auto -> graphviz</td></tr><tr><td>Available plot backends:</td><td style='text-align:left'>graphviz v0.20.3; networkx v3.6.1+mpl v3.11.1; graphviz-wasm</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href="https://github.com/saezlab/corneto">https://github.com/saezlab/corneto</a></td></tr></table>
             </td>
           </tr>
         </table>
@@ -618,7 +621,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[np.int64(2979), 78, 3043, 342, 49, 2649, np.int64(4001)]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[np.int64(3086), 31, 7, 56, 2845, np.int64(2235)]
 </pre></div>
 </div>
 </div>
@@ -630,7 +633,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>19.47873268326359
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>17.576126987277586
 </pre></div>
 </div>
 </div>
@@ -652,7 +655,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>np.float64(19.47873268326359)
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>np.float64(17.576126987277586)
 </pre></div>
 </div>
 </div>
@@ -664,7 +667,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/23d94a915d0ff7e22a7f60d6f1bf8ab2d373f217d402c3ee4f5512639e45741d.svg" src="../../_images/23d94a915d0ff7e22a7f60d6f1bf8ab2d373f217d402c3ee4f5512639e45741d.svg" />
+<img alt="../../_images/1629935a726286268dc8e55502e30cf2fe109c7a7849e98ceb7602e77fc870b5.svg" src="../../_images/1629935a726286268dc8e55502e30cf2fe109c7a7849e98ceb7602e77fc870b5.svg" />
 </div>
 </div>
 </section>

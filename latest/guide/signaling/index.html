@@ -65,7 +65,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'guide/signaling/index';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1785346565';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
@@ -396,6 +396,7 @@
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../method-inputs.html">Building method problems from explicit inputs</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../intro/index.html">Getting started</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../intro/prior-knowledge.html">Prior Knowledge and Graphs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../intro/data.html">Working with data</a></li>
@@ -422,6 +423,8 @@
 <li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">Signaling</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="carnival.html">CARNIVAL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="multisample-carnival.html">Multi-sample CARNIVAL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="phonemes.html">PHONEMeS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bidirectional-phonemes.html">Global upstream and downstream PHONEMeS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cellnopt_ILP.html">Acyclic boolean models of cell signaling (experimental)</a></li>
 
 
@@ -516,6 +519,33 @@
 <li class="toctree-l2"><a class="reference internal" href="multisample-carnival.html#plotting-solutions-on-top-of-the-pkn">Plotting solutions on top of the PKN</a></li>
 <li class="toctree-l2"><a class="reference internal" href="multisample-carnival.html#penalizing-indirect-signaling-rules">Penalizing indirect signaling rules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="multisample-carnival.html#single-sample-using-the-same-multi-sample-method">Single sample using the same multi-sample method</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="phonemes.html">PHONEMeS</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="phonemes.html#choosing-the-appropriate-phonemes-workflow">Choosing the appropriate PHONEMeS workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="phonemes.html#understanding-phosphosite-scores">Understanding phosphosite scores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="phonemes.html#computing-scores-from-differential-results">Computing scores from differential results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="phonemes.html#inferring-a-network-for-one-condition">Inferring a network for one condition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="phonemes.html#reading-and-plotting-the-inferred-subnetwork">Reading and plotting the inferred subnetwork</a></li>
+<li class="toctree-l2"><a class="reference internal" href="phonemes.html#controlling-network-size-with-edge-costs">Controlling network size with edge costs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="phonemes.html#comparing-multiple-conditions">Comparing multiple conditions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="phonemes.html#advanced-implementation-in-corneto">Advanced: implementation in CORNETO</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="phonemes.html#internal-solution-variables">Internal solution variables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phonemes.html#advanced-data-interface">Advanced <code class="docutils literal notranslate"><span class="pre">Data</span></code> interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phonemes.html#reference-data-validation">Reference-data validation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="bidirectional-phonemes.html">Global upstream and downstream PHONEMeS</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bidirectional-phonemes.html#a-small-runnable-example">A small runnable example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bidirectional-phonemes.html#reading-the-inferred-network">Reading the inferred network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bidirectional-phonemes.html#choosing-how-anchors-participate">Choosing how anchors participate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bidirectional-phonemes.html#multiple-conditions">Multiple conditions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bidirectional-phonemes.html#why-this-differs-from-original-upside-down-phonemes">Why this differs from original upside-down PHONEMeS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bidirectional-phonemes.html#scores-and-edge-costs-in-real-analyses">Scores and edge costs in real analyses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bidirectional-phonemes.html#advanced-the-general-data-interface">Advanced: the general <code class="docutils literal notranslate"><span class="pre">Data</span></code> interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bidirectional-phonemes.html#advanced-implementation-in-corneto">Advanced: implementation in CORNETO</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="cellnopt_ILP.html">Acyclic boolean models of cell signaling (experimental)</a></li>

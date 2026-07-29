@@ -65,7 +65,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'guide/networks/steiner-trees';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1785346565';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
@@ -400,6 +400,7 @@
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../method-inputs.html">Building method problems from explicit inputs</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../intro/index.html">Getting started</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../intro/prior-knowledge.html">Prior Knowledge and Graphs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../intro/data.html">Working with data</a></li>
@@ -426,6 +427,8 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../signaling/index.html">Signaling</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../signaling/carnival.html">CARNIVAL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../signaling/multisample-carnival.html">Multi-sample CARNIVAL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../signaling/phonemes.html">PHONEMeS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../signaling/bidirectional-phonemes.html">Global upstream and downstream PHONEMeS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../signaling/cellnopt_ILP.html">Acyclic boolean models of cell signaling (experimental)</a></li>
 
 
@@ -565,7 +568,7 @@
                    style="width:100%;max-width:100px;" />
             </td>
             <td>
-              <table><tr><td>Installed version:</td><td style='text-align:left'>v1.0.0b8.post9.dev0+2b09ecec</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.9.2, PICOS v2.6.2</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>GLPK, GLPK_MI, CVXOPT, SCIP, SCIPY, HIGHS</td></tr><tr><td>Plot backend (default):</td><td style='text-align:left'>auto -> graphviz</td></tr><tr><td>Available plot backends:</td><td style='text-align:left'>graphviz v0.20.3; networkx v3.6.1+mpl v3.11.1; graphviz-wasm</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href="https://github.com/saezlab/corneto">https://github.com/saezlab/corneto</a></td></tr></table>
+              <table><tr><td>Installed version:</td><td style='text-align:left'>v1.0.0rc1.post11.dev0+32a2d247</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.9.2, PICOS v2.6.2</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>GLPK, GLPK_MI, CVXOPT, SCIP, SCIPY, HIGHS</td></tr><tr><td>Plot backend (default):</td><td style='text-align:left'>auto -> graphviz</td></tr><tr><td>Available plot backends:</td><td style='text-align:left'>graphviz v0.20.3; networkx v3.6.1+mpl v3.11.1; graphviz-wasm</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href="https://github.com/saezlab/corneto">https://github.com/saezlab/corneto</a></td></tr></table>
             </td>
           </tr>
         </table>
@@ -647,7 +650,7 @@ Total cost of the Steiner tree: 38.8896
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/c8fc875c43e2a0603aaf84d24689edb94699d5f09337462a74cb4a60cb28e639.png" src="../../_images/c8fc875c43e2a0603aaf84d24689edb94699d5f09337462a74cb4a60cb28e639.png" />
+<img alt="../../_images/b12025c29e08f79d127503159944bf6f78dc9068d984bd0453d7baaa235f23cf.png" src="../../_images/b12025c29e08f79d127503159944bf6f78dc9068d984bd0453d7baaa235f23cf.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -751,6 +754,8 @@ Total cost of the Steiner tree: 38.8896
  &#39;_flow_ipos&#39;: _flow_ipos: Variable((521,), _flow_ipos, boolean=True),
  &#39;_flow_ineg&#39;: _flow_ineg: Variable((521,), _flow_ineg, boolean=True),
  &#39;_dag_layer&#39;: _dag_layer: Variable((100, 1), _dag_layer),
+ &#39;const0x1a33225a6373c509&#39;: const0x1a33225a6373c509: Constant(CONSTANT, UNKNOWN, (511, 100)),
+ &#39;const0x127e7314acbfc29b&#39;: const0x127e7314acbfc29b: Constant(CONSTANT, NONNEGATIVE, (511, 521)),
  &#39;flow&#39;: _flow: Variable((521,), _flow),
  &#39;with_flow&#39;: Expression(AFFINE, NONNEGATIVE, (521,))}
 </pre></div>
@@ -768,8 +773,8 @@ Total cost of the Steiner tree: 38.8896
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>35.85180933414295
-27.999999999999996
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>35.85180933414298
+28.0
 </pre></div>
 </div>
 </div>
@@ -837,7 +842,7 @@ Total cost of the Steiner tree: 38.8896
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/5a5476c2d40592350e3168d0c2b14dce097aed62d1e0185ea4c5fdb03d61390b.png" src="../../_images/5a5476c2d40592350e3168d0c2b14dce097aed62d1e0185ea4c5fdb03d61390b.png" />
+<img alt="../../_images/655437dbb7bd8a1ab433dfa56f4ae51cd1b773c36e4d3bf966eacb4919bbbb12.png" src="../../_images/655437dbb7bd8a1ab433dfa56f4ae51cd1b773c36e4d3bf966eacb4919bbbb12.png" />
 </div>
 </div>
 </section>
@@ -882,8 +887,8 @@ Total cost of the Steiner tree: 38.8896
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>35.85180933414291
-27.999999999999957
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>35.851809334142814
+27.99999999999993
 </pre></div>
 </div>
 </div>
@@ -896,7 +901,7 @@ Total cost of the Steiner tree: 38.8896
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/9b98a5585a7d48f1f0c10a4268109d2408264ecb513ed7725bbe3c82b7807cbd.svg" src="../../_images/9b98a5585a7d48f1f0c10a4268109d2408264ecb513ed7725bbe3c82b7807cbd.svg" />
+<img alt="../../_images/ce61130ff957dfaa81634e6f282c37b444f4eb6a1b32da8988b23d9cdb7a2a99.svg" src="../../_images/ce61130ff957dfaa81634e6f282c37b444f4eb6a1b32da8988b23d9cdb7a2a99.svg" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -978,6 +983,8 @@ Total cost of the Steiner tree: 38.8896
 <span class="n">P</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">G_mixed</span><span class="p">,</span> <span class="n">D</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
 </div>
 </div>
 <div class="cell docutils container">

@@ -65,7 +65,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'api/generated/corneto.methods.CarnivalFlow';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1785346565';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
@@ -427,6 +427,9 @@
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../corneto.methods.html">Network inference (<code class="xref py py-mod docutils literal notranslate"><span class="pre">corneto.methods</span></code>)</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">corneto.methods.CarnivalFlow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="corneto.methods.CarnivalILP.html">corneto.methods.CarnivalILP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="corneto.methods.BidirectionalPHONEMeS.html">corneto.methods.BidirectionalPHONEMeS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="corneto.methods.PHONEMeS.html">corneto.methods.PHONEMeS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="corneto.methods.compute_phonemes_scores.html">corneto.methods.compute_phonemes_scores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="corneto.methods.milp_carnival.html">corneto.methods.milp_carnival</a></li>
 <li class="toctree-l2"><a class="reference internal" href="corneto.methods.signaling.cellnopt_ilp.cellnoptILP.html">corneto.methods.signaling.cellnopt_ilp.cellnoptILP</a></li>
 <li class="toctree-l2"><a class="reference internal" href="corneto.methods.MultiSampleFBA.html">corneto.methods.MultiSampleFBA</a></li>
@@ -516,7 +519,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="corneto.methods.CarnivalFlow">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">corneto.methods.</span></span><span class="sig-name descname"><span class="pre">CarnivalFlow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lambda_reg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclusive_signal_paths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vertex_lb_dist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_flow</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enable_bfs_heuristic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indirect_rule_penalty</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depth_penalty</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_type_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'role'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_input_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'input'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_output_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'output'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.CarnivalFlow" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FlowMethod</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">_CarnivalUserInputs</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">FlowMethod</span></code></p>
 <p>Flow-base, multi-sample CARNIVAL method for intracellular signaling.</p>
 <p>Implements multi-sample intracellular network inference using
 an extension of the CARNIVAL method to model signal propagation.</p>
@@ -554,8 +557,14 @@ constraints. Default: True</p></li>
 <tr class="row-odd"><td><p><a class="reference internal" href="#corneto.methods.CarnivalFlow.__init__" title="corneto.methods.CarnivalFlow.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([lambda_reg, ...])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">build</span></code>(graph[, data])</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">build</span></code>(pkn[, data, perturbations, ...])</p></td>
+<td><p>Build from a <a class="reference internal" href="corneto.data.Data.html#corneto.data.Data" title="corneto.data.Data"><code class="xref py py-class docutils literal notranslate"><span class="pre">Data</span></code></a> object.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">build_from_data</span></code>(graph[, data])</p></td>
 <td><p>Build the complete optimization problem.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">build_many</span></code>(pkn, *, perturbations, ...)</p></td>
+<td><p></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#corneto.methods.CarnivalFlow.create_flow_based_problem" title="corneto.methods.CarnivalFlow.create_flow_based_problem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_flow_based_problem</span></code></a>(flow_problem, ...)</p></td>
 <td><p>Create the optimization problem with flow-based constraints.</p></td>
