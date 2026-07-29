@@ -89,6 +89,15 @@ jobs:
           poetry build
           poetry run twine check dist/*
 
+      # The tag is already covered by the merged PR's full test gate. Validate
+      # only the tag-specific artifact here, before it is published.
+      - name: Smoke-test the release wheel
+        if: steps.validate_tag.outputs.should_publish == 'true'
+        run: |
+          python -m venv /tmp/corneto-release-wheel-smoke
+          /tmp/corneto-release-wheel-smoke/bin/pip install dist/*.whl
+          /tmp/corneto-release-wheel-smoke/bin/python -c 'import corneto; print(corneto.__version__)'
+
       # 8. Create GitHub Release with automated notes
       - name: Create GitHub Release
         if: steps.validate_tag.outputs.should_publish == 'true'

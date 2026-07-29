@@ -17,7 +17,6 @@ def test_dry_run_uses_selected_remote(monkeypatch, capsys):
     monkeypatch.setattr(release, "_ensure_clean_tree", lambda: None)
     monkeypatch.setattr(release, "_ensure_on_main", lambda: None)
     monkeypatch.setattr(release, "_ensure_up_to_date_with_remote_main", calls.append)
-    monkeypatch.setattr(release, "_ensure_dev_is_merged", calls.append)
     monkeypatch.setattr(
         release,
         "_ensure_tag_does_not_exist",
@@ -28,7 +27,6 @@ def test_dry_run_uses_selected_remote(monkeypatch, capsys):
 
     assert result == 0
     assert calls == [
-        "public",
         "public",
         "public",
         ("v1.0.0-beta.8", "public"),

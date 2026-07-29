@@ -41,7 +41,7 @@ CORNETO follows [semantic versioning](https://semver.org/) with the following re
 
 - **GitHub Releases**: Follow releases on the [GitHub repository](https://github.com/saezlab/corneto/releases)
 - **PyPI**: Install the latest version with `pip install --upgrade corneto`
-- **Development**: Track development progress on the `dev` branch
+- **Development**: Track development through pull requests into `main`
 
 ## Contributing to Releases
 
