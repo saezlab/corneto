@@ -50,7 +50,7 @@ phonemes_problem = PHONEMeS().build(
 )
 ```
 
-See the [PHONEMeS guide](networks/phonemes.ipynb) for score interpretation, edge
+See the [PHONEMeS guide](signaling/phonemes.ipynb) for score interpretation, edge
 costs, computing scores from differential results, optional pandas inputs, and
 extracting the inferred subnetwork.
 
@@ -69,7 +69,7 @@ bidirectional_problem = BidirectionalPHONEMeS().build(
 ```
 
 See the
-[global bidirectional PHONEMeS guide](networks/bidirectional-phonemes.ipynb) for
+[global bidirectional PHONEMeS guide](signaling/bidirectional-phonemes.ipynb) for
 anchor policies, directional results, and the distinction from the original
 post-hoc upside-down union.
 
