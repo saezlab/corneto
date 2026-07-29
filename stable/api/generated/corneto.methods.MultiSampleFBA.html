@@ -65,7 +65,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'api/generated/corneto.methods.MultiSampleFBA';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1785347030';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'stable';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
@@ -427,6 +427,9 @@
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../corneto.methods.html">Network inference (<code class="xref py py-mod docutils literal notranslate"><span class="pre">corneto.methods</span></code>)</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="corneto.methods.CarnivalFlow.html">corneto.methods.CarnivalFlow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="corneto.methods.CarnivalILP.html">corneto.methods.CarnivalILP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="corneto.methods.BidirectionalPHONEMeS.html">corneto.methods.BidirectionalPHONEMeS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="corneto.methods.PHONEMeS.html">corneto.methods.PHONEMeS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="corneto.methods.compute_phonemes_scores.html">corneto.methods.compute_phonemes_scores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="corneto.methods.milp_carnival.html">corneto.methods.milp_carnival</a></li>
 <li class="toctree-l2"><a class="reference internal" href="corneto.methods.signaling.cellnopt_ilp.cellnoptILP.html">corneto.methods.signaling.cellnopt_ilp.cellnoptILP</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">corneto.methods.MultiSampleFBA</a></li>
@@ -600,79 +603,29 @@ sparsity optimization.</p>
 </dd></dl>
 
 <p class="rubric">Examples</p>
-<p>Basic usage with a single sample:</p>
+<p>Basic usage with a single condition:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">import_miom_model</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">Data</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods.fba</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiSampleFBA</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Load a metabolic model</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">import_miom_model</span><span class="p">(</span><span class="s2">&quot;path/to/metabolic_model.miom&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create data with objective function (typically biomass)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Data</span><span class="o">.</span><span class="n">from_dict</span><span class="p">({</span>
-<span class="gp">... </span>    <span class="s2">&quot;sample1&quot;</span><span class="p">:</span> <span class="p">{</span>
-<span class="gp">... </span>        <span class="s2">&quot;EX_biomass_e&quot;</span><span class="p">:</span> <span class="p">{</span>
-<span class="gp">... </span>            <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;objective&quot;</span><span class="p">,</span>
-<span class="gp">... </span>        <span class="p">},</span>
-<span class="gp">... </span>    <span class="p">}</span>
-<span class="gp">... </span><span class="p">})</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Initialize FBA and solve</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">fba</span> <span class="o">=</span> <span class="n">MultiSampleFBA</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">P</span> <span class="o">=</span> <span class="n">fba</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">P</span> <span class="o">=</span> <span class="n">MultiSampleFBA</span><span class="p">()</span><span class="o">.</span><span class="n">build</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">model</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">objectives</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;EX_biomass_e&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">},</span>
+<span class="gp">... </span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Access the flux values</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">biomass_rid</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">get_edges_by_attr</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;EX_biomass_e&quot;</span><span class="p">)))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">biomass_flux</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="p">[</span><span class="n">biomass_rid</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Biomass flux: </span><span class="si">{</span><span class="n">biomass_flux</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Multi-sample analysis with gene knockouts:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create data with two samples - control and knockout</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Data</span><span class="o">.</span><span class="n">from_cdict</span><span class="p">({</span>
-<span class="gp">... </span>    <span class="s2">&quot;control&quot;</span><span class="p">:</span> <span class="p">{</span>
-<span class="gp">... </span>        <span class="s2">&quot;EX_biomass_e&quot;</span><span class="p">:</span> <span class="p">{</span>
-<span class="gp">... </span>            <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;objective&quot;</span><span class="p">,</span>
-<span class="gp">... </span>        <span class="p">},</span>
+<p>Multi-condition analysis with a reaction knockout:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">P</span> <span class="o">=</span> <span class="n">MultiSampleFBA</span><span class="p">()</span><span class="o">.</span><span class="n">build_many</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">model</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">objectives</span><span class="o">=</span><span class="p">{</span>
+<span class="gp">... </span>        <span class="s2">&quot;control&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;EX_biomass_e&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">},</span>
+<span class="gp">... </span>        <span class="s2">&quot;knockout&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;EX_biomass_e&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">},</span>
 <span class="gp">... </span>    <span class="p">},</span>
-<span class="gp">... </span>    <span class="s2">&quot;knockout&quot;</span><span class="p">:</span> <span class="p">{</span>
-<span class="gp">... </span>        <span class="s2">&quot;EX_biomass_e&quot;</span><span class="p">:</span> <span class="p">{</span>
-<span class="gp">... </span>            <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;objective&quot;</span><span class="p">,</span>
-<span class="gp">... </span>        <span class="p">},</span>
-<span class="gp">... </span>        <span class="s2">&quot;MDHm&quot;</span><span class="p">:</span> <span class="p">{</span>  <span class="c1"># Malate dehydrogenase knockout</span>
-<span class="gp">... </span>            <span class="s2">&quot;lower_bound&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-<span class="gp">... </span>            <span class="s2">&quot;upper_bound&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-<span class="gp">... </span>        <span class="p">},</span>
-<span class="gp">... </span>    <span class="p">}</span>
-<span class="gp">... </span><span class="p">})</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Initialize FBA and solve</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">fba</span> <span class="o">=</span> <span class="n">MultiSampleFBA</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">P</span> <span class="o">=</span> <span class="n">fba</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Compare biomass production between conditions</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">rid</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">get_edges_by_attr</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;EX_biomass_e&quot;</span><span class="p">)))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">control_flux</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="p">[</span><span class="n">rid</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">knockout_flux</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="p">[</span><span class="n">rid</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Control biomass: </span><span class="si">{</span><span class="n">control_flux</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Knockout biomass: </span><span class="si">{</span><span class="n">knockout_flux</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">reduction</span> <span class="o">=</span> <span class="p">(</span><span class="n">control_flux</span> <span class="o">-</span> <span class="n">knockout_flux</span><span class="p">)</span> <span class="o">/</span> <span class="n">control_flux</span> <span class="o">*</span> <span class="mi">100</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Growth reduction: </span><span class="si">{</span><span class="n">reduction</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Sparse FBA to minimize the number of active reactions:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create data with biomass lower bound constraint</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Data</span><span class="o">.</span><span class="n">from_dict</span><span class="p">({</span>
-<span class="gp">... </span>    <span class="s2">&quot;sample1&quot;</span><span class="p">:</span> <span class="p">{</span>
-<span class="gp">... </span>        <span class="s2">&quot;EX_biomass_e&quot;</span><span class="p">:</span> <span class="p">{</span>
-<span class="gp">... </span>            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;objective&quot;</span><span class="p">,</span>
-<span class="gp">... </span>            <span class="s2">&quot;lower_bound&quot;</span><span class="p">:</span> <span class="mf">100.80</span><span class="p">,</span>  <span class="c1"># Enforce minimum biomass production</span>
-<span class="gp">... </span>        <span class="p">},</span>
-<span class="gp">... </span>    <span class="p">}</span>
-<span class="gp">... </span><span class="p">})</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Initialize FBA with regularization for sparsity</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">fba</span> <span class="o">=</span> <span class="n">MultiSampleFBA</span><span class="p">(</span><span class="n">beta_reg</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">P</span> <span class="o">=</span> <span class="n">fba</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Count number of active reactions</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">n_active_reactions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">edge_has_flux</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of active reactions: </span><span class="si">{</span><span class="n">n_active_reactions</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">reaction_bounds</span><span class="o">=</span><span class="p">{</span>
+<span class="gp">... </span>        <span class="s2">&quot;control&quot;</span><span class="p">:</span> <span class="p">{},</span>
+<span class="gp">... </span>        <span class="s2">&quot;knockout&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;MDHm&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)},</span>
+<span class="gp">... </span>    <span class="p">},</span>
+<span class="gp">... </span><span class="p">)</span>
 </pre></div>
 </div>
 <dl class="py method">
@@ -708,8 +661,14 @@ If None, the default backend is used. Defaults to None.</p></li>
 <tr class="row-odd"><td><p><a class="reference internal" href="#corneto.methods.MultiSampleFBA.__init__" title="corneto.methods.MultiSampleFBA.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([lambda_reg, beta_reg, ...])</p></td>
 <td><p>Initialize a MultiSampleFBA instance.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">build</span></code>(graph[, data])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#corneto.methods.MultiSampleFBA.build" title="corneto.methods.MultiSampleFBA.build"><code class="xref py py-obj docutils literal notranslate"><span class="pre">build</span></code></a>(model[, data, objectives, reaction_bounds])</p></td>
+<td><p>Build a single-condition FBA problem from explicit inputs.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">build_from_data</span></code>(graph[, data])</p></td>
 <td><p>Build the complete optimization problem.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#corneto.methods.MultiSampleFBA.build_many" title="corneto.methods.MultiSampleFBA.build_many"><code class="xref py py-obj docutils literal notranslate"><span class="pre">build_many</span></code></a>(model, *[, objectives, ...])</p></td>
+<td><p>Build a multi-condition FBA problem from named condition mappings.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#corneto.methods.MultiSampleFBA.create_flow_based_problem" title="corneto.methods.MultiSampleFBA.create_flow_based_problem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_flow_based_problem</span></code></a>(flow_problem, ...)</p></td>
 <td><p>Create the flow-based optimization problem.</p></td>
@@ -750,6 +709,31 @@ If None, the default backend is used. Defaults to None.</p></li>
 </tbody>
 </table>
 </div>
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.methods.MultiSampleFBA.build">
+<span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">objectives</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reaction_bounds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.MultiSampleFBA.build" title="Link to this definition">#</a></dt>
+<dd><p>Build a single-condition FBA problem from explicit inputs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<a class="reference internal" href="corneto.graph.BaseGraph.html#corneto.graph.BaseGraph" title="corneto.graph._base.BaseGraph"><em>BaseGraph</em></a>)</p></li>
+<li><p><strong>data</strong> (<a class="reference internal" href="corneto.data.Data.html#corneto.data.Data" title="corneto.data._base.Data"><em>Data</em></a><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.methods.MultiSampleFBA.build_many">
+<span class="sig-name descname"><span class="pre">build_many</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">objectives</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reaction_bounds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.MultiSampleFBA.build_many" title="Link to this definition">#</a></dt>
+<dd><p>Build a multi-condition FBA problem from named condition mappings.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>model</strong> (<a class="reference internal" href="corneto.graph.BaseGraph.html#corneto.graph.BaseGraph" title="corneto.graph._base.BaseGraph"><em>BaseGraph</em></a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="corneto.methods.MultiSampleFBA.preprocess">
 <span class="sig-name descname"><span class="pre">preprocess</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.methods.MultiSampleFBA.preprocess" title="Link to this definition">#</a></dt>
@@ -871,6 +855,8 @@ blocked reactions or dead-end metabolites.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.MultiSampleFBA.disable_structured_sparsity"><code class="docutils literal notranslate"><span class="pre">MultiSampleFBA.disable_structured_sparsity</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.MultiSampleFBA.backend"><code class="docutils literal notranslate"><span class="pre">MultiSampleFBA.backend</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.MultiSampleFBA.__init__"><code class="docutils literal notranslate"><span class="pre">MultiSampleFBA.__init__</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.MultiSampleFBA.build"><code class="docutils literal notranslate"><span class="pre">MultiSampleFBA.build</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.MultiSampleFBA.build_many"><code class="docutils literal notranslate"><span class="pre">MultiSampleFBA.build_many</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.MultiSampleFBA.preprocess"><code class="docutils literal notranslate"><span class="pre">MultiSampleFBA.preprocess</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.MultiSampleFBA.get_flow_bounds"><code class="docutils literal notranslate"><span class="pre">MultiSampleFBA.get_flow_bounds</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.methods.MultiSampleFBA.create_flow_based_problem"><code class="docutils literal notranslate"><span class="pre">MultiSampleFBA.create_flow_based_problem</span></code></a></li>

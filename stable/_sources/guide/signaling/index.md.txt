@@ -7,5 +7,7 @@ Inferring signaling networks from omics data is a challenging task due to the co
 
 carnival.ipynb
 multisample-carnival.ipynb
+phonemes.ipynb
+bidirectional-phonemes.ipynb
 cellnopt_ILP.ipynb
 ```

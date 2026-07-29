@@ -65,7 +65,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'api/corneto.methods';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1785347030';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'stable';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
@@ -427,6 +427,9 @@
 <li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">Network inference (<code class="xref py py-mod docutils literal notranslate"><span class="pre">corneto.methods</span></code>)</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="generated/corneto.methods.CarnivalFlow.html">corneto.methods.CarnivalFlow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/corneto.methods.CarnivalILP.html">corneto.methods.CarnivalILP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/corneto.methods.BidirectionalPHONEMeS.html">corneto.methods.BidirectionalPHONEMeS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/corneto.methods.PHONEMeS.html">corneto.methods.PHONEMeS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/corneto.methods.compute_phonemes_scores.html">corneto.methods.compute_phonemes_scores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/corneto.methods.milp_carnival.html">corneto.methods.milp_carnival</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/corneto.methods.signaling.cellnopt_ilp.cellnoptILP.html">corneto.methods.signaling.cellnopt_ilp.cellnoptILP</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/corneto.methods.MultiSampleFBA.html">corneto.methods.MultiSampleFBA</a></li>
@@ -518,9 +521,10 @@ It is organized into several functional areas.</p>
 <section id="signaling">
 <h2>Signaling<a class="headerlink" href="#signaling" title="Link to this heading">#</a></h2>
 <p>Network methods to infer signaling networks from omics data.</p>
-<p><code class="docutils literal notranslate"><span class="pre">milp_carnival</span></code> is the simple single-condition formulation.
-<code class="docutils literal notranslate"><span class="pre">CarnivalILP</span></code> is the general formulation for one or more conditions, while
-<code class="docutils literal notranslate"><span class="pre">CarnivalFlow</span></code> provides the flow-based multi-condition alternative.</p>
+<p><code class="docutils literal notranslate"><span class="pre">CarnivalILP.build</span></code> and <code class="docutils literal notranslate"><span class="pre">CarnivalFlow.build</span></code> accept explicit perturbation
+and transcription-factor mappings for one condition. Their <code class="docutils literal notranslate"><span class="pre">build_many</span></code>
+methods accept named conditions. <code class="docutils literal notranslate"><span class="pre">milp_carnival</span></code> remains as a compatibility
+formulation.</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/corneto.methods.CarnivalFlow.html#corneto.methods.CarnivalFlow" title="corneto.methods.CarnivalFlow"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CarnivalFlow</span></code></a>([lambda_reg, ...])</p></td>
@@ -529,10 +533,19 @@ It is organized into several functional areas.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/corneto.methods.CarnivalILP.html#corneto.methods.CarnivalILP" title="corneto.methods.CarnivalILP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CarnivalILP</span></code></a>([beta_weight, max_dist, ...])</p></td>
 <td><p>Multi-condition implementation of the CARNIVAL ILP formulation.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/corneto.methods.milp_carnival.html#corneto.methods.milp_carnival" title="corneto.methods.milp_carnival"><code class="xref py py-obj docutils literal notranslate"><span class="pre">milp_carnival</span></code></a>(G, perturbations, measurements)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/corneto.methods.BidirectionalPHONEMeS.html#corneto.methods.BidirectionalPHONEMeS" title="corneto.methods.BidirectionalPHONEMeS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BidirectionalPHONEMeS</span></code></a>([default_edge_cost, ...])</p></td>
+<td><p>Infer one globally optimized network around regulated kinase anchors.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/corneto.methods.PHONEMeS.html#corneto.methods.PHONEMeS" title="corneto.methods.PHONEMeS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PHONEMeS</span></code></a>([default_edge_cost, max_flow, ...])</p></td>
+<td><p>Infer acyclic signaling networks from phosphoproteomic scores.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/corneto.methods.compute_phonemes_scores.html#corneto.methods.compute_phonemes_scores" title="corneto.methods.compute_phonemes_scores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_phonemes_scores</span></code></a>(pvalues, *[, ...])</p></td>
+<td><p>Compute PHONEMeS node scores from p-values and fold changes.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/corneto.methods.milp_carnival.html#corneto.methods.milp_carnival" title="corneto.methods.milp_carnival"><code class="xref py py-obj docutils literal notranslate"><span class="pre">milp_carnival</span></code></a>(G, perturbations, measurements)</p></td>
 <td><p>Build the supported single-condition CARNIVAL ILP formulation.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/corneto.methods.signaling.cellnopt_ilp.cellnoptILP.html#corneto.methods.signaling.cellnopt_ilp.cellnoptILP" title="corneto.methods.signaling.cellnopt_ilp.cellnoptILP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">signaling.cellnopt_ilp.cellnoptILP</span></code></a>(G, exp_list)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/corneto.methods.signaling.cellnopt_ilp.cellnoptILP.html#corneto.methods.signaling.cellnopt_ilp.cellnoptILP" title="corneto.methods.signaling.cellnopt_ilp.cellnoptILP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">signaling.cellnopt_ilp.cellnoptILP</span></code></a>(G, exp_list)</p></td>
 <td><p>Create and solves the ILP model for the given graph G and the list of experiments exp_list.</p></td>
 </tr>
 </tbody>
@@ -541,7 +554,9 @@ It is organized into several functional areas.</p>
 </section>
 <section id="metabolism">
 <h2>Metabolism<a class="headerlink" href="#metabolism" title="Link to this heading">#</a></h2>
-<p>Network methods for flux balance analysis in metabolic networks.</p>
+<p>Network methods for flux balance analysis in metabolic networks.
+Use <code class="docutils literal notranslate"><span class="pre">build</span></code> with explicit objectives, bounds, or expression values;
+<code class="docutils literal notranslate"><span class="pre">build_from_data</span></code> provides the advanced generic-data interface.</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/corneto.methods.MultiSampleFBA.html#corneto.methods.MultiSampleFBA" title="corneto.methods.MultiSampleFBA"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MultiSampleFBA</span></code></a>([lambda_reg, beta_reg, ...])</p></td>

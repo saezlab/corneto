@@ -65,7 +65,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'releases/migration-1.0';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1785347030';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'stable';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
@@ -557,21 +557,22 @@ module-shaped <code class="docutils literal notranslate"><span class="pre">corne
 </section>
 <section id="multi-condition-convention">
 <h2>Multi-condition convention<a class="headerlink" href="#multi-condition-convention" title="Link to this heading">#</a></h2>
-<p>Modern formulations accept a <code class="docutils literal notranslate"><span class="pre">corneto.Data</span></code> object containing one <code class="docutils literal notranslate"><span class="pre">Sample</span></code> per
-condition. Features use <code class="docutils literal notranslate"><span class="pre">role=&quot;input&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">role=&quot;output&quot;</span></code> and
-<code class="docutils literal notranslate"><span class="pre">mapping=&quot;vertex&quot;</span></code> where appropriate. A method builds one condition axis while
-sharing graph structure and any configured regularization across conditions.
-Single-condition use is represented by a <code class="docutils literal notranslate"><span class="pre">Data</span></code> object with one sample.</p>
+<p>Modern formulations use explicit method-specific arguments through <code class="docutils literal notranslate"><span class="pre">build</span></code> for
+one condition and named condition mappings through <code class="docutils literal notranslate"><span class="pre">build_many</span></code>. The advanced
+<code class="docutils literal notranslate"><span class="pre">build_from_data(graph,</span> <span class="pre">data)</span></code> interface accepts a <code class="docutils literal notranslate"><span class="pre">corneto.Data</span></code> object when
+custom feature metadata is needed. Passing <code class="docutils literal notranslate"><span class="pre">Data</span></code> directly to <code class="docutils literal notranslate"><span class="pre">build</span></code> is a
+deprecated compatibility path.</p>
 </section>
 <section id="choosing-a-carnival-entry-point">
 <h2>Choosing a CARNIVAL entry point<a class="headerlink" href="#choosing-a-carnival-entry-point" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">milp_carnival(graph,</span> <span class="pre">perturbations,</span> <span class="pre">measurements,</span> <span class="pre">...)</span></code> is the supported
 simple single-condition ILP and accepts two mappings directly.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">CarnivalILP(...).build(graph,</span> <span class="pre">data)</span></code> is the general ILP for one or many
-conditions and should be the default for new condition-aware workflows.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">CarnivalFlow(...).build(graph,</span> <span class="pre">data)</span></code> is the flow-based multi-condition
-formulation for workflows that require explicit network flow structure.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CarnivalILP(...).build(pkn,</span> <span class="pre">perturbations=...,</span> <span class="pre">transcription_factors=...)</span></code>
+is the default single-condition ILP interface; use <code class="docutils literal notranslate"><span class="pre">build_many</span></code> for named
+conditions.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CarnivalFlow</span></code> provides the same explicit inputs with a flow-based
+formulation.</p></li>
 </ul>
 </section>
 <section id="alternative-solution-sampling">

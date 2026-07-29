@@ -67,7 +67,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'guide/networks/pcst';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1785347030';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'stable';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
@@ -402,6 +402,7 @@
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../method-inputs.html">Building method problems from explicit inputs</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../intro/index.html">Getting started</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../intro/prior-knowledge.html">Prior Knowledge and Graphs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../intro/data.html">Working with data</a></li>
@@ -428,6 +429,8 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../signaling/index.html">Signaling</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../signaling/carnival.html">CARNIVAL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../signaling/multisample-carnival.html">Multi-sample CARNIVAL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../signaling/phonemes.html">PHONEMeS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../signaling/bidirectional-phonemes.html">Global upstream and downstream PHONEMeS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../signaling/cellnopt_ILP.html">Acyclic boolean models of cell signaling (experimental)</a></li>
 
 
@@ -541,7 +544,7 @@
                    style="width:100%;max-width:100px;" />
             </td>
             <td>
-              <table><tr><td>Installed version:</td><td style='text-align:left'>v1.0.0rc1</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.9.2, PICOS v2.6.2</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>GLPK, GLPK_MI, CVXOPT, SCIP, SCIPY, HIGHS</td></tr><tr><td>Plot backend (default):</td><td style='text-align:left'>auto -> graphviz</td></tr><tr><td>Available plot backends:</td><td style='text-align:left'>graphviz v0.20.3; networkx v3.6.1+mpl v3.11.1; graphviz-wasm</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href="https://github.com/saezlab/corneto">https://github.com/saezlab/corneto</a></td></tr></table>
+              <table><tr><td>Installed version:</td><td style='text-align:left'>v1.0.0rc1.post12.dev0+9bccb230</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.9.2, PICOS v2.6.2</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>GLPK, GLPK_MI, CVXOPT, SCIP, SCIPY, HIGHS</td></tr><tr><td>Plot backend (default):</td><td style='text-align:left'>auto -> graphviz</td></tr><tr><td>Available plot backends:</td><td style='text-align:left'>graphviz v0.20.3; networkx v3.6.1+mpl v3.11.1; graphviz-wasm</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href="https://github.com/saezlab/corneto">https://github.com/saezlab/corneto</a></td></tr></table>
             </td>
           </tr>
         </table>
@@ -809,8 +812,10 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_flow&#39;: _flow: Variable((517,), _flow),
- &#39;_flow_ipos&#39;: _flow_ipos: Variable((517,), _flow_ipos, boolean=True),
  &#39;_flow_ineg&#39;: _flow_ineg: Variable((517,), _flow_ineg, boolean=True),
+ &#39;_flow_ipos&#39;: _flow_ipos: Variable((517,), _flow_ipos, boolean=True),
+ &#39;const0xa8d08020ebee4b2&#39;: const0xa8d08020ebee4b2: Constant(CONSTANT, NONNEGATIVE, (511, 517)),
+ &#39;const0x138262cc69ea925d&#39;: const0x138262cc69ea925d: Constant(CONSTANT, UNKNOWN, (511, 100)),
  &#39;_dag_layer&#39;: _dag_layer: Variable((100, 1), _dag_layer),
  &#39;flow&#39;: _flow: Variable((517,), _flow),
  &#39;with_flow&#39;: Expression(AFFINE, NONNEGATIVE, (517,)),
@@ -928,7 +933,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/d6f26ca7863ccb17dcf7f828a2bb85fe58c1682af1bf29974e15874750ea23a9.png" src="../../_images/d6f26ca7863ccb17dcf7f828a2bb85fe58c1682af1bf29974e15874750ea23a9.png" />
+<img alt="../../_images/1e7cd5d373739eb33480afb41c7283a2ceb288384ec58a79043f284ad12f457a.png" src="../../_images/1e7cd5d373739eb33480afb41c7283a2ceb288384ec58a79043f284ad12f457a.png" />
 </div>
 </div>
 <section id="directed">
@@ -955,6 +960,8 @@
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_flow&#39;: _flow: Variable((1028,), _flow),
  &#39;_flow_ipos&#39;: _flow_ipos: Variable((1028,), _flow_ipos, boolean=True),
  &#39;_flow_ineg&#39;: _flow_ineg: Variable((1028,), _flow_ineg, boolean=True),
+ &#39;const0xad12553930a4dff&#39;: const0xad12553930a4dff: Constant(CONSTANT, NONNEGATIVE, (1022, 1028)),
+ &#39;const0x1dceca5a00f18075&#39;: const0x1dceca5a00f18075: Constant(CONSTANT, UNKNOWN, (1022, 100)),
  &#39;_dag_layer&#39;: _dag_layer: Variable((100, 1), _dag_layer),
  &#39;_flow_terminal_neg_0&#39;: _flow_terminal_neg_0: Variable((6,), _flow_terminal_neg_0, boolean=True),
  &#39;_flow_terminal_pos_0&#39;: _flow_terminal_pos_0: Variable((6,), _flow_terminal_pos_0, boolean=True),
@@ -976,9 +983,9 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>24.493118581655672
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>24.493118581652915
 139.73652992602086
-16.999999999999957
+16.999999999998888
 </pre></div>
 </div>
 </div>
@@ -1035,6 +1042,8 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1055,9 +1064,9 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>24.49311858165573
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>24.493118581655736
 139.73652992602086
-17.999999999999993
+18.0
 </pre></div>
 </div>
 </div>
