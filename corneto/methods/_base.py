@@ -5,6 +5,7 @@ from corneto import DEFAULT_BACKEND
 from corneto.backend._base import Backend, ProblemDef
 from corneto.data import Data
 from corneto.graph import BaseGraph
+from corneto.methods._optimization_utils import add_condition_union
 
 
 class Method(ABC):
@@ -157,7 +158,7 @@ class Method(ABC):
         """
         pass
 
-    def build(self, graph: BaseGraph, data: Optional[Data] = None) -> ProblemDef:
+    def build_from_data(self, graph: BaseGraph, data: Optional[Data] = None) -> ProblemDef:
         """Build the complete optimization problem.
 
         The process involves:
@@ -186,7 +187,6 @@ class Method(ABC):
             if self._reg_varname is not None:
                 reg_var = self.problem.expr[self._reg_varname]
                 newvar_name = self._reg_varname + self._reg_varname_suffix
-                ax = 0 if len(reg_var.shape) == 1 else 1
                 # A 1D vector can be summed directly without a linear OR.
                 if len(reg_var.shape) == 1 or reg_var.shape[1] == 1 or reg_var.shape[0] == 1:
                     self.problem.add_objective(
@@ -196,15 +196,29 @@ class Method(ABC):
                     )
                 else:
                     # Structured sparsity regularization
-                    self.problem += self._backend.linear_or(reg_var, axis=ax, varname=newvar_name)
+                    reg_var_any = add_condition_union(
+                        self._backend,
+                        self.problem,
+                        reg_var,
+                        name=newvar_name,
+                    )
                     self.problem.add_objective(
-                        self.problem.expr[newvar_name].sum(),
+                        reg_var_any.sum(),
                         weight=self.lambda_reg_param,
                         name=f"regularization_{newvar_name}",
                     )
             else:
                 raise ValueError("Parameter lambda_reg > 0 but no regularization variable name provided")
         return self.problem
+
+    def build(self, graph: BaseGraph, data: Optional[Data] = None) -> ProblemDef:
+        """Build from a :class:`~corneto.data.Data` object.
+
+        This compatibility entry point is retained for custom ``Method``
+        subclasses. Public CORNETO methods provide method-specific ``build``
+        signatures and expose this generic path as :meth:`build_from_data`.
+        """
+        return self.build_from_data(graph, data)
 
     @staticmethod
     def name() -> str:

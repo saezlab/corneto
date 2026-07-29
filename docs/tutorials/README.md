@@ -55,12 +55,12 @@ matplotlib = ">=3.5"
 pip = "*"
 
 [pypi-dependencies]
-corneto = "==0.9.2"  # Use specific version, not latest
+corneto = "==1.0.0rc1"  # Use a specific version, not latest
 scanpy = ">=1.9"
 # Add other dependencies as needed
 ```
 
-> ℹ️ **Important**: Always specify a specific corneto version (e.g., `==0.9.2`) to ensure reproducibility and independence from the main repository.
+> ℹ️ **Important**: Always specify a specific corneto version (e.g., `==1.0.0rc1`) to ensure reproducibility and independence from the main repository.
 
 ---
 

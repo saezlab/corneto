@@ -55,20 +55,27 @@ def test_backend_api_surface():
 def test_methods_api_surface_and_identity():
     """Canonical method imports expose the exact documented objects."""
     assert methods.__all__ == [
+        "BidirectionalPHONEMeS",
         "CarnivalFlow",
         "CarnivalILP",
         "MultiSampleFBA",
         "MultiSampleIMAT",
+        "PHONEMeS",
         "PrizeCollectingSteinerTree",
         "SteinerTreeFlow",
+        "compute_phonemes_scores",
         "create_multisample_shortest_path",
         "milp_carnival",
         "shortest_path",
         "solve_shortest_path",
     ]
 
+    from corneto.methods.bidirectional_phonemes import BidirectionalPHONEMeS
+    from corneto.methods.phonemes import compute_phonemes_scores
     from corneto.methods.shortest_path import create_multisample_shortest_path
 
+    assert methods.BidirectionalPHONEMeS is BidirectionalPHONEMeS
+    assert methods.compute_phonemes_scores is compute_phonemes_scores
     assert methods.create_multisample_shortest_path is create_multisample_shortest_path
 
 

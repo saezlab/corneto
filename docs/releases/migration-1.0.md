@@ -40,20 +40,21 @@ serialization functions do not have shims.
 
 ## Multi-condition convention
 
-Modern formulations accept a `corneto.Data` object containing one `Sample` per
-condition. Features use `role="input"` or `role="output"` and
-`mapping="vertex"` where appropriate. A method builds one condition axis while
-sharing graph structure and any configured regularization across conditions.
-Single-condition use is represented by a `Data` object with one sample.
+Modern formulations use explicit method-specific arguments through `build` for
+one condition and named condition mappings through `build_many`. The advanced
+`build_from_data(graph, data)` interface accepts a `corneto.Data` object when
+custom feature metadata is needed. Passing `Data` directly to `build` is a
+deprecated compatibility path.
 
 ## Choosing a CARNIVAL entry point
 
 - `milp_carnival(graph, perturbations, measurements, ...)` is the supported
   simple single-condition ILP and accepts two mappings directly.
-- `CarnivalILP(...).build(graph, data)` is the general ILP for one or many
-  conditions and should be the default for new condition-aware workflows.
-- `CarnivalFlow(...).build(graph, data)` is the flow-based multi-condition
-  formulation for workflows that require explicit network flow structure.
+- `CarnivalILP(...).build(pkn, perturbations=..., transcription_factors=...)`
+  is the default single-condition ILP interface; use `build_many` for named
+  conditions.
+- `CarnivalFlow` provides the same explicit inputs with a flow-based
+  formulation.
 
 ## Alternative-solution sampling
 
