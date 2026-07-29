@@ -41,10 +41,7 @@ def _score_array(
 ) -> np.ndarray:
     pvalue_array = np.asarray(pvalues, dtype=float)
     if pvalue_array.ndim not in {1, 2}:
-        raise ValueError(
-            "pvalues must be one-dimensional (sites) or two-dimensional "
-            "(sites by conditions)."
-        )
+        raise ValueError("pvalues must be one-dimensional (sites) or two-dimensional (sites by conditions).")
     if pvalue_array.size == 0:
         raise ValueError("pvalues must not be empty.")
     if not np.all(np.isfinite(pvalue_array)):
@@ -55,9 +52,7 @@ def _score_array(
     supported = pvalue_array < pvalue_threshold
     if fold_change_threshold is not None:
         if fold_changes is None:
-            raise ValueError(
-                "fold_changes is required when fold_change_threshold is provided."
-            )
+            raise ValueError("fold_changes is required when fold_change_threshold is provided.")
         fold_change_array = np.asarray(fold_changes, dtype=float)
         if fold_change_array.shape != pvalue_array.shape:
             raise ValueError(
@@ -86,10 +81,7 @@ def _mapping_kind(values: Mapping, *, name: str) -> str:
     if all(is_nested):
         return "nested"
     if any(is_nested):
-        raise TypeError(
-            f"{name} must be either a flat site mapping or a uniformly nested "
-            "condition-to-site mapping."
-        )
+        raise TypeError(f"{name} must be either a flat site mapping or a uniformly nested condition-to-site mapping.")
     return "flat"
 
 
@@ -132,11 +124,7 @@ def _score_mapping(
     identifiers = tuple(pvalues)
     score_values = _score_array(
         [pvalues[identifier] for identifier in identifiers],
-        fold_changes=(
-            None
-            if fold_mapping is None
-            else [fold_mapping[identifier] for identifier in identifiers]
-        ),
+        fold_changes=(None if fold_mapping is None else [fold_mapping[identifier] for identifier in identifiers]),
         pvalue_threshold=pvalue_threshold,
         fold_change_threshold=fold_change_threshold,
         direction=direction,
@@ -163,15 +151,11 @@ def normalize_phonemes_score_mapping(scores, *, many: bool):
         raise TypeError(f"phosphosite_scores must be {expected}.")
     if many and isinstance(scores, pd.DataFrame):
         if not scores.index.is_unique or not scores.columns.is_unique:
-            raise ValueError(
-                "phosphosite_scores DataFrame must have unique phosphosite and condition labels."
-            )
+            raise ValueError("phosphosite_scores DataFrame must have unique phosphosite and condition labels.")
         return scores.to_dict()
     if not many and isinstance(scores, pd.Series):
         if not scores.index.is_unique:
-            raise ValueError(
-                "phosphosite_scores Series must have unique phosphosite labels."
-            )
+            raise ValueError("phosphosite_scores Series must have unique phosphosite labels.")
         return scores.to_dict()
     raise TypeError(f"phosphosite_scores must be {expected}.")
 
@@ -245,21 +229,14 @@ def compute_phonemes_scores(
         aligned_fold_changes = None
         if fold_changes is not None:
             if type(fold_changes) is not type(pvalues):
-                raise TypeError(
-                    "fold_changes must have the same pandas container type as pvalues."
-                )
+                raise TypeError("fold_changes must have the same pandas container type as pvalues.")
             if isinstance(pvalues, pd.Series):
                 if set(fold_changes.index) != set(pvalues.index):
                     raise ValueError("fold_changes index must match pvalues index.")
                 aligned_fold_changes = fold_changes.reindex(pvalues.index).to_numpy()
             else:
-                if (
-                    set(fold_changes.index) != set(pvalues.index)
-                    or set(fold_changes.columns) != set(pvalues.columns)
-                ):
-                    raise ValueError(
-                        "fold_changes index and columns must match pvalues."
-                    )
+                if set(fold_changes.index) != set(pvalues.index) or set(fold_changes.columns) != set(pvalues.columns):
+                    raise ValueError("fold_changes index and columns must match pvalues.")
                 aligned_fold_changes = fold_changes.reindex(
                     index=pvalues.index,
                     columns=pvalues.columns,

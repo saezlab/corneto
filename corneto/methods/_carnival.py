@@ -73,12 +73,8 @@ def prune_graph(
     sources = {}
     targets = {}
     for condition, sample in data.samples.items():
-        sources[condition] = graph_vertices & sample.query.select(
-            lambda f: f.data[property_key] == input_key
-        ).pluck()
-        targets[condition] = graph_vertices & sample.query.select(
-            lambda f: f.data[property_key] == output_key
-        ).pluck()
+        sources[condition] = graph_vertices & sample.query.select(lambda f: f.data[property_key] == input_key).pluck()
+        targets[condition] = graph_vertices & sample.query.select(lambda f: f.data[property_key] == output_key).pluck()
 
     pruning = prune_to_paths(G, sources=sources, targets=targets)
     pruned_graph = pruning.graph

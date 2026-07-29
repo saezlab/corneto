@@ -104,9 +104,7 @@ def test_imat_separates_objectives_and_expression(backend):
     gene_method = MultiSampleIMAT(backend=backend)
     gene_method.build(model, gene_expression={"G1": 2}, objectives={"R1": -1})
     gene_feature = next(
-        feature
-        for feature in gene_method.processed_data.samples["condition"].features
-        if feature.id == "R1"
+        feature for feature in gene_method.processed_data.samples["condition"].features if feature.id == "R1"
     )
     assert gene_feature.data["role"] == "objective"
     assert gene_feature.data["imat_score"] == 2.0

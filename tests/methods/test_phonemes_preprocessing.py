@@ -98,9 +98,7 @@ def test_phonemes_accepts_pandas_scores_directly(backend):
     many = method.build_many(
         graph,
         perturbations={"control": ["r"], "treated": ["r"]},
-        phosphosite_scores=pd.DataFrame(
-            {"control": {"m": -1.0}, "treated": {"m": -0.5}}
-        ),
+        phosphosite_scores=pd.DataFrame({"control": {"m": -1.0}, "treated": {"m": -0.5}}),
     )
     assert many.expr.vertex_selected.shape == (2, 2)
 
@@ -156,10 +154,7 @@ def test_phonemes_prunes_unreachable_measurements_and_remaps_costs(backend):
     assert method._edge_costs.tolist() == pytest.approx([0.2, 0.3])
     assert "dead" not in method.processed_graph.V
     assert "unreachable" not in method.processed_graph.V
-    assert all(
-        feature.id != "unreachable"
-        for feature in method.processed_data.samples["condition"].features
-    )
+    assert all(feature.id != "unreachable" for feature in method.processed_data.samples["condition"].features)
     assert problem.expr.edge_selected.shape == (2, 1)
 
 

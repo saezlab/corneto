@@ -276,33 +276,22 @@ class PHONEMeS(FlowMethod):
         pruning = prune_to_paths(
             graph,
             sources=targets_by_condition,
-            targets={
-                condition: measured.keys()
-                for condition, measured in measured_by_condition.items()
-            },
+            targets={condition: measured.keys() for condition, measured in measured_by_condition.items()},
         )
         for condition in condition_names:
             unreachable_sources = pruning.unreachable_sources[condition]
             if unreachable_sources:
-                target = next(
-                    vertex
-                    for vertex in graph.V
-                    if vertex in unreachable_sources
-                )
+                target = next(vertex for vertex in graph.V if vertex in unreachable_sources)
                 raise ValueError(
-                    f"Perturbation target {target!r} in condition {condition!r} "
-                    "cannot reach any measured phosphosite."
+                    f"Perturbation target {target!r} in condition {condition!r} cannot reach any measured phosphosite."
                 )
 
         pruned_graph = pruning.graph
         if pruned_graph.num_edges == 0:
-            raise ValueError(
-                "PHONEMeS connectivity pruning removed every PKN interaction."
-            )
+            raise ValueError("PHONEMeS connectivity pruning removed every PKN interaction.")
 
         original_to_processed_edge = {
-            int(original): processed
-            for processed, original in enumerate(pruning.original_edge_indices)
+            int(original): processed for processed, original in enumerate(pruning.original_edge_indices)
         }
         processed_costs = {
             original_to_processed_edge[edge]: cost
@@ -318,11 +307,7 @@ class PHONEMeS(FlowMethod):
                 for vertex, score in measured_by_condition[condition].items()
                 if vertex in condition_vertices
             }
-            vertex_order = [
-                vertex
-                for vertex in graph.V
-                if vertex in targets or vertex in measured
-            ]
+            vertex_order = [vertex for vertex in graph.V if vertex in targets or vertex in measured]
             features = []
             for vertex in vertex_order:
                 is_target = vertex in targets
@@ -369,10 +354,7 @@ class PHONEMeS(FlowMethod):
             measured_indexes = [vertex_index[vertex] for vertex in measured]
             target_mask[target_indexes, condition_index] = True
             measured_mask[measured_indexes, condition_index] = True
-            node_scores[measured_indexes, condition_index] = [
-                measured[vertices[index]]
-                for index in measured_indexes
-            ]
+            node_scores[measured_indexes, condition_index] = [measured[vertices[index]] for index in measured_indexes]
 
         self._condition_names = condition_names
         self._biological_num_edges = pruned_graph.num_edges

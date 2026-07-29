@@ -138,28 +138,20 @@ class MultiSampleIMAT(MultiSampleFBA):
                 if rule:
                     known_genes.update(get_genes_from_gpr(rule))
             for condition in conditions:
-                values = require_mapping(
-                    gene_expression[condition], argument="gene_expression", condition=condition
-                )
+                values = require_mapping(gene_expression[condition], argument="gene_expression", condition=condition)
                 for identifier, value in values.items():
                     if identifier not in known_genes:
-                        raise ValueError(
-                            f"Unknown gene {identifier!r} in gene_expression for condition {condition!r}."
-                        )
+                        raise ValueError(f"Unknown gene {identifier!r} in gene_expression for condition {condition!r}.")
                     score = validate_numeric(
                         value,
                         argument="gene_expression",
                         identifier=identifier,
                         condition=condition,
                     )
-                    data.samples[condition].add(
-                        Feature(id=identifier, value=score, mapping="none", role="expression")
-                    )
+                    data.samples[condition].add(Feature(id=identifier, value=score, mapping="none", role="expression"))
         else:
             for condition in conditions:
-                values = require_mapping(
-                    reaction_scores[condition], argument="reaction_scores", condition=condition
-                )
+                values = require_mapping(reaction_scores[condition], argument="reaction_scores", condition=condition)
                 scores = validate_reaction_values(
                     model,
                     values,

@@ -97,14 +97,11 @@ def validate_condition_keys(**arguments: Any) -> tuple[str, ...]:
 def validate_numeric(value: Any, *, argument: str, identifier: Any, condition: str) -> float:
     if isinstance(value, bool) or not isinstance(value, Real):
         raise TypeError(
-            f"{argument}[{identifier!r}] for condition {condition!r} must be a finite number, "
-            f"got {value!r}."
+            f"{argument}[{identifier!r}] for condition {condition!r} must be a finite number, got {value!r}."
         )
     number = float(value)
     if not np.isfinite(number):
-        raise ValueError(
-            f"{argument}[{identifier!r}] for condition {condition!r} must be finite, got {value!r}."
-        )
+        raise ValueError(f"{argument}[{identifier!r}] for condition {condition!r} must be finite, got {value!r}.")
     return number
 
 
@@ -120,9 +117,7 @@ def validate_vertices(
     for identifier, value in values.items():
         if identifier not in vertices:
             raise ValueError(f"Unknown vertex {identifier!r} in {argument} for condition {condition!r}.")
-        result[identifier] = validate_numeric(
-            value, argument=argument, identifier=identifier, condition=condition
-        )
+        result[identifier] = validate_numeric(value, argument=argument, identifier=identifier, condition=condition)
     return result
 
 
@@ -162,9 +157,7 @@ def validate_reaction_values(
     for identifier, value in values.items():
         if identifier not in identifiers:
             raise ValueError(f"Unknown reaction {identifier!r} in {argument} for condition {condition!r}.")
-        result[identifier] = validate_numeric(
-            value, argument=argument, identifier=identifier, condition=condition
-        )
+        result[identifier] = validate_numeric(value, argument=argument, identifier=identifier, condition=condition)
     return result
 
 
@@ -181,8 +174,7 @@ def validate_reaction_bounds(
             raise ValueError(f"Unknown reaction {identifier!r} in reaction_bounds for condition {condition!r}.")
         if isinstance(bounds, (str, bytes)) or not isinstance(bounds, Collection) or len(bounds) != 2:
             raise ValueError(
-                f"reaction_bounds[{identifier!r}] for condition {condition!r} "
-                "must be a (lower, upper) pair."
+                f"reaction_bounds[{identifier!r}] for condition {condition!r} must be a (lower, upper) pair."
             )
         lower, upper = tuple(bounds)
         lower_value = (
@@ -238,6 +230,4 @@ def validate_edge_costs(
 
 
 def data_from_features(features_by_condition: Mapping[str, list[dict[str, Any]]]) -> Data:
-    return Data.from_dict(
-        {condition: {"features": features} for condition, features in features_by_condition.items()}
-    )
+    return Data.from_dict({condition: {"features": features} for condition, features in features_by_condition.items()})

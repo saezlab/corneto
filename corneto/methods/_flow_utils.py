@@ -70,11 +70,7 @@ def add_selected_flow(
         dag_layer = problem.expr._dag_layer
     else:
         flow = problem.expr._flow
-        indicator_indexes = (
-            biological_edge_indices
-            if len(flow.shape) == 1
-            else (biological_edge_indices, slice(None))
-        )
+        indicator_indexes = biological_edge_indices if len(flow.shape) == 1 else (biological_edge_indices, slice(None))
         problem += backend.Indicator(flow, indexes=indicator_indexes)
         selected_all = problem.expr._flow_i
         dag_layer = None
@@ -120,11 +116,7 @@ def add_vertex_selection(
 
     problem += outgoing <= selected.multiply(np.broadcast_to(out_degree, selected.shape))
     problem += incoming <= selected.multiply(np.broadcast_to(in_degree, selected.shape))
-    forced = (
-        force_selected.astype(float)
-        if isinstance(force_selected, np.ndarray)
-        else force_selected
-    )
+    forced = force_selected.astype(float) if isinstance(force_selected, np.ndarray) else force_selected
     problem += selected >= forced
     problem += selected.multiply(require_outgoing.astype(float)) <= outgoing
     problem += selected.multiply(require_incoming.astype(float)) <= incoming

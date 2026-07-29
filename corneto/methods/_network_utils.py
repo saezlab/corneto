@@ -140,13 +140,11 @@ def augment_with_boundaries(
     for direction in boundary_order:
         if direction == "inflow":
             inflow_edges.update(
-                (vertex, augmented.add_edge((), vertex, type=inflow_type))
-                for vertex in inflow_vertices
+                (vertex, augmented.add_edge((), vertex, type=inflow_type)) for vertex in inflow_vertices
             )
         else:
             outflow_edges.update(
-                (vertex, augmented.add_edge(vertex, (), type=outflow_type))
-                for vertex in outflow_vertices
+                (vertex, augmented.add_edge(vertex, (), type=outflow_type)) for vertex in outflow_vertices
             )
     return BoundaryFlowLayout(
         graph=augmented,

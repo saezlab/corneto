@@ -65,9 +65,7 @@ def test_carnival_ilp_supports_multiple_conditions(backend):
 def test_carnival_ilp_constraint_blocks_are_vectorized(backend):
     def build_problem(num_vertices, condition_names):
         vertices = [f"v{i}" for i in range(num_vertices)]
-        graph = Graph.from_tuples(
-            [(source, 1, target) for source, target in pairwise(vertices)]
-        )
+        graph = Graph.from_tuples([(source, 1, target) for source, target in pairwise(vertices)])
         perturbations = {condition: {vertices[0]: 1} for condition in condition_names}
         outputs = {condition: {vertices[-1]: 1} for condition in condition_names}
         return CarnivalILP(beta_weight=0, backend=backend).build_many(

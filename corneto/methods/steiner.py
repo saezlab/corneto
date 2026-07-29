@@ -95,16 +95,12 @@ class SteinerTreeFlow(PrizeCollectingSteinerTree):
             )
             cost_values = validate_edge_costs(
                 graph,
-                {} if edge_costs is None else require_mapping(
-                    edge_costs[condition], argument="edge_costs", condition=condition
-                ),
+                {}
+                if edge_costs is None
+                else require_mapping(edge_costs[condition], argument="edge_costs", condition=condition),
                 condition=condition,
             )
             features_by_condition[condition] = [
-                {"id": identifier, "mapping": "vertex", "role": "terminal"}
-                for identifier in terminal_values
-            ] + [
-                {"id": identifier, "mapping": "edge", "value": value}
-                for identifier, value in cost_values.items()
-            ]
+                {"id": identifier, "mapping": "vertex", "role": "terminal"} for identifier in terminal_values
+            ] + [{"id": identifier, "mapping": "edge", "value": value} for identifier, value in cost_values.items()]
         return self.build_from_data(graph, data_from_features(features_by_condition))
