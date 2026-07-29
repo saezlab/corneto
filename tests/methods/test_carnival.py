@@ -1,5 +1,7 @@
 """Tests for the retained public CARNIVAL implementations."""
 
+from itertools import pairwise
+
 import numpy as np
 
 from corneto.data import Data
@@ -58,3 +60,20 @@ def test_carnival_ilp_supports_multiple_conditions(backend):
     assert problem.expr.vertex_values.shape == (2, 2)
     assert np.allclose(vertex_values[input_index], [1, -1])
     assert np.allclose(vertex_values[output_index], [1, -1])
+
+
+def test_carnival_ilp_constraint_blocks_are_vectorized(backend):
+    def build_problem(num_vertices, condition_names):
+        vertices = [f"v{i}" for i in range(num_vertices)]
+        graph = Graph.from_tuples([(source, 1, target) for source, target in pairwise(vertices)])
+        perturbations = {condition: {vertices[0]: 1} for condition in condition_names}
+        outputs = {condition: {vertices[-1]: 1} for condition in condition_names}
+        return CarnivalILP(beta_weight=0, backend=backend).build_many(
+            graph,
+            perturbations=perturbations,
+            transcription_factors=outputs,
+        )
+
+    small = build_problem(3, ["one"])
+    large = build_problem(30, ["one", "two", "three"])
+    assert len(small.constraints) == len(large.constraints)

@@ -891,13 +891,14 @@ class Backend(abc.ABC):
         alias_flow_ineg: str = EXPR_NAME_FLOW_INEG,
         alias_nonzero_flow: str = EXPR_NAME_FLOW_NZI,
         indicator_tolerance: float = 1e-4,
+        force_matrix: bool = False,
     ) -> ProblemDef:
         shape: Tuple = (g.num_edges,)
         if isinstance(lb, list):
             lb = np.array(lb)
         if isinstance(ub, list):
             ub = np.array(ub)
-        if n_flows > 1:
+        if n_flows > 1 or force_matrix:
             shape = (g.num_edges, n_flows)
             # If lb/ub are vectors, duplicate for each flow
             if isinstance(lb, (int, float)):
@@ -1166,70 +1167,61 @@ class Backend(abc.ABC):
         if vertex_ub_dist is not None and len(vertex_ub_dist) != n_samples:
             raise ValueError("Length of vertex_ub_dist must match number of samples")
 
-        # Loop over samples to add constraints based on indicator variables and the bounds.
-        for i_sample in range(n_samples):
-            if Ip is not None:
-                Ip_i_order = Ip if len(Ip.shape) == 1 else Ip[:, i_sample]
-            if In is not None:
-                In_i_order = In if len(In.shape) == 1 else In[:, i_sample]
+        edge_indexes = np.array([i for i, (source, target) in enumerate(g.E) if source and target], dtype=int)
+        if edge_indexes.size:
+            from scipy.sparse import csr_matrix
+
+            edges = [g.get_edge(i) for i in edge_indexes]
+            source_indexes = np.array([vix[next(iter(source))] for source, _ in edges])
+            target_indexes = np.array([vix[next(iter(target))] for _, target in edges])
+            num_internal_edges = len(edge_indexes)
+            edge_rows = np.arange(num_internal_edges)
+            edge_selector = csr_matrix(
+                (
+                    np.ones(num_internal_edges),
+                    (edge_rows, edge_indexes),
+                ),
+                shape=(num_internal_edges, g.num_edges),
+            )
+            layer_difference_matrix = csr_matrix(
+                (
+                    np.concatenate((-np.ones(num_internal_edges), np.ones(num_internal_edges))),
+                    (
+                        np.concatenate((edge_rows, edge_rows)),
+                        np.concatenate((source_indexes, target_indexes)),
+                    ),
+                ),
+                shape=(num_internal_edges, g.num_vertices),
+            )
+            edge_selector = self.Constant(edge_selector)
+            layer_difference_matrix = self.Constant(layer_difference_matrix)
 
             if Ip is not None:
-                # Get edges that can have a positive flow.
-                if hasattr(Ip, "ub"):
-                    ub = Ip.ub if len(Ip.shape) == 1 else Ip.ub[:, i_sample]
-                    e_pos = [(i, g.get_edge(i)) for i in np.flatnonzero(ub > 0)]
-                    e_ix = np.array([i for i, (s, t) in e_pos if s and t])
-                else:
-                    e_ix = np.array([i for i, (s, t) in enumerate(g.E) if s and t])
-                edges = [g.get_edge(i) for i in e_ix]
-                s_idx = np.array([vix[next(iter(s))] for (s, _) in edges])
-                t_idx = np.array([vix[next(iter(t))] for (_, t) in edges])
-                if len(e_ix) > 0:
-                    P += L[t_idx, i_sample] - L[s_idx, i_sample] >= Ip_i_order[e_ix] + (1 - g.num_vertices) * (
-                        1 - Ip_i_order[e_ix]
-                    )
-                    P += L[t_idx, i_sample] - L[s_idx, i_sample] <= g.num_vertices - 1
+                positive = Ip.reshape((g.num_edges, 1)) if len(Ip.shape) == 1 else Ip
+                selected = edge_selector @ positive
+                layer_difference = layer_difference_matrix @ L
+                P += layer_difference >= selected + (1 - g.num_vertices) * (1 - selected)
+                P += layer_difference <= g.num_vertices - 1
 
             if In is not None:
-                # Negative flows are handled as reversed directed edges.
-                if hasattr(In, "ub"):
-                    ub = In.ub if len(In.shape) == 1 else In.ub[:, i_sample]
-                    e_neg = [(i, g.get_edge(i)) for i in np.flatnonzero(ub > 0)]
-                    e_ix = np.array([i for i, (s, t) in e_neg if s and t])
-                else:
-                    e_ix = np.array([i for i, (s, t) in enumerate(g.E) if s and t])
-                edges = [g.get_edge(i) for i in e_ix]
-                s_idx = np.array([vix[next(iter(s))] for (s, _) in edges])
-                t_idx = np.array([vix[next(iter(t))] for (_, t) in edges])
-                if len(e_ix) > 0:
-                    P += L[s_idx, i_sample] - L[t_idx, i_sample] >= In_i_order[e_ix] + (1 - g.num_vertices) * (
-                        1 - In_i_order[e_ix]
-                    )
-                    P += L[s_idx, i_sample] - L[t_idx, i_sample] <= g.num_vertices - 1
+                negative = In.reshape((g.num_edges, 1)) if len(In.shape) == 1 else In
+                selected = edge_selector @ negative
+                layer_difference = -(layer_difference_matrix @ L)
+                P += layer_difference >= selected + (1 - g.num_vertices) * (1 - selected)
+                P += layer_difference <= g.num_vertices - 1
 
-            # --- New: Add vertex lower and upper bound constraints ---
-            if vertex_lb_dist is not None:
-                list_vix = []
-                list_dist = []
-                for v in g.V:
-                    idx = vix[v]
-                    if v in vertex_lb_dist[i_sample]:
-                        list_vix.append(idx)
-                        list_dist.append(vertex_lb_dist[i_sample][v])
-                if list_vix:
-                    P += L[np.array(list_vix), i_sample] >= np.array(list_dist)
-            if vertex_ub_dist is not None:
-                list_vix = []
-                list_dist = []
-                for v in g.V:
-                    idx = vix[v]
-                    if v in vertex_ub_dist[i_sample]:
-                        list_vix.append(idx)
-                        list_dist.append(vertex_ub_dist[i_sample][v])
-                if list_vix:
-                    P += L[np.array(list_vix), i_sample] <= np.array(list_dist)
-
-            # TODO: Raise error if hypergraph is used
+        if vertex_lb_dist is not None:
+            layer_lb = np.zeros((g.num_vertices, n_samples))
+            for sample_index, bounds in enumerate(vertex_lb_dist):
+                for vertex, distance in bounds.items():
+                    layer_lb[vix[vertex], sample_index] = distance
+            P += L >= layer_lb
+        if vertex_ub_dist is not None:
+            layer_ub = np.full((g.num_vertices, n_samples), g.num_vertices - 1)
+            for sample_index, bounds in enumerate(vertex_ub_dist):
+                for vertex, distance in bounds.items():
+                    layer_ub[vix[vertex], sample_index] = distance
+            P += L <= layer_ub
         return P
 
     def AcyclicFlow(
@@ -1417,35 +1409,12 @@ class Backend(abc.ABC):
         indicator = I_pos + I_neg
         c += [indicator <= 1]  # Ensure mutual exclusivity
 
-        # Disable infeasible binary indicators based on bounds
-        if np.sum(ub <= 0) > 0:
-            mask = ub <= 0
-            if mask.ndim == 0:
-                c += [I_pos == 0]
-            elif mask.ndim == 1:
-                idx = np.where(mask)[0]
-                c += [I_pos[idx] == 0]
-            elif mask.ndim == 2:
-                for col in range(mask.shape[1]):
-                    idx = np.where(mask[:, col])[0]
-                    if len(idx) > 0:
-                        c += [I_pos[idx, col] == 0]
-            else:
-                raise ValueError(f"Unsupported NonZeroIndicator ub dimensionality: {mask.ndim}")
-        if np.sum(lb >= 0) > 0:
-            mask = lb >= 0
-            if mask.ndim == 0:
-                c += [I_neg == 0]
-            elif mask.ndim == 1:
-                idx = np.where(mask)[0]
-                c += [I_neg[idx] == 0]
-            elif mask.ndim == 2:
-                for col in range(mask.shape[1]):
-                    idx = np.where(mask[:, col])[0]
-                    if len(idx) > 0:
-                        c += [I_neg[idx, col] == 0]
-            else:
-                raise ValueError(f"Unsupported NonZeroIndicator lb dimensionality: {mask.ndim}")
+        # Fix impossible directions with whole-array masks. Besides tightening
+        # the model, this avoids relying on solver feasibility tolerances when
+        # the nonzero tolerance is small. The matrix form keeps compilation
+        # independent of the number of flow columns.
+        c += [I_pos.multiply(np.asarray(ub <= 0, dtype=float)) == 0]
+        c += [I_neg.multiply(np.asarray(lb >= 0, dtype=float)) == 0]
 
         # Add constraints to enforce variable behavior depending on the indicator activation:
         # If I_pos = 1 and I_neg = 0: V >= tol AND V <= ub

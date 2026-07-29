@@ -10,6 +10,50 @@ from corneto.graph import BaseGraph
 
 # from corneto.methods import expand_graph_for_flows
 from corneto.methods._base import FlowMethod
+from corneto.methods._input_utils import (
+    DEFAULT_CONDITION,
+    data_from_features,
+    legacy_data,
+    require_mapping,
+    validate_condition_keys,
+    validate_reaction_bounds,
+    validate_reaction_values,
+)
+
+
+def _fba_data(model, conditions, objectives, reaction_bounds):
+    objectives = objectives or {condition: {} for condition in conditions}
+    reaction_bounds = reaction_bounds or {condition: {} for condition in conditions}
+    features_by_condition = {}
+    for condition in conditions:
+        objective_values = validate_reaction_values(
+            model,
+            require_mapping(objectives[condition], argument="objectives", condition=condition),
+            argument="objectives",
+            condition=condition,
+        )
+        bounds = validate_reaction_bounds(
+            model,
+            require_mapping(reaction_bounds[condition], argument="reaction_bounds", condition=condition),
+            condition=condition,
+        )
+        feature_data = {}
+        for identifier, value in objective_values.items():
+            feature_data.setdefault(identifier, {}).update(
+                value=value,
+                mapping="edge",
+                role="objective",
+            )
+        for identifier, (lower, upper) in bounds.items():
+            feature = feature_data.setdefault(identifier, {"mapping": "edge"})
+            if lower is not None:
+                feature["lower_bound"] = lower
+            if upper is not None:
+                feature["upper_bound"] = upper
+        features_by_condition[condition] = [
+            {"id": identifier, **attributes} for identifier, attributes in feature_data.items()
+        ]
+    return data_from_features(features_by_condition)
 
 
 class MultiSampleFBA(FlowMethod):
@@ -40,80 +84,30 @@ class MultiSampleFBA(FlowMethod):
         backend (Backend): The optimization backend to use.
 
     Examples:
-        Basic usage with a single sample:
+        Basic usage with a single condition:
 
         >>> from corneto.io import import_miom_model
-        >>> from corneto.data import Data
         >>> from corneto.methods.fba import MultiSampleFBA
-        >>> # Load a metabolic model
         >>> model = import_miom_model("path/to/metabolic_model.miom")
-        >>> # Create data with objective function (typically biomass)
-        >>> data = Data.from_dict({
-        ...     "sample1": {
-        ...         "EX_biomass_e": {
-        ...             "role": "objective",
-        ...         },
-        ...     }
-        ... })
-        >>> # Initialize FBA and solve
-        >>> fba = MultiSampleFBA()
-        >>> P = fba.build(model, data)
+        >>> P = MultiSampleFBA().build(
+        ...     model,
+        ...     objectives={"EX_biomass_e": -1},
+        ... )
         >>> P.solve()
-        >>> # Access the flux values
-        >>> biomass_rid = next(iter(model.get_edges_by_attr("id", "EX_biomass_e")))
-        >>> biomass_flux = P.expr.flow[biomass_rid].value
-        >>> print(f"Biomass flux: {biomass_flux}")
 
-        Multi-sample analysis with gene knockouts:
+        Multi-condition analysis with a reaction knockout:
 
-        >>> # Create data with two samples - control and knockout
-        >>> data = Data.from_cdict({
-        ...     "control": {
-        ...         "EX_biomass_e": {
-        ...             "role": "objective",
-        ...         },
+        >>> P = MultiSampleFBA().build_many(
+        ...     model,
+        ...     objectives={
+        ...         "control": {"EX_biomass_e": -1},
+        ...         "knockout": {"EX_biomass_e": -1},
         ...     },
-        ...     "knockout": {
-        ...         "EX_biomass_e": {
-        ...             "role": "objective",
-        ...         },
-        ...         "MDHm": {  # Malate dehydrogenase knockout
-        ...             "lower_bound": 0,
-        ...             "upper_bound": 0,
-        ...         },
-        ...     }
-        ... })
-        >>> # Initialize FBA and solve
-        >>> fba = MultiSampleFBA()
-        >>> P = fba.build(model, data)
-        >>> P.solve()
-        >>> # Compare biomass production between conditions
-        >>> rid = next(iter(model.get_edges_by_attr("id", "EX_biomass_e")))
-        >>> control_flux = P.expr.flow[rid, 0].value
-        >>> knockout_flux = P.expr.flow[rid, 1].value
-        >>> print(f"Control biomass: {control_flux}")
-        >>> print(f"Knockout biomass: {knockout_flux}")
-        >>> reduction = (control_flux - knockout_flux) / control_flux * 100
-        >>> print(f"Growth reduction: {reduction:.2f}%")
-
-        Sparse FBA to minimize the number of active reactions:
-
-        >>> # Create data with biomass lower bound constraint
-        >>> data = Data.from_dict({
-        ...     "sample1": {
-        ...         "EX_biomass_e": {
-        ...             "type": "objective",
-        ...             "lower_bound": 100.80,  # Enforce minimum biomass production
-        ...         },
-        ...     }
-        ... })
-        >>> # Initialize FBA with regularization for sparsity
-        >>> fba = MultiSampleFBA(beta_reg=1)
-        >>> P = fba.build(model, data)
-        >>> P.solve()
-        >>> # Count number of active reactions
-        >>> n_active_reactions = np.sum(np.round(P.expr.edge_has_flux.value))
-        >>> print(f"Number of active reactions: {n_active_reactions}")
+        ...     reaction_bounds={
+        ...         "control": {},
+        ...         "knockout": {"MDHm": (0, 0)},
+        ...     },
+        ... )
     """
 
     def __init__(
@@ -156,6 +150,33 @@ class MultiSampleFBA(FlowMethod):
         self.beta_reg = self.backend.Parameter(name="beta_reg_param", value=beta_reg)
         self.default_flow_upper_bound = default_flow_upper_bound
         self.default_flow_lower_bound = default_flow_lower_bound
+
+    def build(
+        self,
+        model: BaseGraph,
+        data: Optional[Data] = None,
+        *,
+        objectives=None,
+        reaction_bounds=None,
+    ):
+        """Build a single-condition FBA problem from explicit inputs."""
+        old_data = legacy_data(data, method=self.__class__.__name__)
+        if old_data is not None:
+            if objectives is not None or reaction_bounds is not None:
+                raise TypeError("Do not combine a Data object with explicit scientific inputs.")
+            return self.build_from_data(model, old_data)
+        return self.build_many(
+            model,
+            objectives={DEFAULT_CONDITION: objectives or {}},
+            reaction_bounds={DEFAULT_CONDITION: reaction_bounds or {}},
+        )
+
+    def build_many(self, model: BaseGraph, *, objectives=None, reaction_bounds=None):
+        """Build a multi-condition FBA problem from named condition mappings."""
+        conditions = validate_condition_keys(objectives=objectives, reaction_bounds=reaction_bounds)
+        if not conditions:
+            raise ValueError("build_many() requires objectives or reaction_bounds with named conditions.")
+        return self.build_from_data(model, _fba_data(model, conditions, objectives, reaction_bounds))
 
     def preprocess(self, graph: BaseGraph, data: Data) -> Tuple[BaseGraph, Data]:
         """Preprocess the graph and data before solving.
