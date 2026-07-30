@@ -6,6 +6,7 @@ import numpy as np
 import pytest
 
 from corneto import Data, Graph
+from corneto.backend import CvxpyBackend
 from corneto.graph import EdgeType
 from corneto.methods import PHONEMeS
 
@@ -234,6 +235,26 @@ def test_auxiliary_edges_are_excluded_and_shapes_are_stable(backend):
     assert problem.expr.edge_selected_any.shape in {(2,), (2, 1)}
     assert problem.expr.dag_layer.shape == (3, 1)
     assert method.processed_graph.num_edges == graph.num_edges + 2
+
+
+def test_cvxpy_formulation_selects_only_biological_edges():
+    """Boundary flows should not receive positive/negative indicator binaries."""
+    graph = Graph()
+    graph.add_edges([("r", "a"), ("a", "m")])
+    problem = PHONEMeS(backend=CvxpyBackend()).build(
+        graph,
+        perturbations=["r"],
+        phosphosite_scores={"m": -1},
+    )
+    cvxpy_problem = problem.solve(solver="SCIPY")
+
+    boolean_count = sum(variable.size for variable in cvxpy_problem.variables() if variable.attributes["boolean"])
+    # Two biological edge selectors plus three vertex selectors. The two
+    # auxiliary boundary flows do not introduce binaries.
+    assert boolean_count == 5
+    assert cvxpy_problem.size_metrics.num_scalar_variables == 12
+    assert "_flow_ipos" not in problem.expr
+    assert "_flow_ineg" not in problem.expr
 
 
 def test_constraint_blocks_do_not_scale_with_graph_or_conditions(backend):

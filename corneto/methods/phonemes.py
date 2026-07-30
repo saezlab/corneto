@@ -11,10 +11,7 @@ from corneto.backend._base import Backend, ProblemDef
 from corneto.data import Data
 from corneto.graph import Attr, BaseGraph, EdgeType
 from corneto.methods._base import FlowMethod
-from corneto.methods._flow_utils import (
-    add_selected_flow,
-    add_vertex_selection,
-)
+from corneto.methods._flow_utils import add_vertex_selection
 from corneto.methods._input_utils import (
     DEFAULT_CONDITION,
     data_from_features,
@@ -26,7 +23,6 @@ from corneto.methods._input_utils import (
     validate_vertices,
 )
 from corneto.methods._network_utils import augment_with_boundaries, prune_to_paths
-from corneto.methods._optimization_utils import add_condition_union
 from corneto.methods._phonemes_preprocessing import (
     compute_phonemes_scores,
     normalize_phonemes_score_mapping,
@@ -132,6 +128,7 @@ class PHONEMeS(FlowMethod):
             raise ValueError("max_flow must be greater than or equal to epsilon.")
 
         self._condition_names: tuple[str, ...] = ()
+        self._biological_graph: BaseGraph | None = None
         self._biological_num_edges = 0
         self._flow_max = 0.0
         self._target_inflow_edges: dict[Any, int] = {}
@@ -357,6 +354,7 @@ class PHONEMeS(FlowMethod):
             node_scores[measured_indexes, condition_index] = [measured[vertices[index]] for index in measured_indexes]
 
         self._condition_names = condition_names
+        self._biological_graph = pruned_graph
         self._biological_num_edges = pruned_graph.num_edges
         self._target_mask = target_mask
         self._measured_mask = measured_mask
@@ -431,31 +429,31 @@ class PHONEMeS(FlowMethod):
         }
 
     def create_problem(self, graph: BaseGraph, data: Data):
-        """Create a consistently two-dimensional flow problem."""
+        """Create selected biological flows without auxiliary-edge binaries."""
         flow_params = self.get_flow_bounds(graph, data)
-        flow_problem = self.backend.Flow(
+        flow_problem = self.backend.SelectedFlow(
             graph,
             lb=flow_params["lb"],
             ub=flow_params["ub"],
             n_flows=flow_params["n_flows"],
-            shared_bounds=False,
-            force_matrix=True,
+            edge_indices=range(self._biological_num_edges),
+            epsilon=self.epsilon,
+            selected_by_flow_name="edge_selected",
+            selected_any_name="edge_selected_any",
         )
         return self.create_flow_based_problem(flow_problem, graph, data)
 
     def create_flow_based_problem(self, flow_problem: ProblemDef, graph: BaseGraph, data: Data):
         """Add vectorized PHONEMeS selection, role, and objective terms."""
-        selected_flow = add_selected_flow(
-            self.backend,
+        edge_selected = flow_problem.expr.edge_selected
+        assert self._biological_graph is not None
+        self.backend.Acyclic(
+            self._biological_graph,
             flow_problem,
-            graph,
-            biological_edge_indices=range(self._biological_num_edges),
-            epsilon=self.epsilon,
-            acyclic=True,
+            indicator_positive_var_name="edge_selected",
+            acyclic_var_name="_dag_layer",
         )
-        edge_selected = selected_flow.biological_edges
-        flow_problem.register("edge_selected", edge_selected)
-        flow_problem.register("dag_layer", selected_flow.dag_layer)
+        flow_problem.register("dag_layer", flow_problem.expr._dag_layer)
 
         internal_mask = ~(self._target_mask | self._measured_mask)
         require_outgoing = (internal_mask | self._target_mask).astype(float)
@@ -471,12 +469,7 @@ class PHONEMeS(FlowMethod):
             require_incoming=require_incoming,
         )
         vertex_selected = vertex_selection.selected
-        edge_selected_any = add_condition_union(
-            self.backend,
-            flow_problem,
-            edge_selected,
-            name="edge_selected_any",
-        )
+        edge_selected_any = flow_problem.expr.edge_selected_any
 
         flow_problem.add_objective(
             vertex_selected.multiply(self._node_scores).sum(),
