@@ -8,7 +8,7 @@ from nbclient import NotebookClient
 from corneto._plotting import to_dot_source
 from corneto.graph import Graph
 from corneto.methods.signaling import (
-    CellNOptILP,
+    CellNOptDAG,
     plot_cellnopt_fit,
     plot_cellnopt_model,
 )
@@ -18,7 +18,7 @@ from corneto.methods.signaling.cellnopt_plotting import (
 
 
 def _solve(backend, graph, *, inputs, measurements, inhibitors=None, lambda_reg=1e-3):
-    method = CellNOptILP(lambda_reg=lambda_reg, backend=backend)
+    method = CellNOptDAG(lambda_reg=lambda_reg, backend=backend)
     problem = method.build_many(
         graph,
         inputs=inputs,
@@ -239,7 +239,7 @@ def test_networkx_model_plot_returns_real_figure(backend):
 
 
 def test_plotting_requires_a_solved_problem():
-    method = CellNOptILP(lambda_reg=0)
+    method = CellNOptDAG(lambda_reg=0)
     method.build(
         Graph.from_tuples([("A", 1, "Y")]),
         inputs={"A": 1},
@@ -253,7 +253,7 @@ def test_plotting_requires_a_solved_problem():
 
 
 def test_cellnopt_worked_notebook_executes_every_cell():
-    notebook_path = Path(__file__).parents[3] / "docs/guide/signaling/cellnopt_ILP.ipynb"
+    notebook_path = Path(__file__).parents[3] / "docs/guide/signaling/cellnopt_dag.ipynb"
     notebook = nbformat.read(notebook_path, as_version=4)
 
     executed = NotebookClient(

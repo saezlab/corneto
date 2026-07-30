@@ -14,13 +14,12 @@ were removed instead of being carried as permanent compatibility aliases.
 | `corneto.methods.future.MultiSampleIMAT` | `corneto.methods.MultiSampleIMAT` |
 | `corneto.methods.future.PrizeCollectingSteinerTree` | `corneto.methods.PrizeCollectingSteinerTree` |
 | `corneto.methods.future.SteinerTreeFlow` | `corneto.methods.SteinerTreeFlow` |
-| `corneto.methods.signal.cellnopt_ilp` | `corneto.methods.signaling.cellnopt_ilp` |
 | `corneto.K` or `corneto.ops` | `corneto.opt` |
 | `corneto._ml.build_dagnn` | `corneto.ml.build_dagnn` |
 | `corneto.methods.shortest_path.create_multisample_shortest_path` | `corneto.methods.create_multisample_shortest_path` |
 | module-level graph serialization | `Graph.save` and `Graph.load` |
 
-The old `future`, `signal`, `K`, and `ops` paths in this table remain warning
+The old `future`, `K`, and `ops` paths in this table remain warning
 compatibility paths throughout 1.x. The private `_ml` path and duplicate graph
 serialization functions do not have shims.
 
@@ -34,8 +33,9 @@ serialization functions do not have shims.
   modules (`corneto._graph`, `corneto._data`, `corneto._io`, `corneto._nx`,
   `corneto._core`, and `corneto._legacy`).
 - The British-spelling `corneto.methods.signalling` implementation and the old
-  module-shaped `corneto.methods.signaling`; signaling methods now live in the
-  `corneto.methods.signaling` package.
+  module-shaped `corneto.methods.signaling`, as well as the singular
+  `corneto.methods.signal` compatibility namespace; signaling methods now live
+  in the `corneto.methods.signaling` package.
 - Duplicate module-level graph serialization helpers from `corneto.io`.
 
 ## Multi-condition convention

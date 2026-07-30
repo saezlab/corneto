@@ -23,7 +23,7 @@ from corneto.methods._input_utils import (
 )
 from corneto.methods._network_utils import augment_with_boundaries
 
-__all__ = ["BooleanReaction", "CellNOptILP"]
+__all__ = ["BooleanReaction", "CellNOptDAG"]
 
 _AND_PATTERN = re.compile(r"^and[0-9]+$", re.IGNORECASE)
 _ROLE_INPUT = "input"
@@ -68,14 +68,14 @@ def _is_and_vertex(vertex: Any) -> bool:
 def _interaction(graph: BaseGraph, edge_index: int) -> int:
     value = graph.get_attr_edge(edge_index).get("interaction")
     if isinstance(value, bool) or not isinstance(value, Real) or value not in (-1, 1):
-        raise ValueError(f"CellNOptILP requires interaction +1 or -1 on edge {edge_index}; got {value!r}.")
+        raise ValueError(f"CellNOptDAG requires interaction +1 or -1 on edge {edge_index}; got {value!r}.")
     return int(value)
 
 
 def _compile_reactions(graph: BaseGraph) -> _ReactionNetwork:
     """Compile SIF-style dummy AND vertices into reaction-level dependencies."""
     if graph.num_vertices == 0 or graph.num_edges == 0:
-        raise ValueError("CellNOptILP requires a non-empty directed PKN.")
+        raise ValueError("CellNOptDAG requires a non-empty directed PKN.")
 
     and_vertices = {vertex for vertex in graph.V if _is_and_vertex(vertex)}
     vertex_order = {vertex: index for index, vertex in enumerate(graph.V)}
@@ -85,11 +85,11 @@ def _compile_reactions(graph: BaseGraph) -> _ReactionNetwork:
     for edge_index, ((source, target), attributes) in enumerate(zip(graph.E, graph.get_attr_edges())):
         if len(source) != 1 or len(target) != 1:
             raise ValueError(
-                "CellNOptILP accepts simple directed PKN edges only; "
+                "CellNOptDAG accepts simple directed PKN edges only; "
                 f"edge {edge_index} has {len(source)} sources and {len(target)} targets."
             )
         if not attributes.has_attr(Attr.EDGE_TYPE, EdgeType.DIRECTED):
-            raise ValueError(f"CellNOptILP requires directed edges; edge {edge_index} is not directed.")
+            raise ValueError(f"CellNOptDAG requires directed edges; edge {edge_index} is not directed.")
         _interaction(graph, edge_index)
         source_vertex = next(iter(source))
         target_vertex = next(iter(target))
@@ -168,7 +168,7 @@ def _compile_reactions(graph: BaseGraph) -> _ReactionNetwork:
             )
 
     if not reactions:
-        raise ValueError("CellNOptILP preprocessing produced no Boolean reactions.")
+        raise ValueError("CellNOptDAG preprocessing produced no Boolean reactions.")
 
     dependency_graph = Graph()
     species = [vertex for vertex in graph.V if vertex not in and_vertices]
@@ -279,7 +279,7 @@ def _cellnopt_data(
         inhibitors=inhibitors,
     )
     if not condition_names:
-        raise ValueError("CellNOptILP requires at least one named condition.")
+        raise ValueError("CellNOptDAG requires at least one named condition.")
     if inhibitors is None:
         inhibitors = {condition: {} for condition in condition_names}
 
@@ -372,7 +372,7 @@ def _cellnopt_data(
     return data_from_features(features_by_condition)
 
 
-class CellNOptILP(FlowMethod):
+class CellNOptDAG(FlowMethod):
     """Infer a shared acyclic Boolean model from multiple conditions.
 
     The method selects reactions globally and evaluates their Boolean truth in
@@ -475,11 +475,11 @@ class CellNOptILP(FlowMethod):
         """Compile reactions, validate condition data, and add flow boundaries."""
         network = _compile_reactions(graph)
         if not data.samples:
-            raise ValueError("CellNOptILP requires at least one condition.")
+            raise ValueError("CellNOptDAG requires at least one condition.")
 
         condition_names = tuple(data.samples)
         if any(not isinstance(name, str) or not name for name in condition_names):
-            raise ValueError("CellNOptILP condition names must be non-empty strings.")
+            raise ValueError("CellNOptDAG condition names must be non-empty strings.")
 
         vertex_index = {vertex: index for index, vertex in enumerate(network.graph.V)}
         num_vertices = network.graph.num_vertices
@@ -495,12 +495,12 @@ class CellNOptILP(FlowMethod):
             for feature in sample.features:
                 if feature.mapping != "vertex":
                     raise ValueError(
-                        f"CellNOptILP only accepts vertex features; got mapping "
+                        f"CellNOptDAG only accepts vertex features; got mapping "
                         f"{feature.mapping!r} in condition {condition!r}."
                     )
                 if feature.id not in vertex_index:
                     raise ValueError(
-                        f"Unknown species {feature.id!r} in CellNOptILP data for "
+                        f"Unknown species {feature.id!r} in CellNOptDAG data for "
                         f"condition {condition!r}; dummy AND vertices cannot be measured "
                         "or perturbed."
                     )
@@ -683,7 +683,7 @@ class CellNOptILP(FlowMethod):
     @staticmethod
     def name() -> str:
         """Return the method name."""
-        return "CellNOptILP"
+        return "CellNOptDAG"
 
     @staticmethod
     def description() -> str:

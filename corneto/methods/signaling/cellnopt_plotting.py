@@ -1,4 +1,4 @@
-"""Visualization utilities for :class:`~corneto.methods.signaling.CellNOptILP`."""
+"""Visualization utilities for :class:`~corneto.methods.signaling.CellNOptDAG`."""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ import numpy as np
 
 from corneto._plotting import _scaled_magnitudes
 from corneto.graph import Graph
-from corneto.methods.signaling.cellnopt_ilp import CellNOptILP
+from corneto.methods.signaling.cellnopt_dag import CellNOptDAG
 
 __all__ = ["plot_cellnopt_fit", "plot_cellnopt_model"]
 
@@ -43,7 +43,7 @@ class _CellNOptPlotData:
 class _FitSeries:
     """Observed and predicted responses on an explicit time axis.
 
-    CellNOptILP currently infers one steady-state endpoint per condition, so
+    CellNOptDAG currently infers one steady-state endpoint per condition, so
     extraction produces a singleton axis labelled ``Endpoint``. Keeping time
     as a real array dimension lets a future time-resolved formulation reuse
     the renderer without assigning scientific meaning to series identity.
@@ -67,7 +67,7 @@ class _ModelPlotSpec:
 
 def _expression_values(problem: Any, name: str, shape: tuple[int, ...]) -> np.ndarray:
     if problem is None:
-        raise ValueError("CellNOptILP has not been built. Build and solve the method before plotting.")
+        raise ValueError("CellNOptDAG has not been built. Build and solve the method before plotting.")
     try:
         expression = problem.expr[name]
     except (KeyError, TypeError, AttributeError):
@@ -94,15 +94,15 @@ def _validate_binary_values(values: np.ndarray, name: str, tolerance: float = 1e
     return values >= 0.5
 
 
-def _extract_plot_data(method: CellNOptILP, problem: Any = None) -> _CellNOptPlotData:
-    if not isinstance(method, CellNOptILP):
-        raise TypeError("method must be a CellNOptILP instance.")
+def _extract_plot_data(method: CellNOptDAG, problem: Any = None) -> _CellNOptPlotData:
+    if not isinstance(method, CellNOptDAG):
+        raise TypeError("method must be a CellNOptDAG instance.")
     if problem is None:
         problem = method.problem
     conditions = tuple(method._condition_names)
     vertices = tuple(method.processed_graph.V) if method.processed_graph is not None else ()
     if not conditions or not vertices or not method.reactions:
-        raise ValueError("CellNOptILP has not been built. Build and solve the method before plotting.")
+        raise ValueError("CellNOptDAG has not been built. Build and solve the method before plotting.")
 
     num_reactions = len(method.reactions)
     num_conditions = len(conditions)
@@ -205,7 +205,7 @@ def _merge_attributes(
 
 
 def _build_cellnopt_model_plot(
-    method: CellNOptILP,
+    method: CellNOptDAG,
     problem: Any = None,
     *,
     condition: Optional[Union[int, str]] = None,
@@ -439,7 +439,7 @@ def _build_cellnopt_model_plot(
 
 
 def plot_cellnopt_model(
-    method: CellNOptILP,
+    method: CellNOptDAG,
     problem: Any = None,
     *,
     condition: Optional[Union[int, str]] = None,
@@ -846,7 +846,7 @@ def _plot_fit_heatmaps(
 
 
 def plot_cellnopt_fit(
-    method: CellNOptILP,
+    method: CellNOptDAG,
     problem: Any = None,
     *,
     view: Literal["cellnopt", "heatmap"] = "cellnopt",

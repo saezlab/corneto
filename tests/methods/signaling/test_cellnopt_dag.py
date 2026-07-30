@@ -2,7 +2,7 @@ import numpy as np
 
 from corneto.backend import PicosBackend
 from corneto.graph import Graph
-from corneto.methods.signaling.cellnopt_ilp import CellNOptILP
+from corneto.methods.signaling.cellnopt_dag import CellNOptDAG
 
 
 def _vertex_values(method, problem, vertex):
@@ -56,7 +56,7 @@ def test_and_gate_is_one_reaction_with_conjunctive_truth(backend):
         "both": {"Y": 1},
     }
 
-    method = CellNOptILP(lambda_reg=1e-3, backend=backend)
+    method = CellNOptDAG(lambda_reg=1e-3, backend=backend)
     problem = _solve(
         method,
         graph,
@@ -95,7 +95,7 @@ def test_or_is_induced_by_multiple_active_producing_reactions(backend):
         "both": {"Y": 1},
     }
 
-    method = CellNOptILP(lambda_reg=1e-3, backend=backend)
+    method = CellNOptDAG(lambda_reg=1e-3, backend=backend)
     problem = _solve(
         method,
         graph,
@@ -118,7 +118,7 @@ def test_positive_and_negative_alternatives_fit_complementary_conditions(backend
             ("A", -1, "Y"),
         ]
     )
-    method = CellNOptILP(lambda_reg=1e-3, backend=backend)
+    method = CellNOptDAG(lambda_reg=1e-3, backend=backend)
     problem = _solve(
         method,
         graph,
@@ -136,7 +136,7 @@ def test_positive_and_negative_alternatives_fit_complementary_conditions(backend
 
 def test_same_inputs_with_conflicting_measurements_cannot_both_be_fit(backend):
     graph = Graph.from_tuples([("A", 1, "Y")])
-    method = CellNOptILP(lambda_reg=0, backend=backend)
+    method = CellNOptDAG(lambda_reg=0, backend=backend)
     problem = _solve(
         method,
         graph,
@@ -156,7 +156,7 @@ def test_irrelevant_active_input_does_not_force_a_disconnected_branch(backend):
             ("C", 1, "D"),
         ]
     )
-    method = CellNOptILP(lambda_reg=1e-3, backend=backend)
+    method = CellNOptDAG(lambda_reg=1e-3, backend=backend)
     problem = _solve(
         method,
         graph,
@@ -176,7 +176,7 @@ def test_flow_rejects_a_selected_component_without_experimental_boundaries(backe
             ("C", 1, "D"),
         ]
     )
-    method = CellNOptILP(lambda_reg=0, backend=backend)
+    method = CellNOptDAG(lambda_reg=0, backend=backend)
     problem = method.build(
         graph,
         inputs={"A": 1},
@@ -194,7 +194,7 @@ def test_flow_rejects_a_selected_dangling_branch(backend):
             ("A", 1, "C"),
         ]
     )
-    method = CellNOptILP(lambda_reg=0, backend=backend)
+    method = CellNOptDAG(lambda_reg=0, backend=backend)
     problem = method.build(
         graph,
         inputs={"A": 1},
@@ -207,7 +207,7 @@ def test_flow_rejects_a_selected_dangling_branch(backend):
 
 def test_inhibition_overrides_product_without_disabling_reaction_truth(backend):
     graph = Graph.from_tuples([("A", 1, "B")])
-    method = CellNOptILP(lambda_reg=0, backend=backend)
+    method = CellNOptDAG(lambda_reg=0, backend=backend)
     problem = method.build(
         graph,
         inputs={"A": 1},
@@ -230,7 +230,7 @@ def test_acyclicity_rejects_a_selected_feedback_cycle(backend):
             ("B", 1, "A"),
         ]
     )
-    method = CellNOptILP(lambda_reg=0, backend=backend)
+    method = CellNOptDAG(lambda_reg=0, backend=backend)
     problem = method.build(
         graph,
         inputs={"A": 1},
@@ -244,12 +244,12 @@ def test_acyclicity_rejects_a_selected_feedback_cycle(backend):
 def test_constraint_blocks_are_vectorized_over_reactions_and_conditions(backend):
     small_graph = Graph.from_tuples([("A", 1, "B")])
     large_graph = Graph.from_tuples([(f"v{i}", 1, f"v{i + 1}") for i in range(30)])
-    small = CellNOptILP(lambda_reg=0, backend=backend).build(
+    small = CellNOptDAG(lambda_reg=0, backend=backend).build(
         small_graph,
         inputs={"A": 1},
         measurements={"B": 1},
     )
-    large = CellNOptILP(lambda_reg=0, backend=backend).build_many(
+    large = CellNOptDAG(lambda_reg=0, backend=backend).build_many(
         large_graph,
         inputs={
             "one": {"v0": 1},

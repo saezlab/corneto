@@ -9,5 +9,5 @@ carnival.ipynb
 multisample-carnival.ipynb
 phonemes.ipynb
 bidirectional-phonemes.ipynb
-cellnopt_ILP.ipynb
+cellnopt_dag.ipynb
 ```

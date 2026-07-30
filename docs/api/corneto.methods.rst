@@ -15,7 +15,7 @@ and transcription-factor mappings for one condition. Their ``build_many``
 methods accept named conditions. ``milp_carnival`` remains as a compatibility
 formulation.
 
-``CellNOptILP.build`` accepts binary input, measurement, and optional inhibitor
+``CellNOptDAG.build`` accepts binary input, measurement, and optional inhibitor
 mappings. ``build_many`` infers one shared connected reaction model while
 evaluating its Boolean state independently in every named condition.
 
@@ -25,7 +25,7 @@ evaluating its Boolean state independently in every named condition.
 
     CarnivalFlow
     CarnivalILP
-    signaling.CellNOptILP
+    signaling.CellNOptDAG
     BidirectionalPHONEMeS
     PHONEMeS
     compute_phonemes_scores

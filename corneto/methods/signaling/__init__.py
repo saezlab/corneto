@@ -1,6 +1,6 @@
 """Signaling-network inference methods."""
 
-from corneto.methods.signaling.cellnopt_ilp import BooleanReaction, CellNOptILP
+from corneto.methods.signaling.cellnopt_dag import BooleanReaction, CellNOptDAG
 from corneto.methods.signaling.cellnopt_plotting import (
     plot_cellnopt_fit,
     plot_cellnopt_model,
@@ -8,7 +8,7 @@ from corneto.methods.signaling.cellnopt_plotting import (
 
 __all__ = [
     "BooleanReaction",
-    "CellNOptILP",
+    "CellNOptDAG",
     "plot_cellnopt_fit",
     "plot_cellnopt_model",
 ]
