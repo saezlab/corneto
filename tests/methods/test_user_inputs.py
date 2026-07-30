@@ -102,12 +102,31 @@ def test_imat_separates_objectives_and_expression(backend):
     }
 
     gene_method = MultiSampleIMAT(backend=backend)
-    gene_method.build(model, gene_expression={"G1": 2}, objectives={"R1": -1})
+    gene_method.build(
+        model,
+        gene_expression={"G1": 2},
+        objectives={"R1": -1},
+        reaction_bounds={"R1": (1, 8)},
+    )
     gene_feature = next(
         feature for feature in gene_method.processed_data.samples["condition"].features if feature.id == "R1"
     )
     assert gene_feature.data["role"] == "objective"
     assert gene_feature.data["imat_score"] == 2.0
+
+    bounded_gene_method = MultiSampleIMAT(backend=backend)
+    bounded_gene_method.build(
+        model,
+        gene_expression={"G1": 2},
+        reaction_bounds={"R1": (1, 8)},
+    )
+    bounded_gene_feature = next(
+        feature for feature in bounded_gene_method.processed_data.samples["condition"].features if feature.id == "R1"
+    )
+    assert bounded_gene_feature.data["role"] == "expression"
+    assert bounded_gene_feature.data["value"] == 2.0
+    assert bounded_gene_feature.data["lower_bound"] == 1.0
+    assert bounded_gene_feature.data["upper_bound"] == 8.0
 
     many = MultiSampleIMAT(backend=backend)
     many.build_many(

@@ -40,7 +40,9 @@ class MultiSampleIMAT(MultiSampleFBA):
             Used when both types of regularization are needed. Defaults to 0.0.
         eps (float, optional): Tolerance for considering a flux as non-zero.
             Defaults to 1e-2.
-        scale (bool, optional): Whether to scale the weights. Defaults to False.
+        scale (bool, optional): If True, normalize the nonzero iMAT score
+            weights independently for each condition so their absolute values
+            sum to 100. Defaults to False.
         gpr_field (str, optional): Name of the attribute field containing GPR rules.
             Defaults to "GPR".
         high_expression_threshold (Optional[float], optional): Threshold above
@@ -198,8 +200,10 @@ class MultiSampleIMAT(MultiSampleFBA):
 
             # Count features with mapping="edge"
             for feature in sample.features:
-                if feature.mapping == "edge" and (
-                    feature.data.get("role") != "objective" or "imat_score" in feature.data
+                if (
+                    feature.mapping == "edge"
+                    and (feature.value is not None or "imat_score" in feature.data)
+                    and (feature.data.get("role") != "objective" or "imat_score" in feature.data)
                 ):
                     edge_features_count += 1
 

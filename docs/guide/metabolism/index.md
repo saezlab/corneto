@@ -1,11 +1,20 @@
 # Metabolism
 
-CORNETO supports flux balance analysis workflows while adding modeling flexibility to define custom constraints, objectives, and coupled formulations in a single optimization problem. For users familiar with COBRA-style modeling, this enables extension from standard FBA to explicit use cases such as multi-condition FBA and integration of omics data into metabolic networks to detect stoichiometrically consistent steady-state metabolic states.
+CORNETO brings constraint-based metabolic modeling into the same optimization
+framework used for other network-inference problems. It interoperates with
+COBRApy models and supports standard flux balance analysis while exposing the
+formulation for custom constraints, coupled conditions, shared sparsity, and
+omics integration.
+
+Start with standard FBA and model interoperability, continue with
+multi-condition FBA and shared reaction selection, and then integrate
+expression evidence first in one condition and later across several conditions.
 
 ```{toctree}
 :maxdepth: 3
 
 flux-balance-analysis.ipynb
 multicondition-sfba.ipynb
+imat.ipynb
 multicondition-imat.ipynb
 ```
