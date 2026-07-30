@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from corneto.backend import PicosBackend
+from corneto.backend import CvxpyBackend, PicosBackend
 from corneto.data import Data
 from corneto.graph import EdgeType, Graph
 from corneto.methods.pcst import PrizeCollectingSteinerTree
@@ -82,6 +82,29 @@ def test_steiner_different_fixed_roots_per_sample_is_feasible(backend, request):
     edge_cost_values = [float(np.asarray(o.value).reshape(-1)[0]) for o in problem.objectives if o.name == "edge_cost"]
     assert len(edge_cost_values) == 2
     assert np.isclose(sum(edge_cost_values), 4.0, atol=1e-6)
+
+
+def test_steiner_per_sample_max_flow_bounds_are_edge_by_sample(backend):
+    """Distinct sample maxima should bound every biological and boundary flow."""
+    graph = _small_undirected_path_graph()
+    method = SteinerTreeFlow(
+        root_vertex=["A", "C"],
+        max_flow=[2, 3],
+        strict_acyclic=True,
+        backend=backend,
+    )
+    problem = method.build_many(
+        graph,
+        terminals={"s1": ["A", "C"], "s2": ["A", "C"]},
+    )
+    problem.solve()
+
+    flow = np.asarray(problem.expr.flow.value)
+    assert flow.shape == (method.processed_graph.num_edges, 2)
+    assert np.max(np.abs(flow[:, 0])) <= 2 + 1e-8
+    assert np.max(np.abs(flow[:, 1])) <= 3 + 1e-8
+    assert np.asarray(problem.expr.flow.lb).shape == flow.shape
+    assert np.asarray(problem.expr.flow.ub).shape == flow.shape
 
 
 def test_steiner_lambda_reg_promotes_edge_sharing_across_samples(backend, request):
@@ -298,3 +321,84 @@ def test_steiner_multisample_fixed_roots_isolate_in_edges_per_sample(backend, re
     assert in_c not in sample0_edges
     assert in_c in sample1_edges
     assert in_a not in sample1_edges
+
+
+@pytest.mark.parametrize(
+    ("edge_type", "expected_binaries", "expected_variables"),
+    [
+        (EdgeType.DIRECTED, 2, 9),
+        (EdgeType.UNDIRECTED, 4, 11),
+    ],
+)
+def test_cvxpy_strict_steiner_supports_only_biological_edges(
+    edge_type,
+    expected_binaries,
+    expected_variables,
+):
+    """Strict Steiner support should exclude root and terminal boundaries."""
+    graph = Graph()
+    graph.add_edge("A", "B", type=edge_type)
+    graph.add_edge("B", "C", type=edge_type)
+    problem = SteinerTreeFlow(
+        root_vertex="A",
+        strict_acyclic=True,
+        backend=CvxpyBackend(),
+    ).build(
+        graph,
+        terminals=["A", "C"],
+    )
+    cvxpy_problem = problem.solve(solver="SCIPY")
+
+    boolean_count = sum(variable.size for variable in cvxpy_problem.variables() if variable.attributes["boolean"])
+    assert boolean_count == expected_binaries
+    assert cvxpy_problem.size_metrics.num_scalar_variables == expected_variables
+    assert problem.expr.with_flow.shape == (graph.num_edges, 1)
+    assert "_flow_ipos" not in problem.expr
+    assert "_flow_ineg" not in problem.expr
+
+
+def test_cvxpy_non_strict_undirected_steiner_uses_one_selector_per_edge():
+    """Non-strict Steiner should not pay for unused direction binaries."""
+    graph = _small_undirected_path_graph()
+    problem = SteinerTreeFlow(
+        root_vertex="A",
+        strict_acyclic=False,
+        backend=CvxpyBackend(),
+    ).build(
+        graph,
+        terminals=["A", "C"],
+    )
+    cvxpy_problem = problem.solve(solver="SCIPY")
+
+    boolean_count = sum(variable.size for variable in cvxpy_problem.variables() if variable.attributes["boolean"])
+    assert boolean_count == graph.num_edges
+    flow_variables = int(np.prod(problem.expr.flow.shape))
+    assert cvxpy_problem.size_metrics.num_scalar_variables == flow_variables + graph.num_edges
+    assert "with_flow_positive" not in problem.expr
+    assert "with_flow_negative" not in problem.expr
+
+
+def test_cvxpy_best_root_reuses_candidate_support_for_prizes():
+    """Prize collection should reuse best-root boundary direction selectors."""
+    graph = Graph()
+    graph.add_edge("A", "B", type=EdgeType.DIRECTED)
+    graph.add_edge("B", "C", type=EdgeType.DIRECTED)
+    problem = PrizeCollectingSteinerTree(
+        root_selection_strategy="best",
+        strict_acyclic=False,
+        backend=CvxpyBackend(),
+    ).build(
+        graph,
+        prizes={"B": 2, "C": 3},
+        terminals=["B", "C"],
+    )
+    cvxpy_problem = problem.solve(solver="SCIPY")
+
+    boolean_count = sum(variable.size for variable in cvxpy_problem.variables() if variable.attributes["boolean"])
+    # Two biological selectors and positive/negative selectors for two root
+    # candidates. Prize support aliases those root-candidate selectors.
+    assert boolean_count == 6
+    assert cvxpy_problem.size_metrics.num_scalar_variables == 10
+    assert "_flow_prize_pos_0" not in problem.expr
+    assert "_flow_prize_neg_0" not in problem.expr
+    assert problem.expr.selected_prized_flow_edges_0.shape == (2,)

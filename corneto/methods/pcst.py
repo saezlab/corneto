@@ -9,7 +9,6 @@ from corneto.backend._base import Backend, ProblemDef
 from corneto.data import Data
 from corneto.graph import Attr, BaseGraph, EdgeType
 from corneto.methods._base import FlowMethod
-from corneto.methods._flow_utils import add_selected_flow
 from corneto.methods._input_utils import (
     DEFAULT_CONDITION,
     data_from_features,
@@ -74,6 +73,8 @@ class PrizeCollectingSteinerTree(FlowMethod):
         self.flow_edges_out = dict()
         self.prized_flow_edges = dict()
         self._candidate_vertices_per_sample: List[Tuple[Any, ...]] = []
+        self._biological_graph: Optional[BaseGraph] = None
+        self._biological_num_edges = 0
 
         # Internal storage for per-sample values.
         self._max_flow: Optional[float] = None
@@ -169,6 +170,8 @@ class PrizeCollectingSteinerTree(FlowMethod):
         self.flow_edges_out = dict()
         self.prized_flow_edges = dict()
         self._candidate_vertices_per_sample = []
+        self._biological_graph = graph
+        self._biological_num_edges = graph.num_edges
 
         graph_vertices = tuple(graph.V)
         all_vertices = tuple(
@@ -292,13 +295,27 @@ class PrizeCollectingSteinerTree(FlowMethod):
     def get_flow_bounds(self, graph: BaseGraph, data: Data) -> Dict[str, Any]:
         """Get the flow bounds for the optimization problem."""
         if self._max_flow_list is not None:
-            lb = [
-                np.array(
-                    [0 if prop.has_attr(Attr.EDGE_TYPE, EdgeType.DIRECTED) else -mf for prop in graph.get_attr_edges()]
-                )
-                for mf in self._max_flow_list
-            ]
-            ub = self._max_flow_list
+            lb = np.column_stack(
+                [
+                    np.array(
+                        [
+                            0 if prop.has_attr(Attr.EDGE_TYPE, EdgeType.DIRECTED) else -max_flow
+                            for prop in graph.get_attr_edges()
+                        ]
+                    )
+                    for max_flow in self._max_flow_list
+                ]
+            )
+            ub = np.column_stack(
+                [
+                    np.full(
+                        graph.num_edges,
+                        max_flow,
+                        dtype=float,
+                    )
+                    for max_flow in self._max_flow_list
+                ]
+            )
         else:
             lb = np.array(
                 [
@@ -315,23 +332,43 @@ class PrizeCollectingSteinerTree(FlowMethod):
             "shared_bounds": False,
         }
 
+    def create_problem(self, graph: BaseGraph, data: Data):
+        """Create exact biological support without auxiliary-edge indicators."""
+        flow_params = self.get_flow_bounds(graph, data)
+        flow_problem = self.backend.SelectedFlow(
+            graph,
+            lb=flow_params["lb"],
+            ub=flow_params["ub"],
+            n_flows=flow_params["n_flows"],
+            edge_indices=range(self._biological_num_edges),
+            epsilon=self.epsilon,
+            exact_support=self.strict_acyclic,
+            selected_by_flow_name="with_flow",
+            selected_any_name=None,
+        )
+        return self.create_flow_based_problem(flow_problem, graph, data)
+
     def create_flow_based_problem(self, flow_problem: ProblemDef, graph: BaseGraph, data: Data):
         """Create the flow-based optimization problem."""
-        flow_edge_ids = list(set(self.flow_edges_in.values()) | set(self.flow_edges_out.values()))
-        edge_ids = list(set(range(graph.num_edges)) - set(flow_edge_ids))
-
-        selected_flow = add_selected_flow(
-            self.backend,
-            flow_problem,
-            graph,
-            biological_edge_indices=edge_ids,
-            epsilon=self.epsilon,
-            acyclic=self.strict_acyclic,
-        )
-        with_flow = selected_flow.all_edges
-
-        flow_problem.register("with_flow", with_flow)
+        edge_ids = list(range(self._biological_num_edges))
+        with_flow = flow_problem.expr.with_flow
         self._reg_varname = "with_flow"
+
+        if self.strict_acyclic:
+            assert self._biological_graph is not None
+            if "with_flow_negative" in flow_problem.expr:
+                self.backend.Acyclic(
+                    self._biological_graph,
+                    flow_problem,
+                    indicator_positive_var_name="with_flow_positive",
+                    indicator_negative_var_name="with_flow_negative",
+                )
+            else:
+                self.backend.Acyclic(
+                    self._biological_graph,
+                    flow_problem,
+                    indicator_positive_var_name="with_flow",
+                )
 
         for i, sample_data in enumerate(data.samples.values()):
             sample_max_flow = self._max_flow_list[i] if self._max_flow_list is not None else self._max_flow
@@ -375,6 +412,7 @@ class PrizeCollectingSteinerTree(FlowMethod):
             if other_flow_edges:
                 flow_problem += F[other_flow_edges] == 0
 
+            candidate_support = None
             # Root Flow Constraints
             if sample_selected_root is not None:
                 if self.force_flow_through_root:
@@ -386,16 +424,18 @@ class PrizeCollectingSteinerTree(FlowMethod):
                     flow_problem += F[terminals_edgeflow_idx] >= 1
             else:
                 if candidate_vertices:
-                    flow_problem += self.backend.NonZeroIndicator(
+                    terminal_support = f"{self.flow_name}_terminal_support_{i}"
+                    terminal_pos = f"{self.flow_name}_terminal_pos_{i}"
+                    terminal_neg = f"{self.flow_name}_terminal_neg_{i}"
+                    flow_problem += self.backend.ExactSupport(
                         flow_problem.expr.flow,
-                        vertices_edgeflow_idx,
-                        i,
-                        tolerance=self.epsilon,
-                        suffix_pos=f"_terminal_pos_{i}",
-                        suffix_neg=f"_terminal_neg_{i}",
+                        indexes=(vertices_edgeflow_idx, i),
+                        epsilon=self.epsilon,
+                        name=terminal_support,
+                        positive_name=terminal_pos,
+                        negative_name=terminal_neg,
                     )
-                    terminal_pos = self.flow_name + f"_terminal_pos_{i}"
-                    terminal_neg = self.flow_name + f"_terminal_neg_{i}"
+                    candidate_support = flow_problem.expr[terminal_support]
 
                     flow_problem += flow_problem.expr[terminal_neg].sum() == 1
 
@@ -404,9 +444,7 @@ class PrizeCollectingSteinerTree(FlowMethod):
                         if t_idx:
                             # Enforce all terminals selected, whether root is a terminal
                             # (negative sign) or not (all terminals positive).
-                            flow_problem += flow_problem.expr[terminal_pos][t_idx].sum() + flow_problem.expr[
-                                terminal_neg
-                            ][t_idx].sum() == len(t_idx)
+                            flow_problem += candidate_support[t_idx].sum() == len(t_idx)
 
             # Costs Objective
             edge_costs = np.ones((graph.num_edges)) * self.default_edge_cost
@@ -437,23 +475,26 @@ class PrizeCollectingSteinerTree(FlowMethod):
                             prized_vertices.append(prized)
                 if prized_idx:
                     prizes = np.array([prized_terminals[prized] for prized in prized_vertices])
-                    if self.strict_acyclic:
-                        selected_for_prizes = with_flow if len(with_flow.shape) == 1 else with_flow[:, i]
-                        selected_prized_flow_edges = selected_for_prizes[prized_idx]
+                    if candidate_support is not None:
+                        candidate_position = {edge: position for position, edge in enumerate(vertices_edgeflow_idx)}
+                        selected_prized_flow_edges = candidate_support[
+                            [candidate_position[edge] for edge in prized_idx]
+                        ]
                     else:
                         flow_variable = flow_problem.expr._flow
-                        indicator_args = (prized_idx,) if len(flow_variable.shape) == 1 else (prized_idx, i)
-                        flow_problem += self.backend.NonZeroIndicator(
+                        prize_support = f"{self.flow_name}_prize_support_{i}"
+                        prize_lb = np.asarray(flow_variable.lb[prized_idx, i], dtype=float)
+                        nonnegative = bool(np.all(prize_lb >= 0))
+                        flow_problem += self.backend.ExactSupport(
                             flow_variable,
-                            *indicator_args,
-                            tolerance=self.epsilon,
-                            suffix_pos=f"_prize_pos_{i}",
-                            suffix_neg=f"_prize_neg_{i}",
+                            indexes=(prized_idx, i),
+                            epsilon=self.epsilon,
+                            nonnegative=nonnegative,
+                            name=prize_support,
+                            positive_name=f"{self.flow_name}_prize_pos_{i}",
+                            negative_name=f"{self.flow_name}_prize_neg_{i}",
                         )
-                        selected_prized_flow_edges = (
-                            flow_problem.expr[f"{self.flow_name}_prize_pos_{i}"]
-                            + flow_problem.expr[f"{self.flow_name}_prize_neg_{i}"]
-                        )
+                        selected_prized_flow_edges = flow_problem.expr[prize_support]
 
                     flow_problem.register(f"selected_prized_flow_edges_{i}", selected_prized_flow_edges)
                     flow_problem.add_objective(prizes @ selected_prized_flow_edges, weight=-1, name="prizes")

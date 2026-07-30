@@ -1477,13 +1477,14 @@ class Backend(abc.ABC):
         flow_blocks: Optional[Iterable[Tuple[Iterable[int], Union[slice, Iterable[int]]]]] = None,
         selector_groups: Optional[Iterable[int]] = None,
         epsilon: float = 1.0,
+        exact_support: bool = True,
         selected: Optional[CExpression] = None,
         acyclic_graph: Optional[BaseGraph] = None,
         max_parents: Optional[Union[int, Dict[Any, int]]] = None,
         flow_name: str = EXPR_NAME_FLOW,
         selected_by_flow_name: str = "selected_by_flow",
         selected_by_group_name: Optional[str] = None,
-        selected_any_name: str = "selected_any",
+        selected_any_name: Optional[str] = "selected_any",
         dag_name: str = VAR_DAG,
     ) -> ProblemDef:
         """Create bounded flows with exact per-flow and shared support.
@@ -1493,12 +1494,18 @@ class Backend(abc.ABC):
         unnecessary integer variables. Rows whose selected flow bounds are
         nonnegative use one binary per flow; rows that permit negative flow
         automatically use mutually exclusive positive and negative binaries.
+        Set ``exact_support=False`` to use one bounded indicator per entry:
+        nonzero flow still implies selection, but a selected entry may carry
+        zero flow. This smaller formulation is suitable when a minimizing
+        objective makes such false selections unattractive and flow direction
+        is not otherwise required.
 
         ``flow_blocks`` can map multiple rectangular regions of the flow
         matrix to the same logical edge ordering. ``selector_groups`` can then
         map block columns to shared selector columns. This supports layouts
         such as forward and reversed edge blocks without indicators on the
-        unused off-diagonal blocks.
+        unused off-diagonal blocks. Set ``selected_any_name=None`` when a union
+        across selector columns is not needed.
 
         The union across flows can be linked to an existing shared selector.
         With signed acyclic flows, direction-specific unions are used so a
@@ -1507,6 +1514,8 @@ class Backend(abc.ABC):
         """
         if not isinstance(n_flows, int) or isinstance(n_flows, bool) or n_flows <= 0:
             raise ValueError("n_flows must be a positive integer.")
+        if not isinstance(exact_support, bool):
+            raise TypeError("exact_support must be a boolean.")
         if flow_blocks is not None and edge_indices is not None:
             raise ValueError("Provide either edge_indices or flow_blocks, not both.")
 
@@ -1582,7 +1591,7 @@ class Backend(abc.ABC):
             signed_rows = np.any(selected_lb < 0, axis=1)
             nonnegative_positions = np.flatnonzero(~signed_rows)
             signed_positions = np.flatnonzero(signed_rows)
-            has_signed_rows |= bool(signed_positions.size)
+            has_signed_rows |= exact_support and bool(signed_positions.size)
 
             block_base_name = (
                 f"{selected_by_flow_name}_block_{block_index}" if multiple_blocks else selected_by_flow_name
@@ -1590,6 +1599,20 @@ class Backend(abc.ABC):
             selection_parts = []
             positive_parts = []
             negative_parts = []
+
+            if not exact_support:
+                if signed_positions.size and acyclic_graph is not None:
+                    raise ValueError("Signed acyclic flows require exact_support=True.")
+                problem += self.Indicator(
+                    flow,
+                    indexes=(block_rows, block_columns),
+                    name=block_base_name,
+                )
+                support = problem.expr[block_base_name]
+                selection_blocks.append(support)
+                positive_blocks.append(support)
+                negative_blocks.append(self.Constant(np.zeros(support.shape)))
+                continue
 
             if nonnegative_positions.size:
                 nonnegative_edges = block_rows[nonnegative_positions]
@@ -1678,6 +1701,13 @@ class Backend(abc.ABC):
             problem += selected_by_group <= selected_by_flow @ group_matrix
         if selected_by_group_name is not None and selected_by_group_name not in problem.expressions:
             problem.register(selected_by_group_name, selected_by_group)
+
+        if selected_any_name is None:
+            if selected is not None:
+                raise ValueError("selected requires selected_any_name.")
+            if acyclic_graph is not None:
+                raise ValueError("acyclic_graph requires selected_any_name.")
+            return problem
 
         def union_across_flows(values, name):
             num_value_columns = values.shape[1]
