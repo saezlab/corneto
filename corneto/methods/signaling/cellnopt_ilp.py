@@ -1,620 +1,691 @@
-"""CellNOpt integer-linear programming method and visualization helpers."""
+"""Flow-based Boolean network inference in the style of CellNOpt."""
+
+from __future__ import annotations
 
 import re
-from typing import Literal, Optional
+from dataclasses import dataclass
+from numbers import Real
+from typing import Any, Optional
 
 import numpy as np
+from scipy.sparse import csr_matrix
 
-__all__ = [
-    "cellnoptILP",
-    "cno_style",
-    "expand_graph_for_flows",
-    "plot_data",
-    "plot_fitness",
-]
+from corneto._constants import VarType
+from corneto.backend._base import Backend, ProblemDef
+from corneto.data import Data
+from corneto.graph import Attr, BaseGraph, EdgeType, Graph
+from corneto.methods._base import FlowMethod
+from corneto.methods._input_utils import (
+    DEFAULT_CONDITION,
+    data_from_features,
+    require_mapping,
+    validate_condition_keys,
+)
+from corneto.methods._network_utils import augment_with_boundaries
 
-import corneto as cn
-from corneto.backend._base import EXPR_NAME_FLOW
+__all__ = ["BooleanReaction", "CellNOptILP"]
 
-
-def clip_quantiles(arr, q):
-    """Clip an array to its lower and upper quantiles."""
-    if q < 0 or q > 1:
-        raise ValueError(f"Clipping value must be between 0 and 1, got {q}")
-    # compute the quantiles at clipping and 1-clipping and clip the flow
-    q = np.quantile(arr, [q, 1 - q])
-    return np.clip(arr, q[0], q[1])
-
-
-def cno_style(
-    P,
-    max_edge_width: float = 5,
-    min_edge_width: float = 0.25,
-    flow_name: str = EXPR_NAME_FLOW,
-    positive_color: str = "dodgerblue4",
-    negative_color: str = "firebrick4",
-    zero_flow_threshold: float = 1e-6,
-    scale: Optional[Literal["log", "std"]] = "log",
-    clip_quantil: Optional[float] = 0.05,
-    iexp=0,
-):
-    """Return graph-plotting attributes derived from a CellNOpt solution."""
-    flow = np.array(P.expr[flow_name].value)[:, iexp]
-    flow[np.abs(flow) < zero_flow_threshold] = 0
-    if scale is not None:
-        if scale == "log":
-            flow = np.log10(np.abs(flow) + 1e-6) * np.sign(flow)
-        elif scale == "std":
-            flow = flow / np.std(flow)
-        else:
-            raise ValueError(f"Unknown normalization method: {scale}")
-    if clip_quantil is not None:
-        flow = clip_quantiles(flow, clip_quantil)
-    max_flow = max(np.max(np.abs(flow)), 1e-6)
-    edge_attrs = dict()
-    for i, v in enumerate(flow):
-        # Apply threshold edge width
-        if abs(v) > 0:
-            edge_width = max_edge_width
-        else:
-            edge_width = min_edge_width
-        if scale is not None:
-            edge_width = min_edge_width + (max_edge_width - min_edge_width) * abs(v / max_flow)
-        # bound = P.expr[flow_name].ub[i] if v >= 0 else P.expr[flow_name].lb[i]
-        edge_attrs[i] = {"penwidth": str(edge_width)}
-        if flow[i] > 0:
-            edge_attrs[i]["color"] = positive_color
-        elif flow[i] < 0:
-            edge_attrs[i]["color"] = negative_color
-        else:
-            edge_attrs[i]["color"] = "black"
-    return edge_attrs
+_AND_PATTERN = re.compile(r"^and[0-9]+$", re.IGNORECASE)
+_ROLE_INPUT = "input"
+_ROLE_OUTPUT = "output"
+_ROLE_INPUT_OUTPUT = "input_output"
 
 
-def get_interactions(G):
-    """Get the sign of interactions from the graph G. I in [1, -1]"""
-    return np.array(G.get_attr_from_edges("interaction", 1))
+@dataclass(frozen=True)
+class BooleanReaction:
+    """A normalized Boolean reaction with one product.
 
-
-def get_AND_gate_nodes(G):
-    """Get the indices of nodes that represent AND gates in the graph G.
-
-    Parameters:
-    - G (Graph): The input graph.
-
-    Returns:
-    - np.array: An array containing the indices of nodes that represent AND gates.
+    Positive literals must be active and negative literals must be inactive
+    for the reaction to propagate in a condition. ``source_edges`` records the
+    PKN edges from which the reaction was compiled.
     """
-    # find AND gates with regular expression: AND[0+9]+
-    pattern = re.compile(r"^(AND|And|and)[0-9]+$")
-    V_is_and = [bool(pattern.match(v)) for v in G.V]
 
-    return np.array(V_is_and)
+    positive_literals: tuple[Any, ...]
+    negative_literals: tuple[Any, ...]
+    product: Any
+    source_edges: tuple[int, ...]
 
-
-def get_incidence_matrices_of_edges(G, as_dataframe=False):
-    """Get the mapping matrices A, At, Ah from the graph G.
-
-    Parameters:
-    - G: The graph object.
-    - as_dataframe: Whether to return the matrices as pandas DataFrames. Default is False.
-
-    Returns:
-    - At: The tail-incidence matrix.
-    - Ah: The head-incidence matrix.
-    """
-    A = G.vertex_incidence_matrix().astype(int)  # V x E
-    At = np.clip(A, 0, 1)  # V x E, 1 if vertex appears as tail of edge
-    Ah = np.clip(-A, 0, 1)  # V x E, 1 if vertex appears as head of edge
-
-    if as_dataframe:
-        import pandas as pd
-
-        Ah = pd.DataFrame(Ah, index=G.V, columns=G.E)
-        At = pd.DataFrame(At, index=G.V, columns=G.E)
-
-    return At, Ah
+    @property
+    def literals(self) -> tuple[Any, ...]:
+        """Return positive and negative literals in deterministic order."""
+        return self.positive_literals + self.negative_literals
 
 
-def get_egdes_with_head(G):
-    """Get the indices of edges with a head node.
-
-    Parameters:
-        G (graph): The input graph.
-
-    Returns:
-        edges_with_head (array): An array containing the indices of edges with a head node.
-    """
-    _At, Ah = get_incidence_matrices_of_edges(G)
-    edges_with_head = np.flatnonzero(np.sum(np.abs(Ah), axis=0) > 0)
-    return edges_with_head
+@dataclass(frozen=True)
+class _ReactionNetwork:
+    graph: Graph
+    reactions: tuple[BooleanReaction, ...]
+    dependency_reactions: np.ndarray
+    positive_literals: csr_matrix
+    negative_literals: csr_matrix
+    products: csr_matrix
 
 
-def get_inhibited_nodes(G, exp_list):
-    """Returns an array, with shape = (len(G.V), len(exp_list)), where each column is a boolean array
-    indicating if the node is inhibited in the corresponding experiment.
-    """
-    V_is_inhibited = np.full((len(G.V), len(exp_list)), False)
-
-    for exp, iexp in zip(exp_list, range(len(exp_list))):
-        if "inhibition" not in exp_list[exp]:
-            continue
-        i_nodes = list(exp_list[exp]["inhibition"].keys())
-        V_is_inhibited[:, iexp] = np.array([v in i_nodes for v in G.V])
-    return V_is_inhibited
+def _is_and_vertex(vertex: Any) -> bool:
+    return isinstance(vertex, str) and _AND_PATTERN.fullmatch(vertex) is not None
 
 
-def presolve_report(G, exp_list):
-    At, Ah = get_incidence_matrices_of_edges(G, as_dataframe=True)
-    interaction = get_interactions(G)
-    edges_with_head = get_egdes_with_head(G)
-    V_is_and = get_AND_gate_nodes(G)
-
-    print("Vertex order:")
-    print(G.V)
-    print("AND gates:")
-    print(V_is_and)
-    print("Tails of interactions:")
-    print(At)
-    print("Head of interactions:")
-    print(Ah)
-    print("Sign of interactions:")
-    print(interaction)
-    print("Edges with head:")
-    print(edges_with_head)
+def _interaction(graph: BaseGraph, edge_index: int) -> int:
+    value = graph.get_attr_edge(edge_index).get("interaction")
+    if isinstance(value, bool) or not isinstance(value, Real) or value not in (-1, 1):
+        raise ValueError(f"CellNOptILP requires interaction +1 or -1 on edge {edge_index}; got {value!r}.")
+    return int(value)
 
 
-def expand_graph_for_flows(G, exp_list):
-    """Expand the graph G with the perturbations and measurements from the experiments in exp_list."""
-    G1 = G.copy()
-    output_names = list({key for exp in exp_list.values() for key in exp["output"].keys()})
-    input_names = list({key for exp in exp_list.values() for key in exp["input"].keys()})
+def _compile_reactions(graph: BaseGraph) -> _ReactionNetwork:
+    """Compile SIF-style dummy AND vertices into reaction-level dependencies."""
+    if graph.num_vertices == 0 or graph.num_edges == 0:
+        raise ValueError("CellNOptILP requires a non-empty directed PKN.")
 
-    output_names = list(set(output_names))
-    input_names = list(set(input_names))
+    and_vertices = {vertex for vertex in graph.V if _is_and_vertex(vertex)}
+    vertex_order = {vertex: index for index, vertex in enumerate(graph.V)}
+    incoming_by_and = {vertex: [] for vertex in and_vertices}
+    outgoing_by_and = {vertex: [] for vertex in and_vertices}
 
-    for node in output_names:
-        G1.add_edge(node, ())
-    for node in input_names:
-        G1.add_edge((), node)
+    for edge_index, ((source, target), attributes) in enumerate(zip(graph.E, graph.get_attr_edges())):
+        if len(source) != 1 or len(target) != 1:
+            raise ValueError(
+                "CellNOptILP accepts simple directed PKN edges only; "
+                f"edge {edge_index} has {len(source)} sources and {len(target)} targets."
+            )
+        if not attributes.has_attr(Attr.EDGE_TYPE, EdgeType.DIRECTED):
+            raise ValueError(f"CellNOptILP requires directed edges; edge {edge_index} is not directed.")
+        _interaction(graph, edge_index)
+        source_vertex = next(iter(source))
+        target_vertex = next(iter(target))
+        if source_vertex in and_vertices and target_vertex in and_vertices:
+            raise ValueError(f"Nested dummy AND gates are not supported (edge {edge_index}).")
+        if target_vertex in and_vertices:
+            incoming_by_and[target_vertex].append(edge_index)
+        if source_vertex in and_vertices:
+            outgoing_by_and[source_vertex].append(edge_index)
 
-    return G1
+    reactions: list[BooleanReaction] = []
+    reaction_keys: set[tuple[frozenset, frozenset, Any]] = set()
 
+    def ordered(vertices):
+        return tuple(sorted(vertices, key=vertex_order.__getitem__))
 
-def check_exp_graph_consistency(G, exp_list):
-    """Check if the experiments are consistent with the graph G."""
-    for exp in exp_list:
-        for node in exp_list[exp]["input"]:
-            if node not in G.V:
-                raise ValueError(f"Node {node} in experiment {exp} is not in the graph.")
-        for node in exp_list[exp]["output"]:
-            if node not in G.V:
-                raise ValueError(f"Node {node} in experiment {exp} is not in the graph.")
-        if "inhibition" in exp_list[exp]:
-            for node in exp_list[exp]["inhibition"]:
-                if node not in G.V:
-                    raise ValueError(f"Node {node} in experiment {exp} is not in the graph.")
-
-
-def cellnoptILP(G, exp_list, solver=None, alpha_flow=1e-3, verbose=False, backend=None):
-    """Create and solves the ILP model for the given graph G and the list of experiments exp_list.
-
-    Parameters:
-    - G: The graph representing the network.
-    - exp_list: The list of experiments.
-    - solver: The solver to use for solving the ILP problem. Default is None.
-    - alpha_flow: The weight of the penalty of flow in the objective. Default is 1e-3.
-    - verbose: Whether to print verbose output. Default is False.
-
-    Returns:
-    - P: The ILP model.
-    """
-    if backend is None:
-        backend = cn.DEFAULT_BACKEND
-    check_exp_graph_consistency(G, exp_list)
-
-    At, Ah = get_incidence_matrices_of_edges(G)
-    interaction = get_interactions(G)
-    edges_with_head = get_egdes_with_head(G)
-    edges_with_head = np.flatnonzero(np.sum(np.abs(Ah), axis=0) > 0)
-    V_is_and = get_AND_gate_nodes(G)
-    and_idx = np.flatnonzero(V_is_and)
-    V_is_inhibited = get_inhibited_nodes(G, exp_list)
-
-    # let's start with acyclic flow
-    P = backend.AcyclicFlow(G)
-
-    # vertex value is binary (0 and 1)
-    V = backend.Variable("vertex_value", (G.num_vertices, len(exp_list)), vartype=cn.VarType.BINARY)
-    # edge activation is also binary:
-    Eact = backend.Variable("edge_activates", (G.num_edges, len(exp_list)), vartype=cn.VarType.BINARY)
-
-    M = 100  # a large number, so sum(incoming edges)/M is always less than 1
-
-    # Dummy variable for the linearization of the absolute deviation objective function
-    Z = backend.Variable("dummy", (G.num_vertices, len(exp_list)), vartype=cn.VarType.CONTINUOUS)
-    P += Z >= 0
-
-    # some basic constraints
-    P += V >= 0
-    P += V <= 1
-
-    # Rule 1: Edge can be activated only if they carry flow
-    for exp, iexp in zip(exp_list, range(len(exp_list))):
-        P += Eact[:, iexp] <= P.expr.with_flow
-
-        # Rule 2: Edges take the upstream value for a positive sign and its
-        # complement for a negative sign.
-        for exp, iexp in zip(exp_list, range(len(exp_list))):
-            # this should keep Eact in [0,1] interval:
-
-            # signed value of source/head node for an edge:
-            V_head = (Ah.T @ V)[edges_with_head, iexp].multiply((interaction[edges_with_head] > 0).astype(int)) + (
-                1 - (Ah.T @ V)[edges_with_head, iexp]
-            ).multiply((interaction[edges_with_head] < 0).astype(int))
-            # an edge is active if there is flow AND there head node is also active
-            # logical AND is translated to ILP as:
-            # y >= x1 + x2 - 1  ; y <= x1 ; y <= x2
-            P += Eact[edges_with_head, iexp] >= P.expr.with_flow[edges_with_head] + V_head - 1
-            P += Eact[edges_with_head, iexp] <= V_head
-            # The with-flow upper bound is already enforced by Rule 1.
-
-    # Rule 3: propagate the active edges to the vertices
-
-    # This is for general nodes that are not AND gates
-    #
-    for exp, iexp in zip(exp_list, range(len(exp_list))):
-        is_regular_node = np.logical_and(~V_is_and, ~V_is_inhibited[:, iexp])
-        is_regular_node = np.flatnonzero(is_regular_node)
-
-        P += (
-            V[is_regular_node, iexp] >= ((At @ Eact) / M)[is_regular_node, iexp]
-        )  # when there is at least one active edge, the vertex becomes 1 (larger than  someValue/M)
-        P += (
-            V[is_regular_node, iexp] <= (At @ Eact)[is_regular_node, iexp]
-        )  # but it has an upper constraint, so it takes 0 when all input are 0
-        if V_is_inhibited[:, iexp].any():
-            inh_idx = np.flatnonzero(V_is_inhibited[:, iexp])
-            P += V[inh_idx, iexp] == np.zeros(inh_idx.size)
-
-    # AND relation expressed as follows:
-    # - we only define these constraints for the AND gates
-    # - we count the sum of flows (selected edges) and sum of activated edges
-    # - if flow equals incoming-edge activation, all edges are activated and so
-    #   is the vertex;
-    # - a second constraint prevents activation when no flow is present.
-    if V_is_and.any():
-        # and_idx = np.flatnonzero(V_is_and)
-        sum_of_flow = At[and_idx, :] @ P.expr.with_flow
-        sum_of_edge_activation = At[and_idx, :] @ Eact
-
-        #  (sum_of_flow - sum_of_edge_activation)/M is always less than 1 and it is 0 if  all edges are activated.
-        for exp, iexp in zip(exp_list, range(len(exp_list))):
-            P += V[and_idx, iexp] <= 1 - (sum_of_flow - sum_of_edge_activation[:, iexp]) / M
-            P += V[and_idx, iexp] <= sum_of_flow
-
-        P.register("sum_of_flow", sum_of_flow)
-        P.register("sum_of_edge_activation", sum_of_edge_activation)
-
-    for exp, iexp in zip(exp_list, range(len(exp_list))):
-        # activation:
-        p_nodes = list(exp_list[exp]["input"].keys())
-        p_values = list(exp_list[exp]["input"].values())
-        p_nodes_positions = np.array([G.V.index(key) for key in p_nodes])
-
-        P += V[p_nodes_positions, iexp] == p_values
-
-        # measurements:
-        m_nodes = list(exp_list[exp]["output"].keys())
-        m_values = np.array(list(exp_list[exp]["output"].values()))
-        m_nodes_positions = np.array([G.V.index(key) for key in m_nodes])
-
-        # linearization of the ABS function: https://lpsolve.sourceforge.net/5.1/absolute.htm
-        P += V[m_nodes_positions, iexp] - m_values <= Z[m_nodes_positions, iexp]
-        P += -(V[m_nodes_positions, iexp] - m_values) <= Z[m_nodes_positions, iexp]
-
-        P.add_objectives(sum(Z[m_nodes_positions, iexp]))
-
-    P.add_objectives(alpha_flow * sum(P.expr.with_flow))
-
-    P.solve(solver=solver, verbosity=verbose)
-
-    return P
-
-
-def report_solution_tables(G, exp_list, P):
-    import pandas as pd
-
-    for iexp in range(len(exp_list)):
-        print("--------- iexp: ", iexp, " ---------")
-        print(pd.DataFrame({"V": G.V, "value": P.expr.vertex_value.value[:, iexp]}))
-        print(
-            pd.DataFrame(
-                {
-                    "E": G.E,
-                    "flow": P.expr.with_flow.value,
-                    "Eact": P.expr.edge_activates.value[:, iexp],
-                }
+    def add_reaction(positive, negative, product, source_edges):
+        positive = set(positive)
+        negative = set(negative)
+        contradictory = positive & negative
+        if contradictory:
+            literal = min(contradictory, key=vertex_order.__getitem__)
+            raise ValueError(f"Reaction producing {product!r} contains both {literal!r} and !{literal!r}.")
+        key = (frozenset(positive), frozenset(negative), product)
+        if key in reaction_keys:
+            return
+        reaction_keys.add(key)
+        reactions.append(
+            BooleanReaction(
+                positive_literals=ordered(positive),
+                negative_literals=ordered(negative),
+                product=product,
+                source_edges=tuple(source_edges),
             )
         )
 
-
-def plot_solution_network_active_edges(G, P, iexp):
-    G.plot(custom_edge_attr=cno_style(P, flow_name="edge_activates", scale=None, iexp=iexp))
-
-
-def plot_fitness(G, exp_list, P, measured_only=False, **kwargs):
-    """Plot the fitness of the model simulation vs measurements.
-
-    PARAMETERS:
-    - G: corneto.Graph object
-    - exp_list: dictionary of experiments
-    - P: solution of the ILP model
-    - measured_only: if True, plot only the measured nodes, otherwise plot all nodes
-    - **kwargs arguments are passed to subplots and figures of matplotlib
-
-    TODO: there are some assumptions, like the first experiment is the reference experiment and it is called 'exp0'
-    """
-    import matplotlib.pyplot as plt
-
-    N_exps = len(exp_list)
-
-    # Ensure that all experiments have the input and output variables
-    for exp in exp_list.values():
-        if "input" not in exp:
-            raise ValueError("Input not found in experiment")
-        if "output" not in exp:
-            raise ValueError("Output not found in experiment")
-
-    # Collect the input and output variables
-    input_matrix, input_vars = collect_field_into_matrix(exp_list, "input")
-    _output_matrix, _output_vars = collect_field_into_matrix(exp_list, "output")
-
-    # Check if inhibition is present in any of the experiments
-    inhibition_present = any("inhibition" in exp for exp in exp_list.values())
-    if inhibition_present:
-        inhibition_matrix, inhibition_vars = collect_field_into_matrix(exp_list, "inhibition")
-        perturbation_matrix = np.hstack((input_matrix, inhibition_matrix))
-        perturbation_vars = input_vars + inhibition_vars
-    else:
-        perturbation_matrix = input_matrix
-        perturbation_vars = input_vars
-
-    # Create the figure
-    # Set colors: input colors are blue, inhibition colors are red
-    perturbation_colors = ["blue"] * len(input_vars)
-    if inhibition_present:
-        perturbation_colors += ["red"] * len(inhibition_vars)
-
-    N_nodes = len(G.V)
-    output_names = list({key for exp in exp_list.values() for key in exp["output"].keys()})
-
-    # depending on the flag measured_only, we can plot only the measured nodes or all nodes
-    if measured_only:
-        fig, axs = plt.subplots(N_exps - 1, len(output_names) + 1, squeeze=False, **kwargs)
-    else:
-        fig, axs = plt.subplots(N_exps - 1, N_nodes + 1, squeeze=False, **kwargs)
-
-    fig.tight_layout(pad=0.0)
-
-    # Adjust the space between subplots
-    plt.subplots_adjust(wspace=0.1, hspace=0.1)
-
-    for exp, iexp in zip(exp_list, range(N_exps)):
-        if iexp == 0:
+    for edge_index, (source, target) in enumerate(graph.E):
+        source_vertex = next(iter(source))
+        target_vertex = next(iter(target))
+        if source_vertex in and_vertices or target_vertex in and_vertices:
             continue
-
-        if measured_only:
-            for imarker in range(len(output_names)):
-                # output_names[imarker] is the name of the output node, find the position in the graph
-                imarker_inG = G.V.index(output_names[imarker])
-
-                axs[iexp - 1, imarker].plot(
-                    [0, 10],
-                    [
-                        P.expr.vertex_value.value[imarker_inG, 0],
-                        min(P.expr.vertex_value.value[imarker_inG, iexp], 1),
-                    ],
-                    "bo-",
-                    label=G.V[imarker_inG],
-                )
-
-                if G.V[imarker_inG] in exp_list[exp]["output"].keys():
-                    axs[iexp - 1, imarker].plot(
-                        [0, 10],
-                        [
-                            exp_list["exp0"]["output"][G.V[imarker_inG]],
-                            exp_list[exp]["output"][G.V[imarker_inG]],
-                        ],
-                        "ro-",
-                    )
-                axs[iexp - 1, imarker].set_ylim([-0.05, 1.1])
-                if iexp == 1:
-                    axs[iexp - 1, imarker].set_title(output_names[imarker])
-                if iexp != N_exps - 1:
-                    axs[iexp - 1, imarker].set_xticks([])
-                if imarker == 0:
-                    axs[iexp - 1, imarker].set_ylabel(f"Exp. {iexp}")
-                else:
-                    axs[iexp - 1, imarker].set_yticks([])
-        else:
-            for imarker in range(N_nodes):
-                axs[iexp - 1, imarker].plot(
-                    [0, 10],
-                    [
-                        P.expr.vertex_value.value[imarker, 0],
-                        min(P.expr.vertex_value.value[imarker, iexp], 1),
-                    ],
-                    "bo-",
-                    label=G.V[imarker],
-                    # color="blue",
-                    # linestyle="o-",
-                )
-
-                if G.V[imarker] in exp_list[exp]["output"].keys():
-                    axs[iexp - 1, imarker].plot(
-                        [0, 10],
-                        [
-                            exp_list["exp0"]["output"][G.V[imarker]],
-                            exp_list[exp]["output"][G.V[imarker]],
-                        ],
-                        "ro-",
-                    )
-                axs[iexp - 1, imarker].set_ylim([-0.05, 1.1])
-                if iexp == 1:
-                    axs[iexp - 1, imarker].set_title(G.V[imarker])
-                if iexp != N_exps - 1:
-                    axs[iexp - 1, imarker].set_xticks([])
-                if imarker == 0:
-                    axs[iexp - 1, imarker].set_ylabel(f"Exp. {iexp}")
-                else:
-                    axs[iexp - 1, imarker].set_yticks([])
-        # Plot perturbation
-        if measured_only:
-            plot_location = len(output_names)
-        else:
-            plot_location = N_nodes
-
-        axs[iexp - 1, plot_location].bar(
-            range(len(perturbation_vars)),
-            perturbation_matrix[iexp],
-            color=perturbation_colors,
+        sign = _interaction(graph, edge_index)
+        add_reaction(
+            [source_vertex] if sign > 0 else [],
+            [source_vertex] if sign < 0 else [],
+            target_vertex,
+            [edge_index],
         )
-        if iexp == N_exps - 1:
-            axs[iexp - 1, plot_location].set_xticks(range(len(perturbation_vars)))
-            axs[iexp - 1, plot_location].set_xticklabels(perturbation_vars, rotation=45)
-        else:
-            # No xtick label
-            axs[iexp - 1, plot_location].set_xticks([])
 
-        axs[iexp - 1, plot_location].set_ylim([-0.01, 1.1])
-        axs[iexp - 1, plot_location].set_yticks([])
-        if iexp == 1:
-            axs[iexp - 1, plot_location].set_title("Pert.")
-
-    plt.show()
-
-
-def collect_field_into_matrix(experiments, field_name="input"):
-    """Collects the field_name values into matrix.
-
-    Collects the field_name values (input, inhibition etc) from a dictionary
-    of experiments and returns them as a numpy array.
-
-    PARAMETERS:
-    - experiments: dictionary of experiments containing input values
-    - field_name: name of the field to collect (default: 'input')
-
-    Returns:
-    - input_matrix: numpy array of input values
-    - input_vars: list of unique input variable names
-
-    """
-    # Collect all unique input names
-    input_vars = set()
-    for exp in experiments.values():
-        # ensure field_name exists
-        if field_name not in exp:
-            raise ValueError("Field name (" + field_name + ")  not found in experiment")
-        input_vars.update(exp[field_name].keys())
-
-    input_vars = sorted(input_vars)  # Sorting to keep a consistent order
-    data = []
-
-    # Collect input values for each experiment
-    for exp in experiments.values():
-        row = [exp[field_name].get(var, 0) for var in input_vars]
-        data.append(row)
-
-    # Convert the data to a numpy array
-    input_matrix = np.array(data)
-
-    return input_matrix, input_vars
-
-
-def plot_data(exp_list):
-    """Plot the data.
-
-    PARAMETERS:
-    - exp_list: dictionary of experiments
-
-    """
-    import matplotlib.pyplot as plt
-
-    N_exps = len(exp_list)
-
-    # Ensure that all experiments have the input and output variables
-    for exp in exp_list.values():
-        if "input" not in exp:
-            raise ValueError("Input not found in experiment")
-        if "output" not in exp:
-            raise ValueError("Output not found in experiment")
-
-    # Collect the input and output variables
-    input_matrix, input_vars = collect_field_into_matrix(exp_list, "input")
-    output_matrix, output_vars = collect_field_into_matrix(exp_list, "output")
-
-    # Check if inhibition is present in any of the experiments
-    inhibition_present = any("inhibition" in exp for exp in exp_list.values())
-    if inhibition_present:
-        inhibition_matrix, inhibition_vars = collect_field_into_matrix(exp_list, "inhibition")
-        perturbation_matrix = np.hstack((input_matrix, inhibition_matrix))
-        perturbation_vars = input_vars + inhibition_vars
-    else:
-        perturbation_matrix = input_matrix
-        perturbation_vars = input_vars
-
-    # Create the figure
-    # Set colors: input colors are blue, inhibition colors are red
-    perturbation_colors = ["blue"] * len(input_vars)
-    if inhibition_present:
-        perturbation_colors += ["red"] * len(inhibition_vars)
-
-    fig, axs = plt.subplots(N_exps - 1, len(output_vars) + 1, squeeze=False)
-
-    fig.tight_layout(pad=0.0)
-    # Adjust the space between subplots
-    plt.subplots_adjust(wspace=0.1, hspace=0.1)
-
-    for exp, iexp in zip(exp_list, range(N_exps)):
-        if iexp == 0:
-            continue
-
-        for imarker in range(len(output_vars)):
-            # output_names[imarker] is the name of the output node, find the position in the graph
-            imarker_name = output_vars[imarker]
-
-            axs[iexp - 1, imarker].plot(
-                [0, 10],
-                [output_matrix[0, imarker], output_matrix[iexp, imarker]],
-                "ro-",
-            )
-            axs[iexp - 1, imarker].set_ylim([-0.01, 1.1])
-
-            if iexp == 1:
-                axs[iexp - 1, imarker].set_title(imarker_name)
-            if iexp != N_exps - 1:
-                axs[iexp - 1, imarker].set_xticks([])
-            if imarker == 0:
-                axs[iexp - 1, imarker].set_ylabel(f"Exp. {iexp}")
+    for gate in (vertex for vertex in graph.V if vertex in and_vertices):
+        incoming = incoming_by_and[gate]
+        outgoing = outgoing_by_and[gate]
+        if len(incoming) < 2:
+            raise ValueError(f"Dummy AND gate {gate!r} must have at least two incoming edges.")
+        if not outgoing:
+            raise ValueError(f"Dummy AND gate {gate!r} must have at least one outgoing edge.")
+        positive = []
+        negative = []
+        for edge_index in incoming:
+            source_vertex = next(iter(graph.get_edge(edge_index)[0]))
+            if _interaction(graph, edge_index) > 0:
+                positive.append(source_vertex)
             else:
-                axs[iexp - 1, imarker].set_yticks([])
+                negative.append(source_vertex)
+        for edge_index in outgoing:
+            if _interaction(graph, edge_index) < 0:
+                raise ValueError(
+                    f"Dummy AND gate {gate!r} must activate its product; edge {edge_index} has interaction -1."
+                )
+            product = next(iter(graph.get_edge(edge_index)[1]))
+            add_reaction(
+                positive,
+                negative,
+                product,
+                [*incoming, edge_index],
+            )
 
-        # Plot perturbation
-        axs[iexp - 1, len(output_vars)].bar(
-            range(len(perturbation_vars)),
-            perturbation_matrix[iexp],
-            color=perturbation_colors,
+    if not reactions:
+        raise ValueError("CellNOptILP preprocessing produced no Boolean reactions.")
+
+    dependency_graph = Graph()
+    species = [vertex for vertex in graph.V if vertex not in and_vertices]
+    for vertex in species:
+        dependency_graph.add_vertex(vertex)
+
+    dependency_reactions = []
+    for reaction_index, reaction in enumerate(reactions):
+        for literal in reaction.positive_literals:
+            dependency_graph.add_edge(
+                literal,
+                reaction.product,
+                interaction=1,
+                reaction=reaction_index,
+            )
+            dependency_reactions.append(reaction_index)
+        for literal in reaction.negative_literals:
+            dependency_graph.add_edge(
+                literal,
+                reaction.product,
+                interaction=-1,
+                reaction=reaction_index,
+            )
+            dependency_reactions.append(reaction_index)
+
+    vertex_index = {vertex: index for index, vertex in enumerate(dependency_graph.V)}
+    num_reactions = len(reactions)
+    positive_rows = []
+    positive_columns = []
+    negative_rows = []
+    negative_columns = []
+    product_rows = []
+    product_columns = []
+    for reaction_index, reaction in enumerate(reactions):
+        positive_rows.extend([reaction_index] * len(reaction.positive_literals))
+        positive_columns.extend(vertex_index[vertex] for vertex in reaction.positive_literals)
+        negative_rows.extend([reaction_index] * len(reaction.negative_literals))
+        negative_columns.extend(vertex_index[vertex] for vertex in reaction.negative_literals)
+        product_rows.append(vertex_index[reaction.product])
+        product_columns.append(reaction_index)
+
+    literal_shape = (num_reactions, dependency_graph.num_vertices)
+    product_shape = (dependency_graph.num_vertices, num_reactions)
+    positive_literals = csr_matrix(
+        (
+            np.ones(len(positive_rows)),
+            (positive_rows, positive_columns),
+        ),
+        shape=literal_shape,
+    )
+    negative_literals = csr_matrix(
+        (
+            np.ones(len(negative_rows)),
+            (negative_rows, negative_columns),
+        ),
+        shape=literal_shape,
+    )
+    products = csr_matrix(
+        (
+            np.ones(num_reactions),
+            (product_rows, product_columns),
+        ),
+        shape=product_shape,
+    )
+    return _ReactionNetwork(
+        graph=dependency_graph,
+        reactions=tuple(reactions),
+        dependency_reactions=np.asarray(dependency_reactions, dtype=int),
+        positive_literals=positive_literals,
+        negative_literals=negative_literals,
+        products=products,
+    )
+
+
+def _bounded_number(
+    value: Any,
+    *,
+    argument: str,
+    identifier: Any,
+    condition: str,
+    binary: bool,
+) -> float:
+    if isinstance(value, (bool, np.bool_)):
+        number = float(value)
+    elif isinstance(value, Real):
+        number = float(value)
+    else:
+        raise TypeError(f"{argument}[{identifier!r}] for condition {condition!r} must be numeric, got {value!r}.")
+    if not np.isfinite(number):
+        raise ValueError(f"{argument}[{identifier!r}] for condition {condition!r} must be finite.")
+    allowed = number in (0, 1) if binary else 0 <= number <= 1
+    if not allowed:
+        domain = "0 or 1" if binary else "between 0 and 1"
+        raise ValueError(f"{argument}[{identifier!r}] for condition {condition!r} must be {domain}; got {value!r}.")
+    return number
+
+
+def _cellnopt_data(
+    graph: BaseGraph,
+    *,
+    inputs,
+    measurements,
+    inhibitors=None,
+) -> Data:
+    condition_names = validate_condition_keys(
+        inputs=inputs,
+        measurements=measurements,
+        inhibitors=inhibitors,
+    )
+    if not condition_names:
+        raise ValueError("CellNOptILP requires at least one named condition.")
+    if inhibitors is None:
+        inhibitors = {condition: {} for condition in condition_names}
+
+    graph_vertices = set(graph.V)
+    features_by_condition = {}
+    for condition in condition_names:
+        condition_inputs = require_mapping(
+            inputs[condition],
+            argument="inputs",
+            condition=condition,
         )
-        if iexp == N_exps - 1:
-            axs[iexp - 1, len(output_vars)].set_xticks(range(len(perturbation_vars)))
-            axs[iexp - 1, len(output_vars)].set_xticklabels(perturbation_vars, rotation=45)
-        else:
-            # No xtick label
-            axs[iexp - 1, len(output_vars)].set_xticks([])
+        condition_measurements = require_mapping(
+            measurements[condition],
+            argument="measurements",
+            condition=condition,
+        )
+        condition_inhibitors = require_mapping(
+            inhibitors[condition],
+            argument="inhibitors",
+            condition=condition,
+        )
+        if not condition_inputs and not condition_inhibitors:
+            raise ValueError(f"Condition {condition!r} must contain an input or active inhibitor.")
+        if not condition_measurements:
+            raise ValueError(f"measurements for condition {condition!r} must not be empty.")
 
-        axs[iexp - 1, len(output_vars)].set_ylim([-0.01, 1.1])
-        axs[iexp - 1, len(output_vars)].set_yticks([])
-        if iexp == 1:
-            axs[iexp - 1, len(output_vars)].set_title("Pert.")
-    plt.show()
+        input_values = {}
+        measurement_values = {}
+        active_inhibitors = set()
+        for vertex, value in condition_inputs.items():
+            if vertex not in graph_vertices:
+                raise ValueError(f"Unknown vertex {vertex!r} in inputs for condition {condition!r}.")
+            input_values[vertex] = _bounded_number(
+                value,
+                argument="inputs",
+                identifier=vertex,
+                condition=condition,
+                binary=True,
+            )
+        for vertex, value in condition_measurements.items():
+            if vertex not in graph_vertices:
+                raise ValueError(f"Unknown vertex {vertex!r} in measurements for condition {condition!r}.")
+            measurement_values[vertex] = _bounded_number(
+                value,
+                argument="measurements",
+                identifier=vertex,
+                condition=condition,
+                binary=False,
+            )
+        for vertex, value in condition_inhibitors.items():
+            if vertex not in graph_vertices:
+                raise ValueError(f"Unknown vertex {vertex!r} in inhibitors for condition {condition!r}.")
+            inhibitor = _bounded_number(
+                value,
+                argument="inhibitors",
+                identifier=vertex,
+                condition=condition,
+                binary=True,
+            )
+            if inhibitor:
+                active_inhibitors.add(vertex)
+
+        overlap = active_inhibitors & set(input_values)
+        if overlap:
+            vertex = next(vertex for vertex in graph.V if vertex in overlap)
+            raise ValueError(
+                f"Vertex {vertex!r} cannot be both an input and an active inhibitor in condition {condition!r}."
+            )
+        for vertex in active_inhibitors:
+            input_values[vertex] = 0.0
+
+        features = []
+        included = set(input_values) | set(measurement_values)
+        for vertex in (vertex for vertex in graph.V if vertex in included):
+            is_input = vertex in input_values
+            is_output = vertex in measurement_values
+            role = _ROLE_INPUT_OUTPUT if is_input and is_output else (_ROLE_INPUT if is_input else _ROLE_OUTPUT)
+            feature = {
+                "id": vertex,
+                "mapping": "vertex",
+                "role": role,
+                "value": (measurement_values[vertex] if is_output else input_values[vertex]),
+            }
+            if is_input:
+                feature["input_value"] = input_values[vertex]
+            if vertex in active_inhibitors:
+                feature["intervention"] = "inhibitor"
+            features.append(feature)
+        features_by_condition[condition] = features
+    return data_from_features(features_by_condition)
+
+
+class CellNOptILP(FlowMethod):
+    """Infer a shared acyclic Boolean model from multiple conditions.
+
+    The method selects reactions globally and evaluates their Boolean truth in
+    every condition. A single nonnegative flow has exactly the selected
+    reaction dependencies as its internal support. Conservation, positive
+    support, and acyclicity therefore require every selected dependency to lie
+    on a path from a controlled input or inhibitor to a measured output.
+
+    Dummy vertices named ``AND<number>`` are compiled into one reaction per
+    product. All operands of such a reaction share one selection variable and
+    are evaluated conjunctively.
+
+    Args:
+        lambda_reg: Penalty for every selected reaction.
+        max_flow: Upper bound for structural flow. By default, the number of
+            compiled dependency edges is used.
+        epsilon: Minimum flow on every selected dependency edge.
+        backend: Optimization backend.
+    """
+
+    def __init__(
+        self,
+        lambda_reg: float = 1e-3,
+        max_flow: Optional[float] = None,
+        epsilon: float = 1.0,
+        backend: Optional[Backend] = None,
+    ):
+        if isinstance(lambda_reg, bool) or not isinstance(lambda_reg, Real):
+            raise TypeError("lambda_reg must be a finite nonnegative number.")
+        if not np.isfinite(lambda_reg) or lambda_reg < 0:
+            raise ValueError("lambda_reg must be a finite nonnegative number.")
+        if isinstance(epsilon, bool) or not isinstance(epsilon, Real):
+            raise TypeError("epsilon must be a finite positive number.")
+        if not np.isfinite(epsilon) or epsilon <= 0:
+            raise ValueError("epsilon must be a finite positive number.")
+        if max_flow is not None:
+            if isinstance(max_flow, bool) or not isinstance(max_flow, Real):
+                raise TypeError("max_flow must be a finite positive number.")
+            if not np.isfinite(max_flow) or max_flow <= 0:
+                raise ValueError("max_flow must be a finite positive number.")
+            if max_flow < epsilon:
+                raise ValueError("max_flow must be greater than or equal to epsilon.")
+
+        super().__init__(
+            lambda_reg=lambda_reg,
+            reg_varname="reaction_selected",
+            flow_lower_bound=0,
+            flow_upper_bound=1,
+            backend=backend,
+        )
+        self.max_flow = None if max_flow is None else float(max_flow)
+        self.epsilon = float(epsilon)
+        self.reactions: tuple[BooleanReaction, ...] = ()
+        self._condition_names: tuple[str, ...] = ()
+        self._biological_num_edges = 0
+        self._flow_max = 0.0
+        self._dependency_to_reaction = csr_matrix((0, 0))
+        self._positive_literals = csr_matrix((0, 0))
+        self._negative_literals = csr_matrix((0, 0))
+        self._products = csr_matrix((0, 0))
+        self._forced_mask = np.empty((0, 0), dtype=bool)
+        self._forced_values = np.empty((0, 0), dtype=float)
+        self._measurement_mask = np.empty((0, 0), dtype=bool)
+        self._measurements = np.empty((0, 0), dtype=float)
+
+    def build(
+        self,
+        pkn: BaseGraph,
+        *,
+        inputs,
+        measurements,
+        inhibitors=None,
+    ) -> ProblemDef:
+        """Build a single-condition CellNOpt problem."""
+        return self.build_many(
+            pkn,
+            inputs={DEFAULT_CONDITION: inputs},
+            measurements={DEFAULT_CONDITION: measurements},
+            inhibitors=(None if inhibitors is None else {DEFAULT_CONDITION: inhibitors}),
+        )
+
+    def build_many(
+        self,
+        pkn: BaseGraph,
+        *,
+        inputs,
+        measurements,
+        inhibitors=None,
+    ) -> ProblemDef:
+        """Build a problem for multiple named experimental conditions."""
+        data = _cellnopt_data(
+            pkn,
+            inputs=inputs,
+            measurements=measurements,
+            inhibitors=inhibitors,
+        )
+        return self.build_from_data(pkn, data)
+
+    def preprocess(self, graph: BaseGraph, data: Data):
+        """Compile reactions, validate condition data, and add flow boundaries."""
+        network = _compile_reactions(graph)
+        if not data.samples:
+            raise ValueError("CellNOptILP requires at least one condition.")
+
+        condition_names = tuple(data.samples)
+        if any(not isinstance(name, str) or not name for name in condition_names):
+            raise ValueError("CellNOptILP condition names must be non-empty strings.")
+
+        vertex_index = {vertex: index for index, vertex in enumerate(network.graph.V)}
+        num_vertices = network.graph.num_vertices
+        num_conditions = len(condition_names)
+        forced_mask = np.zeros((num_vertices, num_conditions), dtype=bool)
+        forced_values = np.zeros((num_vertices, num_conditions), dtype=float)
+        measurement_mask = np.zeros((num_vertices, num_conditions), dtype=bool)
+        measurements = np.zeros((num_vertices, num_conditions), dtype=float)
+
+        for condition_index, (condition, sample) in enumerate(data.samples.items()):
+            condition_inputs = 0
+            condition_measurements = 0
+            for feature in sample.features:
+                if feature.mapping != "vertex":
+                    raise ValueError(
+                        f"CellNOptILP only accepts vertex features; got mapping "
+                        f"{feature.mapping!r} in condition {condition!r}."
+                    )
+                if feature.id not in vertex_index:
+                    raise ValueError(
+                        f"Unknown species {feature.id!r} in CellNOptILP data for "
+                        f"condition {condition!r}; dummy AND vertices cannot be measured "
+                        "or perturbed."
+                    )
+                role = feature.data.get("role")
+                if role not in {
+                    _ROLE_INPUT,
+                    _ROLE_OUTPUT,
+                    _ROLE_INPUT_OUTPUT,
+                }:
+                    raise ValueError(
+                        f"Vertex feature {feature.id!r} for condition {condition!r} "
+                        "must have role 'input', 'output', or 'input_output'."
+                    )
+                index = vertex_index[feature.id]
+                if role in {_ROLE_INPUT, _ROLE_INPUT_OUTPUT}:
+                    input_value = feature.data.get(
+                        "input_value",
+                        feature.value if role == _ROLE_INPUT else None,
+                    )
+                    forced_mask[index, condition_index] = True
+                    forced_values[index, condition_index] = _bounded_number(
+                        input_value,
+                        argument="input_value",
+                        identifier=feature.id,
+                        condition=condition,
+                        binary=True,
+                    )
+                    condition_inputs += 1
+                if role in {_ROLE_OUTPUT, _ROLE_INPUT_OUTPUT}:
+                    measurement_mask[index, condition_index] = True
+                    measurements[index, condition_index] = _bounded_number(
+                        feature.value,
+                        argument="measurement",
+                        identifier=feature.id,
+                        condition=condition,
+                        binary=False,
+                    )
+                    condition_measurements += 1
+            if condition_inputs == 0:
+                raise ValueError(f"Condition {condition!r} must contain at least one input.")
+            if condition_measurements == 0:
+                raise ValueError(f"Condition {condition!r} must contain at least one output.")
+
+        input_union = forced_mask.any(axis=1)
+        output_union = measurement_mask.any(axis=1)
+        layout = augment_with_boundaries(
+            network.graph,
+            inflow_vertices=(vertex for vertex, include in zip(network.graph.V, input_union) if include),
+            outflow_vertices=(vertex for vertex, include in zip(network.graph.V, output_union) if include),
+        )
+        flow_graph = layout.graph
+        num_dependencies = network.graph.num_edges
+        num_reactions = len(network.reactions)
+        dependency_rows = np.arange(num_dependencies)
+        dependency_to_reaction = csr_matrix(
+            (
+                np.ones(num_dependencies),
+                (dependency_rows, network.dependency_reactions),
+            ),
+            shape=(flow_graph.num_edges, num_reactions),
+        )
+
+        default_max_flow = float(max(num_dependencies, 1))
+        flow_max = default_max_flow if self.max_flow is None else self.max_flow
+        if flow_max < self.epsilon:
+            raise ValueError(f"max_flow ({flow_max:g}) must be greater than or equal to epsilon ({self.epsilon:g}).")
+
+        self.reactions = network.reactions
+        self._condition_names = condition_names
+        self._biological_num_edges = num_dependencies
+        self._flow_max = float(flow_max)
+        self._dependency_to_reaction = dependency_to_reaction
+        self._positive_literals = network.positive_literals
+        self._negative_literals = network.negative_literals
+        self._products = network.products
+        self._forced_mask = forced_mask
+        self._forced_values = forced_values
+        self._measurement_mask = measurement_mask
+        self._measurements = measurements
+        return flow_graph, data.copy()
+
+    def get_flow_bounds(self, graph: BaseGraph, data: Data):
+        """Return bounds for the single shared structural flow."""
+        return {
+            "lb": 0,
+            "ub": self._flow_max,
+            "n_flows": 1,
+            "shared_bounds": False,
+        }
+
+    def create_flow_based_problem(
+        self,
+        flow_problem: ProblemDef,
+        graph: BaseGraph,
+        data: Data,
+    ) -> ProblemDef:
+        """Add vectorized Boolean propagation and shared-flow selection."""
+        problem = flow_problem
+        num_vertices = graph.num_vertices
+        num_reactions = len(self.reactions)
+        num_conditions = len(self._condition_names)
+        condition_ones = np.ones((1, num_conditions))
+
+        reaction_selected = self.backend.Variable(
+            "reaction_selected",
+            (num_reactions,),
+            vartype=VarType.BINARY,
+        )
+        reaction_active = self.backend.Variable(
+            "reaction_active",
+            (num_reactions, num_conditions),
+            vartype=VarType.BINARY,
+        )
+        vertex_value = self.backend.Variable(
+            "vertex_value",
+            (num_vertices, num_conditions),
+            vartype=VarType.BINARY,
+        )
+
+        dependency_selected_all = self.backend.Constant(self._dependency_to_reaction) @ reaction_selected
+        dependency_selected = dependency_selected_all[: self._biological_num_edges]
+        flow = problem.expr.flow
+        biological_flow = flow[: self._biological_num_edges]
+        # The shared flow and shared reaction selection have exactly the same
+        # support on biological dependencies. Boundary flow remains free to
+        # choose which controlled species and measurements connect that support.
+        problem += biological_flow >= self.epsilon * dependency_selected
+        problem += biological_flow <= self._flow_max * dependency_selected
+
+        problem.register("_dependency_selected_all", dependency_selected_all)
+        self.backend.Acyclic(
+            graph,
+            problem,
+            indicator_positive_var_name="_dependency_selected_all",
+        )
+
+        positive_literals = self.backend.Constant(self._positive_literals)
+        negative_literals = self.backend.Constant(self._negative_literals)
+        products = self.backend.Constant(self._products)
+        negative_count = np.asarray(self._negative_literals.sum(axis=1)).reshape(-1, 1)
+        literal_count = np.asarray((self._positive_literals + self._negative_literals).sum(axis=1)).reshape(-1, 1)
+        negative_count = negative_count @ condition_ones
+        literal_count = literal_count @ condition_ones
+        # S[r, c] counts true literals of reaction r in condition c. With k
+        # literals, the three inequalities below impose
+        # Z[r, c] = Y[r] AND (S[r, c] == k[r]) without a big-M constant.
+        literal_satisfaction = positive_literals @ vertex_value + negative_count - negative_literals @ vertex_value
+        selected_by_condition = reaction_selected.reshape((num_reactions, 1)) @ condition_ones
+
+        problem += reaction_active <= selected_by_condition
+        problem += reaction_active.multiply(literal_count) <= literal_satisfaction
+        problem += reaction_active >= selected_by_condition + literal_satisfaction - literal_count
+
+        producing_reactions = products @ reaction_active
+        producer_count = np.asarray(self._products.sum(axis=1)).reshape(-1, 1)
+        producer_count = producer_count @ condition_ones
+        free_mask = (~self._forced_mask).astype(float)
+        # A non-intervened species is the OR of its active producing reactions.
+        # Interventions mask only this product relation; upstream reaction truth
+        # remains intact when a product is experimentally forced to zero.
+        problem += vertex_value.multiply(free_mask) <= producing_reactions.multiply(free_mask)
+        problem += producing_reactions.multiply(free_mask) <= vertex_value.multiply(producer_count * free_mask)
+        problem += vertex_value.multiply(self._forced_mask.astype(float)) == self._forced_values
+
+        error_coefficients = self._measurement_mask.astype(float) * (1 - 2 * self._measurements)
+        error_constant = float(np.sum(self._measurement_mask * self._measurements))
+        # For binary x and measurement m in [0, 1],
+        # |x - m| = m + (1 - 2m)x exactly.
+        measurement_error = vertex_value.multiply(error_coefficients).sum() + error_constant
+        problem.add_objective(
+            measurement_error,
+            name="measurement_error",
+        )
+
+        problem.register("dependency_selected", dependency_selected)
+        problem.register("literal_satisfaction", literal_satisfaction)
+        problem.register("dag_layer", problem.expr._dag_layer)
+        return problem
+
+    @staticmethod
+    def name() -> str:
+        """Return the method name."""
+        return "CellNOptILP"
+
+    @staticmethod
+    def description() -> str:
+        """Return a short method description."""
+        return "Shared acyclic Boolean-reaction inference with structural flow connectivity"

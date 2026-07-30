@@ -38,6 +38,7 @@ pip install corneto
 
 CORNETO provides several optional dependency groups:
 
+- **`plot`**: Graphviz, NetworkX, and Matplotlib visualization support
 - **`research`**: Full research stack with Gurobi, PICOS, visualization, and network tools
 - **`os`**: Open-source solvers (SCIP, HiGHS) with visualization and network tools
 - **`ml`**: Machine learning dependencies (JAX, Keras, scikit-learn)
@@ -45,6 +46,7 @@ CORNETO provides several optional dependency groups:
 
 Install any combination with:
 ```bash
+pip install corneto[plot]         # Visualization without the full research stack
 pip install corneto[research,ml]  # Multiple extras
 ```
 

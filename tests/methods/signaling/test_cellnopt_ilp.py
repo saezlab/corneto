@@ -1,116 +1,266 @@
 import numpy as np
-import pytest
 
-import corneto as cn
-from corneto.backend import Backend, CvxpyBackend, PicosBackend
-from corneto.methods.signaling.cellnopt_ilp import cellnoptILP
-
-
-# PICOS does not work
-@pytest.fixture(params=[CvxpyBackend, PicosBackend])
-def backend(request):
-    opt: Backend = request.param()
-    if isinstance(opt, CvxpyBackend):
-        opt._default_solver = "SCIPY"
-    elif isinstance(opt, PicosBackend):
-        opt._default_solver = "glpk"
-    return opt
+from corneto.backend import PicosBackend
+from corneto.graph import Graph
+from corneto.methods.signaling.cellnopt_ilp import CellNOptILP
 
 
-def get_test_graph_1():
-    G1 = cn.Graph.from_tuples(
+def _vertex_values(method, problem, vertex):
+    index = method.processed_graph.V.index(vertex)
+    values = np.asarray(problem.expr.vertex_value.value, dtype=float)
+    return values.reshape(problem.expr.vertex_value.shape)[index].reshape(-1)
+
+
+def _flat_values(expression):
+    return np.asarray(expression.value, dtype=float).reshape(expression.shape).reshape(-1)
+
+
+def _assert_infeasible(problem, backend):
+    if isinstance(backend, PicosBackend):
+        result = problem.solve(primals=None)
+    else:
+        result = problem.solve()
+    assert result.status == "infeasible"
+
+
+def _solve(method, graph, *, inputs, measurements, inhibitors=None):
+    problem = method.build_many(
+        graph,
+        inputs=inputs,
+        measurements=measurements,
+        inhibitors=inhibitors,
+    )
+    result = problem.solve()
+    assert result.status == "optimal"
+    return problem
+
+
+def test_and_gate_is_one_reaction_with_conjunctive_truth(backend):
+    graph = Graph.from_tuples(
         [
-            ("EGF", 1, "AND1"),
-            ("TNFa", 1, "AND1"),
-            ("AND1", 1, "Ras"),
-            ("EGF", 1, "Ras"),
-            ("TNFa", 1, "Ras"),
+            ("A", 1, "AND1"),
+            ("B", 1, "AND1"),
+            ("AND1", 1, "Y"),
         ]
     )
-    G1.add_edge((), "EGF")
-    G1.add_edge((), "TNFa")
-    G1.add_edge("Ras", ())
-
-    return G1
-
-
-@pytest.mark.skip(reason="Error with PICOS solvers")
-def test_cellnoptILP_AND(backend):
-    G1 = get_test_graph_1()
-
-    # RAS is only active iff both EGF and TNFa are active -> we need to identify the AND gate
-    exp_list_G1_and = {
-        "exp0": {"input": {"EGF": 0, "TNFa": 0}, "output": {"Ras": 0}},
-        "exp1": {"input": {"EGF": 1, "TNFa": 0}, "output": {"Ras": 0}},
-        "exp2": {"input": {"EGF": 0, "TNFa": 1}, "output": {"Ras": 0}},
-        "exp3": {"input": {"EGF": 1, "TNFa": 1}, "output": {"Ras": 1}},
+    inputs = {
+        "neither": {"A": 0, "B": 0},
+        "a_only": {"A": 1, "B": 0},
+        "b_only": {"A": 0, "B": 1},
+        "both": {"A": 1, "B": 1},
+    }
+    measurements = {
+        "neither": {"Y": 0},
+        "a_only": {"Y": 0},
+        "b_only": {"Y": 0},
+        "both": {"Y": 1},
     }
 
-    P = cellnoptILP(G1, exp_list_G1_and, verbose=True, alpha_flow=0.001, backend=backend)
-    expected_edge_values = np.array(
-        [
-            [0.0, 1.0, 0.0, 1.0],
-            [0.0, 0.0, 1.0, 1.0],
-            [-0.0, -0.0, -0.0, 1.0],
-            [0.0, -0.0, 0.0, 0.0],
-            [0.0, 0.0, 0.0, -0.0],
-            [0.0, 1.0, 0.0, 1.0],
-            [0.0, 0.0, 1.0, 1.0],
-            [0.0, 0.0, 0.0, 1.0],
-        ]
+    method = CellNOptILP(lambda_reg=1e-3, backend=backend)
+    problem = _solve(
+        method,
+        graph,
+        inputs=inputs,
+        measurements=measurements,
     )
 
-    # vertices do not have a specific order (set of vertices is a list, but the order is not fixed)
-    expected_vertex_values = np.array(
+    assert len(method.reactions) == 1
+    assert method.reactions[0].positive_literals == ("A", "B")
+    assert np.allclose(_flat_values(problem.expr.reaction_selected), [1])
+    assert np.allclose(
+        np.asarray(problem.expr.reaction_active.value).reshape(1, -1),
+        [[0, 0, 0, 1]],
+    )
+    assert np.allclose(_vertex_values(method, problem, "Y"), [0, 0, 0, 1])
+    assert np.all(np.asarray(problem.expr.flow.value)[:2] >= method.epsilon)
+
+
+def test_or_is_induced_by_multiple_active_producing_reactions(backend):
+    graph = Graph.from_tuples(
         [
-            [-0.0, -0.0, -0.0, 1.0],
-            [-0.0, 1.0, -0.0, 1.0],
-            [-0.0, -0.0, 1.0, 1.0],
-            [0.0, -0.0, -0.0, 1.0],
+            ("A", 1, "Y"),
+            ("B", 1, "Y"),
         ]
     )
-    sum([o.value for o in P.objectives])
-    assert np.isclose(sum([o.value for o in P.objectives]), 0.006)
-    assert np.isclose(P.expr.edge_activates.value, expected_edge_values).all()
-    assert np.isclose(np.sum(P.expr.vertex_value.value, axis=0), expected_vertex_values.sum(axis=0)).all()
-
-
-# @pytest.mark.skip(reason="not compatible with picos")
-def test_cellnoptILP_OR(backend):
-    G1 = get_test_graph_1()
-
-    # RAS is only active iff both EGF and TNFa are active -> we need to identify the AND gate
-    exp_list_G1_or = {
-        "exp0": {"input": {"EGF": 0, "TNFa": 0}, "output": {"Ras": 0}},
-        "exp1": {"input": {"EGF": 1, "TNFa": 0}, "output": {"Ras": 1}},
-        "exp2": {"input": {"EGF": 0, "TNFa": 1}, "output": {"Ras": 1}},
-        "exp3": {"input": {"EGF": 1, "TNFa": 1}, "output": {"Ras": 1}},
+    inputs = {
+        "neither": {"A": 0, "B": 0},
+        "a_only": {"A": 1, "B": 0},
+        "b_only": {"A": 0, "B": 1},
+        "both": {"A": 1, "B": 1},
+    }
+    measurements = {
+        "neither": {"Y": 0},
+        "a_only": {"Y": 1},
+        "b_only": {"Y": 1},
+        "both": {"Y": 1},
     }
 
-    P = cellnoptILP(G1, exp_list_G1_or, verbose=True, alpha_flow=0.001, backend=backend)
-    expected_edge_values = np.array(
-        [
-            [0.0, -0.0, 0.0, -0.0],
-            [0.0, 0.0, -0.0, -0.0],
-            [-0.0, -0.0, -0.0, -0.0],
-            [0.0, 1.0, 0.0, 1.0],
-            [0.0, 0.0, 1.0, 1.0],
-            [0.0, 1.0, 0.0, 1.0],
-            [0.0, 0.0, 1.0, 1.0],
-            [0.0, 1.0, 1.0, 1.0],
-        ]
+    method = CellNOptILP(lambda_reg=1e-3, backend=backend)
+    problem = _solve(
+        method,
+        graph,
+        inputs=inputs,
+        measurements=measurements,
     )
 
-    # vertices do not have a specific order (set of vertices is a list, but the order is not fixed)
-    expected_vertex_values = np.array(
+    assert np.allclose(_flat_values(problem.expr.reaction_selected), [1, 1])
+    assert np.allclose(
+        np.asarray(problem.expr.reaction_active.value),
+        [[0, 1, 0, 1], [0, 0, 1, 1]],
+    )
+    assert np.allclose(_vertex_values(method, problem, "Y"), [0, 1, 1, 1])
+
+
+def test_positive_and_negative_alternatives_fit_complementary_conditions(backend):
+    graph = Graph.from_tuples(
         [
-            [-0.0, -0.0, -0.0, -0.0],
-            [-0.0, 1.0, -0.0, 1.0],
-            [-0.0, -0.0, 1.0, 1.0],
-            [0.0, 1.0, 1.0, 1.0],
+            ("A", 1, "Y"),
+            ("A", -1, "Y"),
         ]
     )
+    method = CellNOptILP(lambda_reg=1e-3, backend=backend)
+    problem = _solve(
+        method,
+        graph,
+        inputs={"off": {"A": 0}, "on": {"A": 1}},
+        measurements={"off": {"Y": 1}, "on": {"Y": 1}},
+    )
 
-    assert np.isclose(sum([o.value for o in P.objectives]), 0.005)
-    assert np.isclose(P.expr.edge_activates.value, expected_edge_values).all()
-    assert np.isclose(np.sum(P.expr.vertex_value.value, axis=0), expected_vertex_values.sum(axis=0)).all()
+    assert np.allclose(_flat_values(problem.expr.reaction_selected), [1, 1])
+    assert np.allclose(
+        np.asarray(problem.expr.reaction_active.value),
+        [[0, 1], [1, 0]],
+    )
+    assert np.allclose(_vertex_values(method, problem, "Y"), [1, 1])
+
+
+def test_same_inputs_with_conflicting_measurements_cannot_both_be_fit(backend):
+    graph = Graph.from_tuples([("A", 1, "Y")])
+    method = CellNOptILP(lambda_reg=0, backend=backend)
+    problem = _solve(
+        method,
+        graph,
+        inputs={"first": {"A": 1}, "second": {"A": 1}},
+        measurements={"first": {"Y": 0}, "second": {"Y": 1}},
+    )
+
+    assert np.isclose(problem.objectives[0].value, 1)
+    predictions = _vertex_values(method, problem, "Y")
+    assert np.allclose(predictions, [0, 0]) or np.allclose(predictions, [1, 1])
+
+
+def test_irrelevant_active_input_does_not_force_a_disconnected_branch(backend):
+    graph = Graph.from_tuples(
+        [
+            ("A", 1, "B"),
+            ("C", 1, "D"),
+        ]
+    )
+    method = CellNOptILP(lambda_reg=1e-3, backend=backend)
+    problem = _solve(
+        method,
+        graph,
+        inputs={"condition": {"A": 1, "C": 1}},
+        measurements={"condition": {"B": 1}},
+    )
+
+    assert np.allclose(_flat_values(problem.expr.reaction_selected), [1, 0])
+    assert np.allclose(_vertex_values(method, problem, "C"), [1])
+    assert np.allclose(_vertex_values(method, problem, "D"), [0])
+
+
+def test_flow_rejects_a_selected_component_without_experimental_boundaries(backend):
+    graph = Graph.from_tuples(
+        [
+            ("A", 1, "B"),
+            ("C", 1, "D"),
+        ]
+    )
+    method = CellNOptILP(lambda_reg=0, backend=backend)
+    problem = method.build(
+        graph,
+        inputs={"A": 1},
+        measurements={"B": 1},
+    )
+    problem += problem.expr.reaction_selected[1] == 1
+
+    _assert_infeasible(problem, backend)
+
+
+def test_flow_rejects_a_selected_dangling_branch(backend):
+    graph = Graph.from_tuples(
+        [
+            ("A", 1, "B"),
+            ("A", 1, "C"),
+        ]
+    )
+    method = CellNOptILP(lambda_reg=0, backend=backend)
+    problem = method.build(
+        graph,
+        inputs={"A": 1},
+        measurements={"B": 1},
+    )
+    problem += problem.expr.reaction_selected[1] == 1
+
+    _assert_infeasible(problem, backend)
+
+
+def test_inhibition_overrides_product_without_disabling_reaction_truth(backend):
+    graph = Graph.from_tuples([("A", 1, "B")])
+    method = CellNOptILP(lambda_reg=0, backend=backend)
+    problem = method.build(
+        graph,
+        inputs={"A": 1},
+        inhibitors={"B": 1},
+        measurements={"B": 0},
+    )
+    problem += problem.expr.reaction_selected[0] == 1
+
+    result = problem.solve()
+
+    assert result.status == "optimal"
+    assert np.allclose(problem.expr.reaction_active.value, [[1]])
+    assert np.allclose(_vertex_values(method, problem, "B"), [0])
+
+
+def test_acyclicity_rejects_a_selected_feedback_cycle(backend):
+    graph = Graph.from_tuples(
+        [
+            ("A", 1, "B"),
+            ("B", 1, "A"),
+        ]
+    )
+    method = CellNOptILP(lambda_reg=0, backend=backend)
+    problem = method.build(
+        graph,
+        inputs={"A": 1},
+        measurements={"B": 1},
+    )
+    problem += problem.expr.reaction_selected == 1
+
+    _assert_infeasible(problem, backend)
+
+
+def test_constraint_blocks_are_vectorized_over_reactions_and_conditions(backend):
+    small_graph = Graph.from_tuples([("A", 1, "B")])
+    large_graph = Graph.from_tuples([(f"v{i}", 1, f"v{i + 1}") for i in range(30)])
+    small = CellNOptILP(lambda_reg=0, backend=backend).build(
+        small_graph,
+        inputs={"A": 1},
+        measurements={"B": 1},
+    )
+    large = CellNOptILP(lambda_reg=0, backend=backend).build_many(
+        large_graph,
+        inputs={
+            "one": {"v0": 1},
+            "two": {"v0": 1},
+            "three": {"v0": 1},
+        },
+        measurements={
+            "one": {"v30": 1},
+            "two": {"v30": 1},
+            "three": {"v30": 1},
+        },
+    )
+
+    assert len(small.constraints) == len(large.constraints)
