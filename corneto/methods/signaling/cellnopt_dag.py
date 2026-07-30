@@ -623,12 +623,17 @@ class CellNOptDAG(FlowMethod):
         dependency_selected_all = self.backend.Constant(self._dependency_to_reaction) @ reaction_selected
         dependency_selected = dependency_selected_all[: self._biological_num_edges]
         flow = problem.expr.flow
-        biological_flow = flow[: self._biological_num_edges]
         # The shared flow and shared reaction selection have exactly the same
         # support on biological dependencies. Boundary flow remains free to
         # choose which controlled species and measurements connect that support.
-        problem += biological_flow >= self.epsilon * dependency_selected
-        problem += biological_flow <= self._flow_max * dependency_selected
+        problem += self.backend.ExactSupport(
+            flow,
+            indexes=np.arange(self._biological_num_edges, dtype=int),
+            selected=dependency_selected,
+            epsilon=self.epsilon,
+            nonnegative=True,
+            name="dependency_selected",
+        )
 
         problem.register("_dependency_selected_all", dependency_selected_all)
         self.backend.Acyclic(
@@ -675,7 +680,6 @@ class CellNOptDAG(FlowMethod):
             name="measurement_error",
         )
 
-        problem.register("dependency_selected", dependency_selected)
         problem.register("literal_satisfaction", literal_satisfaction)
         problem.register("dag_layer", problem.expr._dag_layer)
         return problem

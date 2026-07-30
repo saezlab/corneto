@@ -43,6 +43,19 @@ network views and return Matplotlib figure/axes objects for data-fit views.
     signaling.plot_cellnopt_model
     signaling.plot_cellnopt_fit
 
+Causal discovery
+----------------
+
+``LinearDAGDiscovery`` infers a sparse, acyclic linear structural model from
+continuous observational and perfect-intervention measurements. Candidate
+interactions come from a directed prior-knowledge network, and commodity flows
+ensure that selected edges are supported by intervention-to-response paths.
+
+.. autosummary::
+    :toctree: generated/
+
+    LinearDAGDiscovery
+
 Metabolism
 ----------
 

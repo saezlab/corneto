@@ -1,0 +1,573 @@
+"""Flow-supported linear DAG discovery over a prior knowledge network."""
+
+from __future__ import annotations
+
+from numbers import Real
+from typing import Any, Mapping, Optional
+
+import numpy as np
+
+from corneto._constants import VarType
+from corneto.backend._base import Backend, ProblemDef
+from corneto.data import Data
+from corneto.graph import Attr, BaseGraph, EdgeType
+from corneto.methods._base import FlowMethod
+from corneto.methods._network_utils import BoundaryFlowLayout, augment_with_boundaries
+
+__all__ = ["LinearDAGDiscovery"]
+
+
+class LinearDAGDiscovery(FlowMethod):
+    """Discover a sparse linear DAG inside a directed prior network.
+
+    A linear structural equation is fitted for every vertex. One nonnegative
+    flow commodity is created for each intervened vertex in each condition.
+    Every selected biological edge must be used by at least one commodity, so
+    the learned DAG is structurally supported by intervention-to-measurement
+    paths without requiring every intervention to be explained.
+
+    Missing outcomes are excluded from the loss. If a candidate parent is
+    missing in a sample, the corresponding child equation is also excluded;
+    this conservative complete-equation rule prevents missing predictors from
+    being silently treated as zero while preserving a linear formulation.
+
+    Args:
+        lambda_edges: Penalty for every selected prior edge.
+        coefficient_bound: Absolute bound on linear edge coefficients.
+        fit_intercept: Whether to fit one intercept per vertex.
+        intercept_bound: Absolute bound on vertex intercepts.
+        max_parents: Optional global or vertex-specific parent limit.
+        loss: ``"absolute"`` for a MILP or ``"squared"`` for a MIQP.
+        standardize_loss: Divide residuals by the observed response standard
+            deviation of each vertex. Coefficients remain in the original
+            measurement units.
+        vertex_weights: Optional positive loss weight per PKN vertex.
+        sample_weights: Optional positive loss weight per sample.
+        enforce_signs: Constrain coefficients using numeric PKN interactions
+            ``+1`` and ``-1`` when present.
+        interaction_attribute: Edge attribute containing PKN interaction signs.
+        intervention_key: Feature metadata key marking perfect interventions.
+        flow_capacity: Upper bound on every commodity flow. By default, the
+            number of PKN edges is used.
+        flow_epsilon: Minimum positive flow on every used biological edge.
+        min_commodity_coverage: Minimum fraction of intervention occurrences
+            that must have a selected-edge path to a measured, non-intervened
+            response in the same sample. Each intervened vertex in each sample
+            is one commodity, so a value ``f`` requires at least
+            ``ceil(f * K)`` of the ``K`` commodities to be structurally
+            connected. This does not measure prediction accuracy. Zero does
+            not force any intervention to be connected.
+        lambda_unexplained: Optional objective penalty for every intervention
+            commodity without such a structural path. Unlike
+            ``min_commodity_coverage``, this is a soft preference rather than
+            a minimum feasibility requirement.
+        backend: Optimization backend.
+    """
+
+    def __init__(
+        self,
+        lambda_edges: float = 1e-2,
+        coefficient_bound: float = 5.0,
+        fit_intercept: bool = True,
+        intercept_bound: float = 10.0,
+        max_parents: Optional[int | dict[Any, int]] = None,
+        loss: str = "absolute",
+        standardize_loss: bool = True,
+        vertex_weights: Optional[Mapping[Any, float]] = None,
+        sample_weights: Optional[Mapping[Any, float]] = None,
+        enforce_signs: bool = False,
+        interaction_attribute: str = "interaction",
+        intervention_key: str = "intervened",
+        flow_capacity: Optional[float] = None,
+        flow_epsilon: float = 1.0,
+        min_commodity_coverage: float = 0.0,
+        lambda_unexplained: float = 0.0,
+        backend: Optional[Backend] = None,
+    ):
+        self._validate_nonnegative(lambda_edges, "lambda_edges")
+        self._validate_positive(coefficient_bound, "coefficient_bound")
+        self._validate_positive(intercept_bound, "intercept_bound")
+        self._validate_positive(flow_epsilon, "flow_epsilon")
+        if flow_capacity is not None:
+            self._validate_positive(flow_capacity, "flow_capacity")
+            if float(flow_capacity) < float(flow_epsilon):
+                raise ValueError("flow_capacity must be greater than or equal to flow_epsilon.")
+        if loss not in {"absolute", "squared"}:
+            raise ValueError("loss must be 'absolute' or 'squared'.")
+        if not isinstance(standardize_loss, bool):
+            raise TypeError("standardize_loss must be boolean.")
+        if vertex_weights is not None and not isinstance(vertex_weights, Mapping):
+            raise TypeError("vertex_weights must be a mapping or None.")
+        if sample_weights is not None and not isinstance(sample_weights, Mapping):
+            raise TypeError("sample_weights must be a mapping or None.")
+        if isinstance(max_parents, int) and not isinstance(max_parents, bool):
+            if max_parents < 0:
+                raise ValueError("max_parents must be nonnegative.")
+        elif max_parents is not None:
+            if not isinstance(max_parents, dict):
+                raise TypeError("max_parents must be an integer, mapping, or None.")
+            for vertex, value in max_parents.items():
+                if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+                    raise ValueError(f"max_parents[{vertex!r}] must be a nonnegative integer.")
+        if isinstance(min_commodity_coverage, bool) or not isinstance(min_commodity_coverage, Real):
+            raise TypeError("min_commodity_coverage must be a finite number in [0, 1].")
+        if not np.isfinite(min_commodity_coverage) or not 0 <= min_commodity_coverage <= 1:
+            raise ValueError("min_commodity_coverage must be in [0, 1].")
+        self._validate_nonnegative(lambda_unexplained, "lambda_unexplained")
+
+        super().__init__(
+            flow_lower_bound=0,
+            flow_upper_bound=1,
+            num_flows=1,
+            shared_flow_bounds=False,
+            lambda_reg=0,
+            disable_structured_sparsity=True,
+            backend=backend,
+        )
+        self.lambda_edges = float(lambda_edges)
+        self.coefficient_bound = float(coefficient_bound)
+        self.fit_intercept = fit_intercept
+        self.intercept_bound = float(intercept_bound)
+        self.max_parents = max_parents
+        self.loss = loss
+        self.standardize_loss = standardize_loss
+        self.vertex_weights = dict(vertex_weights or {})
+        self.sample_weights = dict(sample_weights or {})
+        self.enforce_signs = enforce_signs
+        self.interaction_attribute = interaction_attribute
+        self.intervention_key = intervention_key
+        self.flow_capacity = None if flow_capacity is None else float(flow_capacity)
+        self.flow_epsilon = float(flow_epsilon)
+        self.min_commodity_coverage = float(min_commodity_coverage)
+        self.lambda_unexplained = float(lambda_unexplained)
+
+        self._original_graph: Optional[BaseGraph] = None
+        self._layout: Optional[BoundaryFlowLayout] = None
+        self._vertex_index: dict[Any, int] = {}
+        self._sample_names: tuple[Any, ...] = ()
+        self._values = np.empty((0, 0))
+        self._observed = np.empty((0, 0), dtype=bool)
+        self._valid_residual = np.empty((0, 0), dtype=bool)
+        self._loss_scales = np.empty((0,))
+        self._observation_weights = np.empty((0, 0))
+        self._intervened = np.empty((0, 0), dtype=bool)
+        self._edge_sources = np.empty((0,), dtype=int)
+        self._edge_targets = np.empty((0,), dtype=int)
+        self._commodity_samples: list[int] = []
+        self._commodity_sources: list[Any] = []
+        self._commodity_source_edges: list[int] = []
+        self._commodity_sink_edges: list[list[int]] = []
+        self._flow_lb = np.empty((0, 0))
+        self._flow_ub = np.empty((0, 0))
+        self._resolved_flow_capacity = 0.0
+
+    @staticmethod
+    def _validate_positive(value: Any, name: str) -> None:
+        if isinstance(value, bool) or not isinstance(value, Real):
+            raise TypeError(f"{name} must be a finite positive number.")
+        if not np.isfinite(value) or value <= 0:
+            raise ValueError(f"{name} must be a finite positive number.")
+
+    @staticmethod
+    def _validate_nonnegative(value: Any, name: str) -> None:
+        if isinstance(value, bool) or not isinstance(value, Real):
+            raise TypeError(f"{name} must be a finite nonnegative number.")
+        if not np.isfinite(value) or value < 0:
+            raise ValueError(f"{name} must be a finite nonnegative number.")
+
+    @classmethod
+    def _resolve_positive_weights(
+        cls,
+        keys: tuple[Any, ...],
+        supplied: Mapping[Any, float],
+        name: str,
+    ) -> np.ndarray:
+        unknown = set(supplied).difference(keys)
+        if unknown:
+            raise ValueError(f"{name} contains unknown keys: {sorted(unknown, key=repr)!r}.")
+        weights = np.ones((len(keys),), dtype=float)
+        index = {key: position for position, key in enumerate(keys)}
+        for key, value in supplied.items():
+            cls._validate_positive(value, f"{name}[{key!r}]")
+            weights[index[key]] = float(value)
+        return weights
+
+    def build(self, pkn: BaseGraph, data: Data) -> ProblemDef:
+        """Build a discovery problem from vertex measurements and interventions."""
+        if not isinstance(data, Data):
+            raise TypeError("data must be a corneto.data.Data object.")
+        return self.build_from_data(pkn, data)
+
+    def _validate_graph(self, graph: BaseGraph) -> tuple[np.ndarray, np.ndarray]:
+        if graph.num_vertices == 0 or graph.num_edges == 0:
+            raise ValueError("LinearDAGDiscovery requires a non-empty directed PKN.")
+        vertex_index = {vertex: index for index, vertex in enumerate(graph.V)}
+        sources = []
+        targets = []
+        for edge_index, (source, target) in enumerate(graph.E):
+            if len(source) != 1 or len(target) != 1:
+                raise ValueError(
+                    "LinearDAGDiscovery accepts simple directed PKN edges only; "
+                    f"edge {edge_index} has {len(source)} sources and {len(target)} targets."
+                )
+            attributes = graph.get_attr_edge(edge_index)
+            if not attributes.has_attr(Attr.EDGE_TYPE, EdgeType.DIRECTED):
+                raise ValueError(f"LinearDAGDiscovery requires directed edges; edge {edge_index} is not directed.")
+            sources.append(vertex_index[next(iter(source))])
+            targets.append(vertex_index[next(iter(target))])
+        return np.asarray(sources, dtype=int), np.asarray(targets, dtype=int)
+
+    def _extract_data(
+        self,
+        graph: BaseGraph,
+        data: Data,
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+        if not data.samples:
+            raise ValueError("LinearDAGDiscovery requires at least one sample.")
+        values = np.full((graph.num_vertices, len(data.samples)), np.nan, dtype=float)
+        observed = np.zeros_like(values, dtype=bool)
+        intervened = np.zeros_like(values, dtype=bool)
+        graph_vertices = set(graph.V)
+
+        for sample_index, (sample_name, sample) in enumerate(data.samples.items()):
+            seen = set()
+            for feature in sample.features:
+                if feature.mapping != "vertex":
+                    continue
+                if feature.id not in graph_vertices:
+                    raise ValueError(f"Unknown vertex {feature.id!r} in sample {sample_name!r}.")
+                if feature.id in seen:
+                    raise ValueError(f"Duplicate vertex {feature.id!r} in sample {sample_name!r}.")
+                seen.add(feature.id)
+                raw_intervened = feature.data.get(self.intervention_key, False)
+                if not isinstance(raw_intervened, (bool, np.bool_)):
+                    raise TypeError(
+                        f"{self.intervention_key!r} for vertex {feature.id!r} "
+                        f"in sample {sample_name!r} must be boolean."
+                    )
+                vertex_index = self._vertex_index[feature.id]
+                intervened[vertex_index, sample_index] = bool(raw_intervened)
+                value = feature.value
+                if value is None or (
+                    isinstance(value, Real) and not isinstance(value, bool) and np.isnan(float(value))
+                ):
+                    if raw_intervened:
+                        raise ValueError(
+                            f"Intervened vertex {feature.id!r} in sample {sample_name!r} requires an observed value."
+                        )
+                    continue
+                if isinstance(value, bool) or not isinstance(value, Real):
+                    raise TypeError(
+                        f"Measurement for vertex {feature.id!r} in sample {sample_name!r} must be numeric or missing."
+                    )
+                value = float(value)
+                if not np.isfinite(value):
+                    raise ValueError(
+                        f"Measurement for vertex {feature.id!r} in sample {sample_name!r} must be finite or missing."
+                    )
+                values[vertex_index, sample_index] = value
+                observed[vertex_index, sample_index] = True
+
+        if not np.any(intervened):
+            raise ValueError("LinearDAGDiscovery requires at least one intervened vertex.")
+        never_observed = [graph.V[index] for index in np.flatnonzero(~observed.any(axis=1))]
+        if never_observed:
+            raise ValueError(f"PKN vertices {never_observed!r} are never observed; latent vertices are not supported.")
+        return values, observed, intervened
+
+    def preprocess(self, graph: BaseGraph, data: Data):
+        """Validate data and construct commodity-specific flow boundaries."""
+        self._original_graph = graph.copy()
+        self._vertex_index = {vertex: index for index, vertex in enumerate(graph.V)}
+        self._sample_names = tuple(data.samples)
+        self._edge_sources, self._edge_targets = self._validate_graph(graph)
+        self._values, self._observed, self._intervened = self._extract_data(graph, data)
+        self._valid_residual = self._observed & ~self._intervened
+        for source, target in zip(self._edge_sources, self._edge_targets, strict=True):
+            self._valid_residual[target, :] &= self._observed[source, :]
+        if not np.any(self._valid_residual):
+            raise ValueError("No complete, non-intervened structural equations are available.")
+        self._values = np.where(self._observed, self._values, 0.0)
+
+        vertex_weights = self._resolve_positive_weights(
+            tuple(graph.V),
+            self.vertex_weights,
+            "vertex_weights",
+        )
+        sample_weights = self._resolve_positive_weights(
+            self._sample_names,
+            self.sample_weights,
+            "sample_weights",
+        )
+        self._observation_weights = vertex_weights[:, None] * sample_weights[None, :]
+        self._loss_scales = np.ones((graph.num_vertices,), dtype=float)
+        if self.standardize_loss:
+            for vertex_index in range(graph.num_vertices):
+                fitted_values = self._values[vertex_index, self._valid_residual[vertex_index, :]]
+                if fitted_values.size > 1:
+                    scale = float(np.std(fitted_values))
+                    if np.isfinite(scale) and scale > np.finfo(float).eps:
+                        self._loss_scales[vertex_index] = scale
+
+        intervened_union = self._intervened.any(axis=1)
+        measured_responses = self._observed & ~self._intervened
+        sink_union = measured_responses.any(axis=1)
+        self._layout = augment_with_boundaries(
+            graph,
+            inflow_vertices=(vertex for vertex, include in zip(graph.V, intervened_union, strict=True) if include),
+            outflow_vertices=(vertex for vertex, include in zip(graph.V, sink_union, strict=True) if include),
+        )
+
+        self._commodity_samples = []
+        self._commodity_sources = []
+        self._commodity_source_edges = []
+        self._commodity_sink_edges = []
+        for sample_index in range(len(self._sample_names)):
+            source_indices = np.flatnonzero(self._intervened[:, sample_index])
+            sink_indices = np.flatnonzero(measured_responses[:, sample_index])
+            if source_indices.size and not sink_indices.size:
+                raise ValueError(
+                    f"Sample {self._sample_names[sample_index]!r} has interventions but no eligible sinks."
+                )
+            sink_vertices = [graph.V[index] for index in sink_indices]
+            sink_edges = [self._layout.outflow_edges[vertex] for vertex in sink_vertices]
+            for source_index in source_indices:
+                source_vertex = graph.V[source_index]
+                self._commodity_samples.append(sample_index)
+                self._commodity_sources.append(source_vertex)
+                self._commodity_source_edges.append(self._layout.inflow_edges[source_vertex])
+                self._commodity_sink_edges.append(sink_edges)
+
+        num_commodities = len(self._commodity_sources)
+        num_flow_edges = self._layout.graph.num_edges
+        flow_capacity = self.flow_capacity
+        if flow_capacity is None:
+            flow_capacity = float(max(graph.num_edges, 1))
+        if flow_capacity < self.flow_epsilon:
+            raise ValueError("Resolved flow capacity must be greater than or equal to flow_epsilon.")
+        self._resolved_flow_capacity = float(flow_capacity)
+        self._flow_lb = np.zeros((num_flow_edges, num_commodities), dtype=float)
+        self._flow_ub = np.zeros((num_flow_edges, num_commodities), dtype=float)
+        self._flow_ub[: graph.num_edges, :] = self._resolved_flow_capacity
+        for commodity_index, (source_edge, sink_edges) in enumerate(
+            zip(self._commodity_source_edges, self._commodity_sink_edges, strict=True)
+        ):
+            self._flow_ub[source_edge, commodity_index] = self._resolved_flow_capacity
+            self._flow_ub[np.asarray(sink_edges, dtype=int), commodity_index] = self._resolved_flow_capacity
+        return self._layout.graph, data.copy()
+
+    def get_flow_bounds(self, graph: BaseGraph, data: Data):
+        """Return the precomputed per-edge, per-commodity bounds."""
+        return {
+            "lb": self._flow_lb,
+            "ub": self._flow_ub,
+            "n_flows": len(self._commodity_sources),
+            "shared_bounds": False,
+        }
+
+    def create_problem(self, graph: BaseGraph, data: Data):
+        """Build an efficient matrix-valued commodity-flow formulation."""
+        if self._original_graph is None or self._layout is None:
+            raise ValueError("LinearDAGDiscovery preprocessing has not been initialized.")
+        num_edges = self._original_graph.num_edges
+        edge_selected = self.backend.Variable(
+            "edge_selected",
+            (num_edges,),
+            vartype=VarType.BINARY,
+        )
+        problem = self.backend.SelectedFlow(
+            graph,
+            lb=self._flow_lb,
+            ub=self._flow_ub,
+            n_flows=len(self._commodity_sources),
+            edge_indices=range(num_edges),
+            epsilon=self.flow_epsilon,
+            selected=edge_selected,
+            acyclic_graph=self._original_graph,
+            max_parents=self.max_parents,
+            selected_by_flow_name="edge_used_by_commodity",
+            selected_any_name="edge_selected",
+        )
+        return self.create_flow_based_problem(problem, graph, data)
+
+    def create_flow_based_problem(self, flow_problem: ProblemDef, graph: BaseGraph, data: Data) -> ProblemDef:
+        """Add commodity coverage and linear structural-equation fitting."""
+        if self._original_graph is None:
+            raise ValueError("LinearDAGDiscovery preprocessing has not been initialized.")
+        problem = flow_problem
+        num_vertices = self._original_graph.num_vertices
+        num_edges = self._original_graph.num_edges
+        num_samples = self._values.shape[1]
+        num_commodities = len(self._commodity_sources)
+
+        flow = problem.expr.flow
+        edge_selected = problem.expr.edge_selected
+        edge_used = problem.expr.edge_used_by_commodity
+        coverage_enabled = self.min_commodity_coverage > 0 or self.lambda_unexplained > 0
+        if coverage_enabled:
+            commodity_active = self.backend.Variable(
+                "commodity_active",
+                (num_commodities,),
+                vartype=VarType.BINARY,
+            )
+            active_matrix = np.ones((num_edges, 1)) @ commodity_active.reshape((1, num_commodities))
+            problem += edge_used <= active_matrix
+            problem += commodity_active.reshape((num_commodities, 1)) <= edge_used.sum(axis=0).reshape(
+                (num_commodities, 1)
+            )
+
+            for commodity_index, (source_edge, sink_edges) in enumerate(
+                zip(self._commodity_source_edges, self._commodity_sink_edges, strict=True)
+            ):
+                active = commodity_active[commodity_index]
+                problem += flow[source_edge, commodity_index] >= self.flow_epsilon * active
+                problem += flow[source_edge, commodity_index] <= self._resolved_flow_capacity * active
+                sink_index = np.asarray(sink_edges, dtype=int)
+                problem += flow[sink_index, commodity_index].sum() >= self.flow_epsilon * active
+                problem += flow[sink_index, commodity_index] <= self._resolved_flow_capacity * active
+
+            minimum_active = int(np.ceil(self.min_commodity_coverage * num_commodities))
+            if minimum_active:
+                problem += commodity_active.sum() >= minimum_active
+
+        if self.lambda_unexplained:
+            unexplained = self.backend.Constant(np.ones((num_commodities,))) - commodity_active
+            problem.register("commodity_unexplained", unexplained)
+            problem.add_objective(
+                unexplained.sum(),
+                weight=self.lambda_unexplained,
+                name="commodity_coverage",
+            )
+
+        edge_coefficient = self.backend.Variable(
+            "edge_coefficient",
+            (num_edges,),
+            lb=-self.coefficient_bound,
+            ub=self.coefficient_bound,
+        )
+        problem += edge_coefficient <= self.coefficient_bound * edge_selected
+        problem += edge_coefficient >= -self.coefficient_bound * edge_selected
+
+        if self.enforce_signs:
+            positive = []
+            negative = []
+            for edge_index in range(num_edges):
+                interaction = self._original_graph.get_attr_edge(edge_index).get(
+                    self.interaction_attribute,
+                    None,
+                )
+                if interaction in {1, 1.0}:
+                    positive.append(edge_index)
+                elif interaction in {-1, -1.0}:
+                    negative.append(edge_index)
+            if positive:
+                problem += edge_coefficient[np.asarray(positive, dtype=int)] >= 0
+            if negative:
+                problem += edge_coefficient[np.asarray(negative, dtype=int)] <= 0
+
+        if self.fit_intercept:
+            intercept = self.backend.Variable(
+                "intercept",
+                (num_vertices,),
+                lb=-self.intercept_bound,
+                ub=self.intercept_bound,
+            )
+        else:
+            intercept = self.backend.Constant(np.zeros((num_vertices,)), name="intercept_zero")
+
+        parent_values = self._values[self._edge_sources, :]
+        coefficient_matrix = edge_coefficient.reshape((num_edges, 1)) @ np.ones((1, num_samples))
+        weighted_parents = coefficient_matrix.multiply(parent_values)
+        target_incidence = np.zeros((num_vertices, num_edges), dtype=float)
+        target_incidence[self._edge_targets, np.arange(num_edges)] = 1.0
+        prediction = target_incidence @ weighted_parents
+        if self.fit_intercept:
+            prediction = prediction + intercept.reshape((num_vertices, 1)) @ np.ones((1, num_samples))
+
+        residual = self._values - prediction
+        problem.register("prediction", prediction)
+        problem.register("residual", residual)
+        problem.register(
+            "observed_mask",
+            self.backend.Constant(self._observed.astype(float), name="observed_mask"),
+        )
+        problem.register(
+            "fitted_mask",
+            self.backend.Constant(self._valid_residual.astype(float), name="fitted_mask"),
+        )
+        problem.register(
+            "loss_scale",
+            self.backend.Constant(self._loss_scales, name="loss_scale"),
+        )
+        problem.register(
+            "observation_weight",
+            self.backend.Constant(
+                self._observation_weights,
+                name="observation_weight",
+            ),
+        )
+        residual_vector = residual.reshape((num_vertices * num_samples,))
+        valid_indices = np.flatnonzero(self._valid_residual.reshape(-1, order="F"))
+        fitted_residual = residual_vector[valid_indices]
+        observation_weights = self._observation_weights.reshape(-1, order="F")[valid_indices]
+        scales = np.broadcast_to(
+            self._loss_scales[:, None],
+            (num_vertices, num_samples),
+        ).reshape(-1, order="F")[valid_indices]
+        if self.loss == "absolute":
+            absolute_residual = self.backend.Variable(
+                "absolute_residual",
+                (valid_indices.size,),
+                lb=0,
+            )
+            problem += fitted_residual <= absolute_residual
+            problem += -fitted_residual <= absolute_residual
+            fit = absolute_residual.multiply(observation_weights / scales).sum()
+            problem.add_objective(fit, name="absolute_fit")
+        else:
+            standardized_residual = fitted_residual.multiply(np.sqrt(observation_weights) / scales)
+            fit = (standardized_residual**2).sum()
+            problem.add_objective(fit, name="squared_fit")
+
+        if self.lambda_edges:
+            problem.add_objective(
+                edge_selected.sum(),
+                weight=self.lambda_edges,
+                name="edge_sparsity",
+            )
+        problem.register("dag_layer", problem.expr._dag_layer)
+        return problem
+
+    def get_selected_edge_indices(self, threshold: float = 0.5) -> np.ndarray:
+        """Return selected edge indices in the original PKN."""
+        if self.problem is None:
+            raise ValueError("The method has not been built.")
+        values = self.problem.expr.edge_selected.value
+        if values is None:
+            raise ValueError("The problem has not been solved.")
+        return np.flatnonzero(np.asarray(values).reshape(-1) > threshold)
+
+    def get_edge_usage(self, threshold: float = 0.5) -> np.ndarray:
+        """Return the edge-by-commodity support matrix."""
+        if self.problem is None:
+            raise ValueError("The method has not been built.")
+        values = self.problem.expr.edge_used_by_commodity.value
+        if values is None:
+            raise ValueError("The problem has not been solved.")
+        return np.asarray(values).reshape((self._original_graph.num_edges, len(self._commodity_sources))) > threshold
+
+    def get_solution_graph(self, threshold: float = 0.5):
+        """Return the selected subgraph of the original PKN."""
+        if self._original_graph is None:
+            raise ValueError("The method has not been built.")
+        return self._original_graph.edge_subgraph(self.get_selected_edge_indices(threshold))
+
+    @staticmethod
+    def name() -> str:
+        """Return the method name."""
+        return "LinearDAGDiscovery"
+
+    @staticmethod
+    def description() -> str:
+        """Return a short method description."""
+        return "Commodity-flow-supported linear DAG discovery over a prior network"

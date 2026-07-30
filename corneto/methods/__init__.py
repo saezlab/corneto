@@ -15,6 +15,7 @@ from corneto.methods.carnival import (
     CarnivalILP,
     milp_carnival,
 )
+from corneto.methods.causal import LinearDAGDiscovery
 from corneto.methods.fba import MultiSampleFBA
 from corneto.methods.imat import MultiSampleIMAT
 from corneto.methods.pcst import PrizeCollectingSteinerTree
@@ -32,6 +33,7 @@ __all__ = [
     "BidirectionalPHONEMeS",
     "CarnivalFlow",
     "CarnivalILP",
+    "LinearDAGDiscovery",
     "MultiSampleFBA",
     "MultiSampleIMAT",
     "PHONEMeS",

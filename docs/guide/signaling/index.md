@@ -10,4 +10,5 @@ multisample-carnival.ipynb
 phonemes.ipynb
 bidirectional-phonemes.ipynb
 cellnopt_dag.ipynb
+linear-dag-discovery.ipynb
 ```

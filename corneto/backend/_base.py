@@ -1143,13 +1143,25 @@ class Backend(abc.ABC):
         else:
             raise ValueError("At least one indicator variable name is required")
 
-        # Limit the number of parents per node, if requested
+        # Limit the number of parents per node, if requested. A negative
+        # selection traverses an edge in reverse, so it contributes a parent
+        # at the edge's source rather than at its target.
         if max_parents is not None:
             for v, max_val in max_parents.items():
-                edges_idx = [i for i, _ in g.in_edges(v)]
-                if edges_idx:
-                    # Sum selected parent edges
-                    P += np.ones((len(edges_idx),)) @ indicator[edges_idx] <= max_val
+                parent_count = None
+                if Ip is not None:
+                    positive_edges = [i for i, _ in g.in_edges(v)]
+                    if positive_edges:
+                        parent_count = np.ones((len(positive_edges),)) @ Ip[positive_edges]
+                if In is not None:
+                    negative_edges = [i for i, _ in g.out_edges(v)]
+                    if negative_edges:
+                        negative_parent_count = np.ones((len(negative_edges),)) @ In[negative_edges]
+                        parent_count = (
+                            negative_parent_count if parent_count is None else parent_count + negative_parent_count
+                        )
+                if parent_count is not None:
+                    P += parent_count <= max_val
 
         # Determine number of samples (if the indicator is 1D, assume 1 sample)
         if len(indicator.shape) == 1:
@@ -1360,6 +1372,393 @@ class Backend(abc.ABC):
             raise ValueError(f"The continuous variable {V.name} is unbounded, indicators cannot be created.")
         c += [S >= indicator.multiply(lb), S <= indicator.multiply(ub)]
         return self.Problem(c)
+
+    def ExactSupport(
+        self,
+        V: CSymbol,
+        *,
+        selected: Optional[CExpression] = None,
+        indexes: Optional[Union[int, slice, Tuple, List, np.ndarray]] = None,
+        epsilon: float = 1.0,
+        nonnegative: bool = False,
+        name: Optional[str] = None,
+        positive_name: Optional[str] = None,
+        negative_name: Optional[str] = None,
+    ) -> ProblemDef:
+        """Link a bounded value exactly to binary structural support.
+
+        ``selected == 0`` forces the value to zero. ``selected == 1`` forces
+        its magnitude to be at least ``epsilon``. For nonnegative values this
+        uses one binary per entry. Signed values use mutually exclusive
+        positive and negative binaries and expose their sum as ``selected``.
+
+        An existing selector can be supplied to avoid introducing a redundant
+        binary variable, which is useful when a method already has a shared
+        structural edge-selection variable.
+        """
+        if isinstance(epsilon, bool) or not isinstance(epsilon, numbers.Real):
+            raise TypeError("epsilon must be a finite positive number.")
+        epsilon = float(epsilon)
+        if not np.isfinite(epsilon) or epsilon <= 0:
+            raise ValueError("epsilon must be a finite positive number.")
+        if V._provided_lb is None or V._provided_ub is None:
+            raise ValueError(f"The continuous variable {V.name} is unbounded, exact support cannot be created.")
+
+        S = V if indexes is None else V[indexes]
+        lb = np.asarray(V.lb if indexes is None else V.lb[indexes], dtype=float)
+        ub = np.asarray(V.ub if indexes is None else V.ub[indexes], dtype=float)
+        if np.shape(lb) != S.shape or np.shape(ub) != S.shape:
+            expected_size = int(np.prod(S.shape))
+            if lb.size == expected_size:
+                lb = lb.reshape(S.shape)
+            else:
+                lb = np.broadcast_to(lb, S.shape)
+            if ub.size == expected_size:
+                ub = ub.reshape(S.shape)
+            else:
+                ub = np.broadcast_to(ub, S.shape)
+
+        support_name = name or f"{V.name}_support"
+        constraints = []
+        if nonnegative:
+            if np.any(lb < 0):
+                raise ValueError("ExactSupport(..., nonnegative=True) requires nonnegative lower bounds.")
+            if selected is None:
+                selected = self.Variable(support_name, S.shape, 0, 1, vartype=VarType.BINARY)
+            elif selected.shape != S.shape:
+                raise ValueError(f"selected has shape {selected.shape}; expected {S.shape}.")
+
+            possible = np.asarray(ub >= epsilon, dtype=float)
+            if not np.all(possible):
+                constraints.append(selected.multiply(1 - possible) == 0)
+            constraints += [S >= selected * epsilon, S <= selected.multiply(ub)]
+            problem = self.Problem(constraints)
+            if selected.name != support_name:
+                problem.register(support_name, selected)
+            return problem
+
+        if positive_name is None:
+            positive_name = f"{support_name}_positive"
+        if negative_name is None:
+            negative_name = f"{support_name}_negative"
+        positive = self.Variable(positive_name, S.shape, 0, 1, vartype=VarType.BINARY)
+        negative = self.Variable(negative_name, S.shape, 0, 1, vartype=VarType.BINARY)
+        support = positive + negative
+        if selected is not None:
+            if selected.shape != S.shape:
+                raise ValueError(f"selected has shape {selected.shape}; expected {S.shape}.")
+            constraints.append(support == selected)
+            support = selected
+
+        positive_possible = np.asarray(ub >= epsilon, dtype=float)
+        negative_possible = np.asarray(lb <= -epsilon, dtype=float)
+        if not np.all(positive_possible):
+            constraints.append(positive.multiply(1 - positive_possible) == 0)
+        if not np.all(negative_possible):
+            constraints.append(negative.multiply(1 - negative_possible) == 0)
+        constraints += [
+            positive + negative <= 1,
+            S >= negative.multiply(lb) + positive * epsilon,
+            S <= positive.multiply(ub) - negative * epsilon,
+        ]
+        problem = self.Problem(constraints)
+        if support.name != support_name:
+            problem.register(support_name, support)
+        return problem
+
+    def SelectedFlow(
+        self,
+        g: BaseGraph,
+        *,
+        lb: Optional[Union[float, List, np.ndarray]] = 0,
+        ub: Optional[Union[float, List, np.ndarray]] = DEFAULT_UB,
+        n_flows: int = 1,
+        edge_indices: Optional[Iterable[int]] = None,
+        flow_blocks: Optional[Iterable[Tuple[Iterable[int], Union[slice, Iterable[int]]]]] = None,
+        selector_groups: Optional[Iterable[int]] = None,
+        epsilon: float = 1.0,
+        selected: Optional[CExpression] = None,
+        acyclic_graph: Optional[BaseGraph] = None,
+        max_parents: Optional[Union[int, Dict[Any, int]]] = None,
+        flow_name: str = EXPR_NAME_FLOW,
+        selected_by_flow_name: str = "selected_by_flow",
+        selected_by_group_name: Optional[str] = None,
+        selected_any_name: str = "selected_any",
+        dag_name: str = VAR_DAG,
+    ) -> ProblemDef:
+        """Create bounded flows with exact per-flow and shared support.
+
+        Flow conservation is imposed on ``g``. Exact support binaries are
+        created only for ``edge_indices`` so boundary edges do not consume
+        unnecessary integer variables. Rows whose selected flow bounds are
+        nonnegative use one binary per flow; rows that permit negative flow
+        automatically use mutually exclusive positive and negative binaries.
+
+        ``flow_blocks`` can map multiple rectangular regions of the flow
+        matrix to the same logical edge ordering. ``selector_groups`` can then
+        map block columns to shared selector columns. This supports layouts
+        such as forward and reversed edge blocks without indicators on the
+        unused off-diagonal blocks.
+
+        The union across flows can be linked to an existing shared selector.
+        With signed acyclic flows, direction-specific unions are used so a
+        negative flow orders the edge in reverse. No redundant structural-union
+        binary is created in that case.
+        """
+        if not isinstance(n_flows, int) or isinstance(n_flows, bool) or n_flows <= 0:
+            raise ValueError("n_flows must be a positive integer.")
+        if flow_blocks is not None and edge_indices is not None:
+            raise ValueError("Provide either edge_indices or flow_blocks, not both.")
+
+        problem = self.Flow(
+            g,
+            lb=lb,
+            ub=ub,
+            n_flows=n_flows,
+            shared_bounds=False,
+            alias_flow=flow_name,
+            force_matrix=True,
+        )
+        flow = problem.expr[flow_name]
+
+        if flow_blocks is None:
+            rows = range(g.num_edges) if edge_indices is None else edge_indices
+            flow_blocks = [(rows, slice(0, n_flows))]
+
+        normalized_blocks = []
+        used_flow_columns = set()
+        num_selected_edges = None
+        for block_index, (block_rows, block_columns) in enumerate(flow_blocks):
+            rows = np.asarray(list(block_rows), dtype=int)
+            if rows.ndim != 1:
+                raise ValueError(f"flow_blocks[{block_index}] edge indices must be one-dimensional.")
+            if np.any(rows < 0) or np.any(rows >= g.num_edges):
+                raise ValueError(f"flow_blocks[{block_index}] contains an edge outside the flow graph.")
+            if num_selected_edges is None:
+                num_selected_edges = len(rows)
+            elif len(rows) != num_selected_edges:
+                raise ValueError("Every flow block must map the same number of logical edges.")
+
+            if isinstance(block_columns, slice):
+                start, stop, step = block_columns.indices(n_flows)
+                columns = np.arange(start, stop, step, dtype=int)
+            else:
+                columns = np.asarray(list(block_columns), dtype=int)
+            if columns.ndim != 1 or not columns.size:
+                raise ValueError(f"flow_blocks[{block_index}] flow columns must be a non-empty one-dimensional set.")
+            if np.any(columns < 0) or np.any(columns >= n_flows):
+                raise ValueError(f"flow_blocks[{block_index}] contains a flow column outside [0, {n_flows}).")
+            if columns.size > 1 and np.any(np.diff(columns) != 1):
+                raise ValueError("Flow columns within each block must be contiguous and increasing.")
+            duplicate_columns = used_flow_columns.intersection(columns.tolist())
+            if duplicate_columns:
+                raise ValueError("Flow blocks must use disjoint flow columns.")
+            used_flow_columns.update(columns.tolist())
+            normalized_blocks.append((rows, slice(int(columns[0]), int(columns[-1]) + 1), len(columns)))
+
+        if not normalized_blocks or num_selected_edges is None or num_selected_edges == 0:
+            raise ValueError("SelectedFlow requires at least one mapped edge.")
+        if selected is not None and selected.shape != (num_selected_edges,):
+            raise ValueError(f"selected has shape {selected.shape}; expected {(num_selected_edges,)}.")
+
+        def combine_rows(parts):
+            """Stack row groups and restore the caller's edge order."""
+            if len(parts) == 1:
+                return parts[0][1]
+            positions = np.concatenate([part_positions for part_positions, _ in parts])
+            stacked = self.vstack([expression for _, expression in parts])
+            return stacked[np.argsort(positions), :]
+
+        selection_blocks = []
+        positive_blocks = []
+        negative_blocks = []
+        has_signed_rows = False
+        multiple_blocks = len(normalized_blocks) > 1
+        for block_index, (block_rows, block_columns, _) in enumerate(normalized_blocks):
+            block_flow = flow[block_rows, block_columns]
+            selected_lb = np.asarray(flow.lb[block_rows, block_columns], dtype=float)
+            if selected_lb.shape != block_flow.shape:
+                selected_lb = np.broadcast_to(selected_lb, block_flow.shape)
+            signed_rows = np.any(selected_lb < 0, axis=1)
+            nonnegative_positions = np.flatnonzero(~signed_rows)
+            signed_positions = np.flatnonzero(signed_rows)
+            has_signed_rows |= bool(signed_positions.size)
+
+            block_base_name = (
+                f"{selected_by_flow_name}_block_{block_index}" if multiple_blocks else selected_by_flow_name
+            )
+            selection_parts = []
+            positive_parts = []
+            negative_parts = []
+
+            if nonnegative_positions.size:
+                nonnegative_edges = block_rows[nonnegative_positions]
+                support_name = block_base_name if not signed_positions.size else f"{block_base_name}_nonnegative"
+                problem += self.ExactSupport(
+                    flow,
+                    indexes=(nonnegative_edges, block_columns),
+                    epsilon=epsilon,
+                    nonnegative=True,
+                    name=support_name,
+                )
+                support = problem.expr[support_name]
+                selection_parts.append((nonnegative_positions, support))
+                positive_parts.append((nonnegative_positions, support))
+                negative_parts.append(
+                    (
+                        nonnegative_positions,
+                        self.Constant(np.zeros(support.shape)),
+                    )
+                )
+
+            if signed_positions.size:
+                signed_edges = block_rows[signed_positions]
+                support_name = block_base_name if not nonnegative_positions.size else f"{block_base_name}_signed"
+                positive_name = f"{support_name}_positive"
+                negative_name = f"{support_name}_negative"
+                problem += self.ExactSupport(
+                    flow,
+                    indexes=(signed_edges, block_columns),
+                    epsilon=epsilon,
+                    name=support_name,
+                    positive_name=positive_name,
+                    negative_name=negative_name,
+                )
+                selection_parts.append((signed_positions, problem.expr[support_name]))
+                positive_parts.append((signed_positions, problem.expr[positive_name]))
+                negative_parts.append((signed_positions, problem.expr[negative_name]))
+
+            selection_blocks.append(combine_rows(selection_parts))
+            positive_blocks.append(combine_rows(positive_parts))
+            negative_blocks.append(combine_rows(negative_parts))
+
+        selected_by_flow = selection_blocks[0] if len(selection_blocks) == 1 else self.hstack(selection_blocks)
+        if selected_by_flow_name not in problem.expressions:
+            problem.register(selected_by_flow_name, selected_by_flow)
+
+        positive_by_flow = negative_by_flow = None
+        if has_signed_rows:
+            positive_by_flow_name = f"{selected_by_flow_name}_positive"
+            negative_by_flow_name = f"{selected_by_flow_name}_negative"
+            positive_by_flow = positive_blocks[0] if len(positive_blocks) == 1 else self.hstack(positive_blocks)
+            negative_by_flow = negative_blocks[0] if len(negative_blocks) == 1 else self.hstack(negative_blocks)
+            if positive_by_flow_name not in problem.expressions:
+                problem.register(positive_by_flow_name, positive_by_flow)
+            if negative_by_flow_name not in problem.expressions:
+                problem.register(negative_by_flow_name, negative_by_flow)
+
+        num_mapped_flows = selected_by_flow.shape[1]
+        if selector_groups is None:
+            selector_groups = np.arange(num_mapped_flows, dtype=int)
+        else:
+            selector_groups = np.asarray(list(selector_groups), dtype=int)
+            if selector_groups.shape != (num_mapped_flows,):
+                raise ValueError(f"selector_groups has shape {selector_groups.shape}; expected {(num_mapped_flows,)}.")
+            if np.any(selector_groups < 0):
+                raise ValueError("selector_groups must contain nonnegative integers.")
+            unique_groups = np.unique(selector_groups)
+            if not np.array_equal(unique_groups, np.arange(len(unique_groups))):
+                raise ValueError("selector_groups must use consecutive group indexes starting at zero.")
+
+        num_selector_groups = int(np.max(selector_groups)) + 1
+        identity_groups = np.array_equal(selector_groups, np.arange(num_mapped_flows))
+        if identity_groups:
+            selected_by_group = selected_by_flow
+        else:
+            group_name = selected_by_group_name or f"{selected_by_flow_name}_grouped"
+            selected_by_group = self.Variable(
+                group_name,
+                (num_selected_edges, num_selector_groups),
+                vartype=VarType.BINARY,
+            )
+            group_matrix = np.zeros((num_mapped_flows, num_selector_groups), dtype=float)
+            group_matrix[np.arange(num_mapped_flows), selector_groups] = 1
+            expanded_groups = selected_by_group @ group_matrix.T
+            problem += selected_by_flow <= expanded_groups
+            problem += selected_by_group <= selected_by_flow @ group_matrix
+        if selected_by_group_name is not None and selected_by_group_name not in problem.expressions:
+            problem.register(selected_by_group_name, selected_by_group)
+
+        def union_across_flows(values, name):
+            num_value_columns = values.shape[1]
+            if num_value_columns == 1:
+                union = values[:, 0]
+            else:
+                union = self.Variable(
+                    name,
+                    (num_selected_edges,),
+                    vartype=VarType.BINARY,
+                )
+                union_matrix = union.reshape((num_selected_edges, 1)) @ np.ones((1, num_value_columns))
+                problem.add_constraints(values <= union_matrix)
+                problem.add_constraints(union <= values.sum(axis=1))
+            if name not in problem.expressions:
+                problem.register(name, union)
+            return union
+
+        signed_acyclic = has_signed_rows and acyclic_graph is not None
+        positive_any = negative_any = None
+        if signed_acyclic:
+            positive_any_name = f"{selected_any_name}_positive"
+            negative_any_name = f"{selected_any_name}_negative"
+            positive_any = union_across_flows(positive_by_flow, positive_any_name)
+            negative_any = union_across_flows(negative_by_flow, negative_any_name)
+            # A shared DAG cannot use the same structural edge in both
+            # directions, even when the directions occur in different flows.
+            problem += positive_any + negative_any <= 1
+            directional_union = positive_any + negative_any
+            if selected is None:
+                selected_any = directional_union
+            else:
+                selected_any = selected
+                problem += selected_any == directional_union
+        else:
+            if selected is None:
+                selected_any = (
+                    selected_by_group[:, 0]
+                    if num_selector_groups == 1
+                    else self.Variable(
+                        selected_any_name,
+                        (num_selected_edges,),
+                        vartype=VarType.BINARY,
+                    )
+                )
+            else:
+                selected_any = selected
+
+            if num_selector_groups == 1:
+                problem += selected_any == selected_by_group[:, 0]
+            else:
+                selected_matrix = selected_any.reshape((num_selected_edges, 1)) @ np.ones((1, num_selector_groups))
+                problem += selected_by_group <= selected_matrix
+                problem += selected_any <= selected_by_group.sum(axis=1)
+
+        if selected_any_name not in problem.expressions:
+            problem.register(selected_any_name, selected_any)
+
+        if acyclic_graph is not None:
+            if acyclic_graph.num_edges != num_selected_edges:
+                raise ValueError("acyclic_graph must have one edge for each selected flow edge.")
+            if signed_acyclic:
+                self.Acyclic(
+                    acyclic_graph,
+                    problem,
+                    indicator_positive_var_name=f"{selected_any_name}_positive",
+                    indicator_negative_var_name=f"{selected_any_name}_negative",
+                    acyclic_var_name=dag_name,
+                    max_parents=max_parents,
+                )
+            else:
+                indicator_name = f"_{selected_any_name}_acyclic"
+                problem.register(indicator_name, selected_any)
+                self.Acyclic(
+                    acyclic_graph,
+                    problem,
+                    indicator_positive_var_name=indicator_name,
+                    acyclic_var_name=dag_name,
+                    max_parents=max_parents,
+                )
+        return problem
 
     def NonZeroIndicator(
         self,
