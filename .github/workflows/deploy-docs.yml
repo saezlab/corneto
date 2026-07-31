@@ -7,24 +7,8 @@ env:
 on:
   push:
     branches:
-      - dev
       - main
-    tags:
-      - '*'
   workflow_dispatch:
-    inputs:
-      target:
-        description: "What to build/deploy (dev=latest, main=stable, or tag)"
-        type: choice
-        required: true
-        options:
-          - dev
-          - main
-          - tag
-      tag:
-        description: "Tag to deploy when target=tag (e.g., v1.0.0-beta.3)"
-        type: string
-        required: false
   workflow_run:
     workflows: ["Publish Python Package"]
     types: [completed]
@@ -43,14 +27,7 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
-          ref: >-
-            ${{
-              github.event_name == 'workflow_dispatch' &&
-              (github.event.inputs.target == 'tag' && format('refs/tags/{0}', github.event.inputs.tag) ||
-               format('refs/heads/{0}', github.event.inputs.target))
-              || github.event_name == 'workflow_run' && github.event.workflow_run.head_sha
-              || github.ref
-            }}
+          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.ref }}
 
       - name: Set up Python & Graphviz
         uses: actions/setup-python@v5
@@ -89,22 +66,19 @@ jobs:
       - name: Determine version_folder
         id: set_version
         run: |
-          case "${GITHUB_REF}" in
-            refs/heads/dev)
-              echo "version_folder=latest" >> $GITHUB_OUTPUT
-              ;;
-            refs/heads/main)
-              echo "version_folder=stable" >> $GITHUB_OUTPUT
-              ;;
-            refs/tags/*)
-              v="${GITHUB_REF#refs/tags/}"
-              echo "version_folder=${v}" >> $GITHUB_OUTPUT
-              ;;
-            *)
-              echo "No docs to deploy for ${GITHUB_REF}" >&2
-              exit 0
-              ;;
-          esac
+          if [ "${{ github.event_name }}" = "workflow_run" ]; then
+            if [[ "${{ github.event.workflow_run.head_branch }}" == v* ]]; then
+              echo "version_folder=${{ github.event.workflow_run.head_branch }}" >> $GITHUB_OUTPUT
+            else
+              echo "Publish workflow did not run for a release tag" >&2
+              exit 1
+            fi
+          elif [ "${GITHUB_REF}" = "refs/heads/main" ]; then
+            echo "version_folder=stable" >> $GITHUB_OUTPUT
+          else
+            echo "No documentation target for ${GITHUB_REF}" >&2
+            exit 1
+          fi
 
       - name: Sync GitHub Releases to Docs
         env:
@@ -119,15 +93,6 @@ jobs:
           DOCS_BASE_URL: https://corneto.org
         run: poetry run sphinx-build -W --keep-going -b html docs docs/_build/html
 
-      - name: Deploy “latest” docs
-        if: ${{ steps.set_version.outputs.version_folder == 'latest' }}
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs/_build/html
-          destination_dir: latest
-          keep_files: true
-
       - name: Deploy “stable” docs
         if: ${{ steps.set_version.outputs.version_folder == 'stable' }}
         uses: peaceiris/actions-gh-pages@v4
@@ -137,8 +102,8 @@ jobs:
           destination_dir: stable
           keep_files: true
 
-      - name: Deploy versioned docs for tag
-        if: ${{ startsWith(github.ref, 'refs/tags/') }}
+      - name: Deploy versioned docs for release tag
+        if: ${{ steps.set_version.outputs.version_folder != 'stable' }}
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}

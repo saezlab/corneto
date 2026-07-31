@@ -15,17 +15,33 @@ and transcription-factor mappings for one condition. Their ``build_many``
 methods accept named conditions. ``milp_carnival`` remains as a compatibility
 formulation.
 
+``CellNOptDAG.build`` accepts binary input, measurement, and optional inhibitor
+mappings. ``build_many`` infers one shared connected reaction model while
+evaluating its Boolean state independently in every named condition.
+
 .. autosummary::
     :toctree: generated/
 
 
     CarnivalFlow
     CarnivalILP
+    signaling.CellNOptDAG
     BidirectionalPHONEMeS
     PHONEMeS
     compute_phonemes_scores
     milp_carnival
-    signaling.cellnopt_ilp.cellnoptILP
+
+CellNOpt visualization
+~~~~~~~~~~~~~~~~~~~~~~
+
+CellNOpt plotting utilities use the standard CORNETO graph renderers for
+network views and return Matplotlib figure/axes objects for data-fit views.
+
+.. autosummary::
+    :toctree: generated/
+
+    signaling.plot_cellnopt_model
+    signaling.plot_cellnopt_fit
 
 Metabolism
 ----------

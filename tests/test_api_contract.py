@@ -79,6 +79,12 @@ def test_methods_api_surface_and_identity():
     assert methods.create_multisample_shortest_path is create_multisample_shortest_path
 
 
+def test_experimental_cellnopt_ilp_surface_is_removed():
+    """The superseded experimental CellNOpt ILP modules have no shims."""
+    assert importlib.util.find_spec("corneto.methods.signal") is None
+    assert importlib.util.find_spec("corneto.methods.signaling.cellnopt_ilp") is None
+
+
 def test_ml_api_replaces_private_module():
     """KPNN helpers live in the public ML module without a private-path shim."""
     assert ml.__all__ == [

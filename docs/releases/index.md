@@ -7,6 +7,7 @@ This section contains detailed release notes for CORNETO versions, documenting n
 ```{toctree}
 :maxdepth: 1
 
+v1.0.0-rc.3
 v1.0.0-rc.1
 migration-1.0
 v1.0.0-beta.2
@@ -41,7 +42,7 @@ CORNETO follows [semantic versioning](https://semver.org/) with the following re
 
 - **GitHub Releases**: Follow releases on the [GitHub repository](https://github.com/saezlab/corneto/releases)
 - **PyPI**: Install the latest version with `pip install --upgrade corneto`
-- **Development**: Track development progress on the `dev` branch
+- **Development**: Track development through pull requests into `main`
 
 ## Contributing to Releases
 
