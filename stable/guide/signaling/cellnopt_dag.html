@@ -1,0 +1,1645 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Inferring intracellular signaling models with CellNOptDAG &#8212; CORNETO  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=53e23fa6" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('consent', 'default', {
+                    'ad_storage': 'denied',
+                    'ad_user_data': 'denied',
+                    'ad_personalization': 'denied',
+                    'analytics_storage': 'denied'
+                });
+            </script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-Z263GN2PKK"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', 'G-Z263GN2PKK');
+            </script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'guide/signaling/cellnopt_dag';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1785487194';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'stable';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://saezlab.github.io/corneto/guide/signaling/cellnopt_dag.html" />
+    <link rel="icon" href="../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Interoperability" href="../interoperability/index.html" />
+    <link rel="prev" title="Global upstream and downstream PHONEMeS" href="bidirectional-phonemes.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="light">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="../../_static/logo.png" class="logo__image only-light" alt="CORNETO  documentation - Home"/>
+    <img src="../../_static/logo.png" class="logo__image only-dark pst-js-only" alt="CORNETO  documentation - Home"/>
+  
+  
+</a></div>
+    
+      <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install.html">
+    Install
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api/index.html">
+    Reference
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../releases/index.html">
+    Release Notes
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-external" href="https://github.com/saezlab/corneto">
+    GitHub
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install.html">
+    Install
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api/index.html">
+    Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../releases/index.html">
+    Release Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/saezlab/corneto">
+    GitHub
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../method-inputs.html">Building method problems from explicit inputs</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../intro/index.html">Getting started</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../intro/prior-knowledge.html">Prior Knowledge and Graphs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/data.html">Working with data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/plotting.html">Plotting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/constrained-optimization.html">Constrained Optimization</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../networks/index.html">Network methods</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../networks/shortest-paths.html">Shortest paths</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../networks/multi-sample-shortest-paths.html">Multi-sample shortest paths</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../networks/multi-commodity-network-flows.html">Multi-commodity Network Flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../networks/acyclic-flows.html">Acyclic Flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../networks/steiner-trees.html">Steiner trees</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../networks/pcst.html">Prize-Collecting Steiner Trees (PCST)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../networks/multi-pcst-grb.html">Multi-sample PCST</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../metabolism/index.html">Metabolism</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../metabolism/flux-balance-analysis.html">Flux balance analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metabolism/multicondition-sfba.html">Multi-condition FBA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metabolism/imat.html">Integrating gene expression into metabolic models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metabolism/multicondition-imat.html">Multi-condition gene expression integration</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Signaling</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="carnival.html">CARNIVAL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multisample-carnival.html">Multi-sample CARNIVAL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="phonemes.html">PHONEMeS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bidirectional-phonemes.html">Global upstream and downstream PHONEMeS</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Inferring intracellular signaling models with CellNOptDAG</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../interoperability/index.html">Interoperability</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../interoperability/cobrapy.html">COBRApy: Constraint-based metabolic modeling in Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../interoperability/liana.html">LIANA+: An all-in-one cell-cell communication framework</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../interoperability/decoupler.html">Decoupler: Ensemble of methods to infer biological activities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../interoperability/omnipath.html">Omnipath: intra- &amp; intercellular signaling knowledge</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../interoperability/networkx.html">NetworkX: Network Analysis in Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../interoperability/annnet.html">AnnNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../interoperability/cvxpy.html">CVXPY: Convex optimization, for everyone</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../interoperability/picos.html">PICOS: A Python interface to conic optimization solvers</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Guide</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Signaling</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Inferring intracellular signaling models with CellNOptDAG</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="inferring-intracellular-signaling-models-with-cellnoptdag">
+<h1>Inferring intracellular signaling models with CellNOptDAG<a class="headerlink" href="#inferring-intracellular-signaling-models-with-cellnoptdag" title="Link to this heading">#</a></h1>
+<p>Many signaling experiments follow the same design: stimulate a receptor or inhibit a signaling protein, wait until a chosen endpoint, and measure a panel of phosphoproteins or reporters. Each experimental condition is therefore a <strong>snapshot of the cellular response to an intervention</strong>.</p>
+<p>This method is built around one question:</p>
+<blockquote>
+<div><p><strong>What is the smallest connected feed-forward signaling logic sufficient to explain the observed endpoint responses across all interventions?</strong></p>
+</div></blockquote>
+<p>A prior-knowledge network (PKN) supplies the candidate biology. It collects signaling interactions reported in the literature or databases and is deliberately inclusive: it may contain alternative routes, AND gates, inhibitory effects, and feedback loops. <code class="docutils literal notranslate"><span class="pre">CellNOptDAG</span></code> searches this network for a small Boolean signaling model that answers the question above across the complete experiment.</p>
+<p>Proteins are represented as inactive (<code class="docutils literal notranslate"><span class="pre">0</span></code>) or active (<code class="docutils literal notranslate"><span class="pre">1</span></code>), and the same pathway structure is used in every condition. The interventions change which parts of that pathway can respond. This is a simplified model of intracellular signal transmission—not a reconstruction of every molecular event between stimulation and measurement.</p>
+<p>The worked example develops the answer in three steps:</p>
+<ol class="arabic simple">
+<li><p>identify which candidate signaling reactions are needed;</p></li>
+<li><p>examine how the predicted pathway response changes after each stimulation or inhibition;</p></li>
+<li><p>compare the predicted activities with the measured readouts.</p></li>
+</ol>
+<p>The main workflow explains these steps visually. The final <strong>Under the hood</strong> section connects the biological intuition to the Boolean and optimization formulation.</p>
+<section id="one-signaling-model-several-perturbation-conditions">
+<h2>One signaling model, several perturbation conditions<a class="headerlink" href="#one-signaling-model-several-perturbation-conditions" title="Link to this heading">#</a></h2>
+<p>CellNOpt learns one pathway diagram from the complete experiment. What happens on that diagram changes from one condition to another.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Part of the experiment</p></th>
+<th class="head"><p>Biological meaning</p></th>
+<th class="head"><p>Shared across conditions?</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Selected reactions</p></td>
+<td><p>The signaling interactions retained in the inferred pathway</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-odd"><td><p>Stimuli and inhibitors</p></td>
+<td><p>Which proteins are experimentally forced on or off</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-even"><td><p>Predicted protein activity</p></td>
+<td><p>The model’s active/inactive response after each intervention</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-odd"><td><p>Active reactions</p></td>
+<td><p>The retained interactions through which signal can pass in that condition</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-even"><td><p>Measured readouts</p></td>
+<td><p>The observed endpoint response used to evaluate the prediction</p></td>
+<td><p>No</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>A reaction may therefore belong to the inferred pathway but remain inactive in a particular condition. For example, an <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">→</span> <span class="pre">X</span></code> reaction can be part of the shared model even when <code class="docutils literal notranslate"><span class="pre">A</span></code> was not stimulated in one experiment.</p>
+<p>CORNETO also checks that the retained pathway connects experimental interventions to measured responses. That computational check is explained later; it should not be interpreted as a measured biochemical flux.</p>
+</section>
+<section id="relationship-to-cellnoptr">
+<h2>Relationship to CellNOptR<a class="headerlink" href="#relationship-to-cellnoptr" title="Link to this heading">#</a></h2>
+<p><a class="reference external" href="https://doi.org/10.1186/1752-0509-6-133">CellNOptR</a> established the idea of training logic models of intracellular signaling against perturbation data. It can iteratively propagate Boolean states toward a steady state and can represent successive pseudo-steady states when several experimental times are available.</p>
+<p>This guide addresses the simpler case of one response snapshot per intervention. It retains the CellNOpt ideas of selecting reactions, evaluating Boolean responses in every condition, and balancing data fit against model size. CORNETO adds two restrictions for this endpoint setting: the selected model must be acyclic, and every selected reaction must belong to a connected route from an intervention to a readout. These additions are summarized in <strong>Under the hood</strong>.</p>
+</section>
+<section id="example-perturbations-and-two-signaling-readouts">
+<h2>Example: perturbations and two signaling readouts<a class="headerlink" href="#example-perturbations-and-two-signaling-readouts" title="Link to this heading">#</a></h2>
+<p>We use abstract labels so that the logic is easy to follow. <code class="docutils literal notranslate"><span class="pre">A</span></code>, <code class="docutils literal notranslate"><span class="pre">C</span></code>, and <code class="docutils literal notranslate"><span class="pre">D</span></code> play the role of experimentally controlled upstream signals; <code class="docutils literal notranslate"><span class="pre">B</span></code>, <code class="docutils literal notranslate"><span class="pre">X</span></code>, and <code class="docutils literal notranslate"><span class="pre">W</span></code> are intracellular signaling proteins; and <code class="docutils literal notranslate"><span class="pre">Y</span></code> and <code class="docutils literal notranslate"><span class="pre">Z</span></code> are measured downstream responses.</p>
+<p>The candidate network includes several plausible mechanisms:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">D</span> <span class="pre">→</span> <span class="pre">B</span></code>, so activating <code class="docutils literal notranslate"><span class="pre">D</span></code> can indirectly block <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">AND</span> <span class="pre">NOT</span> <span class="pre">B</span> <span class="pre">→</span> <span class="pre">X</span></code>;</p></li>
+<li><p>a branch from <code class="docutils literal notranslate"><span class="pre">X</span></code> toward both readouts;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">W</span> <span class="pre">AND</span> <span class="pre">C</span> <span class="pre">→</span> <span class="pre">Z</span></code>, representing a response that needs two signals simultaneously;</p></li>
+<li><p>alternative ways to activate <code class="docutils literal notranslate"><span class="pre">Y</span></code> through <code class="docutils literal notranslate"><span class="pre">X</span></code>, <code class="docutils literal notranslate"><span class="pre">C</span></code>, or the absence of <code class="docutils literal notranslate"><span class="pre">D</span></code>.</p></li>
+</ul>
+<p>The PKN also contains shortcuts and feedback interactions. They remain legitimate biological hypotheses. The question is whether the snapshot experiment contains enough information to retain them in the fitted endpoint model.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">display</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">corneto</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cn</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods.signaling</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">CellNOptDAG</span><span class="p">,</span>
+    <span class="n">plot_cellnopt_fit</span><span class="p">,</span>
+    <span class="n">plot_cellnopt_model</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="define-the-prior-knowledge-network">
+<h3>Define the prior-knowledge network<a class="headerlink" href="#define-the-prior-knowledge-network" title="Link to this heading">#</a></h3>
+<p>Positive interactions use sign <code class="docutils literal notranslate"><span class="pre">+1</span></code>; inhibitory interactions use sign <code class="docutils literal notranslate"><span class="pre">−1</span></code>. The temporary nodes <code class="docutils literal notranslate"><span class="pre">AND1</span></code> and <code class="docutils literal notranslate"><span class="pre">AND2</span></code> are the usual SIF representation of two combinatorial signaling rules:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">AND</span> <span class="pre">NOT</span> <span class="pre">B</span> <span class="pre">→</span> <span class="pre">X</span></code>: <code class="docutils literal notranslate"><span class="pre">A</span></code> must be active while <code class="docutils literal notranslate"><span class="pre">B</span></code> must be inactive;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">W</span> <span class="pre">AND</span> <span class="pre">C</span> <span class="pre">→</span> <span class="pre">Z</span></code>: both <code class="docutils literal notranslate"><span class="pre">W</span></code> and <code class="docutils literal notranslate"><span class="pre">C</span></code> must be active.</p></li>
+</ul>
+<p>CORNETO treats every complete AND rule as one candidate reaction. The network also includes direct routes to <code class="docutils literal notranslate"><span class="pre">Z</span></code> and the feedback candidates <code class="docutils literal notranslate"><span class="pre">Y</span> <span class="pre">→</span> <span class="pre">Z</span> <span class="pre">→</span> <span class="pre">X</span></code> and <code class="docutils literal notranslate"><span class="pre">Z</span> <span class="pre">→</span> <span class="pre">W</span> <span class="pre">→</span> <span class="pre">Z</span></code>. Thus the PKN contains cycles even though the fitted endpoint model will not.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pkn_edges</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;AND1&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;AND1&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;AND1&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;X&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;W&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;W&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;AND2&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;AND2&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;AND2&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;W&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;X&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;W&quot;</span><span class="p">),</span>
+<span class="p">]</span>
+<span class="n">pkn</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Graph</span><span class="o">.</span><span class="n">from_tuples</span><span class="p">(</span><span class="n">pkn_edges</span><span class="p">)</span>
+
+<span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">pkn_edges</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;source&quot;</span><span class="p">,</span> <span class="s2">&quot;sign&quot;</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>source</th>
+      <th>sign</th>
+      <th>target</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>A</td>
+      <td>1</td>
+      <td>AND1</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>B</td>
+      <td>-1</td>
+      <td>AND1</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>AND1</td>
+      <td>1</td>
+      <td>X</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>D</td>
+      <td>1</td>
+      <td>B</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>X</td>
+      <td>1</td>
+      <td>Y</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>X</td>
+      <td>1</td>
+      <td>W</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>W</td>
+      <td>1</td>
+      <td>AND2</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>C</td>
+      <td>1</td>
+      <td>AND2</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>AND2</td>
+      <td>1</td>
+      <td>Z</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>C</td>
+      <td>1</td>
+      <td>Y</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>D</td>
+      <td>-1</td>
+      <td>Y</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>W</td>
+      <td>1</td>
+      <td>Z</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>C</td>
+      <td>1</td>
+      <td>Z</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>Y</td>
+      <td>1</td>
+      <td>Z</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>Z</td>
+      <td>1</td>
+      <td>X</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>Z</td>
+      <td>-1</td>
+      <td>W</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="define-the-perturbation-experiment">
+<h3>Define the perturbation experiment<a class="headerlink" href="#define-the-perturbation-experiment" title="Link to this heading">#</a></h3>
+<p>Each row below corresponds to one experimental condition. It records what was done to the cells and what was measured afterward:</p>
+<ul class="simple">
+<li><p><strong>input:</strong> <code class="docutils literal notranslate"><span class="pre">1</span></code> forces an upstream signal on and <code class="docutils literal notranslate"><span class="pre">0</span></code> keeps it off, representing stimulus present or absent in this simplified experiment;</p></li>
+<li><p><strong>inhibit:</strong> <code class="docutils literal notranslate"><span class="pre">1</span></code> applies an inhibitor and forces its target off;</p></li>
+<li><p><strong>readout:</strong> the observed activity at the endpoint.</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">Y</span></code> and <code class="docutils literal notranslate"><span class="pre">Z</span></code> are the only measured responses. Interventions target the upstream or internal signaling proteins <code class="docutils literal notranslate"><span class="pre">A–D</span></code> and <code class="docutils literal notranslate"><span class="pre">W</span></code>, so the roles of experimental cue and downstream readout remain distinct. The interpretation column is a short label for the reader and is not used by the model.</p>
+<p>The informative part of the design is the contrast between rows. <code class="docutils literal notranslate"><span class="pre">C1</span></code> and <code class="docutils literal notranslate"><span class="pre">C2</span></code> receive the same upstream inputs, but only <code class="docutils literal notranslate"><span class="pre">C1</span></code> inhibits <code class="docutils literal notranslate"><span class="pre">B</span></code>; their different <code class="docutils literal notranslate"><span class="pre">Y</span></code> responses test the route <code class="docutils literal notranslate"><span class="pre">D</span> <span class="pre">→</span> <span class="pre">B</span></code> followed by the first AND gate. <code class="docutils literal notranslate"><span class="pre">C3</span></code> and <code class="docutils literal notranslate"><span class="pre">C4</span></code> test whether <code class="docutils literal notranslate"><span class="pre">C</span></code> alone is sufficient for <code class="docutils literal notranslate"><span class="pre">Z</span></code>, or whether <code class="docutils literal notranslate"><span class="pre">W</span></code> is also required. <code class="docutils literal notranslate"><span class="pre">C4</span></code> and <code class="docutils literal notranslate"><span class="pre">C6</span></code> have the same inputs, but inhibiting <code class="docutils literal notranslate"><span class="pre">W</span></code> in <code class="docutils literal notranslate"><span class="pre">C6</span></code> turns <code class="docutils literal notranslate"><span class="pre">Z</span></code> off while leaving <code class="docutils literal notranslate"><span class="pre">Y</span></code> active, directly testing the <code class="docutils literal notranslate"><span class="pre">W</span> <span class="pre">AND</span> <span class="pre">C</span> <span class="pre">→</span> <span class="pre">Z</span></code> branch.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">inputs</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;C1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;D&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+    <span class="s2">&quot;C2&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;D&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+    <span class="s2">&quot;C3&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;D&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+    <span class="s2">&quot;C4&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;D&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
+    <span class="s2">&quot;C5&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;D&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
+    <span class="s2">&quot;C6&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;D&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
+<span class="p">}</span>
+<span class="n">measurements</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;C1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;Y&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
+    <span class="s2">&quot;C2&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;Y&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
+    <span class="s2">&quot;C3&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;Y&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
+    <span class="s2">&quot;C4&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;Y&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+    <span class="s2">&quot;C5&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;Y&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
+    <span class="s2">&quot;C6&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;Y&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
+<span class="p">}</span>
+<span class="n">inhibitors</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;C1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;B&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+    <span class="s2">&quot;C2&quot;</span><span class="p">:</span> <span class="p">{},</span>
+    <span class="s2">&quot;C3&quot;</span><span class="p">:</span> <span class="p">{},</span>
+    <span class="s2">&quot;C4&quot;</span><span class="p">:</span> <span class="p">{},</span>
+    <span class="s2">&quot;C5&quot;</span><span class="p">:</span> <span class="p">{},</span>
+    <span class="s2">&quot;C6&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;W&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+<span class="p">}</span>
+<span class="n">behavior</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;C1&quot;</span><span class="p">:</span> <span class="s2">&quot;B inhibition enables AND1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;C2&quot;</span><span class="p">:</span> <span class="s2">&quot;D activates B and blocks AND1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;C3&quot;</span><span class="p">:</span> <span class="s2">&quot;C alone&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;C4&quot;</span><span class="p">:</span> <span class="s2">&quot;AND2 enabled&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;C5&quot;</span><span class="p">:</span> <span class="s2">&quot;negative-literal route&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;C6&quot;</span><span class="p">:</span> <span class="s2">&quot;W inhibited; Z lost&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">experiment_table</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">inputs</span><span class="p">)</span>
+<span class="n">experiment_table</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;condition&quot;</span>
+<span class="n">experiment_table</span><span class="p">[</span><span class="s2">&quot;interpretation&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">behavior</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">species</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="s2">&quot;D&quot;</span><span class="p">]:</span>
+    <span class="n">experiment_table</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;input </span><span class="si">{</span><span class="n">species</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">inputs</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="n">species</span><span class="p">]</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">inputs</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">species</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="s2">&quot;W&quot;</span><span class="p">]:</span>
+    <span class="n">experiment_table</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;inhibit </span><span class="si">{</span><span class="n">species</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">inhibitors</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">species</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">inputs</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">species</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">]:</span>
+    <span class="n">experiment_table</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;readout </span><span class="si">{</span><span class="n">species</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">measurements</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="n">species</span><span class="p">]</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">inputs</span><span class="p">]</span>
+
+<span class="n">experiment_table</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>interpretation</th>
+      <th>input A</th>
+      <th>input C</th>
+      <th>input D</th>
+      <th>inhibit B</th>
+      <th>inhibit W</th>
+      <th>readout Y</th>
+      <th>readout Z</th>
+    </tr>
+    <tr>
+      <th>condition</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>C1</th>
+      <td>B inhibition enables AND1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>C2</th>
+      <td>D activates B and blocks AND1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>C3</th>
+      <td>C alone</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>C4</th>
+      <td>AND2 enabled</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>C5</th>
+      <td>negative-literal route</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>C6</th>
+      <td>W inhibited; Z lost</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+</section>
+<section id="fit-one-pathway-to-the-complete-experiment">
+<h2>Fit one pathway to the complete experiment<a class="headerlink" href="#fit-one-pathway-to-the-complete-experiment" title="Link to this heading">#</a></h2>
+<p>All six conditions are fitted together because they are assumed to probe the same underlying signaling network. The model first tries to reproduce the measured <code class="docutils literal notranslate"><span class="pre">Y</span></code> and <code class="docutils literal notranslate"><span class="pre">Z</span></code> responses. Among similarly fitting explanations, it prefers the one using fewer reactions.</p>
+<p><code class="docutils literal notranslate"><span class="pre">lambda_reg</span></code> controls this preference for a smaller model. Its value is deliberately low here: agreement with the experimental readouts is more important than removing one additional reaction.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">method</span> <span class="o">=</span> <span class="n">CellNOptDAG</span><span class="p">(</span><span class="n">lambda_reg</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span>
+<span class="n">problem</span> <span class="o">=</span> <span class="n">method</span><span class="o">.</span><span class="n">build_many</span><span class="p">(</span>
+    <span class="n">pkn</span><span class="p">,</span>
+    <span class="n">inputs</span><span class="o">=</span><span class="n">inputs</span><span class="p">,</span>
+    <span class="n">measurements</span><span class="o">=</span><span class="n">measurements</span><span class="p">,</span>
+    <span class="n">inhibitors</span><span class="o">=</span><span class="n">inhibitors</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;SCIPY&quot;</span><span class="p">)</span>
+<span class="n">result</span><span class="o">.</span><span class="n">status</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&#39;optimal&#39;
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="which-signaling-reactions-are-supported">
+<h2>Which signaling reactions are supported?<a class="headerlink" href="#which-signaling-reactions-are-supported" title="Link to this heading">#</a></h2>
+<p>The fitted model retains <code class="docutils literal notranslate"><span class="pre">D</span> <span class="pre">→</span> <span class="pre">B</span></code>, both AND gates, and three alternative routes to <code class="docutils literal notranslate"><span class="pre">Y</span></code>. Together, these reactions explain why different interventions can produce different combinations of <code class="docutils literal notranslate"><span class="pre">Y</span></code> and <code class="docutils literal notranslate"><span class="pre">Z</span></code> activity.</p>
+<p>The direct shortcuts to <code class="docutils literal notranslate"><span class="pre">Z</span></code> and the feedback reactions are not needed for these observations. They remain in the PKN as biological possibilities, but this particular endpoint experiment does not support including them in the smaller fitted model.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">reaction_label</span><span class="p">(</span><span class="n">reaction</span><span class="p">):</span>
+    <span class="n">literals</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">node</span><span class="p">)</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">reaction</span><span class="o">.</span><span class="n">positive_literals</span><span class="p">]</span>
+    <span class="n">literals</span> <span class="o">+=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;NOT </span><span class="si">{</span><span class="n">node</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">reaction</span><span class="o">.</span><span class="n">negative_literals</span><span class="p">]</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39; AND &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">literals</span><span class="p">)</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">reaction</span><span class="o">.</span><span class="n">product</span><span class="si">}</span><span class="s2">&quot;</span>
+
+<span class="n">reaction_labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">reaction_label</span><span class="p">(</span><span class="n">reaction</span><span class="p">)</span> <span class="k">for</span> <span class="n">reaction</span> <span class="ow">in</span> <span class="n">method</span><span class="o">.</span><span class="n">reactions</span><span class="p">]</span>
+<span class="n">selected</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rint</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">reaction_selected</span><span class="o">.</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;reaction&quot;</span><span class="p">:</span> <span class="n">reaction_labels</span><span class="p">,</span> <span class="s2">&quot;selected&quot;</span><span class="p">:</span> <span class="n">selected</span><span class="p">})</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>reaction</th>
+      <th>selected</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>D -&gt; B</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>X -&gt; Y</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>X -&gt; W</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>C -&gt; Y</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>NOT D -&gt; Y</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>W -&gt; Z</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>C -&gt; Z</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>Y -&gt; Z</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>Z -&gt; X</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>NOT Z -&gt; W</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>A AND NOT B -&gt; X</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>W AND C -&gt; Z</td>
+      <td>1</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<section id="compare-the-candidate-network-with-the-fitted-model">
+<h3>Compare the candidate network with the fitted model<a class="headerlink" href="#compare-the-candidate-network-with-the-fitted-model" title="Link to this heading">#</a></h3>
+<p>This plot shows the complete candidate network. Reactions retained in the fitted model use the main styling; alternatives that were available but not selected are pale and dotted.</p>
+<p>Keeping the unselected reactions visible is useful here. It shows that the feedback loops and shortcuts were offered to the model rather than silently removed from the PKN.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_cellnopt_model</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">show_unselected</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/c3296251e185069c9ad91298b2e21f76142b150f84a0d72d6a83f41071e69503.svg" src="../../_images/c3296251e185069c9ad91298b2e21f76142b150f84a0d72d6a83f41071e69503.svg" />
+</div>
+</div>
+</section>
+<section id="inspect-the-fitted-signaling-model">
+<h3>Inspect the fitted signaling model<a class="headerlink" href="#inspect-the-fitted-signaling-model" title="Link to this heading">#</a></h3>
+<p>Hiding unselected reactions leaves the signaling hypothesis supported by this experiment. <code class="docutils literal notranslate"><span class="pre">D</span> <span class="pre">→</span> <span class="pre">B</span></code> controls the first AND gate, <code class="docutils literal notranslate"><span class="pre">X</span></code> branches toward <code class="docutils literal notranslate"><span class="pre">Y</span></code> and <code class="docutils literal notranslate"><span class="pre">W</span></code>, and the second AND gate combines <code class="docutils literal notranslate"><span class="pre">W</span></code> with <code class="docutils literal notranslate"><span class="pre">C</span></code> to activate <code class="docutils literal notranslate"><span class="pre">Z</span></code>. Separate routes can activate <code class="docutils literal notranslate"><span class="pre">Y</span></code> under different perturbations.</p>
+<p>This is the shared pathway diagram. The next plots show how much of it is active in each condition.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_cellnopt_model</span><span class="p">(</span><span class="n">method</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/f7e98b72f26143c0cd2216a82c56d0c54162e0ec0a16ee77606ab1ba67832288.svg" src="../../_images/f7e98b72f26143c0cd2216a82c56d0c54162e0ec0a16ee77606ab1ba67832288.svg" />
+</div>
+</div>
+</section>
+</section>
+<section id="does-the-model-reproduce-the-measured-responses">
+<h2>Does the model reproduce the measured responses?<a class="headerlink" href="#does-the-model-reproduce-the-measured-responses" title="Link to this heading">#</a></h2>
+<p>Each row is one intervention condition, and the <code class="docutils literal notranslate"><span class="pre">Y</span></code> and <code class="docutils literal notranslate"><span class="pre">Z</span></code> panels match the readout columns in the experiment table:</p>
+<ul class="simple">
+<li><p>red open circles show the measured endpoint response;</p></li>
+<li><p>blue squares show the model prediction;</p></li>
+<li><p>a vertical segment would show a disagreement;</p></li>
+<li><p>the background color summarizes the prediction error.</p></li>
+</ul>
+<p>Only measured signaling responses are shown in this main fit view. Predicted activities of unmeasured internal proteins are inspected later, where they are clearly distinguished from experimental observations.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fit_figure</span><span class="p">,</span> <span class="n">fit_axes</span> <span class="o">=</span> <span class="n">plot_cellnopt_fit</span><span class="p">(</span><span class="n">method</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/b9b59815edbc414146dad28ba5bb94d158ded5fa801dc0a00d66e65fc22eb673.png" src="../../_images/b9b59815edbc414146dad28ba5bb94d158ded5fa801dc0a00d66e65fc22eb673.png" />
+</div>
+</div>
+<p>The horizontal position is labelled <strong>Endpoint</strong> because these data contain one post-intervention snapshot, not a time course. The plot does not create an artificial starting value or assume that the first condition is a baseline. If future formulations model several measured time points, observed and predicted values can instead be placed at their actual sampling times.</p>
+</section>
+<section id="a-pathway-reaction-can-be-present-but-inactive">
+<h2>A pathway reaction can be present but inactive<a class="headerlink" href="#a-pathway-reaction-can-be-present-but-inactive" title="Link to this heading">#</a></h2>
+<p>It helps to separate the <strong>pathway map</strong> from the <strong>response in one experiment</strong>. A road can be present on a map even when no traffic uses it; likewise, a reaction can belong to the fitted signaling model even when its upstream requirements are not satisfied in one condition.</p>
+<p><code class="docutils literal notranslate"><span class="pre">C1</span></code> and <code class="docutils literal notranslate"><span class="pre">C2</span></code> have the same upstream inputs: <code class="docutils literal notranslate"><span class="pre">A=1</span></code>, <code class="docutils literal notranslate"><span class="pre">C=0</span></code>, and <code class="docutils literal notranslate"><span class="pre">D=1</span></code>. In both conditions, <code class="docutils literal notranslate"><span class="pre">D</span></code> can activate <code class="docutils literal notranslate"><span class="pre">B</span></code>. In <code class="docutils literal notranslate"><span class="pre">C1</span></code>, however, the experimental inhibitor forces <code class="docutils literal notranslate"><span class="pre">B</span></code> off. This allows the rule <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">AND</span> <span class="pre">NOT</span> <span class="pre">B</span> <span class="pre">→</span> <span class="pre">X</span></code> to transmit the signal. In <code class="docutils literal notranslate"><span class="pre">C2</span></code>, <code class="docutils literal notranslate"><span class="pre">B</span></code> remains active, the <code class="docutils literal notranslate"><span class="pre">NOT</span> <span class="pre">B</span></code> requirement fails, and the same pathway branch is inactive and drawn with dashed lines.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_cellnopt_model</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">condition</span><span class="o">=</span><span class="s2">&quot;C1&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/db85e8379e86ff8f6da03db3a9ed966c45451b549d8851f4492c57d3d58f8124.svg" src="../../_images/db85e8379e86ff8f6da03db3a9ed966c45451b549d8851f4492c57d3d58f8124.svg" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_cellnopt_model</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">condition</span><span class="o">=</span><span class="s2">&quot;C2&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/a02b55efd42b6e0e5b72f315e1f8612d4083315210351125d14e32605a9997bd.svg" src="../../_images/a02b55efd42b6e0e5b72f315e1f8612d4083315210351125d14e32605a9997bd.svg" />
+</div>
+</div>
+<section id="an-inhibitor-changes-its-target-not-the-whole-cell">
+<h3>An inhibitor changes its target, not the whole cell<a class="headerlink" href="#an-inhibitor-changes-its-target-not-the-whole-cell" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">C4</span></code> and <code class="docutils literal notranslate"><span class="pre">C6</span></code> have the same upstream inputs. Without the inhibitor in <code class="docutils literal notranslate"><span class="pre">C4</span></code>, <code class="docutils literal notranslate"><span class="pre">X</span></code> activates <code class="docutils literal notranslate"><span class="pre">W</span></code>, the rule <code class="docutils literal notranslate"><span class="pre">W</span> <span class="pre">AND</span> <span class="pre">C</span> <span class="pre">→</span> <span class="pre">Z</span></code> is satisfied, and both readouts are active.</p>
+<p>In <code class="docutils literal notranslate"><span class="pre">C6</span></code>, the inhibitor specifically forces internal protein <code class="docutils literal notranslate"><span class="pre">W</span></code> off. Signaling to <code class="docutils literal notranslate"><span class="pre">Y</span></code> remains active through <code class="docutils literal notranslate"><span class="pre">X</span></code> and <code class="docutils literal notranslate"><span class="pre">C</span></code>, but the AND rule producing <code class="docutils literal notranslate"><span class="pre">Z</span></code> is no longer satisfied, matching the observed <code class="docutils literal notranslate"><span class="pre">Y=1,</span> <span class="pre">Z=0</span></code>. The intervention therefore blocks one branch rather than being interpreted as a shutdown of the whole pathway.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_cellnopt_model</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">condition</span><span class="o">=</span><span class="s2">&quot;C6&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/43153483dc7a3c0345fd69cfcd5721bbfd76c43cfa070fc9b16afbd4907f0c14.svg" src="../../_images/43153483dc7a3c0345fd69cfcd5721bbfd76c43cfa070fc9b16afbd4907f0c14.svg" />
+</div>
+</div>
+</section>
+</section>
+<section id="a-compact-view-for-larger-signaling-experiments">
+<h2>A compact view for larger signaling experiments<a class="headerlink" href="#a-compact-view-for-larger-signaling-experiments" title="Link to this heading">#</a></h2>
+<p>When an experiment contains many perturbations or readouts, aligned heatmaps are easier to scan than one panel per response. Observed activities, predicted activities, absolute errors, and experimental cues remain aligned by condition. Unmeasured entries stay blank rather than being treated as zeros.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">heatmap_figure</span><span class="p">,</span> <span class="n">heatmap_axes</span> <span class="o">=</span> <span class="n">plot_cellnopt_fit</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">view</span><span class="o">=</span><span class="s2">&quot;heatmap&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/6e16ebb34b65ba8e7c51294f1f89ab22f87c70512a4b0ebaa848e41a24ca352c.png" src="../../_images/6e16ebb34b65ba8e7c51294f1f89ab22f87c70512a4b0ebaa848e41a24ca352c.png" />
+</div>
+</div>
+</section>
+<section id="under-the-hood">
+<h2>Under the hood<a class="headerlink" href="#under-the-hood" title="Link to this heading">#</a></h2>
+<p>The biological workflow above rests on a few modeling assumptions. This section states only the assumptions needed to interpret the result and separates the CellNOpt core from the acyclicity and connectivity requirements added by CORNETO.</p>
+<section id="endpoint-boolean-assumptions">
+<h3>Endpoint Boolean assumptions<a class="headerlink" href="#endpoint-boolean-assumptions" title="Link to this heading">#</a></h3>
+<p>One reaction set is selected for the whole experiment, while protein and reaction activities are predicted separately for each condition.</p>
+<p>For every condition:</p>
+<ul class="simple">
+<li><p>a selected reaction is active only when all its positive inputs are active and all its negative inputs are inactive;</p></li>
+<li><p>several active reactions producing the same protein act as OR alternatives;</p></li>
+<li><p>a stimulus or inhibitor overrides the usual production rule by fixing its target on or off;</p></li>
+<li><p>internal activities are predictions at the measured endpoint, not simulated intermediate time steps.</p></li>
+</ul>
+<p>CORNETO represents these rules with vectorized binary variables: <span class="math notranslate nohighlight">\(Y_r\)</span> for shared reaction selection, <span class="math notranslate nohighlight">\(Z_{rc}\)</span> for condition-specific reaction activity, and <span class="math notranslate nohighlight">\(X_{vc}\)</span> for condition-specific protein activity. The implementation uses exact linear constraints for AND, OR, and negative literals, but those linearization details do not change the biological assumptions above.</p>
+</section>
+<section id="fit-and-model-size">
+<h3>Fit and model size<a class="headerlink" href="#fit-and-model-size" title="Link to this heading">#</a></h3>
+<p>The model prioritizes agreement with observed readouts and uses a smaller penalty to prefer compact signaling explanations:</p>
+<div class="math notranslate nohighlight">
+\[
+\min\; \sum_{(v,c)\,\mathrm{observed}} |X_{vc}-m_{vc}| + \lambda\sum_r Y_r.
+\]</div>
+<p>Only measured entries contribute to the first term. Unmeasured proteins are not treated as zero. The second term counts selected Boolean reactions, so an AND gate is penalized once rather than once per input leg.</p>
+</section>
+<section id="what-corneto-adds">
+<h3>What CORNETO adds<a class="headerlink" href="#what-corneto-adds" title="Link to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Modeling element</p></th>
+<th class="head"><p>Role in this formulation</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Shared reaction selection across conditions</p></td>
+<td><p>CellNOpt core</p></td>
+</tr>
+<tr class="row-odd"><td><p>Condition-specific Boolean AND, OR, and inhibitory logic</p></td>
+<td><p>CellNOpt core</p></td>
+</tr>
+<tr class="row-even"><td><p>Readout mismatch plus a model-size penalty</p></td>
+<td><p>CellNOpt core</p></td>
+</tr>
+<tr class="row-odd"><td><p>Acyclic selected reaction dependencies</p></td>
+<td><p>CORNETO endpoint restriction</p></td>
+</tr>
+<tr class="row-even"><td><p>One shared structural flow connecting interventions to readouts</p></td>
+<td><p>CORNETO connectivity extension</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Acyclicity is imposed on the <strong>selected model</strong>, not on the PKN. CORNETO assigns an ordering level <span class="math notranslate nohighlight">\(h_v\)</span> to every protein and requires each selected dependency <span class="math notranslate nohighlight">\(u\rightarrow v\)</span> to point forward:</p>
+<div class="math notranslate nohighlight">
+\[
+Y_r=1 \;\Longrightarrow\; h_u &lt; h_v
+\qquad\text{for every dependency }u\rightarrow v\text{ in reaction }r.
+\]</div>
+<p>This makes the endpoint response evaluable from the experimental inputs without choosing an update order or allowing a selected feedback loop to support itself.</p>
+<p>Connectivity is a separate requirement. CORNETO sends an artificial bookkeeping flow from controlled proteins, through every selected dependency, to measured readouts. Selected dependencies must carry positive flow, unselected dependencies carry none, and flow is conserved at internal proteins. The resulting flow is a structural certificate that the selected model contains no disconnected or dangling reactions.</p>
+</section>
+<section id="inspecting-the-inferred-states">
+<h3>Inspecting the inferred states<a class="headerlink" href="#inspecting-the-inferred-states" title="Link to this heading">#</a></h3>
+<p>The tables below contain only selected reactions and the internal or measured proteins needed to interpret the example. Reaction activity and protein activity vary by condition; neither table contains additional experimental measurements. <code class="docutils literal notranslate"><span class="pre">Y</span></code> and <code class="docutils literal notranslate"><span class="pre">Z</span></code> are observed readouts, whereas <code class="docutils literal notranslate"><span class="pre">B</span></code>, <code class="docutils literal notranslate"><span class="pre">X</span></code>, and <code class="docutils literal notranslate"><span class="pre">W</span></code> are model predictions.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">condition_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+<span class="n">selected_mask</span> <span class="o">=</span> <span class="n">selected</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
+<span class="n">reaction_activity</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">rint</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">reaction_active</span><span class="o">.</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">),</span>
+    <span class="n">index</span><span class="o">=</span><span class="n">reaction_labels</span><span class="p">,</span>
+    <span class="n">columns</span><span class="o">=</span><span class="n">condition_names</span><span class="p">,</span>
+<span class="p">)</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">selected_mask</span><span class="p">]</span>
+<span class="n">species_states</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">rint</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">vertex_value</span><span class="o">.</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">),</span>
+    <span class="n">index</span><span class="o">=</span><span class="n">method</span><span class="o">.</span><span class="n">processed_graph</span><span class="o">.</span><span class="n">V</span><span class="p">,</span>
+    <span class="n">columns</span><span class="o">=</span><span class="n">condition_names</span><span class="p">,</span>
+<span class="p">)</span><span class="o">.</span><span class="n">loc</span><span class="p">[[</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;W&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">]]</span>
+
+<span class="n">display</span><span class="p">(</span><span class="n">reaction_activity</span><span class="p">,</span> <span class="n">species_states</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>C1</th>
+      <th>C2</th>
+      <th>C3</th>
+      <th>C4</th>
+      <th>C5</th>
+      <th>C6</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>D -&gt; B</th>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>X -&gt; Y</th>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>X -&gt; W</th>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>C -&gt; Y</th>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>NOT D -&gt; Y</th>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>A AND NOT B -&gt; X</th>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>W AND C -&gt; Z</th>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+</div></div><div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>C1</th>
+      <th>C2</th>
+      <th>C3</th>
+      <th>C4</th>
+      <th>C5</th>
+      <th>C6</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>B</th>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>X</th>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>W</th>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>Y</th>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>Z</th>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="structural-connectivity-diagnostic">
+<h3>Structural connectivity diagnostic<a class="headerlink" href="#structural-connectivity-diagnostic" title="Link to this heading">#</a></h3>
+<p>The following plot visualizes the artificial structural flow by edge width. It is useful for checking that selected reactions are connected to experimental inputs and measured outputs, and for finding an incorrectly mapped, disconnected, or dangling reaction.</p>
+<p>This is a debugging view. Flow is shared across all conditions and records neither whether a reaction is active in one condition nor how strongly a biochemical signal passes through it.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_cellnopt_model</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">width_by</span><span class="o">=</span><span class="s2">&quot;flow&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/3f7748ab6cb87bedcdf63e0a1fffc6262c89ea74b339d2783d403a790445d09f.svg" src="../../_images/3f7748ab6cb87bedcdf63e0a1fffc6262c89ea74b339d2783d403a790445d09f.svg" />
+</div>
+</div>
+<p>All selected dependency legs happen to carry structural flow <code class="docutils literal notranslate"><span class="pre">1</span></code> in this solution, so they receive the same width. That equality does <strong>not</strong> mean the reactions have equal biological strength or importance. It only means that this particular bookkeeping flow can certify every selected dependency with the minimum required amount.</p>
+<p>Structural-flow values are generally non-unique and solver-dependent; a different feasible certificate can assign different widths without changing the selected signaling model. The values are unrelated to protein activity, signal strength, reaction rate, confidence, or causal importance. Use the plot only to verify selected-model connectivity.</p>
+</section>
+</section>
+<section id="biological-interpretation-and-limitations">
+<h2>Biological interpretation and limitations<a class="headerlink" href="#biological-interpretation-and-limitations" title="Link to this heading">#</a></h2>
+<p>This method is designed for intracellular signaling experiments in which cells are stimulated or inhibited and measured once at a chosen endpoint. The result is one compact pathway structure whose predicted activity changes across intervention conditions.</p>
+<p>The fitted model answers the question posed at the beginning: it is a connected feed-forward signaling logic sufficient to explain these observed snapshots. “Sufficient” does not mean unique, dynamically complete, or necessarily identical to the pathway operating in the cell.</p>
+<p>Feedback remains biologically plausible. A snapshot with both <code class="docutils literal notranslate"><span class="pre">Y</span></code> and <code class="docutils literal notranslate"><span class="pre">Z</span></code> active usually cannot reveal whether <code class="docutils literal notranslate"><span class="pre">Y</span></code> activated <code class="docutils literal notranslate"><span class="pre">Z</span></code>, <code class="docutils literal notranslate"><span class="pre">Z</span></code> activated <code class="docutils literal notranslate"><span class="pre">Y</span></code>, an upstream protein activated both, or a loop maintained them. The acyclic restriction therefore reflects what this experiment can identify; it is not evidence that the biological network contains no feedback. Feedback candidates remain visible in the PKN as hypotheses that were available but not established by this endpoint analysis.</p>
+<p>A dynamic model is more appropriate when measurements cover activation and relaxation over time, proteins inside a proposed loop are directly perturbed, or the data show adaptation, oscillation, or dependence on initial state. Such analyses must state how time and updates are represented.</p>
+<p>Other limitations remain: Boolean states simplify graded and stochastic signaling; inference is restricted to the supplied PKN; alternative models may fit equally well; and unmeasured internal activities remain predictions. Structural flow certifies connectivity only—it does not quantify signaling strength.</p>
+</section>
+<section id="connection-to-causal-structure-learning">
+<h2>Connection to causal structure learning<a class="headerlink" href="#connection-to-causal-structure-learning" title="Link to this heading">#</a></h2>
+<p>For readers coming from mathematics or causal inference, <code class="docutils literal notranslate"><span class="pre">CellNOptDAG</span></code> can be viewed as <strong>interventional Boolean causal structure learning over a restricted hypothesis space</strong>.</p>
+<p>The variables are the binary protein activities <span class="math notranslate nohighlight">\(X_v\)</span>. The PKN acts as a causal <em>superstructure</em>: it specifies the allowed variables, directions, signs, and multi-input clauses. The optimization does not invent interactions outside that superstructure. Instead, it chooses which candidate reactions are needed to explain all intervention conditions.</p>
+<p>Let <span class="math notranslate nohighlight">\(Y_r\)</span> indicate whether candidate reaction <span class="math notranslate nohighlight">\(r\)</span> is selected. If <span class="math notranslate nohighlight">\(P_r\)</span> and <span class="math notranslate nohighlight">\(N_r\)</span> are its positive and negative inputs, its condition-specific truth value is</p>
+<div class="math notranslate nohighlight">
+\[
+Z_{rc}=Y_r\land\bigwedge_{u\in P_r}X_{uc}\land\bigwedge_{w\in N_r}\neg X_{wc}.
+\]</div>
+<p>For a protein that is not experimentally fixed, alternative selected reactions producing that protein act as OR alternatives:</p>
+<div class="math notranslate nohighlight">
+\[
+X_{vc}=\bigvee_{r:\,\operatorname{product}(r)=v} Z_{rc}.
+\]</div>
+<p>The inferred equation for each protein is therefore a signed Boolean expression in disjunctive normal form. For example, selecting <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">AND</span> <span class="pre">NOT</span> <span class="pre">B</span> <span class="pre">→</span> <span class="pre">X</span></code> and <code class="docutils literal notranslate"><span class="pre">C</span> <span class="pre">→</span> <span class="pre">X</span></code> gives</p>
+<div class="math notranslate nohighlight">
+\[
+X=(A\land\neg B)\lor C.
+\]</div>
+<p>The selection variables <span class="math notranslate nohighlight">\(Y_r\)</span> are shared across conditions: this is the assumption that the underlying causal mechanisms remain invariant throughout the experiment. The state variables <span class="math notranslate nohighlight">\(X_{vc}\)</span> and reaction activities <span class="math notranslate nohighlight">\(Z_{rc}\)</span> vary because each condition applies different experimental manipulations.</p>
+<p>A stimulus or inhibitor overrides the usual equation for its target and fixes that variable to <code class="docutils literal notranslate"><span class="pre">1</span></code> or <code class="docutils literal notranslate"><span class="pre">0</span></code>. In structural-causal notation, this plays the role of a hard intervention such as <span class="math notranslate nohighlight">\(\operatorname{do}(X_v=1)\)</span> or <span class="math notranslate nohighlight">\(\operatorname{do}(X_v=0)\)</span>. CellNOptDAG then searches for a shared model that predicts the measured outcomes of these interventions:</p>
+<div class="math notranslate nohighlight">
+\[
+\min_Y\;\sum_{(v,c)\,\mathrm{observed}}|X_{vc}-m_{vc}|+\lambda\sum_rY_r.
+\]</div>
+<p>The first term is interventional prediction error and the second is a sparsity penalty on structural mechanisms. Because CORNETO also requires the selected dependencies to be acyclic, the fitted Boolean structural equations can be evaluated in topological order without specifying feedback dynamics.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>CellNOpt term</p></th>
+<th class="head"><p>Causal or mathematical interpretation</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Protein activity</p></td>
+<td><p>Binary endogenous variable</p></td>
+</tr>
+<tr class="row-odd"><td><p>PKN</p></td>
+<td><p>Causal superstructure or hypothesis space</p></td>
+</tr>
+<tr class="row-even"><td><p>Selected reaction</p></td>
+<td><p>Selected structural mechanism or Boolean clause</p></td>
+</tr>
+<tr class="row-odd"><td><p>Stimulus or inhibitor</p></td>
+<td><p>Hard intervention</p></td>
+</tr>
+<tr class="row-even"><td><p>Shared reaction selection</p></td>
+<td><p>Invariant causal structure</p></td>
+</tr>
+<tr class="row-odd"><td><p>Readout mismatch</p></td>
+<td><p>Interventional prediction loss</p></td>
+</tr>
+<tr class="row-even"><td><p>Model-size penalty</p></td>
+<td><p>Sparsity regularization</p></td>
+</tr>
+<tr class="row-odd"><td><p>Acyclicity</p></td>
+<td><p>Topological evaluation of the structural equations; feedback is excluded</p></td>
+</tr>
+<tr class="row-even"><td><p>Structural flow</p></td>
+<td><p>Connectivity certificate, not a causal-effect estimate</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The phrase <strong>causal discovery</strong> needs one qualification here. This is not unrestricted discovery of a causal graph from data alone: the PKN already supplies the possible mechanisms, including the available AND clauses. The method selects among those mechanisms, while OR relationships arise from selecting several reactions with the same product. It is therefore more precise to call the task <strong>PKN-constrained interventional Boolean causal structure learning</strong>.</p>
+<p>As in other causal-learning problems, the fitted structure need not be identifiable. Two candidate subnetworks may make exactly the same predictions under the available interventions. The size penalty can prefer a compact representative, but it cannot turn experimentally indistinguishable models into a uniquely established causal explanation.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="bidirectional-phonemes.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Global upstream and downstream PHONEMeS</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../interoperability/index.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Interoperability</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#one-signaling-model-several-perturbation-conditions">One signaling model, several perturbation conditions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#relationship-to-cellnoptr">Relationship to CellNOptR</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-perturbations-and-two-signaling-readouts">Example: perturbations and two signaling readouts</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#define-the-prior-knowledge-network">Define the prior-knowledge network</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#define-the-perturbation-experiment">Define the perturbation experiment</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fit-one-pathway-to-the-complete-experiment">Fit one pathway to the complete experiment</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#which-signaling-reactions-are-supported">Which signaling reactions are supported?</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#compare-the-candidate-network-with-the-fitted-model">Compare the candidate network with the fitted model</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inspect-the-fitted-signaling-model">Inspect the fitted signaling model</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#does-the-model-reproduce-the-measured-responses">Does the model reproduce the measured responses?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-pathway-reaction-can-be-present-but-inactive">A pathway reaction can be present but inactive</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#an-inhibitor-changes-its-target-not-the-whole-cell">An inhibitor changes its target, not the whole cell</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-compact-view-for-larger-signaling-experiments">A compact view for larger signaling experiments</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#under-the-hood">Under the hood</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#endpoint-boolean-assumptions">Endpoint Boolean assumptions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fit-and-model-size">Fit and model size</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-corneto-adds">What CORNETO adds</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inspecting-the-inferred-states">Inspecting the inferred states</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#structural-connectivity-diagnostic">Structural connectivity diagnostic</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#biological-interpretation-and-limitations">Biological interpretation and limitations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#connection-to-causal-structure-learning">Connection to causal structure learning</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2023-2026, Saez-Rodriguez lab. (EMBL-EBI, Heidelberg University).
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

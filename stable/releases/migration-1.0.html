@@ -65,7 +65,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'releases/migration-1.0';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1785487194';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'stable';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
@@ -75,8 +75,8 @@
     <link rel="icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Release v1.0.0-rc.1 Pre-release" href="v1.0.0-rc.1.html" />
-    <link rel="prev" title="Release Notes" href="index.html" />
+    <link rel="next" title="Release v1.0.0-rc.2 Pre-release" href="v1.0.0-rc.2.html" />
+    <link rel="prev" title="CORNETO 1.0.0 RC3" href="v1.0.0-rc.3.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -400,7 +400,9 @@
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="v1.0.0-rc.3.html">CORNETO 1.0.0 RC3</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Migrating to CORNETO 1.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="v1.0.0-rc.2.html">Release v1.0.0-rc.2 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">Pre-release</span></a></li>
 <li class="toctree-l1"><a class="reference internal" href="v1.0.0-rc.1.html">Release v1.0.0-rc.1 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">Pre-release</span></a></li>
 <li class="toctree-l1"><a class="reference internal" href="v1.0.0-beta.8.html">Release v1.0.0-beta.8 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">Pre-release</span></a></li>
 <li class="toctree-l1"><a class="reference internal" href="v1.0.0-beta.7.html">Release v1.0.0-beta.7 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">Pre-release</span></a></li>
@@ -517,25 +519,22 @@ were removed instead of being carried as permanent compatibility aliases.</p>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">corneto.methods.future.SteinerTreeFlow</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">corneto.methods.SteinerTreeFlow</span></code></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">corneto.methods.signal.cellnopt_ilp</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">corneto.methods.signaling.cellnopt_ilp</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">corneto.K</span></code> or <code class="docutils literal notranslate"><span class="pre">corneto.ops</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">corneto.K</span></code> or <code class="docutils literal notranslate"><span class="pre">corneto.ops</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">corneto.opt</span></code></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">corneto._ml.build_dagnn</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">corneto._ml.build_dagnn</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">corneto.ml.build_dagnn</span></code></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">corneto.methods.shortest_path.create_multisample_shortest_path</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">corneto.methods.shortest_path.create_multisample_shortest_path</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">corneto.methods.create_multisample_shortest_path</span></code></p></td>
 </tr>
-<tr class="row-even"><td><p>module-level graph serialization</p></td>
+<tr class="row-odd"><td><p>module-level graph serialization</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">Graph.save</span></code> and <code class="docutils literal notranslate"><span class="pre">Graph.load</span></code></p></td>
 </tr>
 </tbody>
 </table>
 </div>
-<p>The old <code class="docutils literal notranslate"><span class="pre">future</span></code>, <code class="docutils literal notranslate"><span class="pre">signal</span></code>, <code class="docutils literal notranslate"><span class="pre">K</span></code>, and <code class="docutils literal notranslate"><span class="pre">ops</span></code> paths in this table remain warning
+<p>The old <code class="docutils literal notranslate"><span class="pre">future</span></code>, <code class="docutils literal notranslate"><span class="pre">K</span></code>, and <code class="docutils literal notranslate"><span class="pre">ops</span></code> paths in this table remain warning
 compatibility paths throughout 1.x. The private <code class="docutils literal notranslate"><span class="pre">_ml</span></code> path and duplicate graph
 serialization functions do not have shims.</p>
 </section>
@@ -550,8 +549,9 @@ serialization functions do not have shims.</p>
 modules (<code class="docutils literal notranslate"><span class="pre">corneto._graph</span></code>, <code class="docutils literal notranslate"><span class="pre">corneto._data</span></code>, <code class="docutils literal notranslate"><span class="pre">corneto._io</span></code>, <code class="docutils literal notranslate"><span class="pre">corneto._nx</span></code>,
 <code class="docutils literal notranslate"><span class="pre">corneto._core</span></code>, and <code class="docutils literal notranslate"><span class="pre">corneto._legacy</span></code>).</p></li>
 <li><p>The British-spelling <code class="docutils literal notranslate"><span class="pre">corneto.methods.signalling</span></code> implementation and the old
-module-shaped <code class="docutils literal notranslate"><span class="pre">corneto.methods.signaling</span></code>; signaling methods now live in the
-<code class="docutils literal notranslate"><span class="pre">corneto.methods.signaling</span></code> package.</p></li>
+module-shaped <code class="docutils literal notranslate"><span class="pre">corneto.methods.signaling</span></code>, as well as the singular
+<code class="docutils literal notranslate"><span class="pre">corneto.methods.signal</span></code> compatibility namespace; signaling methods now live
+in the <code class="docutils literal notranslate"><span class="pre">corneto.methods.signaling</span></code> package.</p></li>
 <li><p>Duplicate module-level graph serialization helpers from <code class="docutils literal notranslate"><span class="pre">corneto.io</span></code>.</p></li>
 </ul>
 </section>
@@ -595,20 +595,20 @@ formulation.</p></li>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="index.html"
+       href="v1.0.0-rc.3.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Release Notes</p>
+        <p class="prev-next-title">CORNETO 1.0.0 RC3</p>
       </div>
     </a>
     <a class="right-next"
-       href="v1.0.0-rc.1.html"
+       href="v1.0.0-rc.2.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Release v1.0.0-rc.1 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">Pre-release</span></p>
+        <p class="prev-next-title">Release v1.0.0-rc.2 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">Pre-release</span></p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

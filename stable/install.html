@@ -65,7 +65,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'install';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1785487194';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'stable';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
@@ -471,13 +471,15 @@ pip<span class="w"> </span>install<span class="w"> </span>corneto<span class="o"
 <h3>Optional Dependencies<a class="headerlink" href="#optional-dependencies" title="Link to this heading">#</a></h3>
 <p>CORNETO provides several optional dependency groups:</p>
 <ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">plot</span></code></strong>: Graphviz, NetworkX, and Matplotlib visualization support</p></li>
 <li><p><strong><code class="docutils literal notranslate"><span class="pre">research</span></code></strong>: Full research stack with Gurobi, PICOS, visualization, and network tools</p></li>
 <li><p><strong><code class="docutils literal notranslate"><span class="pre">os</span></code></strong>: Open-source solvers (SCIP, HiGHS) with visualization and network tools</p></li>
 <li><p><strong><code class="docutils literal notranslate"><span class="pre">ml</span></code></strong>: Machine learning dependencies (JAX, Keras, scikit-learn)</p></li>
 <li><p><strong><code class="docutils literal notranslate"><span class="pre">vanilla</span></code></strong>: Minimal dependencies (same as base installation)</p></li>
 </ul>
 <p>Install any combination with:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>corneto<span class="o">[</span>research,ml<span class="o">]</span><span class="w">  </span><span class="c1"># Multiple extras</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>corneto<span class="o">[</span>plot<span class="o">]</span><span class="w">         </span><span class="c1"># Visualization without the full research stack</span>
+pip<span class="w"> </span>install<span class="w"> </span>corneto<span class="o">[</span>research,ml<span class="o">]</span><span class="w">  </span><span class="c1"># Multiple extras</span>
 </pre></div>
 </div>
 </section>

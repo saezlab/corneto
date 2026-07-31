@@ -67,7 +67,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'guide/index';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1785487194';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'stable';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
@@ -417,9 +417,10 @@
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="metabolism/index.html">Metabolism</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="metabolism/flux-balance-analysis.html">Flux Balance Analysis (FBA)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="metabolism/multicondition-sfba.html">Multi-condition sparse FBA</a></li>
-<li class="toctree-l2"><a class="reference internal" href="metabolism/multicondition-imat.html">Multi-condition iMAT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metabolism/flux-balance-analysis.html">Flux balance analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metabolism/multicondition-sfba.html">Multi-condition FBA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metabolism/imat.html">Integrating gene expression into metabolic models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metabolism/multicondition-imat.html">Multi-condition gene expression integration</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="signaling/index.html">Signaling</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -427,9 +428,7 @@
 <li class="toctree-l2"><a class="reference internal" href="signaling/multisample-carnival.html">Multi-sample CARNIVAL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="signaling/phonemes.html">PHONEMeS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="signaling/bidirectional-phonemes.html">Global upstream and downstream PHONEMeS</a></li>
-<li class="toctree-l2"><a class="reference internal" href="signaling/cellnopt_ILP.html">Acyclic boolean models of cell signaling (experimental)</a></li>
-
-
+<li class="toctree-l2"><a class="reference internal" href="signaling/cellnopt_dag.html">Inferring intracellular signaling models with CellNOptDAG</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="interoperability/index.html">Interoperability</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -589,26 +588,43 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="metabolism/index.html">Metabolism</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="metabolism/flux-balance-analysis.html">Flux Balance Analysis (FBA)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="metabolism/flux-balance-analysis.html#what-is-fba">What is FBA?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="metabolism/flux-balance-analysis.html#fba-with-corneto">FBA with CORNETO</a></li>
-<li class="toctree-l3"><a class="reference internal" href="metabolism/flux-balance-analysis.html#using-cobrapy">Using COBRApy</a></li>
-<li class="toctree-l3"><a class="reference internal" href="metabolism/flux-balance-analysis.html#using-corneto">Using CORNETO</a></li>
-<li class="toctree-l3"><a class="reference internal" href="metabolism/flux-balance-analysis.html#passing-a-custom-media-composition">Passing a custom media composition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metabolism/flux-balance-analysis.html">Flux balance analysis</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="metabolism/flux-balance-analysis.html#from-cobrapy-to-corneto">From COBRApy to CORNETO</a></li>
+<li class="toctree-l3"><a class="reference internal" href="metabolism/flux-balance-analysis.html#extend-the-optimization-problem">Extend the optimization problem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="metabolism/flux-balance-analysis.html#solve-multiple-media-conditions">Solve multiple media conditions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="metabolism/flux-balance-analysis.html#sparse-fba">Sparse FBA</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="metabolism/multicondition-sfba.html">Multi-condition sparse FBA</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="metabolism/multicondition-sfba.html#standard-multi-condition-fba">Standard multi-condition FBA</a></li>
-<li class="toctree-l3"><a class="reference internal" href="metabolism/multicondition-sfba.html#sparse-fba-per-condition-independent-runs">Sparse FBA per condition (independent runs)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="metabolism/multicondition-sfba.html#coupled-multi-condition-sparse-fba">Coupled multi-condition sparse FBA</a></li>
-<li class="toctree-l3"><a class="reference internal" href="metabolism/multicondition-sfba.html#compare-independent-vs-coupled-sparse-solutions">Compare independent vs coupled sparse solutions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metabolism/multicondition-sfba.html">Multi-condition FBA</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="metabolism/multicondition-sfba.html#independent-and-coupled-formulations">Independent and coupled formulations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="metabolism/multicondition-sfba.html#why-is-this-different-from-pairwise-comparisons">Why is this different from pairwise comparisons?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="metabolism/multicondition-sfba.html#relation-to-cobrapy">Relation to COBRApy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="metabolism/multicondition-sfba.html#example-shared-and-context-specific-metabolism">Example: shared and context-specific metabolism</a></li>
+<li class="toctree-l3"><a class="reference internal" href="metabolism/multicondition-sfba.html#define-the-metabolic-conditions">Define the metabolic conditions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="metabolism/multicondition-sfba.html#establish-each-condition-s-growth-capacity">Establish each condition’s growth capacity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="metabolism/multicondition-sfba.html#require-growth-and-favor-a-compact-reaction-union">Require growth and favor a compact reaction union</a></li>
+<li class="toctree-l3"><a class="reference internal" href="metabolism/multicondition-sfba.html#what-happens-in-separate-two-condition-analyses">What happens in separate two-condition analyses?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="metabolism/multicondition-sfba.html#solve-all-conditions-jointly">Solve all conditions jointly</a></li>
+<li class="toctree-l3"><a class="reference internal" href="metabolism/multicondition-sfba.html#interpretation-and-limitations">Interpretation and limitations</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="metabolism/multicondition-imat.html">Multi-condition iMAT</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="metabolism/multicondition-imat.html#objective-values">Objective values</a></li>
-<li class="toctree-l3"><a class="reference internal" href="metabolism/multicondition-imat.html#shared-reactions">Shared reactions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="metabolism/multicondition-imat.html#manual-check-of-objectives-per-condition">Manual check of objectives per condition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metabolism/imat.html">Integrating gene expression into metabolic models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="metabolism/imat.html#one-established-approach-imat">One established approach: iMAT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="metabolism/imat.html#from-genes-to-reaction-evidence">From genes to reaction evidence</a></li>
+<li class="toctree-l3"><a class="reference internal" href="metabolism/imat.html#relationship-to-cobrapy">Relationship to COBRApy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="metabolism/imat.html#example-selecting-an-anaerobic-fermentation-program">Example: selecting an anaerobic fermentation program</a></li>
+<li class="toctree-l3"><a class="reference internal" href="metabolism/imat.html#advanced-compute-and-supply-reaction-scores-directly">Advanced: compute and supply reaction scores directly</a></li>
+<li class="toctree-l3"><a class="reference internal" href="metabolism/imat.html#interpretation-and-limitations">Interpretation and limitations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="metabolism/multicondition-imat.html">Multi-condition gene expression integration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="metabolism/multicondition-imat.html#what-changes-in-the-multi-condition-formulation">What changes in the multi-condition formulation?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="metabolism/multicondition-imat.html#example-aerobic-respiration-and-anaerobic-fermentation">Example: aerobic respiration and anaerobic fermentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="metabolism/multicondition-imat.html#balance-expression-evidence-across-conditions">Balance expression evidence across conditions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="metabolism/multicondition-imat.html#independent-imat-as-a-reference">Independent iMAT as a reference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="metabolism/multicondition-imat.html#solve-both-expression-contexts-jointly">Solve both expression contexts jointly</a></li>
+<li class="toctree-l3"><a class="reference internal" href="metabolism/multicondition-imat.html#shared-and-condition-specific-metabolism">Shared and condition-specific metabolism</a></li>
+<li class="toctree-l3"><a class="reference internal" href="metabolism/multicondition-imat.html#interpretation-and-limitations">Interpretation and limitations</a></li>
 </ul>
 </li>
 </ul>
@@ -651,13 +667,20 @@
 <li class="toctree-l3"><a class="reference internal" href="signaling/bidirectional-phonemes.html#advanced-implementation-in-corneto">Advanced: implementation in CORNETO</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="signaling/cellnopt_ILP.html">Acyclic boolean models of cell signaling (experimental)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="signaling/cellnopt_ILP.html#introduction-to-a-boolean-model">Introduction to a Boolean model</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="signaling/cellnopt_ILP.html#inhibition-egf-activates-ras">Inhibition: !EGF activates RAS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="signaling/cellnopt_ILP.html#inhibition-with-and-gates">Inhibition with AND gates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="signaling/cellnopt_dag.html">Inferring intracellular signaling models with CellNOptDAG</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="signaling/cellnopt_dag.html#one-signaling-model-several-perturbation-conditions">One signaling model, several perturbation conditions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="signaling/cellnopt_dag.html#relationship-to-cellnoptr">Relationship to CellNOptR</a></li>
+<li class="toctree-l3"><a class="reference internal" href="signaling/cellnopt_dag.html#example-perturbations-and-two-signaling-readouts">Example: perturbations and two signaling readouts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="signaling/cellnopt_dag.html#fit-one-pathway-to-the-complete-experiment">Fit one pathway to the complete experiment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="signaling/cellnopt_dag.html#which-signaling-reactions-are-supported">Which signaling reactions are supported?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="signaling/cellnopt_dag.html#does-the-model-reproduce-the-measured-responses">Does the model reproduce the measured responses?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="signaling/cellnopt_dag.html#a-pathway-reaction-can-be-present-but-inactive">A pathway reaction can be present but inactive</a></li>
+<li class="toctree-l3"><a class="reference internal" href="signaling/cellnopt_dag.html#a-compact-view-for-larger-signaling-experiments">A compact view for larger signaling experiments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="signaling/cellnopt_dag.html#under-the-hood">Under the hood</a></li>
+<li class="toctree-l3"><a class="reference internal" href="signaling/cellnopt_dag.html#biological-interpretation-and-limitations">Biological interpretation and limitations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="signaling/cellnopt_dag.html#connection-to-causal-structure-learning">Connection to causal structure learning</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="signaling/cellnopt_ILP.html#complex-case-study-with-inhibition">Complex case study with inhibition</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="interoperability/index.html">Interoperability</a><ul>

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Context-specific models (iMAT) &#8212; CORNETO  documentation</title>
+    <title>Integrating gene expression into metabolic models &#8212; CORNETO  documentation</title>
   
   
   
@@ -62,10 +62,12 @@
                 gtag('js', new Date());
                 gtag('config', 'G-Z263GN2PKK');
             </script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'guide/metabolism/imat';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1785487194';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'stable';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
@@ -75,8 +77,8 @@
     <link rel="icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Multi-condition iMAT" href="multicondition-imat.html" />
-    <link rel="prev" title="Multi-condition sparse FBA" href="multicondition-sfba.html" />
+    <link rel="next" title="Multi-condition gene expression integration" href="multicondition-imat.html" />
+    <link rel="prev" title="Multi-condition FBA" href="multicondition-sfba.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -286,6 +288,10 @@
   
 
   
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
 </div>
 
     </header>
@@ -396,6 +402,7 @@
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../method-inputs.html">Building method problems from explicit inputs</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../intro/index.html">Getting started</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../intro/prior-knowledge.html">Prior Knowledge and Graphs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../intro/data.html">Working with data</a></li>
@@ -414,18 +421,18 @@
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Metabolism</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="flux-balance-analysis.html">Flux Balance Analysis (FBA)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="multicondition-sfba.html">Multi-condition sparse FBA</a></li>
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">Context-specific models (iMAT)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="multicondition-imat.html">Multi-condition iMAT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flux-balance-analysis.html">Flux balance analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multicondition-sfba.html">Multi-condition FBA</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Integrating gene expression into metabolic models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multicondition-imat.html">Multi-condition gene expression integration</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../signaling/index.html">Signaling</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../signaling/carnival.html">CARNIVAL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../signaling/multisample-carnival.html">Multi-sample CARNIVAL</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../signaling/cellnopt_ILP.html">Acyclic boolean models of cell signaling (experimental)</a></li>
-
-
+<li class="toctree-l2"><a class="reference internal" href="../signaling/phonemes.html">PHONEMeS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../signaling/bidirectional-phonemes.html">Global upstream and downstream PHONEMeS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../signaling/cellnopt_dag.html">Inferring intracellular signaling models with CellNOptDAG</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../interoperability/index.html">Interoperability</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -485,7 +492,7 @@
     
     <li class="breadcrumb-item"><a href="index.html" class="nav-link">Metabolism</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Context-specific models (iMAT)</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Integrating gene expression into metabolic models</span></li>
   </ul>
 </nav>
 </div>
@@ -502,117 +509,1008 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="context-specific-models-imat">
-<h1>Context-specific models (iMAT)<a class="headerlink" href="#context-specific-models-imat" title="Link to this heading">#</a></h1>
-<p>iMAT (integrative Metabolic Analysis Tool) technique is a method used for the reconstruction and analysis of genome-scale metabolic models, especially in the context of integrating high-throughput gene expression data.</p>
-<p>Genome-scale metabolic reconstructions are systematic representations of the metabolic capabilities of an organism. They are used to make computational predictions about the behavior of metabolic networks under various conditions.</p>
-<p>The iMAT method addresses the challenge of determining the activity state of reactions in the metabolic network given gene expression data. Traditional methods often rely on the assumption that the expression level of a gene correlates with the activity of the corresponding enzyme, which may not always be accurate.</p>
-<p>Gene expression data is first discretized, classifying genes into ‘High’, ‘Medium’, or ‘Low’ expression categories based on specific criteria, often grounded on dataset-specific quantiles. Following this classification, the association of genes to metabolic reactions is accomplished using gene-protein-reaction (GPR) associations. In essence, every metabolic reaction, based on the enzymes that catalyze it, is linked to one or more genes. Using GPR associations, each reaction receives a propensity score reflecting its likelihood to be active, based on the expression state of its associated genes.</p>
-<center style="margin:25px">
-    <img src="../../_static/imat-example.jpg" alt="iMAT toy example" style="width: 100%; max-width:600px; margin-bottom:10px;">
-    <br>
-    <font size="-1">
-        <b>Figure 1:</b> Shlomi, Tomer, et al. "Network-based prediction of human tissue-specific metabolism." <a href="https://www.nature.com/articles/nbt.1487/figures/1">Nature biotechnology 26.9 (2008): 1003-1010 </a>.
-    </font>
-</center>
-<p><a href="https://www.nature.com/articles/nbt.1487/figures/1">Figure 1</a> shows an example of the iMAT method from the original publication. Metabolites are symbolized by circular nodes, while enzymes are denoted by diamond-shaped nodes. Enzyme-encoding genes are color-coded: white indicates normal expression, red corresponds to low expression, and green indicates high expression. Continuous lines show metabolic reactions, while dotted lines link enzymes to the reactions they facilitate. Purple arrows represent the predicted steady-state metabolic flux using the enzymes associated to highly expressed enzyme-encoding genes. In this example it’s predicted that Enzyme E4 will undergo post-transcriptional upregulation, since the enzyme-encoding gene has normal expression but the enzyme is required to mainatin steady-state flux (consistent with the other measurements), while Enzyme E7 is expected to experience post-transcriptional downregulation (since it’s highly expressed but flux is predicted to go through a different pathway)</p>
-<p>Rather than linearly mapping gene expression to metabolic flux activity, iMAT finds a steady-state flux distribution that aligns with the activity of highly expressed genes, minimizing the metabolic flux through reactions whose enzymes depend on lowly expressed genes. This is crucial because, in many biological systems, gene expression doesn’t directly translate to enzymatic activity. The resulting optimized flux distribution is also in harmony with the metabolic model’s stoichiometric and thermodynamic constraints.</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="integrating-gene-expression-into-metabolic-models">
+<h1>Integrating gene expression into metabolic models<a class="headerlink" href="#integrating-gene-expression-into-metabolic-models" title="Link to this heading">#</a></h1>
+<p>The preceding <a class="reference internal" href="flux-balance-analysis.html"><span class="std std-doc">FBA</span></a> and <a class="reference internal" href="multicondition-sfba.html"><span class="std std-doc">Multi-condition FBA</span></a> guides inferred feasible metabolic states from stoichiometry, reaction bounds, and required phenotypes. Gene expression provides another source of information: it can help choose which of the many feasible pathways best represents a particular biological context.</p>
+<p>This guide introduces gene-expression integration for one condition using <strong>iMAT</strong>, the method currently implemented in CORNETO. We will extract an expression-consistent metabolic state from the same COBRApy <em>E. coli</em> core model used in the FBA guides.</p>
+<section id="one-established-approach-imat">
+<h2>One established approach: iMAT<a class="headerlink" href="#one-established-approach-imat" title="Link to this heading">#</a></h2>
+<p><a class="reference external" href="https://www.nature.com/articles/nbt.1487">iMAT was introduced by Shlomi and colleagues</a> to infer context-specific metabolism from expression evidence. It retains the FBA feasible space:</p>
+<div class="math notranslate nohighlight">
+\[
+Sv=0, \qquad \ell \leq v \leq u.
+\]</div>
+<p>It then uses qualitative expression evidence to select a flux state:</p>
+<ul class="simple">
+<li><p>reactions supported by <strong>high</strong> expression are encouraged to carry flux;</p></li>
+<li><p>reactions associated with <strong>low</strong> expression are encouraged to remain inactive;</p></li>
+<li><p>reactions with intermediate or missing evidence are decided by network feasibility and the other objectives.</p></li>
+</ul>
+<p>The optimization minimizes disagreement with this evidence. It does not convert transcript abundance into a flux value, and expression cannot override mass balance, reaction bounds, or a required phenotype. Because reaction activity is represented with indicators, iMAT is a mixed-integer optimization problem.</p>
+<p>CORNETO provides this formulation through <code class="docutils literal notranslate"><span class="pre">MultiSampleIMAT</span></code>, but the framework is not restricted to the original iMAT objective. The built problem exposes its constraints, activity variables, and objective terms, making it straightforward to add biological constraints, compose other penalties, or implement methodological variations.</p>
+</section>
+<section id="from-genes-to-reaction-evidence">
+<h2>From genes to reaction evidence<a class="headerlink" href="#from-genes-to-reaction-evidence" title="Link to this heading">#</a></h2>
+<p>Metabolic models associate genes with reactions through gene–protein–reaction (GPR) rules. CORNETO applies these rules before building iMAT: an <code class="docutils literal notranslate"><span class="pre">and</span></code> relationship uses the least-supported required subunit, while an <code class="docutils literal notranslate"><span class="pre">or</span></code> relationship uses the best-supported alternative enzyme.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-right"><p>Normalized expression</p></th>
+<th class="head"><p>iMAT interpretation</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-right"><p>At or above the high threshold</p></td>
+<td><p>Encourage the mapped reaction to be active</p></td>
+</tr>
+<tr class="row-odd"><td class="text-right"><p>At or below the low threshold</p></td>
+<td><p>Encourage the mapped reaction to be inactive</p></td>
+</tr>
+<tr class="row-even"><td class="text-right"><p>Between thresholds or missing</p></td>
+<td><p>Do not score the reaction</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">eps</span></code> defines the minimum absolute flux used to call a supported reaction active. The optional <code class="docutils literal notranslate"><span class="pre">lambda_reg</span></code> adds a small reaction-count penalty, favoring a compact network when several solutions fit the expression evidence equally well.</p>
+</section>
+<section id="relationship-to-cobrapy">
+<h2>Relationship to COBRApy<a class="headerlink" href="#relationship-to-cobrapy" title="Link to this heading">#</a></h2>
+<p>COBRApy remains the model-management layer in this workflow: it loads the metabolic model, exposes reactions and GPR rules, and supports standard FBA and pFBA analyses. CORNETO converts that model into its graph representation and composes the FBA constraints, expression-fit terms, reaction-activity indicators, and optional regularization in one optimization problem.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">redirect_stdout</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">io</span><span class="w"> </span><span class="kn">import</span> <span class="n">StringIO</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">corneto</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cn</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cobra.flux_analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">pfba</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cobra.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_model</span>
 
-<span class="n">cn</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_html">
-        <table style='background-color:rgba(0,0,0,0);'>
-          <tr>
-            <td style="min-width:85px">
-              <img src="data:image/png;base64,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"
-                   style="width:100%;max-width:100px;" />
-            </td>
-            <td>
-              <table><tr><td>Installed version:</td><td style='text-align:left'>v1.0.0b8</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.9.2, PICOS v2.6.2</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>GLPK, GLPK_MI, CVXOPT, SCIP, SCIPY, HIGHS</td></tr><tr><td>Plot backend (default):</td><td style='text-align:left'>auto -> graphviz</td></tr><tr><td>Available plot backends:</td><td style='text-align:left'>graphviz v0.20.3; networkx v3.6.1+mpl v3.11.1; graphviz-wasm</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href="https://github.com/saezlab/corneto">https://github.com/saezlab/corneto</a></td></tr></table>
-            </td>
-          </tr>
-        </table>
-        </div></div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Gem</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
-<span class="n">Gem</span><span class="o">.</span><span class="n">add_edge</span><span class="p">({</span><span class="s2">&quot;M1&quot;</span><span class="p">,</span> <span class="s2">&quot;M2&quot;</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;M5&quot;</span><span class="p">,</span> <span class="s2">&quot;M6&quot;</span><span class="p">},</span> <span class="n">genes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;E6&quot;</span><span class="p">],</span> <span class="n">weight</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">default_lb</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">default_ub</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
-<span class="n">Gem</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;M1&quot;</span><span class="p">,</span> <span class="s2">&quot;M4&quot;</span><span class="p">,</span> <span class="n">genes</span><span class="o">=</span><span class="p">[],</span> <span class="n">default_lb</span><span class="o">=-</span><span class="mi">100</span><span class="p">,</span> <span class="n">default_ub</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
-<span class="n">Gem</span><span class="o">.</span><span class="n">add_edge</span><span class="p">({</span><span class="s2">&quot;M3&quot;</span><span class="p">,</span> <span class="s2">&quot;M4&quot;</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;M7&quot;</span><span class="p">,</span> <span class="s2">&quot;M8&quot;</span><span class="p">},</span> <span class="n">genes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;E3&quot;</span><span class="p">],</span> <span class="n">weight</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">default_lb</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">default_ub</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
-<span class="n">Gem</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;M6&quot;</span><span class="p">,</span> <span class="s2">&quot;M9&quot;</span><span class="p">,</span> <span class="n">genes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;E7&quot;</span><span class="p">],</span> <span class="n">weight</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">default_lb</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">default_ub</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
-<span class="n">Gem</span><span class="o">.</span><span class="n">add_edge</span><span class="p">((),</span> <span class="s2">&quot;M1&quot;</span><span class="p">,</span> <span class="n">genes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;E1&quot;</span><span class="p">,</span> <span class="s2">&quot;E2&quot;</span><span class="p">],</span> <span class="n">weight</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">default_lb</span><span class="o">=-</span><span class="mi">100</span><span class="p">,</span> <span class="n">default_ub</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
-<span class="n">Gem</span><span class="o">.</span><span class="n">add_edge</span><span class="p">((),</span> <span class="s2">&quot;M2&quot;</span><span class="p">,</span> <span class="n">genes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;E5&quot;</span><span class="p">],</span> <span class="n">weight</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">default_lb</span><span class="o">=-</span><span class="mi">100</span><span class="p">,</span> <span class="n">default_ub</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
-<span class="n">Gem</span><span class="o">.</span><span class="n">add_edge</span><span class="p">((),</span> <span class="s2">&quot;M3&quot;</span><span class="p">,</span> <span class="n">genes</span><span class="o">=</span><span class="p">[],</span> <span class="n">default_lb</span><span class="o">=-</span><span class="mi">100</span><span class="p">,</span> <span class="n">default_ub</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
-<span class="n">Gem</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;M5&quot;</span><span class="p">,</span> <span class="p">(),</span> <span class="n">genes</span><span class="o">=</span><span class="p">[],</span> <span class="n">default_lb</span><span class="o">=-</span><span class="mi">100</span><span class="p">,</span> <span class="n">default_ub</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
-<span class="n">Gem</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;M7&quot;</span><span class="p">,</span> <span class="p">(),</span> <span class="n">genes</span><span class="o">=</span><span class="p">[],</span> <span class="n">default_lb</span><span class="o">=-</span><span class="mi">100</span><span class="p">,</span> <span class="n">default_ub</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
-<span class="n">Gem</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;M8&quot;</span><span class="p">,</span> <span class="p">(),</span> <span class="n">genes</span><span class="o">=</span><span class="p">[],</span> <span class="n">default_lb</span><span class="o">=-</span><span class="mi">100</span><span class="p">,</span> <span class="n">default_ub</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
-<span class="n">Gem</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;M9&quot;</span><span class="p">,</span> <span class="p">(),</span> <span class="n">genes</span><span class="o">=</span><span class="p">[],</span> <span class="n">default_lb</span><span class="o">=-</span><span class="mi">100</span><span class="p">,</span> <span class="n">default_ub</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
-<span class="n">Gem</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">graph_attr</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;rankdir&quot;</span><span class="p">:</span> <span class="s2">&quot;LR&quot;</span><span class="p">,</span> <span class="s2">&quot;center&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">})</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<img alt="../../_images/6abe363cf81e8d3e58b971876784be4f568e7d53433db203471a9e9d637e8440.svg" src="../../_images/6abe363cf81e8d3e58b971876784be4f568e7d53433db203471a9e9d637e8440.svg" />
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">Gem</span><span class="o">.</span><span class="n">get_attr_edge</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Gem</span><span class="o">.</span><span class="n">num_edges</span><span class="p">)])</span>
-<span class="n">weights</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([-1,  0,  1,  1,  1, -1,  0,  0,  0,  0,  0])
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods.metabolism.fba</span><span class="w"> </span><span class="kn">import</span> <span class="n">multicondition_imat</span> <span class="k">as</span> <span class="n">imat</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">corneto.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">cobra_model_to_graph</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiSampleIMAT</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods.metabolism</span><span class="w"> </span><span class="kn">import</span> <span class="n">evaluate_gpr_expression</span>
 
-<span class="n">P</span> <span class="o">=</span> <span class="n">imat</span><span class="p">(</span><span class="n">Gem</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;SCIPY&quot;</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">redirect_stdout</span><span class="p">(</span><span class="n">StringIO</span><span class="p">()):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">load_model</span><span class="p">(</span><span class="s2">&quot;textbook&quot;</span><span class="p">)</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">solver</span> <span class="o">=</span> <span class="s2">&quot;glpk&quot;</span>
+<span class="n">G</span> <span class="o">=</span> <span class="n">cobra_model_to_graph</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+
+<span class="n">reaction_ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">get_attr_from_edges</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">))</span>
+<span class="n">reaction_index</span> <span class="o">=</span> <span class="p">{</span><span class="n">reaction_id</span><span class="p">:</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">reaction_id</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">reaction_ids</span><span class="p">)}</span>
+<span class="n">biomass_id</span> <span class="o">=</span> <span class="s2">&quot;Biomass_Ecoli_core&quot;</span>
+
+<span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;metabolites&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">metabolites</span><span class="p">),</span>
+        <span class="s2">&quot;reactions&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">reactions</span><span class="p">),</span>
+        <span class="s2">&quot;genes&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">genes</span><span class="p">),</span>
+        <span class="s2">&quot;reactions with GPR rules&quot;</span><span class="p">:</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="n">reaction</span><span class="o">.</span><span class="n">gene_reaction_rule</span><span class="p">)</span> <span class="k">for</span> <span class="n">reaction</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">reactions</span><span class="p">),</span>
+    <span class="p">},</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;E. coli core model&quot;</span><span class="p">,</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Problem(Minimize(Expression(AFFINE, UNKNOWN, ())), [Inequality(Constant(CONSTANT, NONPOSITIVE, (11,))), Inequality(Variable((11,), _flow)), Equality(Expression(AFFINE, UNKNOWN, (9,)), Constant(CONSTANT, ZERO, ())), Inequality(Expression(AFFINE, NONNEGATIVE, (11,))), Equality(Expression(AFFINE, NONNEGATIVE, (3,)), Constant(CONSTANT, ZERO, ())), Inequality(Expression(AFFINE, UNKNOWN, (11,))), Inequality(Variable((11,), _flow)), Inequality(Expression(AFFINE, NONNEGATIVE, (11,))), Inequality(Variable((11,), _or, boolean=True))])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>metabolites                  72
+reactions                    95
+genes                       137
+reactions with GPR rules     69
+Name: E. coli core model, dtype: int64
 </pre></div>
 </div>
 </div>
+</div>
+</section>
+<section id="example-selecting-an-anaerobic-fermentation-program">
+<h2>Example: selecting an anaerobic fermentation program<a class="headerlink" href="#example-selecting-an-anaerobic-fermentation-program" title="Link to this heading">#</a></h2>
+<p>We now address a small biological question:</p>
+<blockquote>
+<div><p>At a viable anaerobic growth rate, does the expression evidence support ethanol fermentation rather than alternative lactate or acetate routes?</p>
+</div></blockquote>
+<p>Glucose uptake is limited to 10 units and oxygen uptake is blocked. We require a biomass flux of at least <code class="docutils literal notranslate"><span class="pre">0.1</span></code>, but we do not maximize growth inside iMAT: the phenotype defines what the cell must accomplish, and expression evidence helps select how it accomplishes it.</p>
+<p>The expression values below are deliberately simple, synthetic normalized log-expression values. They resemble the positive scale commonly obtained after transforming expression measurements, but they do not represent a particular experiment.</p>
+<section id="check-that-the-required-phenotype-is-feasible">
+<h3>Check that the required phenotype is feasible<a class="headerlink" href="#check-that-the-required-phenotype-is-feasible" title="Link to this heading">#</a></h3>
+<p>Before integrating expression, standard FBA establishes the maximum anaerobic growth supported by the medium.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">anaerobic_model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">anaerobic_model</span><span class="o">.</span><span class="n">reactions</span><span class="o">.</span><span class="n">EX_glc__D_e</span><span class="o">.</span><span class="n">lower_bound</span> <span class="o">=</span> <span class="o">-</span><span class="mf">10.0</span>
+<span class="n">anaerobic_model</span><span class="o">.</span><span class="n">reactions</span><span class="o">.</span><span class="n">EX_o2_e</span><span class="o">.</span><span class="n">bounds</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">)</span>
+
+<span class="n">maximum_growth</span> <span class="o">=</span> <span class="n">anaerobic_model</span><span class="o">.</span><span class="n">optimize</span><span class="p">()</span><span class="o">.</span><span class="n">fluxes</span><span class="p">[</span><span class="n">biomass_id</span><span class="p">]</span>
+<span class="n">minimum_growth</span> <span class="o">=</span> <span class="mf">0.1</span>
+
+<span class="k">assert</span> <span class="n">maximum_growth</span> <span class="o">&gt;</span> <span class="n">minimum_growth</span>
+
+<span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;maximum anaerobic biomass&quot;</span><span class="p">:</span> <span class="n">maximum_growth</span><span class="p">,</span>
+        <span class="s2">&quot;minimum biomass required for inference&quot;</span><span class="p">:</span> <span class="n">minimum_growth</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>maximum anaerobic biomass                 0.211663
+minimum biomass required for inference    0.100000
+dtype: float64
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="define-a-qualitative-expression-profile">
+<h3>Define a qualitative expression profile<a class="headerlink" href="#define-a-qualitative-expression-profile" title="Link to this heading">#</a></h3>
+<p>Genes linked to ethanol production have expression values around <code class="docutils literal notranslate"><span class="pre">11–12</span></code>. Genes linked to competing lactate and acetate production have values around <code class="docutils literal notranslate"><span class="pre">4–5</span></code>. Values at or above <code class="docutils literal notranslate"><span class="pre">10</span></code> are classified as high, values at or below <code class="docutils literal notranslate"><span class="pre">6</span></code> as low, and values between the thresholds would remain unclassified.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">high_expression_threshold</span> <span class="o">=</span> <span class="mf">10.0</span>
+<span class="n">low_expression_threshold</span> <span class="o">=</span> <span class="mf">6.0</span>
+
+<span class="n">gene_expression</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1"># High expression: acetaldehyde and alcohol dehydrogenases</span>
+    <span class="s2">&quot;b0351&quot;</span><span class="p">:</span> <span class="mf">12.1</span><span class="p">,</span>
+    <span class="s2">&quot;b1241&quot;</span><span class="p">:</span> <span class="mf">11.6</span><span class="p">,</span>
+    <span class="s2">&quot;b0356&quot;</span><span class="p">:</span> <span class="mf">10.9</span><span class="p">,</span>
+    <span class="s2">&quot;b1478&quot;</span><span class="p">:</span> <span class="mf">11.4</span><span class="p">,</span>
+    <span class="c1"># Low expression: lactate dehydrogenase</span>
+    <span class="s2">&quot;b1380&quot;</span><span class="p">:</span> <span class="mf">4.2</span><span class="p">,</span>
+    <span class="s2">&quot;b2133&quot;</span><span class="p">:</span> <span class="mf">5.1</span><span class="p">,</span>
+    <span class="c1"># Low expression: phosphotransacetylase and acetate kinase</span>
+    <span class="s2">&quot;b2297&quot;</span><span class="p">:</span> <span class="mf">4.8</span><span class="p">,</span>
+    <span class="s2">&quot;b2458&quot;</span><span class="p">:</span> <span class="mf">5.3</span><span class="p">,</span>
+    <span class="s2">&quot;b1849&quot;</span><span class="p">:</span> <span class="mf">3.9</span><span class="p">,</span>
+    <span class="s2">&quot;b2296&quot;</span><span class="p">:</span> <span class="mf">4.6</span><span class="p">,</span>
+    <span class="s2">&quot;b3115&quot;</span><span class="p">:</span> <span class="mf">5.0</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">expression_modules</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;ethanol formation&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;reactions&quot;</span><span class="p">:</span> <span class="s2">&quot;ACALD, ALCD2x&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;genes&quot;</span><span class="p">:</span> <span class="s2">&quot;b0351, b1241, b0356, b1478&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;expression range&quot;</span><span class="p">:</span> <span class="s2">&quot;10.9-12.1&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;high&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;lactate formation&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;reactions&quot;</span><span class="p">:</span> <span class="s2">&quot;LDH_D&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;genes&quot;</span><span class="p">:</span> <span class="s2">&quot;b1380, b2133&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;expression range&quot;</span><span class="p">:</span> <span class="s2">&quot;4.2-5.1&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;low&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;acetate formation&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;reactions&quot;</span><span class="p">:</span> <span class="s2">&quot;PTAr, ACKr&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;genes&quot;</span><span class="p">:</span> <span class="s2">&quot;b2297, b2458, b1849, b2296, b3115&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;expression range&quot;</span><span class="p">:</span> <span class="s2">&quot;3.9-5.3&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;low&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">expression_modules</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>module</th>
+      <th>reactions</th>
+      <th>genes</th>
+      <th>expression range</th>
+      <th>class</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>ethanol formation</td>
+      <td>ACALD, ALCD2x</td>
+      <td>b0351, b1241, b0356, b1478</td>
+      <td>10.9-12.1</td>
+      <td>high</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>lactate formation</td>
+      <td>LDH_D</td>
+      <td>b1380, b2133</td>
+      <td>4.2-5.1</td>
+      <td>low</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>acetate formation</td>
+      <td>PTAr, ACKr</td>
+      <td>b2297, b2458, b1849, b2296, b3115</td>
+      <td>3.9-5.3</td>
+      <td>low</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Gem</span><span class="o">.</span><span class="n">edge_subgraph</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="o">.</span><span class="n">value</span> <span class="o">&gt;</span> <span class="mf">1e-6</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">scored_reactions</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ACALD&quot;</span><span class="p">,</span> <span class="s2">&quot;ALCD2x&quot;</span><span class="p">,</span> <span class="s2">&quot;LDH_D&quot;</span><span class="p">,</span> <span class="s2">&quot;PTAr&quot;</span><span class="p">,</span> <span class="s2">&quot;ACKr&quot;</span><span class="p">]</span>
+<span class="n">gpr_table</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;reaction&quot;</span><span class="p">:</span> <span class="n">scored_reactions</span><span class="p">,</span>
+        <span class="s2">&quot;GPR rule&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="n">model</span><span class="o">.</span><span class="n">reactions</span><span class="o">.</span><span class="n">get_by_id</span><span class="p">(</span><span class="n">reaction_id</span><span class="p">)</span><span class="o">.</span><span class="n">gene_reaction_rule</span>
+            <span class="k">for</span> <span class="n">reaction_id</span> <span class="ow">in</span> <span class="n">scored_reactions</span>
+        <span class="p">],</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+
+<span class="n">gpr_table</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/9c9009205866d94c27a95e403f089aea7e5be3cff3222e0aa6a9329150639814.svg" src="../../_images/9c9009205866d94c27a95e403f089aea7e5be3cff3222e0aa6a9329150639814.svg" />
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>reaction</th>
+      <th>GPR rule</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>ACALD</td>
+      <td>b0351 or b1241</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>ALCD2x</td>
+      <td>b1478 or b0356 or b1241</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>LDH_D</td>
+      <td>b2133 or b1380</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>PTAr</td>
+      <td>b2297 or b2458</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>ACKr</td>
+      <td>b2296 or b3115 or b1849</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
 </div>
-</div>
-<p>We can make the plot to look more like the image from the original paper by drawing the reactions with fluxes above a certain threshold with a wider line:</p>
+</section>
+<section id="an-expression-free-reference">
+<h3>An expression-free reference<a class="headerlink" href="#an-expression-free-reference" title="Link to this heading">#</a></h3>
+<p>For comparison, COBRApy pFBA fixes biomass at the required value and minimizes total flux without using expression. This provides one compact feasible state, not a context-specific expression fit.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Gem</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">custom_edge_attr</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">flow_style</span><span class="p">(</span><span class="n">P</span><span class="p">),</span> <span class="n">graph_attr</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;rankdir&quot;</span><span class="p">:</span> <span class="s2">&quot;LR&quot;</span><span class="p">,</span> <span class="s2">&quot;center&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">})</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">reference_model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">reference_model</span><span class="o">.</span><span class="n">reactions</span><span class="o">.</span><span class="n">EX_glc__D_e</span><span class="o">.</span><span class="n">lower_bound</span> <span class="o">=</span> <span class="o">-</span><span class="mf">10.0</span>
+<span class="n">reference_model</span><span class="o">.</span><span class="n">reactions</span><span class="o">.</span><span class="n">EX_o2_e</span><span class="o">.</span><span class="n">bounds</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">)</span>
+<span class="n">reference_model</span><span class="o">.</span><span class="n">reactions</span><span class="o">.</span><span class="n">get_by_id</span><span class="p">(</span><span class="n">biomass_id</span><span class="p">)</span><span class="o">.</span><span class="n">bounds</span> <span class="o">=</span> <span class="p">(</span><span class="n">minimum_growth</span><span class="p">,</span> <span class="n">minimum_growth</span><span class="p">)</span>
+
+<span class="n">pfba_solution</span> <span class="o">=</span> <span class="n">pfba</span><span class="p">(</span><span class="n">reference_model</span><span class="p">)</span>
+
+<span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">pfba_solution</span><span class="o">.</span><span class="n">fluxes</span><span class="p">[</span><span class="n">biomass_id</span><span class="p">],</span> <span class="n">minimum_growth</span><span class="p">)</span>
+<span class="n">pfba_solution</span><span class="o">.</span><span class="n">fluxes</span><span class="p">[[</span><span class="n">biomass_id</span><span class="p">,</span> <span class="s2">&quot;EX_glc__D_e&quot;</span><span class="p">,</span> <span class="s2">&quot;EX_lac__D_e&quot;</span><span class="p">,</span> <span class="s2">&quot;EX_etoh_e&quot;</span><span class="p">,</span> <span class="s2">&quot;EX_ac_e&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span>
+    <span class="s2">&quot;pFBA flux&quot;</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/4b9da3c9bf8f4f0ee0bb9b6942b4d1d611d9ab373939a0a5f7d7b0915416262b.svg" src="../../_images/4b9da3c9bf8f4f0ee0bb9b6942b4d1d611d9ab373939a0a5f7d7b0915416262b.svg" />
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>pFBA flux</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>Biomass_Ecoli_core</th>
+      <td>0.100000</td>
+    </tr>
+    <tr>
+      <th>EX_glc__D_e</th>
+      <td>-7.767692</td>
+    </tr>
+    <tr>
+      <th>EX_lac__D_e</th>
+      <td>8.928430</td>
+    </tr>
+    <tr>
+      <th>EX_etoh_e</th>
+      <td>4.868550</td>
+    </tr>
+    <tr>
+      <th>EX_ac_e</th>
+      <td>0.000000</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="build-and-solve-imat">
+<h3>Build and solve iMAT<a class="headerlink" href="#build-and-solve-imat" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">MultiSampleIMAT.build</span></code> accepts gene scores, reaction bounds, and optional reaction objectives directly. Here the biomass lower bound represents viability, so no biomass objective is needed.</p>
+<p>The small <code class="docutils literal notranslate"><span class="pre">lambda_reg</span></code> value breaks ties in favor of a compact active network. Expression disagreement remains the primary biological criterion in this example.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">eps</span> <span class="o">=</span> <span class="mf">1e-3</span>
+<span class="n">imat</span> <span class="o">=</span> <span class="n">MultiSampleIMAT</span><span class="p">(</span>
+    <span class="n">eps</span><span class="o">=</span><span class="n">eps</span><span class="p">,</span>
+    <span class="n">lambda_reg</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
+    <span class="n">high_expression_threshold</span><span class="o">=</span><span class="n">high_expression_threshold</span><span class="p">,</span>
+    <span class="n">low_expression_threshold</span><span class="o">=</span><span class="n">low_expression_threshold</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">imat_problem</span> <span class="o">=</span> <span class="n">imat</span><span class="o">.</span><span class="n">build</span><span class="p">(</span>
+    <span class="n">G</span><span class="p">,</span>
+    <span class="n">gene_expression</span><span class="o">=</span><span class="n">gene_expression</span><span class="p">,</span>
+    <span class="n">reaction_bounds</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;EX_glc__D_e&quot;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
+        <span class="s2">&quot;EX_o2_e&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
+        <span class="n">biomass_id</span><span class="p">:</span> <span class="p">(</span><span class="n">minimum_growth</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+    <span class="p">},</span>
+<span class="p">)</span>
+<span class="n">imat_problem</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;highs&quot;</span><span class="p">)</span>
+
+<span class="n">imat_fluxes</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">imat_problem</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
+    <span class="n">index</span><span class="o">=</span><span class="n">reaction_ids</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;iMAT flux&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
 </div>
 </div>
+</div>
+</section>
+<section id="did-the-inferred-state-agree-with-expression">
+<h3>Did the inferred state agree with expression?<a class="headerlink" href="#did-the-inferred-state-agree-with-expression" title="Link to this heading">#</a></h3>
+<p>For iMAT, the main interpretation is whether a scored reaction is active, not whether its flux magnitude matches its transcript abundance. Flux signs follow the direction in which each reaction is written in the model.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">reaction_evidence</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;ACALD&quot;</span><span class="p">:</span> <span class="s2">&quot;high&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ALCD2x&quot;</span><span class="p">:</span> <span class="s2">&quot;high&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;LDH_D&quot;</span><span class="p">:</span> <span class="s2">&quot;low&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;PTAr&quot;</span><span class="p">:</span> <span class="s2">&quot;low&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ACKr&quot;</span><span class="p">:</span> <span class="s2">&quot;low&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;expression evidence&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">expression_fit</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;expression evidence&quot;</span><span class="p">:</span> <span class="n">reaction_evidence</span><span class="p">,</span>
+        <span class="s2">&quot;flux&quot;</span><span class="p">:</span> <span class="n">imat_fluxes</span><span class="p">[</span><span class="n">reaction_evidence</span><span class="o">.</span><span class="n">index</span><span class="p">],</span>
+        <span class="s2">&quot;active&quot;</span><span class="p">:</span> <span class="n">imat_fluxes</span><span class="p">[</span><span class="n">reaction_evidence</span><span class="o">.</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="n">eps</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">eps</span><span class="p">),</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+
+<span class="k">assert</span> <span class="n">expression_fit</span><span class="o">.</span><span class="n">loc</span><span class="p">[[</span><span class="s2">&quot;ACALD&quot;</span><span class="p">,</span> <span class="s2">&quot;ALCD2x&quot;</span><span class="p">],</span> <span class="s2">&quot;active&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+<span class="k">assert</span> <span class="ow">not</span> <span class="n">expression_fit</span><span class="o">.</span><span class="n">loc</span><span class="p">[[</span><span class="s2">&quot;LDH_D&quot;</span><span class="p">,</span> <span class="s2">&quot;PTAr&quot;</span><span class="p">,</span> <span class="s2">&quot;ACKr&quot;</span><span class="p">],</span> <span class="s2">&quot;active&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">any</span><span class="p">()</span>
+<span class="k">assert</span> <span class="n">imat_fluxes</span><span class="p">[</span><span class="n">biomass_id</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">minimum_growth</span> <span class="o">-</span> <span class="mf">1e-7</span>
+
+<span class="n">expression_fit</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>expression evidence</th>
+      <th>flux</th>
+      <th>active</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>ACALD</th>
+      <td>high</td>
+      <td>-12.273558</td>
+      <td>True</td>
+    </tr>
+    <tr>
+      <th>ALCD2x</th>
+      <td>high</td>
+      <td>-12.273558</td>
+      <td>True</td>
+    </tr>
+    <tr>
+      <th>LDH_D</th>
+      <td>low</td>
+      <td>0.000000</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>PTAr</th>
+      <td>low</td>
+      <td>0.000000</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>ACKr</th>
+      <td>low</td>
+      <td>0.000000</td>
+      <td>False</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="compare-the-selected-fermentation-routes">
+<h3>Compare the selected fermentation routes<a class="headerlink" href="#compare-the-selected-fermentation-routes" title="Link to this heading">#</a></h3>
+<p>At the same biomass value, pFBA and iMAT answer different questions. pFBA minimizes total flux and uses both lactate and ethanol routes. iMAT instead selects a state consistent with the supplied high-ethanol and low-lactate/acetate evidence.</p>
+<p>The bars show representative flux solutions. Their magnitudes should not be interpreted as predictions from transcript abundance; the iMAT evidence distinguishes active from inactive reactions.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fermentation_products</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;lactate&quot;</span><span class="p">:</span> <span class="s2">&quot;EX_lac__D_e&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ethanol&quot;</span><span class="p">:</span> <span class="s2">&quot;EX_etoh_e&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;acetate&quot;</span><span class="p">:</span> <span class="s2">&quot;EX_ac_e&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">product_fluxes</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;pFBA (no expression)&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="n">product</span><span class="p">:</span> <span class="n">pfba_solution</span><span class="o">.</span><span class="n">fluxes</span><span class="p">[</span><span class="n">reaction_id</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">product</span><span class="p">,</span> <span class="n">reaction_id</span> <span class="ow">in</span> <span class="n">fermentation_products</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;iMAT (expression integrated)&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="n">product</span><span class="p">:</span> <span class="n">imat_fluxes</span><span class="p">[</span><span class="n">reaction_id</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">product</span><span class="p">,</span> <span class="n">reaction_id</span> <span class="ow">in</span> <span class="n">fermentation_products</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">},</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+
+<span class="k">assert</span> <span class="n">product_fluxes</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;ethanol&quot;</span><span class="p">,</span> <span class="s2">&quot;iMAT (expression integrated)&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">eps</span>
+<span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">product_fluxes</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;lactate&quot;</span><span class="p">,</span> <span class="s2">&quot;iMAT (expression integrated)&quot;</span><span class="p">],</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-7</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">product_fluxes</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;lactate&quot;</span><span class="p">,</span> <span class="s2">&quot;pFBA (no expression)&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">eps</span>
+
+<span class="n">product_fluxes</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>pFBA (no expression)</th>
+      <th>iMAT (expression integrated)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>lactate</th>
+      <td>8.92843</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>ethanol</th>
+      <td>4.86855</td>
+      <td>12.273558</td>
+    </tr>
+    <tr>
+      <th>acetate</th>
+      <td>0.00000</td>
+      <td>0.000000</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ax</span> <span class="o">=</span> <span class="n">product_fluxes</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span>
+    <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">),</span>
+    <span class="n">color</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;#9aa0a6&quot;</span><span class="p">,</span> <span class="s2">&quot;#2a9d8f&quot;</span><span class="p">],</span>
+    <span class="n">width</span><span class="o">=</span><span class="mf">0.75</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;exchange flux&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Fermentation products at the same biomass requirement&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">spines</span><span class="p">[[</span><span class="s2">&quot;top&quot;</span><span class="p">,</span> <span class="s2">&quot;right&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/9dcd22dc051d991af6c1f6bbd8fa8564c06eda81a7824621d1e4b16453ef2cb6.png" src="../../_images/9dcd22dc051d991af6c1f6bbd8fa8564c06eda81a7824621d1e4b16453ef2cb6.png" />
+</div>
+</div>
+</section>
+<section id="visualize-the-contextualized-metabolic-network">
+<h3>Visualize the contextualized metabolic network<a class="headerlink" href="#visualize-the-contextualized-metabolic-network" title="Link to this heading">#</a></h3>
+<p>The graph below contains the active iMAT network plus scored reactions that were kept inactive. High-expression active reactions are green, low-expression inactive reactions are dashed red, and active reactions without expression evidence are gray.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Meaning</p></th>
+<th class="head"><p>Color and style</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Active and supported by high expression</p></td>
+<td><p>Green</p></td>
+</tr>
+<tr class="row-odd"><td><p>Inactive and associated with low expression</p></td>
+<td><p>Dashed red</p></td>
+</tr>
+<tr class="row-even"><td><p>Active without supplied expression evidence</p></td>
+<td><p>Gray</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">active_reactions</span> <span class="o">=</span> <span class="n">imat_fluxes</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="n">eps</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">eps</span><span class="p">)</span>
+<span class="n">scored_reaction_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">reaction_evidence</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+<span class="n">displayed_reactions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="n">active_reactions</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">or</span> <span class="n">reaction_id</span> <span class="ow">in</span> <span class="n">scored_reaction_set</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">reaction_id</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">reaction_ids</span><span class="p">)</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">selected_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="n">displayed_reactions</span><span class="p">)</span>
+<span class="n">context_network</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">edge_subgraph</span><span class="p">(</span><span class="n">selected_indices</span><span class="p">)</span>
+<span class="n">edge_style</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="k">for</span> <span class="n">displayed_index</span><span class="p">,</span> <span class="n">original_index</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">selected_indices</span><span class="p">):</span>
+    <span class="n">reaction_id</span> <span class="o">=</span> <span class="n">reaction_ids</span><span class="p">[</span><span class="n">original_index</span><span class="p">]</span>
+    <span class="n">evidence</span> <span class="o">=</span> <span class="n">reaction_evidence</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">reaction_id</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">evidence</span> <span class="o">==</span> <span class="s2">&quot;high&quot;</span><span class="p">:</span>
+        <span class="n">edge_style</span><span class="p">[</span><span class="n">displayed_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;#2a9d8f&quot;</span><span class="p">,</span> <span class="s2">&quot;penwidth&quot;</span><span class="p">:</span> <span class="s2">&quot;4&quot;</span><span class="p">}</span>
+    <span class="k">elif</span> <span class="n">evidence</span> <span class="o">==</span> <span class="s2">&quot;low&quot;</span><span class="p">:</span>
+        <span class="n">edge_style</span><span class="p">[</span><span class="n">displayed_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;#e76f51&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;penwidth&quot;</span><span class="p">:</span> <span class="s2">&quot;3&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;style&quot;</span><span class="p">:</span> <span class="s2">&quot;dashed&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">edge_style</span><span class="p">[</span><span class="n">displayed_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;#b0b0b0&quot;</span><span class="p">,</span> <span class="s2">&quot;penwidth&quot;</span><span class="p">:</span> <span class="s2">&quot;1.5&quot;</span><span class="p">}</span>
+
+<span class="n">context_network</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">graph_attr</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;rankdir&quot;</span><span class="p">:</span> <span class="s2">&quot;LR&quot;</span><span class="p">},</span>
+    <span class="n">node_attr</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;fixedsize&quot;</span><span class="p">:</span> <span class="s2">&quot;false&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="s2">&quot;box&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;style&quot;</span><span class="p">:</span> <span class="s2">&quot;rounded&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;margin&quot;</span><span class="p">:</span> <span class="s2">&quot;0.05,0.03&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="n">custom_edge_attr</span><span class="o">=</span><span class="n">edge_style</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/54538dc8113157f7eb2873d4c4369582614942fb68544363c7fb9c3f34063321.svg" src="../../_images/54538dc8113157f7eb2873d4c4369582614942fb68544363c7fb9c3f34063321.svg" />
+</div>
+</div>
+</section>
+</section>
+<section id="advanced-compute-and-supply-reaction-scores-directly">
+<h2>Advanced: compute and supply reaction scores directly<a class="headerlink" href="#advanced-compute-and-supply-reaction-scores-directly" title="Link to this heading">#</a></h2>
+<p>Passing <code class="docutils literal notranslate"><span class="pre">gene_expression=</span></code> is convenient because <code class="docutils literal notranslate"><span class="pre">MultiSampleIMAT</span></code> performs thresholding and GPR mapping automatically. For method development or custom preprocessing, it can be useful to inspect that transformation and pass the final reaction-level evidence through <code class="docutils literal notranslate"><span class="pre">reaction_scores=</span></code> instead.</p>
+<p>At this level, signed values no longer represent expression abundance. They encode the iMAT classification:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-right"><p>Reaction score</p></th>
+<th class="head"><p>Meaning in the optimization</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-right"><p><code class="docutils literal notranslate"><span class="pre">+1</span></code></p></td>
+<td><p>High-expression evidence: favor an active reaction</p></td>
+</tr>
+<tr class="row-odd"><td class="text-right"><p><code class="docutils literal notranslate"><span class="pre">−1</span></code></p></td>
+<td><p>Low-expression evidence: favor an inactive reaction</p></td>
+</tr>
+<tr class="row-even"><td class="text-right"><p><code class="docutils literal notranslate"><span class="pre">0</span></code> or omitted</p></td>
+<td><p>No expression-fit term for the reaction</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>First, threshold the positive expression measurements into categorical gene evidence.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gene_scores</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="k">for</span> <span class="n">gene_id</span><span class="p">,</span> <span class="n">expression</span> <span class="ow">in</span> <span class="n">gene_expression</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">expression</span> <span class="o">&gt;=</span> <span class="n">high_expression_threshold</span><span class="p">:</span>
+        <span class="n">gene_scores</span><span class="p">[</span><span class="n">gene_id</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="k">elif</span> <span class="n">expression</span> <span class="o">&lt;=</span> <span class="n">low_expression_threshold</span><span class="p">:</span>
+        <span class="n">gene_scores</span><span class="p">[</span><span class="n">gene_id</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">gene_scores</span><span class="p">[</span><span class="n">gene_id</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+<span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;expression&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">gene_expression</span><span class="p">),</span>
+        <span class="s2">&quot;gene score&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">gene_scores</span><span class="p">),</span>
+    <span class="p">}</span>
+<span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">&quot;expression&quot;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>expression</th>
+      <th>gene score</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>b0351</th>
+      <td>12.1</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>b1241</th>
+      <td>11.6</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>b1478</th>
+      <td>11.4</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>b0356</th>
+      <td>10.9</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>b2458</th>
+      <td>5.3</td>
+      <td>-1.0</td>
+    </tr>
+    <tr>
+      <th>b2133</th>
+      <td>5.1</td>
+      <td>-1.0</td>
+    </tr>
+    <tr>
+      <th>b3115</th>
+      <td>5.0</td>
+      <td>-1.0</td>
+    </tr>
+    <tr>
+      <th>b2297</th>
+      <td>4.8</td>
+      <td>-1.0</td>
+    </tr>
+    <tr>
+      <th>b2296</th>
+      <td>4.6</td>
+      <td>-1.0</td>
+    </tr>
+    <tr>
+      <th>b1380</th>
+      <td>4.2</td>
+      <td>-1.0</td>
+    </tr>
+    <tr>
+      <th>b1849</th>
+      <td>3.9</td>
+      <td>-1.0</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>Next, CORNETO’s <code class="docutils literal notranslate"><span class="pre">evaluate_gpr_expression</span></code> applies every model GPR rule to the gene scores in one call. Reactions with a final score of zero are omitted, so they remain governed by stoichiometry, bounds, and regularization rather than expression-fit terms. For several samples, the related <code class="docutils literal notranslate"><span class="pre">evaluate_gpr_rules</span></code> function evaluates the same rule list against multiple gene-score mappings.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gpr_rules</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">get_attr_from_edges</span><span class="p">(</span><span class="s2">&quot;GPR&quot;</span><span class="p">))</span>
+<span class="n">reaction_score_values</span> <span class="o">=</span> <span class="n">evaluate_gpr_expression</span><span class="p">(</span><span class="n">gpr_rules</span><span class="p">,</span> <span class="n">gene_scores</span><span class="p">)</span>
+
+<span class="n">reaction_scores</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">reaction_id</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">score</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">reaction_id</span><span class="p">,</span> <span class="n">score</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">reaction_ids</span><span class="p">,</span> <span class="n">reaction_score_values</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">score</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="n">reaction_score_table</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;GPR rule&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="n">reaction_id</span><span class="p">:</span> <span class="n">gpr_rules</span><span class="p">[</span><span class="n">reaction_index</span><span class="p">[</span><span class="n">reaction_id</span><span class="p">]]</span>
+            <span class="k">for</span> <span class="n">reaction_id</span> <span class="ow">in</span> <span class="n">reaction_scores</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;reaction score&quot;</span><span class="p">:</span> <span class="n">reaction_scores</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+
+<span class="n">reaction_score_table</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>GPR rule</th>
+      <th>reaction score</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>ACALD</th>
+      <td>b0351 or b1241</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>ACKr</th>
+      <td>b2296 or b3115 or b1849</td>
+      <td>-1.0</td>
+    </tr>
+    <tr>
+      <th>ALCD2x</th>
+      <td>b1478 or b0356 or b1241</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>LDH_D</th>
+      <td>b2133 or b1380</td>
+      <td>-1.0</td>
+    </tr>
+    <tr>
+      <th>PTAr</th>
+      <td>b2297 or b2458</td>
+      <td>-1.0</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>The reaction-score interface is closer to the optimization problem and is useful when reaction evidence comes from another mapping method or has already been curated. Threshold arguments are unnecessary because the scores already encode high and low reaction evidence.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">reaction_score_problem</span> <span class="o">=</span> <span class="n">MultiSampleIMAT</span><span class="p">(</span>
+    <span class="n">eps</span><span class="o">=</span><span class="n">eps</span><span class="p">,</span>
+    <span class="n">lambda_reg</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
+<span class="p">)</span><span class="o">.</span><span class="n">build</span><span class="p">(</span>
+    <span class="n">G</span><span class="p">,</span>
+    <span class="n">reaction_scores</span><span class="o">=</span><span class="n">reaction_scores</span><span class="p">,</span>
+    <span class="n">reaction_bounds</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;EX_glc__D_e&quot;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
+        <span class="s2">&quot;EX_o2_e&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
+        <span class="n">biomass_id</span><span class="p">:</span> <span class="p">(</span><span class="n">minimum_growth</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+    <span class="p">},</span>
+<span class="p">)</span>
+<span class="n">reaction_score_problem</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;highs&quot;</span><span class="p">)</span>
+
+<span class="n">reaction_score_fluxes</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">reaction_score_problem</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
+    <span class="n">index</span><span class="o">=</span><span class="n">reaction_ids</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">interface_comparison</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;reaction score&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">reaction_scores</span><span class="p">),</span>
+        <span class="s2">&quot;active from gene_expression&quot;</span><span class="p">:</span> <span class="p">(</span>
+            <span class="n">imat_fluxes</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">reaction_scores</span><span class="p">)]</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="n">eps</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">eps</span><span class="p">)</span>
+        <span class="p">),</span>
+        <span class="s2">&quot;active from reaction_scores&quot;</span><span class="p">:</span> <span class="p">(</span>
+            <span class="n">reaction_score_fluxes</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">reaction_scores</span><span class="p">)]</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="n">eps</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">eps</span><span class="p">)</span>
+        <span class="p">),</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+
+<span class="k">assert</span> <span class="p">(</span>
+    <span class="n">interface_comparison</span><span class="p">[</span><span class="s2">&quot;active from gene_expression&quot;</span><span class="p">]</span>
+    <span class="o">==</span> <span class="n">interface_comparison</span><span class="p">[</span><span class="s2">&quot;active from reaction_scores&quot;</span><span class="p">]</span>
+<span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+<span class="n">interface_comparison</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>reaction score</th>
+      <th>active from gene_expression</th>
+      <th>active from reaction_scores</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>ACALD</th>
+      <td>1.0</td>
+      <td>True</td>
+      <td>True</td>
+    </tr>
+    <tr>
+      <th>ACKr</th>
+      <td>-1.0</td>
+      <td>False</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>ALCD2x</th>
+      <td>1.0</td>
+      <td>True</td>
+      <td>True</td>
+    </tr>
+    <tr>
+      <th>LDH_D</th>
+      <td>-1.0</td>
+      <td>False</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>PTAr</th>
+      <td>-1.0</td>
+      <td>False</td>
+      <td>False</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="interpretation-and-limitations">
+<h2>Interpretation and limitations<a class="headerlink" href="#interpretation-and-limitations" title="Link to this heading">#</a></h2>
+<p>The inferred state is stoichiometrically feasible, satisfies the anaerobic medium and growth requirement, activates the expression-supported ethanol route, and avoids the low-expression lactate and acetate routes. This illustrates the role of iMAT: expression resolves part of the ambiguity left by FBA by ranking feasible reaction-activity patterns.</p>
+<p>The result remains a modeling hypothesis:</p>
+<ul class="simple">
+<li><p>expression is a cue for likely activity, not an activity or flux measurement; protein abundance, post-translational modification, and metabolite-level regulation can decouple expression from flux;</p></li>
+<li><p>thresholds determine which genes contribute evidence and should be checked for sensitivity;</p></li>
+<li><p>iMAT infers reaction activity, not flux magnitude from expression;</p></li>
+<li><p>low-expression reactions may remain active when network constraints or the required phenotype need them;</p></li>
+<li><p>alternative expression-consistent optima may still exist.</p></li>
+</ul>
+<p>The <a class="reference external" href="https://www.nature.com/articles/nbt.1487">original iMAT paper</a> reports a central role for post-transcriptional regulation and uses disagreements between expression and predicted activity to generate hypotheses about regulation beyond transcript abundance. They do not identify a mechanism on their own: additional protein, enzyme-activity, metabolite, or flux measurements are needed to distinguish biological regulation from data and model assumptions.</p>
+<p>Real analyses should inspect threshold choices, biological constraints, expression coverage, and alternative solutions. Continue with <a class="reference internal" href="multicondition-imat.html"><span class="std std-doc">multi-condition gene expression integration</span></a> to learn how CORNETO couples expression-informed metabolic inference across several contexts.</p>
+</section>
 </section>
 
 
@@ -631,7 +1529,7 @@
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Multi-condition sparse FBA</p>
+        <p class="prev-next-title">Multi-condition FBA</p>
       </div>
     </a>
     <a class="right-next"
@@ -639,7 +1537,7 @@
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Multi-condition iMAT</p>
+        <p class="prev-next-title">Multi-condition gene expression integration</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -649,6 +1547,38 @@
             </div>
             
             
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#one-established-approach-imat">One established approach: iMAT</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#from-genes-to-reaction-evidence">From genes to reaction evidence</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#relationship-to-cobrapy">Relationship to COBRApy</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-selecting-an-anaerobic-fermentation-program">Example: selecting an anaerobic fermentation program</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#check-that-the-required-phenotype-is-feasible">Check that the required phenotype is feasible</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#define-a-qualitative-expression-profile">Define a qualitative expression profile</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#an-expression-free-reference">An expression-free reference</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#build-and-solve-imat">Build and solve iMAT</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#did-the-inferred-state-agree-with-expression">Did the inferred state agree with expression?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#compare-the-selected-fermentation-routes">Compare the selected fermentation routes</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#visualize-the-contextualized-metabolic-network">Visualize the contextualized metabolic network</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#advanced-compute-and-supply-reaction-scores-directly">Advanced: compute and supply reaction scores directly</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#interpretation-and-limitations">Interpretation and limitations</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>

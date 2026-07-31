@@ -65,7 +65,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'guide/networks/shortest-paths';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1785487194';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'stable';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
@@ -419,9 +419,10 @@
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../metabolism/index.html">Metabolism</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../metabolism/flux-balance-analysis.html">Flux Balance Analysis (FBA)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../metabolism/multicondition-sfba.html">Multi-condition sparse FBA</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../metabolism/multicondition-imat.html">Multi-condition iMAT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metabolism/flux-balance-analysis.html">Flux balance analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metabolism/multicondition-sfba.html">Multi-condition FBA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metabolism/imat.html">Integrating gene expression into metabolic models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metabolism/multicondition-imat.html">Multi-condition gene expression integration</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../signaling/index.html">Signaling</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -429,9 +430,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../signaling/multisample-carnival.html">Multi-sample CARNIVAL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../signaling/phonemes.html">PHONEMeS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../signaling/bidirectional-phonemes.html">Global upstream and downstream PHONEMeS</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../signaling/cellnopt_ILP.html">Acyclic boolean models of cell signaling (experimental)</a></li>
-
-
+<li class="toctree-l2"><a class="reference internal" href="../signaling/cellnopt_dag.html">Inferring intracellular signaling models with CellNOptDAG</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../interoperability/index.html">Interoperability</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -538,7 +537,7 @@
                    style="width:100%;max-width:100px;" />
             </td>
             <td>
-              <table><tr><td>Installed version:</td><td style='text-align:left'>v1.0.0rc1.post12.dev0+9bccb230</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.9.2, PICOS v2.6.2</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>GLPK, GLPK_MI, CVXOPT, SCIP, SCIPY, HIGHS</td></tr><tr><td>Plot backend (default):</td><td style='text-align:left'>auto -> graphviz</td></tr><tr><td>Available plot backends:</td><td style='text-align:left'>graphviz v0.20.3; networkx v3.6.1+mpl v3.11.1; graphviz-wasm</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href="https://github.com/saezlab/corneto">https://github.com/saezlab/corneto</a></td></tr></table>
+              <table><tr><td>Installed version:</td><td style='text-align:left'>v1.0.0rc2.post7.dev0+4c394c2d</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.9.2, PICOS v2.6.2</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>GLPK, GLPK_MI, CVXOPT, SCIP, SCIPY, HIGHS</td></tr><tr><td>Plot backend (default):</td><td style='text-align:left'>auto -> graphviz</td></tr><tr><td>Available plot backends:</td><td style='text-align:left'>graphviz v0.20.3; networkx v3.6.1+mpl v3.11.1; graphviz-wasm</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href="https://github.com/saezlab/corneto">https://github.com/saezlab/corneto</a></td></tr></table>
             </td>
           </tr>
         </table>
@@ -621,7 +620,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[np.int64(1843), 995, 29, 1295, np.int64(1709)]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[np.int64(245), 2941, 8, 2, np.int64(2023)]
 </pre></div>
 </div>
 </div>
@@ -633,7 +632,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>17.121747173340992
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>8.201179072074423
 </pre></div>
 </div>
 </div>
@@ -655,7 +654,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>np.float64(17.12174717334099)
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>np.float64(8.201179072074424)
 </pre></div>
 </div>
 </div>
@@ -667,7 +666,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/170dd38f13886e698db605c4b9d84cbdeeff83548815862526e903b678030f44.svg" src="../../_images/170dd38f13886e698db605c4b9d84cbdeeff83548815862526e903b678030f44.svg" />
+<img alt="../../_images/4387b418abf4764d568f4bf8084cd8ec3832d756ba16b3ed5c28096fcd77d36f.svg" src="../../_images/4387b418abf4764d568f4bf8084cd8ec3832d756ba16b3ed5c28096fcd77d36f.svg" />
 </div>
 </div>
 </section>

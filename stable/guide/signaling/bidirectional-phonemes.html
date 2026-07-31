@@ -65,7 +65,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'guide/signaling/bidirectional-phonemes';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1785487194';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'stable';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
@@ -75,7 +75,7 @@
     <link rel="icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Acyclic boolean models of cell signaling (experimental)" href="cellnopt_ILP.html" />
+    <link rel="next" title="Inferring intracellular signaling models with CellNOptDAG" href="cellnopt_dag.html" />
     <link rel="prev" title="PHONEMeS" href="phonemes.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -419,9 +419,10 @@
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../metabolism/index.html">Metabolism</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../metabolism/flux-balance-analysis.html">Flux Balance Analysis (FBA)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../metabolism/multicondition-sfba.html">Multi-condition sparse FBA</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../metabolism/multicondition-imat.html">Multi-condition iMAT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metabolism/flux-balance-analysis.html">Flux balance analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metabolism/multicondition-sfba.html">Multi-condition FBA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metabolism/imat.html">Integrating gene expression into metabolic models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metabolism/multicondition-imat.html">Multi-condition gene expression integration</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Signaling</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
@@ -429,9 +430,7 @@
 <li class="toctree-l2"><a class="reference internal" href="multisample-carnival.html">Multi-sample CARNIVAL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="phonemes.html">PHONEMeS</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Global upstream and downstream PHONEMeS</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cellnopt_ILP.html">Acyclic boolean models of cell signaling (experimental)</a></li>
-
-
+<li class="toctree-l2"><a class="reference internal" href="cellnopt_dag.html">Inferring intracellular signaling models with CellNOptDAG</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../interoperability/index.html">Interoperability</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -594,7 +593,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Problem(Minimize(Expression(AFFINE, UNKNOWN, ())), [Inequality(Constant(CONSTANT, ZERO, (5, 1))), Inequality(Variable((5, 1), _dag_layer)), Inequality(Constant(CONSTANT, ZERO, (14, 2))), Inequality(Variable((14, 2), _flow)), Equality(Expression(AFFINE, UNKNOWN, (5, 2)), Constant(CONSTANT, ZERO, ())), Inequality(Expression(AFFINE, NONNEGATIVE, (14, 2))), Equality(Expression(AFFINE, NONNEGATIVE, (14, 2)), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, NONNEGATIVE, (14, 2)), Constant(CONSTANT, ZERO, ())), Inequality(Expression(AFFINE, NONNEGATIVE, (14, 2))), Inequality(Variable((14, 2), _flow)), Inequality(Variable((5, 1), anchor_active_downstream, boolean=True)), Inequality(Variable((5, 1), anchor_active_upstream, boolean=True)), Inequality(Constant(CONSTANT, NONNEGATIVE, (5, 1))), Inequality(Constant(CONSTANT, NONNEGATIVE, (5, 1))), Inequality(Expression(AFFINE, NONNEGATIVE, (1, 1))), Inequality(Expression(AFFINE, UNKNOWN, (1, 1))), Inequality(Expression(AFFINE, NONNEGATIVE, (1, 1))), Inequality(Expression(AFFINE, UNKNOWN, (1, 1))), Inequality(Expression(AFFINE, NONNEGATIVE, (5, 1))), Inequality(Expression(AFFINE, NONNEGATIVE, (5, 1))), Inequality(Variable((5, 1), anchor_active_downstream, boolean=True)), Inequality(Expression(AFFINE, NONNEGATIVE, (5, 1))), Inequality(Expression(AFFINE, NONNEGATIVE, (5, 1))), Inequality(Expression(AFFINE, NONNEGATIVE, (5, 1))), Inequality(Expression(AFFINE, NONNEGATIVE, (5, 1))), Inequality(Variable((5, 1), anchor_active_upstream, boolean=True)), Inequality(Expression(AFFINE, NONNEGATIVE, (5, 1))), Inequality(Expression(AFFINE, NONNEGATIVE, (5, 1))), Inequality(Expression(AFFINE, NONNEGATIVE, (5, 1))), Inequality(Expression(AFFINE, NONNEGATIVE, (5, 1))), Inequality(Variable((5, 1), edge_selected, boolean=True)), Inequality(Variable((5, 1), vertex_selected_downstream, boolean=True)), Inequality(Variable((5, 1), vertex_selected_upstream, boolean=True)), Inequality(Variable((5, 1), vertex_selected, boolean=True)), Inequality(Expression(AFFINE, UNKNOWN, (5, 1))), Inequality(Expression(AFFINE, UNKNOWN, (5, 1)))])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Problem(Minimize(Expression(AFFINE, UNKNOWN, ())), [Inequality(Constant(CONSTANT, ZERO, (14, 2))), Inequality(Variable((14, 2), _flow)), Inequality(Constant(CONSTANT, ZERO, (5, 1))), Inequality(Variable((5, 1), _dag_layer)), Equality(Expression(AFFINE, UNKNOWN, (5, 2)), Constant(CONSTANT, ZERO, ())), Inequality(Expression(AFFINE, NONNEGATIVE, (14, 2))), Equality(Expression(AFFINE, NONNEGATIVE, (14, 2)), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, NONNEGATIVE, (14, 2)), Constant(CONSTANT, ZERO, ())), Inequality(Expression(AFFINE, NONNEGATIVE, (14, 2))), Inequality(Variable((14, 2), _flow)), Inequality(Variable((5, 1), anchor_active_downstream, boolean=True)), Inequality(Variable((5, 1), anchor_active_upstream, boolean=True)), Inequality(Constant(CONSTANT, NONNEGATIVE, (5, 1))), Inequality(Constant(CONSTANT, NONNEGATIVE, (5, 1))), Inequality(Expression(AFFINE, NONNEGATIVE, (1, 1))), Inequality(Expression(AFFINE, UNKNOWN, (1, 1))), Inequality(Expression(AFFINE, NONNEGATIVE, (1, 1))), Inequality(Expression(AFFINE, UNKNOWN, (1, 1))), Inequality(Expression(AFFINE, NONNEGATIVE, (5, 1))), Inequality(Expression(AFFINE, NONNEGATIVE, (5, 1))), Inequality(Variable((5, 1), anchor_active_downstream, boolean=True)), Inequality(Expression(AFFINE, NONNEGATIVE, (5, 1))), Inequality(Expression(AFFINE, NONNEGATIVE, (5, 1))), Inequality(Expression(AFFINE, NONNEGATIVE, (5, 1))), Inequality(Expression(AFFINE, NONNEGATIVE, (5, 1))), Inequality(Variable((5, 1), anchor_active_upstream, boolean=True)), Inequality(Expression(AFFINE, NONNEGATIVE, (5, 1))), Inequality(Expression(AFFINE, NONNEGATIVE, (5, 1))), Inequality(Expression(AFFINE, NONNEGATIVE, (5, 1))), Inequality(Expression(AFFINE, NONNEGATIVE, (5, 1))), Inequality(Variable((5, 1), edge_selected, boolean=True)), Inequality(Variable((5, 1), vertex_selected_downstream, boolean=True)), Inequality(Variable((5, 1), vertex_selected_upstream, boolean=True)), Inequality(Variable((5, 1), vertex_selected, boolean=True)), Inequality(Expression(AFFINE, UNKNOWN, (5, 1))), Inequality(Expression(AFFINE, UNKNOWN, (5, 1)))])
 </pre></div>
 </div>
 </div>
@@ -843,11 +842,11 @@ Union across conditions: [ True  True False  True  True]
       </div>
     </a>
     <a class="right-next"
-       href="cellnopt_ILP.html"
+       href="cellnopt_dag.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Acyclic boolean models of cell signaling (experimental)</p>
+        <p class="prev-next-title">Inferring intracellular signaling models with CellNOptDAG</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

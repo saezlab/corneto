@@ -67,7 +67,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'guide/networks/pcst';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1785487194';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'stable';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
@@ -421,9 +421,10 @@
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../metabolism/index.html">Metabolism</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../metabolism/flux-balance-analysis.html">Flux Balance Analysis (FBA)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../metabolism/multicondition-sfba.html">Multi-condition sparse FBA</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../metabolism/multicondition-imat.html">Multi-condition iMAT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metabolism/flux-balance-analysis.html">Flux balance analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metabolism/multicondition-sfba.html">Multi-condition FBA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metabolism/imat.html">Integrating gene expression into metabolic models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metabolism/multicondition-imat.html">Multi-condition gene expression integration</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../signaling/index.html">Signaling</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -431,9 +432,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../signaling/multisample-carnival.html">Multi-sample CARNIVAL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../signaling/phonemes.html">PHONEMeS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../signaling/bidirectional-phonemes.html">Global upstream and downstream PHONEMeS</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../signaling/cellnopt_ILP.html">Acyclic boolean models of cell signaling (experimental)</a></li>
-
-
+<li class="toctree-l2"><a class="reference internal" href="../signaling/cellnopt_dag.html">Inferring intracellular signaling models with CellNOptDAG</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../interoperability/index.html">Interoperability</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -544,7 +543,7 @@
                    style="width:100%;max-width:100px;" />
             </td>
             <td>
-              <table><tr><td>Installed version:</td><td style='text-align:left'>v1.0.0rc1.post12.dev0+9bccb230</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.9.2, PICOS v2.6.2</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>GLPK, GLPK_MI, CVXOPT, SCIP, SCIPY, HIGHS</td></tr><tr><td>Plot backend (default):</td><td style='text-align:left'>auto -> graphviz</td></tr><tr><td>Available plot backends:</td><td style='text-align:left'>graphviz v0.20.3; networkx v3.6.1+mpl v3.11.1; graphviz-wasm</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href="https://github.com/saezlab/corneto">https://github.com/saezlab/corneto</a></td></tr></table>
+              <table><tr><td>Installed version:</td><td style='text-align:left'>v1.0.0rc2.post7.dev0+4c394c2d</td></tr><tr><td>Available backends:</td><td style='text-align:left'>CVXPY v1.9.2, PICOS v2.6.2</td></tr><tr><td>Default backend (corneto.opt):</td><td style='text-align:left'>CVXPY</td></tr><tr><td>Installed solvers:</td><td style='text-align:left'>GLPK, GLPK_MI, CVXOPT, SCIP, SCIPY, HIGHS</td></tr><tr><td>Plot backend (default):</td><td style='text-align:left'>auto -> graphviz</td></tr><tr><td>Available plot backends:</td><td style='text-align:left'>graphviz v0.20.3; networkx v3.6.1+mpl v3.11.1; graphviz-wasm</td></tr><tr><td>Installed path:</td><td style='text-align:left'>/home/runner/work/corneto/corneto/corneto</td></tr><tr><td>Repository:</td><td style='text-align:left'><a href="https://github.com/saezlab/corneto">https://github.com/saezlab/corneto</a></td></tr></table>
             </td>
           </tr>
         </table>
@@ -812,11 +811,11 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_flow&#39;: _flow: Variable((517,), _flow),
- &#39;_flow_ineg&#39;: _flow_ineg: Variable((517,), _flow_ineg, boolean=True),
  &#39;_flow_ipos&#39;: _flow_ipos: Variable((517,), _flow_ipos, boolean=True),
- &#39;const0xa8d08020ebee4b2&#39;: const0xa8d08020ebee4b2: Constant(CONSTANT, NONNEGATIVE, (511, 517)),
- &#39;const0x138262cc69ea925d&#39;: const0x138262cc69ea925d: Constant(CONSTANT, UNKNOWN, (511, 100)),
+ &#39;_flow_ineg&#39;: _flow_ineg: Variable((517,), _flow_ineg, boolean=True),
  &#39;_dag_layer&#39;: _dag_layer: Variable((100, 1), _dag_layer),
+ &#39;const0x1f973776e5ade22c&#39;: const0x1f973776e5ade22c: Constant(CONSTANT, UNKNOWN, (511, 100)),
+ &#39;const0x8b2440a70cec83e&#39;: const0x8b2440a70cec83e: Constant(CONSTANT, NONNEGATIVE, (511, 517)),
  &#39;flow&#39;: _flow: Variable((517,), _flow),
  &#39;with_flow&#39;: Expression(AFFINE, NONNEGATIVE, (517,)),
  &#39;selected_prized_flow_edges_0&#39;: Expression(AFFINE, NONNEGATIVE, (6,))}
@@ -933,7 +932,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/1e7cd5d373739eb33480afb41c7283a2ceb288384ec58a79043f284ad12f457a.png" src="../../_images/1e7cd5d373739eb33480afb41c7283a2ceb288384ec58a79043f284ad12f457a.png" />
+<img alt="../../_images/ca661432b7d6f861cae6e9401d4901102e123fa2ee5650a0b62ef23326ccd6b8.png" src="../../_images/ca661432b7d6f861cae6e9401d4901102e123fa2ee5650a0b62ef23326ccd6b8.png" />
 </div>
 </div>
 <section id="directed">
@@ -958,11 +957,11 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_flow&#39;: _flow: Variable((1028,), _flow),
- &#39;_flow_ipos&#39;: _flow_ipos: Variable((1028,), _flow_ipos, boolean=True),
  &#39;_flow_ineg&#39;: _flow_ineg: Variable((1028,), _flow_ineg, boolean=True),
- &#39;const0xad12553930a4dff&#39;: const0xad12553930a4dff: Constant(CONSTANT, NONNEGATIVE, (1022, 1028)),
- &#39;const0x1dceca5a00f18075&#39;: const0x1dceca5a00f18075: Constant(CONSTANT, UNKNOWN, (1022, 100)),
+ &#39;_flow_ipos&#39;: _flow_ipos: Variable((1028,), _flow_ipos, boolean=True),
  &#39;_dag_layer&#39;: _dag_layer: Variable((100, 1), _dag_layer),
+ &#39;const0x17be2f13475eee6a&#39;: const0x17be2f13475eee6a: Constant(CONSTANT, UNKNOWN, (1022, 100)),
+ &#39;const0x181bde2145595b0d&#39;: const0x181bde2145595b0d: Constant(CONSTANT, NONNEGATIVE, (1022, 1028)),
  &#39;_flow_terminal_neg_0&#39;: _flow_terminal_neg_0: Variable((6,), _flow_terminal_neg_0, boolean=True),
  &#39;_flow_terminal_pos_0&#39;: _flow_terminal_pos_0: Variable((6,), _flow_terminal_pos_0, boolean=True),
  &#39;flow&#39;: _flow: Variable((1028,), _flow),
@@ -1064,7 +1063,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>24.493118581655736
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>24.49311858165574
 139.73652992602086
 18.0
 </pre></div>

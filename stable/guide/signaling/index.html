@@ -65,7 +65,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'guide/signaling/index';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1785487194';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'stable';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
@@ -76,7 +76,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="CARNIVAL" href="carnival.html" />
-    <link rel="prev" title="Multi-condition iMAT" href="../metabolism/multicondition-imat.html" />
+    <link rel="prev" title="Multi-condition gene expression integration" href="../metabolism/multicondition-imat.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -415,9 +415,10 @@
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../metabolism/index.html">Metabolism</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../metabolism/flux-balance-analysis.html">Flux Balance Analysis (FBA)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../metabolism/multicondition-sfba.html">Multi-condition sparse FBA</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../metabolism/multicondition-imat.html">Multi-condition iMAT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metabolism/flux-balance-analysis.html">Flux balance analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metabolism/multicondition-sfba.html">Multi-condition FBA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metabolism/imat.html">Integrating gene expression into metabolic models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metabolism/multicondition-imat.html">Multi-condition gene expression integration</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">Signaling</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -425,9 +426,7 @@
 <li class="toctree-l2"><a class="reference internal" href="multisample-carnival.html">Multi-sample CARNIVAL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="phonemes.html">PHONEMeS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bidirectional-phonemes.html">Global upstream and downstream PHONEMeS</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cellnopt_ILP.html">Acyclic boolean models of cell signaling (experimental)</a></li>
-
-
+<li class="toctree-l2"><a class="reference internal" href="cellnopt_dag.html">Inferring intracellular signaling models with CellNOptDAG</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../interoperability/index.html">Interoperability</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -548,13 +547,38 @@
 <li class="toctree-l2"><a class="reference internal" href="bidirectional-phonemes.html#advanced-implementation-in-corneto">Advanced: implementation in CORNETO</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="cellnopt_ILP.html">Acyclic boolean models of cell signaling (experimental)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cellnopt_ILP.html#introduction-to-a-boolean-model">Introduction to a Boolean model</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="cellnopt_ILP.html#inhibition-egf-activates-ras">Inhibition: !EGF activates RAS</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cellnopt_ILP.html#inhibition-with-and-gates">Inhibition with AND gates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cellnopt_dag.html">Inferring intracellular signaling models with CellNOptDAG</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cellnopt_dag.html#one-signaling-model-several-perturbation-conditions">One signaling model, several perturbation conditions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cellnopt_dag.html#relationship-to-cellnoptr">Relationship to CellNOptR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cellnopt_dag.html#example-perturbations-and-two-signaling-readouts">Example: perturbations and two signaling readouts</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cellnopt_dag.html#define-the-prior-knowledge-network">Define the prior-knowledge network</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cellnopt_dag.html#define-the-perturbation-experiment">Define the perturbation experiment</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="cellnopt_ILP.html#complex-case-study-with-inhibition">Complex case study with inhibition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cellnopt_dag.html#fit-one-pathway-to-the-complete-experiment">Fit one pathway to the complete experiment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cellnopt_dag.html#which-signaling-reactions-are-supported">Which signaling reactions are supported?</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cellnopt_dag.html#compare-the-candidate-network-with-the-fitted-model">Compare the candidate network with the fitted model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cellnopt_dag.html#inspect-the-fitted-signaling-model">Inspect the fitted signaling model</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cellnopt_dag.html#does-the-model-reproduce-the-measured-responses">Does the model reproduce the measured responses?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cellnopt_dag.html#a-pathway-reaction-can-be-present-but-inactive">A pathway reaction can be present but inactive</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cellnopt_dag.html#an-inhibitor-changes-its-target-not-the-whole-cell">An inhibitor changes its target, not the whole cell</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cellnopt_dag.html#a-compact-view-for-larger-signaling-experiments">A compact view for larger signaling experiments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cellnopt_dag.html#under-the-hood">Under the hood</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cellnopt_dag.html#endpoint-boolean-assumptions">Endpoint Boolean assumptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cellnopt_dag.html#fit-and-model-size">Fit and model size</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cellnopt_dag.html#what-corneto-adds">What CORNETO adds</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cellnopt_dag.html#inspecting-the-inferred-states">Inspecting the inferred states</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cellnopt_dag.html#structural-connectivity-diagnostic">Structural connectivity diagnostic</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cellnopt_dag.html#biological-interpretation-and-limitations">Biological interpretation and limitations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cellnopt_dag.html#connection-to-causal-structure-learning">Connection to causal structure learning</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </section>
@@ -575,7 +599,7 @@
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Multi-condition iMAT</p>
+        <p class="prev-next-title">Multi-condition gene expression integration</p>
       </div>
     </a>
     <a class="right-next"

@@ -65,7 +65,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'api/corneto.methods';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1785487194';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'stable';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
@@ -427,11 +427,13 @@
 <li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">Network inference (<code class="xref py py-mod docutils literal notranslate"><span class="pre">corneto.methods</span></code>)</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="generated/corneto.methods.CarnivalFlow.html">corneto.methods.CarnivalFlow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/corneto.methods.CarnivalILP.html">corneto.methods.CarnivalILP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/corneto.methods.signaling.CellNOptDAG.html">corneto.methods.signaling.CellNOptDAG</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/corneto.methods.BidirectionalPHONEMeS.html">corneto.methods.BidirectionalPHONEMeS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/corneto.methods.PHONEMeS.html">corneto.methods.PHONEMeS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/corneto.methods.compute_phonemes_scores.html">corneto.methods.compute_phonemes_scores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/corneto.methods.milp_carnival.html">corneto.methods.milp_carnival</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generated/corneto.methods.signaling.cellnopt_ilp.cellnoptILP.html">corneto.methods.signaling.cellnopt_ilp.cellnoptILP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/corneto.methods.signaling.plot_cellnopt_model.html">corneto.methods.signaling.plot_cellnopt_model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/corneto.methods.signaling.plot_cellnopt_fit.html">corneto.methods.signaling.plot_cellnopt_fit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/corneto.methods.MultiSampleFBA.html">corneto.methods.MultiSampleFBA</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/corneto.methods.MultiSampleIMAT.html">corneto.methods.MultiSampleIMAT</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/corneto.methods.PrizeCollectingSteinerTree.html">corneto.methods.PrizeCollectingSteinerTree</a></li>
@@ -525,6 +527,9 @@ It is organized into several functional areas.</p>
 and transcription-factor mappings for one condition. Their <code class="docutils literal notranslate"><span class="pre">build_many</span></code>
 methods accept named conditions. <code class="docutils literal notranslate"><span class="pre">milp_carnival</span></code> remains as a compatibility
 formulation.</p>
+<p><code class="docutils literal notranslate"><span class="pre">CellNOptDAG.build</span></code> accepts binary input, measurement, and optional inhibitor
+mappings. <code class="docutils literal notranslate"><span class="pre">build_many</span></code> infers one shared connected reaction model while
+evaluating its Boolean state independently in every named condition.</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/corneto.methods.CarnivalFlow.html#corneto.methods.CarnivalFlow" title="corneto.methods.CarnivalFlow"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CarnivalFlow</span></code></a>([lambda_reg, ...])</p></td>
@@ -533,24 +538,40 @@ formulation.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/corneto.methods.CarnivalILP.html#corneto.methods.CarnivalILP" title="corneto.methods.CarnivalILP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CarnivalILP</span></code></a>([beta_weight, max_dist, ...])</p></td>
 <td><p>Multi-condition implementation of the CARNIVAL ILP formulation.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/corneto.methods.BidirectionalPHONEMeS.html#corneto.methods.BidirectionalPHONEMeS" title="corneto.methods.BidirectionalPHONEMeS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BidirectionalPHONEMeS</span></code></a>([default_edge_cost, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/corneto.methods.signaling.CellNOptDAG.html#corneto.methods.signaling.CellNOptDAG" title="corneto.methods.signaling.CellNOptDAG"><code class="xref py py-obj docutils literal notranslate"><span class="pre">signaling.CellNOptDAG</span></code></a>([lambda_reg, ...])</p></td>
+<td><p>Infer a shared acyclic Boolean model from multiple conditions.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/corneto.methods.BidirectionalPHONEMeS.html#corneto.methods.BidirectionalPHONEMeS" title="corneto.methods.BidirectionalPHONEMeS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BidirectionalPHONEMeS</span></code></a>([default_edge_cost, ...])</p></td>
 <td><p>Infer one globally optimized network around regulated kinase anchors.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/corneto.methods.PHONEMeS.html#corneto.methods.PHONEMeS" title="corneto.methods.PHONEMeS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PHONEMeS</span></code></a>([default_edge_cost, max_flow, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/corneto.methods.PHONEMeS.html#corneto.methods.PHONEMeS" title="corneto.methods.PHONEMeS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PHONEMeS</span></code></a>([default_edge_cost, max_flow, ...])</p></td>
 <td><p>Infer acyclic signaling networks from phosphoproteomic scores.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/corneto.methods.compute_phonemes_scores.html#corneto.methods.compute_phonemes_scores" title="corneto.methods.compute_phonemes_scores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_phonemes_scores</span></code></a>(pvalues, *[, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/corneto.methods.compute_phonemes_scores.html#corneto.methods.compute_phonemes_scores" title="corneto.methods.compute_phonemes_scores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_phonemes_scores</span></code></a>(pvalues, *[, ...])</p></td>
 <td><p>Compute PHONEMeS node scores from p-values and fold changes.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/corneto.methods.milp_carnival.html#corneto.methods.milp_carnival" title="corneto.methods.milp_carnival"><code class="xref py py-obj docutils literal notranslate"><span class="pre">milp_carnival</span></code></a>(G, perturbations, measurements)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/corneto.methods.milp_carnival.html#corneto.methods.milp_carnival" title="corneto.methods.milp_carnival"><code class="xref py py-obj docutils literal notranslate"><span class="pre">milp_carnival</span></code></a>(G, perturbations, measurements)</p></td>
 <td><p>Build the supported single-condition CARNIVAL ILP formulation.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/corneto.methods.signaling.cellnopt_ilp.cellnoptILP.html#corneto.methods.signaling.cellnopt_ilp.cellnoptILP" title="corneto.methods.signaling.cellnopt_ilp.cellnoptILP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">signaling.cellnopt_ilp.cellnoptILP</span></code></a>(G, exp_list)</p></td>
-<td><p>Create and solves the ILP model for the given graph G and the list of experiments exp_list.</p></td>
 </tr>
 </tbody>
 </table>
 </div>
+<section id="cellnopt-visualization">
+<h3>CellNOpt visualization<a class="headerlink" href="#cellnopt-visualization" title="Link to this heading">#</a></h3>
+<p>CellNOpt plotting utilities use the standard CORNETO graph renderers for
+network views and return Matplotlib figure/axes objects for data-fit views.</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/corneto.methods.signaling.plot_cellnopt_model.html#corneto.methods.signaling.plot_cellnopt_model" title="corneto.methods.signaling.plot_cellnopt_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">signaling.plot_cellnopt_model</span></code></a>(method[, ...])</p></td>
+<td><p>Plot a solved CellNOpt model using CORNETO's graph renderers.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/corneto.methods.signaling.plot_cellnopt_fit.html#corneto.methods.signaling.plot_cellnopt_fit" title="corneto.methods.signaling.plot_cellnopt_fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">signaling.plot_cellnopt_fit</span></code></a>(method[, ...])</p></td>
+<td><p>Compare CellNOpt measurements and predictions across conditions.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
 </section>
 <section id="metabolism">
 <h2>Metabolism<a class="headerlink" href="#metabolism" title="Link to this heading">#</a></h2>
@@ -655,7 +676,10 @@ Use <code class="docutils literal notranslate"><span class="pre">build</span></c
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#methods-corneto-methods">Methods (<code class="xref py py-mod docutils literal notranslate"><span class="pre">corneto.methods</span></code>)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#signaling">Signaling</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#signaling">Signaling</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#cellnopt-visualization">CellNOpt visualization</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#metabolism">Metabolism</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#graph-optimization">Graph optimization</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#solution-sampling">Solution sampling</a></li>
