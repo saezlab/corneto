@@ -1,0 +1,323 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "fba-introduction",
+   "metadata": {},
+   "source": [
+    "# Flux balance analysis\n",
+    "\n",
+    "Flux balance analysis (FBA) predicts steady-state fluxes in a metabolic network. For a stoichiometric matrix $S$ and reaction-flux vector $v$, FBA imposes\n",
+    "\n",
+    "$$\n",
+    "S v = 0, \\qquad v_{\\mathrm{lower}} \\leq v \\leq v_{\\mathrm{upper}},\n",
+    "$$\n",
+    "\n",
+    "and optimizes an objective such as biomass production. These models are commonly used to predict growth, compare media, simulate knockouts, and identify metabolic-engineering strategies.\n",
+    "\n",
+    "CORNETO brings FBA into the same optimization framework used for other network-inference problems. It interoperates with COBRApy models and supports standard FBA, while exposing the resulting optimization problem so that constraints, conditions, sparsity, and omics-derived evidence can be combined through a common interface.\n",
+    "\n",
+    "COBRApy remains a natural tool for curating metabolic models and running established COBRA workflows. CORNETO is useful when the formulation itself must be extended or several network-inference problems must be expressed together."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "concept-map",
+   "metadata": {},
+   "source": [
+    "## From COBRApy to CORNETO\n",
+    "\n",
+    "| COBRApy concept | CORNETO concept |\n",
+    "|---|---|\n",
+    "| `cobra.Model` | metabolic hypergraph |\n",
+    "| metabolite | vertex |\n",
+    "| reaction and stoichiometry | directed hyperedge and its coefficients |\n",
+    "| reaction bounds | edge-flow bounds |\n",
+    "| objective coefficients | reaction objectives |\n",
+    "| `solution.fluxes` | `problem.expr.flow.value` |\n",
+    "| optimize a configured model | build and extend an optimization problem |\n",
+    "\n",
+    "The graph representation preserves reaction identifiers, stoichiometry, default bounds, and gene–protein–reaction annotations imported from the COBRApy model."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "load-cobrapy-model",
+   "metadata": {},
+   "source": [
+    "### Solve the COBRApy model\n",
+    "\n",
+    "We start with the familiar *E. coli* core model distributed with COBRApy."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "imports",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from contextlib import redirect_stdout\n",
+    "from io import StringIO\n",
+    "\n",
+    "import numpy as np\n",
+    "import pandas as pd\n",
+    "from cobra.io import load_model\n",
+    "\n",
+    "from corneto.io import cobra_model_to_graph\n",
+    "from corneto.methods import MultiSampleFBA\n",
+    "\n",
+    "with redirect_stdout(StringIO()):\n",
+    "    model = load_model(\"textbook\")\n",
+    "biomass_id = \"Biomass_Ecoli_core\"\n",
+    "cobra_solution = model.optimize()\n",
+    "\n",
+    "pd.Series(\n",
+    "    {\n",
+    "        \"metabolites\": len(model.metabolites),\n",
+    "        \"reactions\": len(model.reactions),\n",
+    "        \"biomass flux\": cobra_solution.fluxes[biomass_id],\n",
+    "    },\n",
+    "    name=\"COBRApy model\",\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "convert-and-solve",
+   "metadata": {},
+   "source": [
+    "### Convert the model and solve with CORNETO\n",
+    "\n",
+    "`cobra_model_to_graph` converts each reaction into a stoichiometric hyperedge. `MultiSampleFBA.build` then constructs the mass-balance constraints, applies the imported bounds, and adds the requested reaction objective.\n",
+    "\n",
+    "`MultiSampleFBA` minimizes a weighted objective. Therefore, the coefficient `-1` below maximizes biomass. CORNETO's general optimization API also supports an explicit `Direction.MAX` when constructing a problem directly, but `direction` is not an argument of `MultiSampleFBA.build`."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "build-corneto-fba",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "G = cobra_model_to_graph(model)\n",
+    "reaction_ids = list(G.get_attr_from_edges(\"id\"))\n",
+    "reaction_index = {reaction_id: i for i, reaction_id in enumerate(reaction_ids)}\n",
+    "biomass_idx = reaction_index[biomass_id]\n",
+    "\n",
+    "problem = MultiSampleFBA().build(\n",
+    "    G,\n",
+    "    objectives={biomass_id: -1},\n",
+    ")\n",
+    "problem.solve(solver=\"scipy\")\n",
+    "\n",
+    "corneto_biomass = float(problem.expr.flow[biomass_idx].value)\n",
+    "comparison = pd.Series(\n",
+    "    {\n",
+    "        \"COBRApy\": cobra_solution.fluxes[biomass_id],\n",
+    "        \"CORNETO\": corneto_biomass,\n",
+    "    },\n",
+    "    name=\"optimal biomass flux\",\n",
+    ")\n",
+    "\n",
+    "assert np.isclose(comparison[\"COBRApy\"], comparison[\"CORNETO\"], atol=1e-7)\n",
+    "comparison"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "inspect-results",
+   "metadata": {},
+   "source": [
+    "Fluxes follow the graph's edge order. Mapping that order back to reaction identifiers gives a labeled result analogous to `solution.fluxes`."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "flux-table",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "fluxes = pd.Series(\n",
+    "    np.asarray(problem.expr.flow.value),\n",
+    "    index=reaction_ids,\n",
+    "    name=\"flux\",\n",
+    ")\n",
+    "fluxes.loc[[biomass_id, \"EX_glc__D_e\", \"EX_o2_e\", \"ATPM\"]]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "compose-constraints",
+   "metadata": {},
+   "source": [
+    "## Extend the optimization problem\n",
+    "\n",
+    "A built CORNETO problem is still editable. For example, the following constraint limits oxygen uptake to 10 mmol gDW$^{-1}$ h$^{-1}$. In this model, exchange uptake is a negative flux, so a less-negative lower limit permits less uptake."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "oxygen-constraint",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "oxygen_idx = reaction_index[\"EX_o2_e\"]\n",
+    "\n",
+    "oxygen_limited = MultiSampleFBA().build(\n",
+    "    G,\n",
+    "    objectives={biomass_id: -1},\n",
+    ")\n",
+    "oxygen_limited += oxygen_limited.expr.flow[oxygen_idx] >= -10\n",
+    "oxygen_limited.solve(solver=\"scipy\")\n",
+    "\n",
+    "oxygen_limited_biomass = float(oxygen_limited.expr.flow[biomass_idx].value)\n",
+    "assert oxygen_limited_biomass < corneto_biomass\n",
+    "\n",
+    "pd.Series(\n",
+    "    {\n",
+    "        \"default medium\": corneto_biomass,\n",
+    "        \"oxygen-limited\": oxygen_limited_biomass,\n",
+    "    },\n",
+    "    name=\"optimal biomass flux\",\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "multiple-media",
+   "metadata": {},
+   "source": [
+    "## Solve multiple media conditions\n",
+    "\n",
+    "`build_many` creates one flux vector per named condition. Objectives and reaction bounds use an outer mapping with the same condition names. Conditions are solved in one problem, which also makes it possible for advanced formulations to couple them."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "build-many",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "condition_objectives = {\n",
+    "    \"glucose_rich\": {biomass_id: -1},\n",
+    "    \"glucose_limited\": {biomass_id: -1},\n",
+    "}\n",
+    "condition_bounds = {\n",
+    "    \"glucose_rich\": {\n",
+    "        \"EX_glc__D_e\": (-10.0, 1000.0),\n",
+    "        \"EX_o2_e\": (-20.0, 1000.0),\n",
+    "    },\n",
+    "    \"glucose_limited\": {\n",
+    "        \"EX_glc__D_e\": (-2.0, 1000.0),\n",
+    "        \"EX_o2_e\": (-20.0, 1000.0),\n",
+    "    },\n",
+    "}\n",
+    "\n",
+    "media_problem = MultiSampleFBA().build_many(\n",
+    "    G,\n",
+    "    objectives=condition_objectives,\n",
+    "    reaction_bounds=condition_bounds,\n",
+    ")\n",
+    "media_problem.solve(solver=\"scipy\")\n",
+    "\n",
+    "condition_names = list(condition_objectives)\n",
+    "reported_reactions = [biomass_id, \"EX_glc__D_e\", \"EX_o2_e\"]\n",
+    "media_fluxes = pd.DataFrame(\n",
+    "    {\n",
+    "        condition: {\n",
+    "            reaction_id: float(media_problem.expr.flow[reaction_index[reaction_id], column].value)\n",
+    "            for reaction_id in reported_reactions\n",
+    "        }\n",
+    "        for column, condition in enumerate(condition_names)\n",
+    "    }\n",
+    ")\n",
+    "\n",
+    "assert media_problem.expr.flow.value.shape == (G.num_edges, len(condition_names))\n",
+    "assert media_fluxes.loc[biomass_id, \"glucose_limited\"] < media_fluxes.loc[biomass_id, \"glucose_rich\"]\n",
+    "media_fluxes"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "sparse-fba",
+   "metadata": {},
+   "source": [
+    "## Sparse FBA\n",
+    "\n",
+    "CORNETO can associate each reaction with a binary indicator that records whether its flux is nonzero. With `lambda_reg > 0`, it penalizes the number of active reactions. Because of these indicators, sparse FBA is a mixed-integer linear program (MILP), rather than the linear program used by the standard mathematical FBA formulation.\n",
+    "\n",
+    "Here we require at least 90% of the optimal biomass and optimize biomass together with a penalty on the number of active reactions. `lambda_reg` controls that trade-off; larger values give reaction count more influence. The biomass floor prevents sparsity from being achieved by suppressing growth."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "solve-sparse-fba",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "biomass_floor = 0.90 * corneto_biomass\n",
+    "sparse_problem = MultiSampleFBA(lambda_reg=0.1).build(\n",
+    "    G,\n",
+    "    objectives={biomass_id: -1},\n",
+    "    reaction_bounds={biomass_id: (biomass_floor, None)},\n",
+    ")\n",
+    "sparse_problem.solve(solver=\"highs\")\n",
+    "\n",
+    "sparse_biomass = float(sparse_problem.expr.flow[biomass_idx].value)\n",
+    "standard_active = int(np.count_nonzero(np.abs(problem.expr.flow.value) > 1e-6))\n",
+    "sparse_active = int(np.count_nonzero(np.abs(sparse_problem.expr.flow.value) > 1e-6))\n",
+    "\n",
+    "assert sparse_biomass >= biomass_floor - 1e-7\n",
+    "assert sparse_active <= standard_active\n",
+    "\n",
+    "pd.Series(\n",
+    "    {\n",
+    "        \"biomass floor\": biomass_floor,\n",
+    "        \"sparse biomass\": sparse_biomass,\n",
+    "        \"active reactions in standard solution\": standard_active,\n",
+    "        \"active reactions in sparse solution\": sparse_active,\n",
+    "    }\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "pfba-and-next-steps",
+   "metadata": {},
+   "source": [
+    "This reaction-count criterion is not the same as parsimonious FBA (pFBA), which conventionally minimizes total flux after fixing the primary objective. Sparse FBA instead penalizes how many reactions are active.\n",
+    "\n",
+    "For several conditions, CORNETO can apply structured sparsity to the union of active reactions. A reaction shared by several conditions is then counted once, encouraging compact shared metabolic programs while retaining a separate flux vector for every condition. Continue with [Multi-condition FBA](multicondition-sfba.ipynb) for the general formulation and a worked example, followed by [gene expression integration](imat.ipynb) for context-specific metabolic inference.\n",
+    "\n",
+    "The examples above use the method-specific `build` and `build_many` interfaces. The general [`Data` interface](../method-inputs.md) remains available for workflows that require custom feature metadata or already represent measurements as CORNETO data objects."
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.12.9"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
