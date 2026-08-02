@@ -43,6 +43,19 @@ network views and return Matplotlib figure/axes objects for data-fit views.
     signaling.plot_cellnopt_model
     signaling.plot_cellnopt_fit
 
+CellNOpt and AnnNet
+~~~~~~~~~~~~~~~~~~~
+
+These helpers keep the signed network, perturbation conditions, and fitted
+CellNOptDAG results in one AnnNet object.
+
+.. autosummary::
+    :toctree: generated/
+
+    signaling.add_cellnopt_conditions
+    signaling.build_cellnopt_from_annnet
+    signaling.add_cellnopt_results
+
 Metabolism
 ----------
 
