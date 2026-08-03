@@ -1,0 +1,1629 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Integrating gene expression into metabolic models &#8212; CORNETO  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=53e23fa6" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('consent', 'default', {
+                    'ad_storage': 'denied',
+                    'ad_user_data': 'denied',
+                    'ad_personalization': 'denied',
+                    'analytics_storage': 'denied'
+                });
+            </script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-Z263GN2PKK"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', 'G-Z263GN2PKK');
+            </script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'guide/metabolism/imat';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1785744368';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v1.0.0-rc.4';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://saezlab.github.io/corneto/guide/metabolism/imat.html" />
+    <link rel="icon" href="../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Multi-condition gene expression integration" href="multicondition-imat.html" />
+    <link rel="prev" title="Multi-condition FBA" href="multicondition-sfba.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="light">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="../../_static/logo.png" class="logo__image only-light" alt="CORNETO  documentation - Home"/>
+    <img src="../../_static/logo.png" class="logo__image only-dark pst-js-only" alt="CORNETO  documentation - Home"/>
+  
+  
+</a></div>
+    
+      <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install.html">
+    Install
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api/index.html">
+    Reference
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../releases/index.html">
+    Release Notes
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-external" href="https://github.com/saezlab/corneto">
+    GitHub
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install.html">
+    Install
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api/index.html">
+    Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../releases/index.html">
+    Release Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/saezlab/corneto">
+    GitHub
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../intro/index.html">Getting started</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../intro/prior-knowledge.html">Prior Knowledge and Graphs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/data.html">Working with data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/plotting.html">Plotting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/constrained-optimization.html">Constrained Optimization</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../networks/index.html">Network methods</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../networks/shortest-paths.html">Shortest paths</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../networks/multi-sample-shortest-paths.html">Multi-sample shortest paths</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../networks/multi-commodity-network-flows.html">Multi-commodity Network Flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../networks/acyclic-flows.html">Acyclic Flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../networks/steiner-trees.html">Steiner trees</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../networks/pcst.html">Prize-Collecting Steiner Trees (PCST)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../networks/multi-pcst-grb.html">Multi-sample PCST</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Metabolism</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="flux-balance-analysis.html">Flux balance analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multicondition-sfba.html">Multi-condition FBA</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Integrating gene expression into metabolic models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multicondition-imat.html">Multi-condition gene expression integration</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../signaling/index.html">Signaling</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../signaling/carnival.html">CARNIVAL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../signaling/multisample-carnival.html">Multi-sample CARNIVAL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../signaling/phonemes.html">PHONEMeS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../signaling/bidirectional-phonemes.html">Global upstream and downstream PHONEMeS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../signaling/cellnopt_dag.html">Inferring intracellular signaling models with CellNOptDAG</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../interoperability/index.html">Interoperability</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../interoperability/cobrapy.html">COBRApy: Constraint-based metabolic modeling in Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../interoperability/liana.html">LIANA+: An all-in-one cell-cell communication framework</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../interoperability/decoupler.html">Decoupler: Ensemble of methods to infer biological activities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../interoperability/omnipath.html">Omnipath: intra- &amp; intercellular signaling knowledge</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../interoperability/networkx.html">NetworkX: Network Analysis in Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../interoperability/annnet.html">AnnNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../interoperability/cvxpy.html">CVXPY: Convex optimization, for everyone</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../interoperability/picos.html">PICOS: A Python interface to conic optimization solvers</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Guide</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Metabolism</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Integrating gene expression into metabolic models</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="integrating-gene-expression-into-metabolic-models">
+<h1>Integrating gene expression into metabolic models<a class="headerlink" href="#integrating-gene-expression-into-metabolic-models" title="Link to this heading">#</a></h1>
+<p>The preceding <a class="reference internal" href="flux-balance-analysis.html"><span class="std std-doc">FBA</span></a> and <a class="reference internal" href="multicondition-sfba.html"><span class="std std-doc">Multi-condition FBA</span></a> guides inferred feasible metabolic states from stoichiometry, reaction bounds, and required phenotypes. Gene expression provides another source of information: it can help choose which of the many feasible pathways best represents a particular biological context.</p>
+<p>This guide introduces gene-expression integration for one condition using <strong>iMAT</strong>, the method currently implemented in CORNETO. We will extract an expression-consistent metabolic state from the same COBRApy <em>E. coli</em> core model used in the FBA guides.</p>
+<section id="one-established-approach-imat">
+<h2>One established approach: iMAT<a class="headerlink" href="#one-established-approach-imat" title="Link to this heading">#</a></h2>
+<p><a class="reference external" href="https://www.nature.com/articles/nbt.1487">iMAT was introduced by Shlomi and colleagues</a> to infer context-specific metabolism from expression evidence. It retains the FBA feasible space:</p>
+<div class="math notranslate nohighlight">
+\[
+Sv=0, \qquad \ell \leq v \leq u.
+\]</div>
+<p>It then uses qualitative expression evidence to select a flux state:</p>
+<ul class="simple">
+<li><p>reactions supported by <strong>high</strong> expression are encouraged to carry flux;</p></li>
+<li><p>reactions associated with <strong>low</strong> expression are encouraged to remain inactive;</p></li>
+<li><p>reactions with intermediate or missing evidence are decided by network feasibility and the other objectives.</p></li>
+</ul>
+<p>The optimization minimizes disagreement with this evidence. It does not convert transcript abundance into a flux value, and expression cannot override mass balance, reaction bounds, or a required phenotype. Because reaction activity is represented with indicators, iMAT is a mixed-integer optimization problem.</p>
+<p>CORNETO provides this formulation through <code class="docutils literal notranslate"><span class="pre">MultiSampleIMAT</span></code>, but the framework is not restricted to the original iMAT objective. The built problem exposes its constraints, activity variables, and objective terms, making it straightforward to add biological constraints, compose other penalties, or implement methodological variations.</p>
+</section>
+<section id="from-genes-to-reaction-evidence">
+<h2>From genes to reaction evidence<a class="headerlink" href="#from-genes-to-reaction-evidence" title="Link to this heading">#</a></h2>
+<p>Metabolic models associate genes with reactions through gene–protein–reaction (GPR) rules. CORNETO applies these rules before building iMAT: an <code class="docutils literal notranslate"><span class="pre">and</span></code> relationship uses the least-supported required subunit, while an <code class="docutils literal notranslate"><span class="pre">or</span></code> relationship uses the best-supported alternative enzyme.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-right"><p>Normalized expression</p></th>
+<th class="head"><p>iMAT interpretation</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-right"><p>At or above the high threshold</p></td>
+<td><p>Encourage the mapped reaction to be active</p></td>
+</tr>
+<tr class="row-odd"><td class="text-right"><p>At or below the low threshold</p></td>
+<td><p>Encourage the mapped reaction to be inactive</p></td>
+</tr>
+<tr class="row-even"><td class="text-right"><p>Between thresholds or missing</p></td>
+<td><p>Do not score the reaction</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">eps</span></code> defines the minimum absolute flux used to call a supported reaction active. The optional <code class="docutils literal notranslate"><span class="pre">lambda_reg</span></code> adds a small reaction-count penalty, favoring a compact network when several solutions fit the expression evidence equally well.</p>
+</section>
+<section id="relationship-to-cobrapy">
+<h2>Relationship to COBRApy<a class="headerlink" href="#relationship-to-cobrapy" title="Link to this heading">#</a></h2>
+<p>COBRApy remains the model-management layer in this workflow: it loads the metabolic model, exposes reactions and GPR rules, and supports standard FBA and pFBA analyses. CORNETO converts that model into its graph representation and composes the FBA constraints, expression-fit terms, reaction-activity indicators, and optional regularization in one optimization problem.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">redirect_stdout</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">io</span><span class="w"> </span><span class="kn">import</span> <span class="n">StringIO</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cobra.flux_analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">pfba</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cobra.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_model</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">corneto.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">cobra_model_to_graph</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiSampleIMAT</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods.metabolism</span><span class="w"> </span><span class="kn">import</span> <span class="n">evaluate_gpr_expression</span>
+
+<span class="k">with</span> <span class="n">redirect_stdout</span><span class="p">(</span><span class="n">StringIO</span><span class="p">()):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">load_model</span><span class="p">(</span><span class="s2">&quot;textbook&quot;</span><span class="p">)</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">solver</span> <span class="o">=</span> <span class="s2">&quot;glpk&quot;</span>
+<span class="n">G</span> <span class="o">=</span> <span class="n">cobra_model_to_graph</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+
+<span class="n">reaction_ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">get_attr_from_edges</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">))</span>
+<span class="n">reaction_index</span> <span class="o">=</span> <span class="p">{</span><span class="n">reaction_id</span><span class="p">:</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">reaction_id</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">reaction_ids</span><span class="p">)}</span>
+<span class="n">biomass_id</span> <span class="o">=</span> <span class="s2">&quot;Biomass_Ecoli_core&quot;</span>
+
+<span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;metabolites&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">metabolites</span><span class="p">),</span>
+        <span class="s2">&quot;reactions&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">reactions</span><span class="p">),</span>
+        <span class="s2">&quot;genes&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">genes</span><span class="p">),</span>
+        <span class="s2">&quot;reactions with GPR rules&quot;</span><span class="p">:</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="n">reaction</span><span class="o">.</span><span class="n">gene_reaction_rule</span><span class="p">)</span> <span class="k">for</span> <span class="n">reaction</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">reactions</span><span class="p">),</span>
+    <span class="p">},</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;E. coli core model&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>metabolites                  72
+reactions                    95
+genes                       137
+reactions with GPR rules     69
+Name: E. coli core model, dtype: int64
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="example-selecting-an-anaerobic-fermentation-program">
+<h2>Example: selecting an anaerobic fermentation program<a class="headerlink" href="#example-selecting-an-anaerobic-fermentation-program" title="Link to this heading">#</a></h2>
+<p>We now address a small biological question:</p>
+<blockquote>
+<div><p>At a viable anaerobic growth rate, does the expression evidence support ethanol fermentation rather than alternative lactate or acetate routes?</p>
+</div></blockquote>
+<p>Glucose uptake is limited to 10 units and oxygen uptake is blocked. We require a biomass flux of at least <code class="docutils literal notranslate"><span class="pre">0.1</span></code>, but we do not maximize growth inside iMAT: the phenotype defines what the cell must accomplish, and expression evidence helps select how it accomplishes it.</p>
+<p>The expression values below are deliberately simple, synthetic normalized log-expression values. They resemble the positive scale commonly obtained after transforming expression measurements, but they do not represent a particular experiment.</p>
+<section id="check-that-the-required-phenotype-is-feasible">
+<h3>Check that the required phenotype is feasible<a class="headerlink" href="#check-that-the-required-phenotype-is-feasible" title="Link to this heading">#</a></h3>
+<p>Before integrating expression, standard FBA establishes the maximum anaerobic growth supported by the medium.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">anaerobic_model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">anaerobic_model</span><span class="o">.</span><span class="n">reactions</span><span class="o">.</span><span class="n">EX_glc__D_e</span><span class="o">.</span><span class="n">lower_bound</span> <span class="o">=</span> <span class="o">-</span><span class="mf">10.0</span>
+<span class="n">anaerobic_model</span><span class="o">.</span><span class="n">reactions</span><span class="o">.</span><span class="n">EX_o2_e</span><span class="o">.</span><span class="n">bounds</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">)</span>
+
+<span class="n">maximum_growth</span> <span class="o">=</span> <span class="n">anaerobic_model</span><span class="o">.</span><span class="n">optimize</span><span class="p">()</span><span class="o">.</span><span class="n">fluxes</span><span class="p">[</span><span class="n">biomass_id</span><span class="p">]</span>
+<span class="n">minimum_growth</span> <span class="o">=</span> <span class="mf">0.1</span>
+
+<span class="k">assert</span> <span class="n">maximum_growth</span> <span class="o">&gt;</span> <span class="n">minimum_growth</span>
+
+<span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;maximum anaerobic biomass&quot;</span><span class="p">:</span> <span class="n">maximum_growth</span><span class="p">,</span>
+        <span class="s2">&quot;minimum biomass required for inference&quot;</span><span class="p">:</span> <span class="n">minimum_growth</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>maximum anaerobic biomass                 0.211663
+minimum biomass required for inference    0.100000
+dtype: float64
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="define-a-qualitative-expression-profile">
+<h3>Define a qualitative expression profile<a class="headerlink" href="#define-a-qualitative-expression-profile" title="Link to this heading">#</a></h3>
+<p>Genes linked to ethanol production have expression values around <code class="docutils literal notranslate"><span class="pre">11–12</span></code>. Genes linked to competing lactate and acetate production have values around <code class="docutils literal notranslate"><span class="pre">4–5</span></code>. Values at or above <code class="docutils literal notranslate"><span class="pre">10</span></code> are classified as high, values at or below <code class="docutils literal notranslate"><span class="pre">6</span></code> as low, and values between the thresholds would remain unclassified.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">high_expression_threshold</span> <span class="o">=</span> <span class="mf">10.0</span>
+<span class="n">low_expression_threshold</span> <span class="o">=</span> <span class="mf">6.0</span>
+
+<span class="n">gene_expression</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1"># High expression: acetaldehyde and alcohol dehydrogenases</span>
+    <span class="s2">&quot;b0351&quot;</span><span class="p">:</span> <span class="mf">12.1</span><span class="p">,</span>
+    <span class="s2">&quot;b1241&quot;</span><span class="p">:</span> <span class="mf">11.6</span><span class="p">,</span>
+    <span class="s2">&quot;b0356&quot;</span><span class="p">:</span> <span class="mf">10.9</span><span class="p">,</span>
+    <span class="s2">&quot;b1478&quot;</span><span class="p">:</span> <span class="mf">11.4</span><span class="p">,</span>
+    <span class="c1"># Low expression: lactate dehydrogenase</span>
+    <span class="s2">&quot;b1380&quot;</span><span class="p">:</span> <span class="mf">4.2</span><span class="p">,</span>
+    <span class="s2">&quot;b2133&quot;</span><span class="p">:</span> <span class="mf">5.1</span><span class="p">,</span>
+    <span class="c1"># Low expression: phosphotransacetylase and acetate kinase</span>
+    <span class="s2">&quot;b2297&quot;</span><span class="p">:</span> <span class="mf">4.8</span><span class="p">,</span>
+    <span class="s2">&quot;b2458&quot;</span><span class="p">:</span> <span class="mf">5.3</span><span class="p">,</span>
+    <span class="s2">&quot;b1849&quot;</span><span class="p">:</span> <span class="mf">3.9</span><span class="p">,</span>
+    <span class="s2">&quot;b2296&quot;</span><span class="p">:</span> <span class="mf">4.6</span><span class="p">,</span>
+    <span class="s2">&quot;b3115&quot;</span><span class="p">:</span> <span class="mf">5.0</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">expression_modules</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;ethanol formation&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;reactions&quot;</span><span class="p">:</span> <span class="s2">&quot;ACALD, ALCD2x&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;genes&quot;</span><span class="p">:</span> <span class="s2">&quot;b0351, b1241, b0356, b1478&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;expression range&quot;</span><span class="p">:</span> <span class="s2">&quot;10.9-12.1&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;high&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;lactate formation&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;reactions&quot;</span><span class="p">:</span> <span class="s2">&quot;LDH_D&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;genes&quot;</span><span class="p">:</span> <span class="s2">&quot;b1380, b2133&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;expression range&quot;</span><span class="p">:</span> <span class="s2">&quot;4.2-5.1&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;low&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;acetate formation&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;reactions&quot;</span><span class="p">:</span> <span class="s2">&quot;PTAr, ACKr&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;genes&quot;</span><span class="p">:</span> <span class="s2">&quot;b2297, b2458, b1849, b2296, b3115&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;expression range&quot;</span><span class="p">:</span> <span class="s2">&quot;3.9-5.3&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;low&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">expression_modules</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>module</th>
+      <th>reactions</th>
+      <th>genes</th>
+      <th>expression range</th>
+      <th>class</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>ethanol formation</td>
+      <td>ACALD, ALCD2x</td>
+      <td>b0351, b1241, b0356, b1478</td>
+      <td>10.9-12.1</td>
+      <td>high</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>lactate formation</td>
+      <td>LDH_D</td>
+      <td>b1380, b2133</td>
+      <td>4.2-5.1</td>
+      <td>low</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>acetate formation</td>
+      <td>PTAr, ACKr</td>
+      <td>b2297, b2458, b1849, b2296, b3115</td>
+      <td>3.9-5.3</td>
+      <td>low</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">scored_reactions</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ACALD&quot;</span><span class="p">,</span> <span class="s2">&quot;ALCD2x&quot;</span><span class="p">,</span> <span class="s2">&quot;LDH_D&quot;</span><span class="p">,</span> <span class="s2">&quot;PTAr&quot;</span><span class="p">,</span> <span class="s2">&quot;ACKr&quot;</span><span class="p">]</span>
+<span class="n">gpr_table</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;reaction&quot;</span><span class="p">:</span> <span class="n">scored_reactions</span><span class="p">,</span>
+        <span class="s2">&quot;GPR rule&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="n">model</span><span class="o">.</span><span class="n">reactions</span><span class="o">.</span><span class="n">get_by_id</span><span class="p">(</span><span class="n">reaction_id</span><span class="p">)</span><span class="o">.</span><span class="n">gene_reaction_rule</span>
+            <span class="k">for</span> <span class="n">reaction_id</span> <span class="ow">in</span> <span class="n">scored_reactions</span>
+        <span class="p">],</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+
+<span class="n">gpr_table</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>reaction</th>
+      <th>GPR rule</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>ACALD</td>
+      <td>b0351 or b1241</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>ALCD2x</td>
+      <td>b1478 or b0356 or b1241</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>LDH_D</td>
+      <td>b2133 or b1380</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>PTAr</td>
+      <td>b2297 or b2458</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>ACKr</td>
+      <td>b2296 or b3115 or b1849</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="an-expression-free-reference">
+<h3>An expression-free reference<a class="headerlink" href="#an-expression-free-reference" title="Link to this heading">#</a></h3>
+<p>For comparison, COBRApy pFBA fixes biomass at the required value and minimizes total flux without using expression. This provides one compact feasible state, not a context-specific expression fit.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">reference_model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">reference_model</span><span class="o">.</span><span class="n">reactions</span><span class="o">.</span><span class="n">EX_glc__D_e</span><span class="o">.</span><span class="n">lower_bound</span> <span class="o">=</span> <span class="o">-</span><span class="mf">10.0</span>
+<span class="n">reference_model</span><span class="o">.</span><span class="n">reactions</span><span class="o">.</span><span class="n">EX_o2_e</span><span class="o">.</span><span class="n">bounds</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">)</span>
+<span class="n">reference_model</span><span class="o">.</span><span class="n">reactions</span><span class="o">.</span><span class="n">get_by_id</span><span class="p">(</span><span class="n">biomass_id</span><span class="p">)</span><span class="o">.</span><span class="n">bounds</span> <span class="o">=</span> <span class="p">(</span><span class="n">minimum_growth</span><span class="p">,</span> <span class="n">minimum_growth</span><span class="p">)</span>
+
+<span class="n">pfba_solution</span> <span class="o">=</span> <span class="n">pfba</span><span class="p">(</span><span class="n">reference_model</span><span class="p">)</span>
+
+<span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">pfba_solution</span><span class="o">.</span><span class="n">fluxes</span><span class="p">[</span><span class="n">biomass_id</span><span class="p">],</span> <span class="n">minimum_growth</span><span class="p">)</span>
+<span class="n">pfba_solution</span><span class="o">.</span><span class="n">fluxes</span><span class="p">[[</span><span class="n">biomass_id</span><span class="p">,</span> <span class="s2">&quot;EX_glc__D_e&quot;</span><span class="p">,</span> <span class="s2">&quot;EX_lac__D_e&quot;</span><span class="p">,</span> <span class="s2">&quot;EX_etoh_e&quot;</span><span class="p">,</span> <span class="s2">&quot;EX_ac_e&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span>
+    <span class="s2">&quot;pFBA flux&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>pFBA flux</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>Biomass_Ecoli_core</th>
+      <td>0.100000</td>
+    </tr>
+    <tr>
+      <th>EX_glc__D_e</th>
+      <td>-7.767692</td>
+    </tr>
+    <tr>
+      <th>EX_lac__D_e</th>
+      <td>8.928430</td>
+    </tr>
+    <tr>
+      <th>EX_etoh_e</th>
+      <td>4.868550</td>
+    </tr>
+    <tr>
+      <th>EX_ac_e</th>
+      <td>0.000000</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="build-and-solve-imat">
+<h3>Build and solve iMAT<a class="headerlink" href="#build-and-solve-imat" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">MultiSampleIMAT.build</span></code> accepts gene scores, reaction bounds, and optional reaction objectives directly. Here the biomass lower bound represents viability, so no biomass objective is needed.</p>
+<p>The small <code class="docutils literal notranslate"><span class="pre">lambda_reg</span></code> value breaks ties in favor of a compact active network. Expression disagreement remains the primary biological criterion in this example.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">eps</span> <span class="o">=</span> <span class="mf">1e-3</span>
+<span class="n">imat</span> <span class="o">=</span> <span class="n">MultiSampleIMAT</span><span class="p">(</span>
+    <span class="n">eps</span><span class="o">=</span><span class="n">eps</span><span class="p">,</span>
+    <span class="n">lambda_reg</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
+    <span class="n">high_expression_threshold</span><span class="o">=</span><span class="n">high_expression_threshold</span><span class="p">,</span>
+    <span class="n">low_expression_threshold</span><span class="o">=</span><span class="n">low_expression_threshold</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">imat_problem</span> <span class="o">=</span> <span class="n">imat</span><span class="o">.</span><span class="n">build</span><span class="p">(</span>
+    <span class="n">G</span><span class="p">,</span>
+    <span class="n">gene_expression</span><span class="o">=</span><span class="n">gene_expression</span><span class="p">,</span>
+    <span class="n">reaction_bounds</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;EX_glc__D_e&quot;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
+        <span class="s2">&quot;EX_o2_e&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
+        <span class="n">biomass_id</span><span class="p">:</span> <span class="p">(</span><span class="n">minimum_growth</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+    <span class="p">},</span>
+<span class="p">)</span>
+<span class="n">imat_problem</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;highs&quot;</span><span class="p">)</span>
+
+<span class="n">imat_fluxes</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">imat_problem</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
+    <span class="n">index</span><span class="o">=</span><span class="n">reaction_ids</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;iMAT flux&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="did-the-inferred-state-agree-with-expression">
+<h3>Did the inferred state agree with expression?<a class="headerlink" href="#did-the-inferred-state-agree-with-expression" title="Link to this heading">#</a></h3>
+<p>For iMAT, the main interpretation is whether a scored reaction is active, not whether its flux magnitude matches its transcript abundance. Flux signs follow the direction in which each reaction is written in the model.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">reaction_evidence</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;ACALD&quot;</span><span class="p">:</span> <span class="s2">&quot;high&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ALCD2x&quot;</span><span class="p">:</span> <span class="s2">&quot;high&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;LDH_D&quot;</span><span class="p">:</span> <span class="s2">&quot;low&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;PTAr&quot;</span><span class="p">:</span> <span class="s2">&quot;low&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ACKr&quot;</span><span class="p">:</span> <span class="s2">&quot;low&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;expression evidence&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">expression_fit</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;expression evidence&quot;</span><span class="p">:</span> <span class="n">reaction_evidence</span><span class="p">,</span>
+        <span class="s2">&quot;flux&quot;</span><span class="p">:</span> <span class="n">imat_fluxes</span><span class="p">[</span><span class="n">reaction_evidence</span><span class="o">.</span><span class="n">index</span><span class="p">],</span>
+        <span class="s2">&quot;active&quot;</span><span class="p">:</span> <span class="n">imat_fluxes</span><span class="p">[</span><span class="n">reaction_evidence</span><span class="o">.</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="n">eps</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">eps</span><span class="p">),</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+
+<span class="k">assert</span> <span class="n">expression_fit</span><span class="o">.</span><span class="n">loc</span><span class="p">[[</span><span class="s2">&quot;ACALD&quot;</span><span class="p">,</span> <span class="s2">&quot;ALCD2x&quot;</span><span class="p">],</span> <span class="s2">&quot;active&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+<span class="k">assert</span> <span class="ow">not</span> <span class="n">expression_fit</span><span class="o">.</span><span class="n">loc</span><span class="p">[[</span><span class="s2">&quot;LDH_D&quot;</span><span class="p">,</span> <span class="s2">&quot;PTAr&quot;</span><span class="p">,</span> <span class="s2">&quot;ACKr&quot;</span><span class="p">],</span> <span class="s2">&quot;active&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">any</span><span class="p">()</span>
+<span class="k">assert</span> <span class="n">imat_fluxes</span><span class="p">[</span><span class="n">biomass_id</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">minimum_growth</span> <span class="o">-</span> <span class="mf">1e-7</span>
+
+<span class="n">expression_fit</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>expression evidence</th>
+      <th>flux</th>
+      <th>active</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>ACALD</th>
+      <td>high</td>
+      <td>-12.273558</td>
+      <td>True</td>
+    </tr>
+    <tr>
+      <th>ALCD2x</th>
+      <td>high</td>
+      <td>-12.273558</td>
+      <td>True</td>
+    </tr>
+    <tr>
+      <th>LDH_D</th>
+      <td>low</td>
+      <td>0.000000</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>PTAr</th>
+      <td>low</td>
+      <td>0.000000</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>ACKr</th>
+      <td>low</td>
+      <td>0.000000</td>
+      <td>False</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="compare-the-selected-fermentation-routes">
+<h3>Compare the selected fermentation routes<a class="headerlink" href="#compare-the-selected-fermentation-routes" title="Link to this heading">#</a></h3>
+<p>At the same biomass value, pFBA and iMAT answer different questions. pFBA minimizes total flux and uses both lactate and ethanol routes. iMAT instead selects a state consistent with the supplied high-ethanol and low-lactate/acetate evidence.</p>
+<p>The bars show representative flux solutions. Their magnitudes should not be interpreted as predictions from transcript abundance; the iMAT evidence distinguishes active from inactive reactions.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fermentation_products</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;lactate&quot;</span><span class="p">:</span> <span class="s2">&quot;EX_lac__D_e&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ethanol&quot;</span><span class="p">:</span> <span class="s2">&quot;EX_etoh_e&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;acetate&quot;</span><span class="p">:</span> <span class="s2">&quot;EX_ac_e&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">product_fluxes</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;pFBA (no expression)&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="n">product</span><span class="p">:</span> <span class="n">pfba_solution</span><span class="o">.</span><span class="n">fluxes</span><span class="p">[</span><span class="n">reaction_id</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">product</span><span class="p">,</span> <span class="n">reaction_id</span> <span class="ow">in</span> <span class="n">fermentation_products</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;iMAT (expression integrated)&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="n">product</span><span class="p">:</span> <span class="n">imat_fluxes</span><span class="p">[</span><span class="n">reaction_id</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">product</span><span class="p">,</span> <span class="n">reaction_id</span> <span class="ow">in</span> <span class="n">fermentation_products</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">},</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+
+<span class="k">assert</span> <span class="n">product_fluxes</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;ethanol&quot;</span><span class="p">,</span> <span class="s2">&quot;iMAT (expression integrated)&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">eps</span>
+<span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">product_fluxes</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;lactate&quot;</span><span class="p">,</span> <span class="s2">&quot;iMAT (expression integrated)&quot;</span><span class="p">],</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-7</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">product_fluxes</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;lactate&quot;</span><span class="p">,</span> <span class="s2">&quot;pFBA (no expression)&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">eps</span>
+
+<span class="n">product_fluxes</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>pFBA (no expression)</th>
+      <th>iMAT (expression integrated)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>lactate</th>
+      <td>8.92843</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>ethanol</th>
+      <td>4.86855</td>
+      <td>12.273558</td>
+    </tr>
+    <tr>
+      <th>acetate</th>
+      <td>0.00000</td>
+      <td>0.000000</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ax</span> <span class="o">=</span> <span class="n">product_fluxes</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span>
+    <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">),</span>
+    <span class="n">color</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;#9aa0a6&quot;</span><span class="p">,</span> <span class="s2">&quot;#2a9d8f&quot;</span><span class="p">],</span>
+    <span class="n">width</span><span class="o">=</span><span class="mf">0.75</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;exchange flux&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Fermentation products at the same biomass requirement&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">spines</span><span class="p">[[</span><span class="s2">&quot;top&quot;</span><span class="p">,</span> <span class="s2">&quot;right&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/9dcd22dc051d991af6c1f6bbd8fa8564c06eda81a7824621d1e4b16453ef2cb6.png" src="../../_images/9dcd22dc051d991af6c1f6bbd8fa8564c06eda81a7824621d1e4b16453ef2cb6.png" />
+</div>
+</div>
+</section>
+<section id="visualize-the-contextualized-metabolic-network">
+<h3>Visualize the contextualized metabolic network<a class="headerlink" href="#visualize-the-contextualized-metabolic-network" title="Link to this heading">#</a></h3>
+<p>The graph below contains the active iMAT network plus scored reactions that were kept inactive. High-expression active reactions are green, low-expression inactive reactions are dashed red, and active reactions without expression evidence are gray.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Meaning</p></th>
+<th class="head"><p>Color and style</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Active and supported by high expression</p></td>
+<td><p>Green</p></td>
+</tr>
+<tr class="row-odd"><td><p>Inactive and associated with low expression</p></td>
+<td><p>Dashed red</p></td>
+</tr>
+<tr class="row-even"><td><p>Active without supplied expression evidence</p></td>
+<td><p>Gray</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">active_reactions</span> <span class="o">=</span> <span class="n">imat_fluxes</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="n">eps</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">eps</span><span class="p">)</span>
+<span class="n">scored_reaction_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">reaction_evidence</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+<span class="n">displayed_reactions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="n">active_reactions</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">or</span> <span class="n">reaction_id</span> <span class="ow">in</span> <span class="n">scored_reaction_set</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">reaction_id</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">reaction_ids</span><span class="p">)</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">selected_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="n">displayed_reactions</span><span class="p">)</span>
+<span class="n">context_network</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">edge_subgraph</span><span class="p">(</span><span class="n">selected_indices</span><span class="p">)</span>
+<span class="n">edge_style</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="k">for</span> <span class="n">displayed_index</span><span class="p">,</span> <span class="n">original_index</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">selected_indices</span><span class="p">):</span>
+    <span class="n">reaction_id</span> <span class="o">=</span> <span class="n">reaction_ids</span><span class="p">[</span><span class="n">original_index</span><span class="p">]</span>
+    <span class="n">evidence</span> <span class="o">=</span> <span class="n">reaction_evidence</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">reaction_id</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">evidence</span> <span class="o">==</span> <span class="s2">&quot;high&quot;</span><span class="p">:</span>
+        <span class="n">edge_style</span><span class="p">[</span><span class="n">displayed_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;#2a9d8f&quot;</span><span class="p">,</span> <span class="s2">&quot;penwidth&quot;</span><span class="p">:</span> <span class="s2">&quot;4&quot;</span><span class="p">}</span>
+    <span class="k">elif</span> <span class="n">evidence</span> <span class="o">==</span> <span class="s2">&quot;low&quot;</span><span class="p">:</span>
+        <span class="n">edge_style</span><span class="p">[</span><span class="n">displayed_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;#e76f51&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;penwidth&quot;</span><span class="p">:</span> <span class="s2">&quot;3&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;style&quot;</span><span class="p">:</span> <span class="s2">&quot;dashed&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">edge_style</span><span class="p">[</span><span class="n">displayed_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;#b0b0b0&quot;</span><span class="p">,</span> <span class="s2">&quot;penwidth&quot;</span><span class="p">:</span> <span class="s2">&quot;1.5&quot;</span><span class="p">}</span>
+
+<span class="n">context_network</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">graph_attr</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;rankdir&quot;</span><span class="p">:</span> <span class="s2">&quot;LR&quot;</span><span class="p">},</span>
+    <span class="n">node_attr</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;fixedsize&quot;</span><span class="p">:</span> <span class="s2">&quot;false&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="s2">&quot;box&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;style&quot;</span><span class="p">:</span> <span class="s2">&quot;rounded&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;margin&quot;</span><span class="p">:</span> <span class="s2">&quot;0.05,0.03&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="n">custom_edge_attr</span><span class="o">=</span><span class="n">edge_style</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/0ad06da75e888684961ff3b830e33e28d0f6fe050356c4a4fb2062436f2f9745.svg" src="../../_images/0ad06da75e888684961ff3b830e33e28d0f6fe050356c4a4fb2062436f2f9745.svg" />
+</div>
+</div>
+</section>
+</section>
+<section id="advanced-compute-and-supply-reaction-scores-directly">
+<h2>Advanced: compute and supply reaction scores directly<a class="headerlink" href="#advanced-compute-and-supply-reaction-scores-directly" title="Link to this heading">#</a></h2>
+<p>Passing <code class="docutils literal notranslate"><span class="pre">gene_expression=</span></code> is convenient because <code class="docutils literal notranslate"><span class="pre">MultiSampleIMAT</span></code> performs thresholding and GPR mapping automatically. For method development or custom preprocessing, it can be useful to inspect that transformation and pass the final reaction-level evidence through <code class="docutils literal notranslate"><span class="pre">reaction_scores=</span></code> instead.</p>
+<p>At this level, signed values no longer represent expression abundance. They encode the iMAT classification:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-right"><p>Reaction score</p></th>
+<th class="head"><p>Meaning in the optimization</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-right"><p><code class="docutils literal notranslate"><span class="pre">+1</span></code></p></td>
+<td><p>High-expression evidence: favor an active reaction</p></td>
+</tr>
+<tr class="row-odd"><td class="text-right"><p><code class="docutils literal notranslate"><span class="pre">−1</span></code></p></td>
+<td><p>Low-expression evidence: favor an inactive reaction</p></td>
+</tr>
+<tr class="row-even"><td class="text-right"><p><code class="docutils literal notranslate"><span class="pre">0</span></code> or omitted</p></td>
+<td><p>No expression-fit term for the reaction</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>First, threshold the positive expression measurements into categorical gene evidence.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gene_scores</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="k">for</span> <span class="n">gene_id</span><span class="p">,</span> <span class="n">expression</span> <span class="ow">in</span> <span class="n">gene_expression</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">expression</span> <span class="o">&gt;=</span> <span class="n">high_expression_threshold</span><span class="p">:</span>
+        <span class="n">gene_scores</span><span class="p">[</span><span class="n">gene_id</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="k">elif</span> <span class="n">expression</span> <span class="o">&lt;=</span> <span class="n">low_expression_threshold</span><span class="p">:</span>
+        <span class="n">gene_scores</span><span class="p">[</span><span class="n">gene_id</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">gene_scores</span><span class="p">[</span><span class="n">gene_id</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+<span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;expression&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">gene_expression</span><span class="p">),</span>
+        <span class="s2">&quot;gene score&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">gene_scores</span><span class="p">),</span>
+    <span class="p">}</span>
+<span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">&quot;expression&quot;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>expression</th>
+      <th>gene score</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>b0351</th>
+      <td>12.1</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>b1241</th>
+      <td>11.6</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>b1478</th>
+      <td>11.4</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>b0356</th>
+      <td>10.9</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>b2458</th>
+      <td>5.3</td>
+      <td>-1.0</td>
+    </tr>
+    <tr>
+      <th>b2133</th>
+      <td>5.1</td>
+      <td>-1.0</td>
+    </tr>
+    <tr>
+      <th>b3115</th>
+      <td>5.0</td>
+      <td>-1.0</td>
+    </tr>
+    <tr>
+      <th>b2297</th>
+      <td>4.8</td>
+      <td>-1.0</td>
+    </tr>
+    <tr>
+      <th>b2296</th>
+      <td>4.6</td>
+      <td>-1.0</td>
+    </tr>
+    <tr>
+      <th>b1380</th>
+      <td>4.2</td>
+      <td>-1.0</td>
+    </tr>
+    <tr>
+      <th>b1849</th>
+      <td>3.9</td>
+      <td>-1.0</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>Next, CORNETO’s <code class="docutils literal notranslate"><span class="pre">evaluate_gpr_expression</span></code> applies every model GPR rule to the gene scores in one call. Reactions with a final score of zero are omitted, so they remain governed by stoichiometry, bounds, and regularization rather than expression-fit terms. For several samples, the related <code class="docutils literal notranslate"><span class="pre">evaluate_gpr_rules</span></code> function evaluates the same rule list against multiple gene-score mappings.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gpr_rules</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">get_attr_from_edges</span><span class="p">(</span><span class="s2">&quot;GPR&quot;</span><span class="p">))</span>
+<span class="n">reaction_score_values</span> <span class="o">=</span> <span class="n">evaluate_gpr_expression</span><span class="p">(</span><span class="n">gpr_rules</span><span class="p">,</span> <span class="n">gene_scores</span><span class="p">)</span>
+
+<span class="n">reaction_scores</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">reaction_id</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">score</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">reaction_id</span><span class="p">,</span> <span class="n">score</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">reaction_ids</span><span class="p">,</span> <span class="n">reaction_score_values</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">score</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="n">reaction_score_table</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;GPR rule&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="n">reaction_id</span><span class="p">:</span> <span class="n">gpr_rules</span><span class="p">[</span><span class="n">reaction_index</span><span class="p">[</span><span class="n">reaction_id</span><span class="p">]]</span>
+            <span class="k">for</span> <span class="n">reaction_id</span> <span class="ow">in</span> <span class="n">reaction_scores</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;reaction score&quot;</span><span class="p">:</span> <span class="n">reaction_scores</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+
+<span class="n">reaction_score_table</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>GPR rule</th>
+      <th>reaction score</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>ACALD</th>
+      <td>b0351 or b1241</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>ACKr</th>
+      <td>b2296 or b3115 or b1849</td>
+      <td>-1.0</td>
+    </tr>
+    <tr>
+      <th>ALCD2x</th>
+      <td>b1478 or b0356 or b1241</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>LDH_D</th>
+      <td>b2133 or b1380</td>
+      <td>-1.0</td>
+    </tr>
+    <tr>
+      <th>PTAr</th>
+      <td>b2297 or b2458</td>
+      <td>-1.0</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>The reaction-score interface is closer to the optimization problem and is useful when reaction evidence comes from another mapping method or has already been curated. Threshold arguments are unnecessary because the scores already encode high and low reaction evidence.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">reaction_score_problem</span> <span class="o">=</span> <span class="n">MultiSampleIMAT</span><span class="p">(</span>
+    <span class="n">eps</span><span class="o">=</span><span class="n">eps</span><span class="p">,</span>
+    <span class="n">lambda_reg</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
+<span class="p">)</span><span class="o">.</span><span class="n">build</span><span class="p">(</span>
+    <span class="n">G</span><span class="p">,</span>
+    <span class="n">reaction_scores</span><span class="o">=</span><span class="n">reaction_scores</span><span class="p">,</span>
+    <span class="n">reaction_bounds</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;EX_glc__D_e&quot;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
+        <span class="s2">&quot;EX_o2_e&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
+        <span class="n">biomass_id</span><span class="p">:</span> <span class="p">(</span><span class="n">minimum_growth</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+    <span class="p">},</span>
+<span class="p">)</span>
+<span class="n">reaction_score_problem</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;highs&quot;</span><span class="p">)</span>
+
+<span class="n">reaction_score_fluxes</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">reaction_score_problem</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
+    <span class="n">index</span><span class="o">=</span><span class="n">reaction_ids</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">interface_comparison</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;reaction score&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">reaction_scores</span><span class="p">),</span>
+        <span class="s2">&quot;active from gene_expression&quot;</span><span class="p">:</span> <span class="p">(</span>
+            <span class="n">imat_fluxes</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">reaction_scores</span><span class="p">)]</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="n">eps</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">eps</span><span class="p">)</span>
+        <span class="p">),</span>
+        <span class="s2">&quot;active from reaction_scores&quot;</span><span class="p">:</span> <span class="p">(</span>
+            <span class="n">reaction_score_fluxes</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">reaction_scores</span><span class="p">)]</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="n">eps</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">eps</span><span class="p">)</span>
+        <span class="p">),</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+
+<span class="k">assert</span> <span class="p">(</span>
+    <span class="n">interface_comparison</span><span class="p">[</span><span class="s2">&quot;active from gene_expression&quot;</span><span class="p">]</span>
+    <span class="o">==</span> <span class="n">interface_comparison</span><span class="p">[</span><span class="s2">&quot;active from reaction_scores&quot;</span><span class="p">]</span>
+<span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+<span class="n">interface_comparison</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>reaction score</th>
+      <th>active from gene_expression</th>
+      <th>active from reaction_scores</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>ACALD</th>
+      <td>1.0</td>
+      <td>True</td>
+      <td>True</td>
+    </tr>
+    <tr>
+      <th>ACKr</th>
+      <td>-1.0</td>
+      <td>False</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>ALCD2x</th>
+      <td>1.0</td>
+      <td>True</td>
+      <td>True</td>
+    </tr>
+    <tr>
+      <th>LDH_D</th>
+      <td>-1.0</td>
+      <td>False</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>PTAr</th>
+      <td>-1.0</td>
+      <td>False</td>
+      <td>False</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="interpretation-and-limitations">
+<h2>Interpretation and limitations<a class="headerlink" href="#interpretation-and-limitations" title="Link to this heading">#</a></h2>
+<p>The inferred state is stoichiometrically feasible, satisfies the anaerobic medium and growth requirement, activates the expression-supported ethanol route, and avoids the low-expression lactate and acetate routes. This illustrates the role of iMAT: expression resolves part of the ambiguity left by FBA by ranking feasible reaction-activity patterns.</p>
+<p>The result remains a modeling hypothesis:</p>
+<ul class="simple">
+<li><p>expression is a cue for likely activity, not an activity or flux measurement; protein abundance, post-translational modification, and metabolite-level regulation can decouple expression from flux;</p></li>
+<li><p>thresholds determine which genes contribute evidence and should be checked for sensitivity;</p></li>
+<li><p>iMAT infers reaction activity, not flux magnitude from expression;</p></li>
+<li><p>low-expression reactions may remain active when network constraints or the required phenotype need them;</p></li>
+<li><p>alternative expression-consistent optima may still exist.</p></li>
+</ul>
+<p>The <a class="reference external" href="https://www.nature.com/articles/nbt.1487">original iMAT paper</a> reports a central role for post-transcriptional regulation and uses disagreements between expression and predicted activity to generate hypotheses about regulation beyond transcript abundance. They do not identify a mechanism on their own: additional protein, enzyme-activity, metabolite, or flux measurements are needed to distinguish biological regulation from data and model assumptions.</p>
+<p>Real analyses should inspect threshold choices, biological constraints, expression coverage, and alternative solutions. Continue with <a class="reference internal" href="multicondition-imat.html"><span class="std std-doc">multi-condition gene expression integration</span></a> to learn how CORNETO couples expression-informed metabolic inference across several contexts.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="multicondition-sfba.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Multi-condition FBA</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="multicondition-imat.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Multi-condition gene expression integration</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#one-established-approach-imat">One established approach: iMAT</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#from-genes-to-reaction-evidence">From genes to reaction evidence</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#relationship-to-cobrapy">Relationship to COBRApy</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-selecting-an-anaerobic-fermentation-program">Example: selecting an anaerobic fermentation program</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#check-that-the-required-phenotype-is-feasible">Check that the required phenotype is feasible</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#define-a-qualitative-expression-profile">Define a qualitative expression profile</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#an-expression-free-reference">An expression-free reference</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#build-and-solve-imat">Build and solve iMAT</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#did-the-inferred-state-agree-with-expression">Did the inferred state agree with expression?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#compare-the-selected-fermentation-routes">Compare the selected fermentation routes</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#visualize-the-contextualized-metabolic-network">Visualize the contextualized metabolic network</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#advanced-compute-and-supply-reaction-scores-directly">Advanced: compute and supply reaction scores directly</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#interpretation-and-limitations">Interpretation and limitations</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2023-2026, Saez-Rodriguez lab. (EMBL-EBI, Heidelberg University).
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

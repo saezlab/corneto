@@ -1,0 +1,1062 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>PHONEMeS &#8212; CORNETO  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=53e23fa6" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('consent', 'default', {
+                    'ad_storage': 'denied',
+                    'ad_user_data': 'denied',
+                    'ad_personalization': 'denied',
+                    'analytics_storage': 'denied'
+                });
+            </script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-Z263GN2PKK"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', 'G-Z263GN2PKK');
+            </script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'guide/signaling/phonemes';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1785744368';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v1.0.0-rc.4';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://saezlab.github.io/corneto/guide/signaling/phonemes.html" />
+    <link rel="icon" href="../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Global upstream and downstream PHONEMeS" href="bidirectional-phonemes.html" />
+    <link rel="prev" title="Multi-sample CARNIVAL" href="multisample-carnival.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="light">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="../../_static/logo.png" class="logo__image only-light" alt="CORNETO  documentation - Home"/>
+    <img src="../../_static/logo.png" class="logo__image only-dark pst-js-only" alt="CORNETO  documentation - Home"/>
+  
+  
+</a></div>
+    
+      <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install.html">
+    Install
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api/index.html">
+    Reference
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../releases/index.html">
+    Release Notes
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-external" href="https://github.com/saezlab/corneto">
+    GitHub
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install.html">
+    Install
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api/index.html">
+    Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../releases/index.html">
+    Release Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/saezlab/corneto">
+    GitHub
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../intro/index.html">Getting started</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../intro/prior-knowledge.html">Prior Knowledge and Graphs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/data.html">Working with data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/plotting.html">Plotting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/constrained-optimization.html">Constrained Optimization</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../networks/index.html">Network methods</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../networks/shortest-paths.html">Shortest paths</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../networks/multi-sample-shortest-paths.html">Multi-sample shortest paths</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../networks/multi-commodity-network-flows.html">Multi-commodity Network Flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../networks/acyclic-flows.html">Acyclic Flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../networks/steiner-trees.html">Steiner trees</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../networks/pcst.html">Prize-Collecting Steiner Trees (PCST)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../networks/multi-pcst-grb.html">Multi-sample PCST</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../metabolism/index.html">Metabolism</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../metabolism/flux-balance-analysis.html">Flux balance analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metabolism/multicondition-sfba.html">Multi-condition FBA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metabolism/imat.html">Integrating gene expression into metabolic models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metabolism/multicondition-imat.html">Multi-condition gene expression integration</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Signaling</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="carnival.html">CARNIVAL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multisample-carnival.html">Multi-sample CARNIVAL</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">PHONEMeS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bidirectional-phonemes.html">Global upstream and downstream PHONEMeS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cellnopt_dag.html">Inferring intracellular signaling models with CellNOptDAG</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../interoperability/index.html">Interoperability</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../interoperability/cobrapy.html">COBRApy: Constraint-based metabolic modeling in Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../interoperability/liana.html">LIANA+: An all-in-one cell-cell communication framework</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../interoperability/decoupler.html">Decoupler: Ensemble of methods to infer biological activities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../interoperability/omnipath.html">Omnipath: intra- &amp; intercellular signaling knowledge</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../interoperability/networkx.html">NetworkX: Network Analysis in Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../interoperability/annnet.html">AnnNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../interoperability/cvxpy.html">CVXPY: Convex optimization, for everyone</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../interoperability/picos.html">PICOS: A Python interface to conic optimization solvers</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Guide</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Signaling</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">PHONEMeS</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="phonemes">
+<h1>PHONEMeS<a class="headerlink" href="#phonemes" title="Link to this heading">#</a></h1>
+<p>The signaling method <code class="docutils literal notranslate"><span class="pre">PHONEMeS</span></code> identifies a directed, acyclic subnetwork that connects known perturbation targets to phosphosites supported by an experiment. Typical inputs are a directed prior-knowledge network (PKN), one or more perturbed proteins, and a score for each measured phosphosite.</p>
+<p>CORNETO expects differential-analysis results and a PKN to be prepared beforehand. It provides <code class="docutils literal notranslate"><span class="pre">compute_phonemes_scores</span></code> for converting p-values and fold changes into PHONEMeS scores, but it does not perform differential analysis, map phosphosites to proteins, or construct the PKN.</p>
+<section id="choosing-the-appropriate-phonemes-workflow">
+<h2>Choosing the appropriate PHONEMeS workflow<a class="headerlink" href="#choosing-the-appropriate-phonemes-workflow" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Workflow</p></th>
+<th class="head"><p>Starting proteins</p></th>
+<th class="head"><p>Question answered</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">PHONEMeS</span></code></p></td>
+<td><p>Known experimental perturbations, such as drug targets or inhibited kinases</p></td>
+<td><p>Which downstream interactions connect the perturbations to the phosphoproteomic measurements?</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">BidirectionalPHONEMeS</span></code></p></td>
+<td><p>Kinases inferred to be regulated from the data</p></td>
+<td><p>Which upstream and downstream interactions jointly explain the measurements around those kinases?</p></td>
+</tr>
+<tr class="row-even"><td><p>Original upside-down PHONEMeS</p></td>
+<td><p>Kinases inferred to be regulated from the data</p></td>
+<td><p>Which separate upstream and downstream networks are found before taking their post-hoc union?</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Use ordinary <code class="docutils literal notranslate"><span class="pre">PHONEMeS</span></code> when the experiment provides a known causal starting point. Its <code class="docutils literal notranslate"><span class="pre">perturbations</span></code> are mandatory roots, and inferred interactions follow the PKN downstream toward measured phosphosites.</p>
+<p>Use <a class="reference internal" href="bidirectional-phonemes.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">BidirectionalPHONEMeS</span></code></span></a> when kinase-activity analysis provides regulated kinases rather than known perturbations. CORNETO then optimizes the upstream and downstream explanations jointly.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">corneto</span><span class="w"> </span><span class="kn">import</span> <span class="n">Graph</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods</span><span class="w"> </span><span class="kn">import</span> <span class="n">PHONEMeS</span><span class="p">,</span> <span class="n">compute_phonemes_scores</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="understanding-phosphosite-scores">
+<h2>Understanding phosphosite scores<a class="headerlink" href="#understanding-phosphosite-scores" title="Link to this heading">#</a></h2>
+<p>PHONEMeS minimizes its objective, so score signs have the following meaning:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Score</p></th>
+<th class="head"><p>Effect on the inferred network</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Negative</p></td>
+<td><p>Rewards inclusion of the phosphosite</p></td>
+</tr>
+<tr class="row-odd"><td><p>Positive</p></td>
+<td><p>Penalizes inclusion of the phosphosite</p></td>
+</tr>
+<tr class="row-even"><td><p>Zero</p></td>
+<td><p>Marks the phosphosite as measured without favoring or penalizing it</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The magnitude controls the strength of the preference. These signs are <strong>optimization preferences</strong>, not activity labels. A negative score does not itself mean that a site is activated, and a positive score does not mean that it is inhibited.</p>
+<p>Every key identifies a measured phosphosite, including keys with value <code class="docutils literal notranslate"><span class="pre">0.0</span></code>. A positively scored site may still appear when it is needed as an intermediate in a better overall explanation.</p>
+</section>
+<section id="computing-scores-from-differential-results">
+<h2>Computing scores from differential results<a class="headerlink" href="#computing-scores-from-differential-results" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">compute_phonemes_scores</span></code> starts from</p>
+<div class="math notranslate nohighlight">
+\[
+r_v = \log_2\left(\frac{p_v}{p_{\mathrm{threshold}}}\right).
+\]</div>
+<p>Sites satisfying the selected evidence criteria receive <span class="math notranslate nohighlight">\(-|r_v|\)</span>, rewarding inclusion. Other measured sites receive <span class="math notranslate nohighlight">\(+|r_v|\)</span>, penalizing inclusion. By default, positive and negative scores are scaled separately to <span class="math notranslate nohighlight">\([0,1]\)</span> and <span class="math notranslate nohighlight">\([-1,0]\)</span>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">scores</span> <span class="o">=</span> <span class="n">compute_phonemes_scores</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;ERK1_S123&quot;</span><span class="p">:</span> <span class="mf">0.001</span><span class="p">,</span>
+        <span class="s2">&quot;AKT1_S473&quot;</span><span class="p">:</span> <span class="mf">0.20</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="n">fold_changes</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;ERK1_S123&quot;</span><span class="p">:</span> <span class="mf">2.1</span><span class="p">,</span>
+        <span class="s2">&quot;AKT1_S473&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="n">pvalue_threshold</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span>
+    <span class="n">fold_change_threshold</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">scores</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;ERK1_S123&#39;: -1.0, &#39;AKT1_S473&#39;: 1.0}
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="inferring-a-network-for-one-condition">
+<h2>Inferring a network for one condition<a class="headerlink" href="#inferring-a-network-for-one-condition" title="Link to this heading">#</a></h2>
+<p>The toy PKN below contains two routes from the known perturbation <code class="docutils literal notranslate"><span class="pre">EGFR</span></code> to the supported site <code class="docutils literal notranslate"><span class="pre">ERK1_S123</span></code>, one route to the penalized site <code class="docutils literal notranslate"><span class="pre">AKT1_S473</span></code>, and a disconnected interaction. The disconnected region cannot explain a measurement and will be removed during preprocessing.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pkn_edges</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s2">&quot;EGFR&quot;</span><span class="p">,</span> <span class="s2">&quot;MAP2K1&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;MAP2K1&quot;</span><span class="p">,</span> <span class="s2">&quot;ERK1_S123&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;EGFR&quot;</span><span class="p">,</span> <span class="s2">&quot;SHC1&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;SHC1&quot;</span><span class="p">,</span> <span class="s2">&quot;GRB2&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;GRB2&quot;</span><span class="p">,</span> <span class="s2">&quot;ERK1_S123&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;EGFR&quot;</span><span class="p">,</span> <span class="s2">&quot;PIK3CA&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;PIK3CA&quot;</span><span class="p">,</span> <span class="s2">&quot;AKT1_S473&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;noise_1&quot;</span><span class="p">,</span> <span class="s2">&quot;noise_2&quot;</span><span class="p">),</span>
+<span class="p">]</span>
+
+<span class="n">pkn</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
+<span class="n">pkn</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">pkn_edges</span><span class="p">)</span>
+
+<span class="n">pkn</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">graph_attr</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;rankdir&quot;</span><span class="p">:</span> <span class="s2">&quot;LR&quot;</span><span class="p">},</span>
+    <span class="n">node_attr</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;fixedsize&quot;</span><span class="p">:</span> <span class="s2">&quot;false&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="s2">&quot;box&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;style&quot;</span><span class="p">:</span> <span class="s2">&quot;rounded&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;margin&quot;</span><span class="p">:</span> <span class="s2">&quot;0.08,0.04&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="n">custom_vertex_attr</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;EGFR&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;fillcolor&quot;</span><span class="p">:</span> <span class="s2">&quot;#f3c969&quot;</span><span class="p">,</span> <span class="s2">&quot;style&quot;</span><span class="p">:</span> <span class="s2">&quot;rounded,filled&quot;</span><span class="p">},</span>
+        <span class="s2">&quot;ERK1_S123&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;fillcolor&quot;</span><span class="p">:</span> <span class="s2">&quot;#90be6d&quot;</span><span class="p">,</span> <span class="s2">&quot;style&quot;</span><span class="p">:</span> <span class="s2">&quot;rounded,filled&quot;</span><span class="p">},</span>
+        <span class="s2">&quot;AKT1_S473&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;fillcolor&quot;</span><span class="p">:</span> <span class="s2">&quot;#f28482&quot;</span><span class="p">,</span> <span class="s2">&quot;style&quot;</span><span class="p">:</span> <span class="s2">&quot;rounded,filled&quot;</span><span class="p">},</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/f17045def8f5abc4df486b6b50da28ec8bf6a7776ad1464cea1f2cd7b563755f.svg" src="../../_images/f17045def8f5abc4df486b6b50da28ec8bf6a7776ad1464cea1f2cd7b563755f.svg" />
+</div>
+</div>
+<p>Interaction costs control which explanation is preferred. Here, the two-edge route through <code class="docutils literal notranslate"><span class="pre">MAP2K1</span></code> costs <code class="docutils literal notranslate"><span class="pre">0.8</span></code>, whereas the three-edge route through <code class="docutils literal notranslate"><span class="pre">SHC1</span></code> and <code class="docutils literal notranslate"><span class="pre">GRB2</span></code> costs <code class="docutils literal notranslate"><span class="pre">0.3</span></code>. The supported phosphosite has score <code class="docutils literal notranslate"><span class="pre">-1.0</span></code>, so the cheaper route remains worthwhile.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">edge_costs</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">0</span><span class="p">:</span> <span class="mf">0.4</span><span class="p">,</span>
+    <span class="mi">1</span><span class="p">:</span> <span class="mf">0.4</span><span class="p">,</span>
+    <span class="mi">2</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span>
+    <span class="mi">3</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span>
+    <span class="mi">4</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span>
+    <span class="mi">5</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span>
+    <span class="mi">6</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">method</span> <span class="o">=</span> <span class="n">PHONEMeS</span><span class="p">()</span>
+<span class="n">problem</span> <span class="o">=</span> <span class="n">method</span><span class="o">.</span><span class="n">build</span><span class="p">(</span>
+    <span class="n">pkn</span><span class="p">,</span>
+    <span class="n">perturbations</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;EGFR&quot;</span><span class="p">],</span>
+    <span class="n">phosphosite_scores</span><span class="o">=</span><span class="n">scores</span><span class="p">,</span>
+    <span class="n">edge_costs</span><span class="o">=</span><span class="n">edge_costs</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">problem</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;scipy&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Problem(Minimize(Expression(AFFINE, UNKNOWN, ())), [Inequality(Constant(CONSTANT, NONNEGATIVE, (10, 1))), Inequality(Variable((10, 1), _flow)), Inequality(Constant(CONSTANT, ZERO, (7, 1))), Inequality(Variable((7, 1), _dag_layer)), Equality(Expression(AFFINE, UNKNOWN, (7, 1)), Constant(CONSTANT, ZERO, ())), Inequality(Expression(AFFINE, NONNEGATIVE, (10, 1))), Equality(Expression(AFFINE, ZERO, (10, 1)), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, NONNEGATIVE, (10, 1)), Constant(CONSTANT, ZERO, ())), Inequality(Expression(AFFINE, NONNEGATIVE, (10, 1))), Inequality(Variable((10, 1), _flow)), Inequality(Expression(AFFINE, UNKNOWN, (7, 1))), Inequality(Expression(AFFINE, UNKNOWN, (7, 1))), Inequality(Expression(AFFINE, UNKNOWN, (7, 1))), Inequality(Expression(AFFINE, UNKNOWN, (7, 1))), Inequality(Expression(AFFINE, NONNEGATIVE, (7, 1))), Inequality(Expression(AFFINE, NONNEGATIVE, (7, 1))), Inequality(Constant(CONSTANT, NONNEGATIVE, (7, 1))), Inequality(Expression(AFFINE, NONNEGATIVE, (7, 1))), Inequality(Expression(AFFINE, NONNEGATIVE, (7, 1)))])
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="reading-and-plotting-the-inferred-subnetwork">
+<h2>Reading and plotting the inferred subnetwork<a class="headerlink" href="#reading-and-plotting-the-inferred-subnetwork" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">edge_selected</span></code> and <code class="docutils literal notranslate"><span class="pre">vertex_selected</span></code> are binary solution arrays with one column per condition. Their rows follow the retained biological interactions and vertices in <code class="docutils literal notranslate"><span class="pre">method.processed_graph</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">selected_edges</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">edge_selected</span><span class="o">.</span><span class="n">value</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.5</span>
+<span class="n">selected_vertices</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">vertex_selected</span><span class="o">.</span><span class="n">value</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.5</span>
+
+<span class="n">selected_edge_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="n">selected_edges</span><span class="p">)</span>
+<span class="n">selected_vertex_names</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+    <span class="n">method</span><span class="o">.</span><span class="n">processed_graph</span><span class="o">.</span><span class="n">V</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">,</span>
+<span class="p">)[</span><span class="n">selected_vertices</span><span class="p">]</span>
+<span class="n">inferred_network</span> <span class="o">=</span> <span class="n">method</span><span class="o">.</span><span class="n">processed_graph</span><span class="o">.</span><span class="n">edge_subgraph</span><span class="p">(</span><span class="n">selected_edge_indices</span><span class="p">)</span>
+
+<span class="n">selected_interactions</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">source</span><span class="p">)),</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">target</span><span class="p">)))</span>
+    <span class="k">for</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">inferred_network</span><span class="o">.</span><span class="n">E</span>
+<span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Selected vertices:&quot;</span><span class="p">,</span> <span class="n">selected_vertex_names</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Selected interactions:&quot;</span><span class="p">,</span> <span class="n">selected_interactions</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Selected vertices: [&#39;EGFR&#39;, &#39;ERK1_S123&#39;, &#39;SHC1&#39;, &#39;GRB2&#39;]
+Selected interactions: [(&#39;EGFR&#39;, &#39;SHC1&#39;), (&#39;SHC1&#39;, &#39;GRB2&#39;), (&#39;GRB2&#39;, &#39;ERK1_S123&#39;)]
+</pre></div>
+</div>
+</div>
+</div>
+<p>The inferred network selects the supported ERK site through the less expensive route. It does not include the penalized AKT site or the disconnected interaction.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">inferred_network</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">graph_attr</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;rankdir&quot;</span><span class="p">:</span> <span class="s2">&quot;LR&quot;</span><span class="p">},</span>
+    <span class="n">node_attr</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;fixedsize&quot;</span><span class="p">:</span> <span class="s2">&quot;false&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="s2">&quot;box&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;style&quot;</span><span class="p">:</span> <span class="s2">&quot;rounded&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;margin&quot;</span><span class="p">:</span> <span class="s2">&quot;0.08,0.04&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="n">custom_edge_attr</span><span class="o">=</span><span class="p">{</span>
+        <span class="n">edge</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;#277da1&quot;</span><span class="p">,</span> <span class="s2">&quot;penwidth&quot;</span><span class="p">:</span> <span class="s2">&quot;3&quot;</span><span class="p">}</span>
+        <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">inferred_network</span><span class="o">.</span><span class="n">num_edges</span><span class="p">)</span>
+    <span class="p">},</span>
+    <span class="n">custom_vertex_attr</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;EGFR&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;fillcolor&quot;</span><span class="p">:</span> <span class="s2">&quot;#f3c969&quot;</span><span class="p">,</span> <span class="s2">&quot;style&quot;</span><span class="p">:</span> <span class="s2">&quot;rounded,filled&quot;</span><span class="p">},</span>
+        <span class="s2">&quot;ERK1_S123&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;fillcolor&quot;</span><span class="p">:</span> <span class="s2">&quot;#90be6d&quot;</span><span class="p">,</span> <span class="s2">&quot;style&quot;</span><span class="p">:</span> <span class="s2">&quot;rounded,filled&quot;</span><span class="p">},</span>
+    <span class="p">},</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/527e776816ef3c9d213ee6e0b24dc99bc20fabe26efb83a0c49cd9a2fe2c3702.svg" src="../../_images/527e776816ef3c9d213ee6e0b24dc99bc20fabe26efb83a0c49cd9a2fe2c3702.svg" />
+</div>
+</div>
+</section>
+<section id="controlling-network-size-with-edge-costs">
+<h2>Controlling network size with edge costs<a class="headerlink" href="#controlling-network-size-with-edge-costs" title="Link to this heading">#</a></h2>
+<p>Unspecified interactions use <code class="docutils literal notranslate"><span class="pre">default_edge_cost</span></code>, which defaults to <code class="docutils literal notranslate"><span class="pre">1e-5</span></code>. Positive costs favor smaller subnetworks. Larger costs require stronger negative phosphosite scores to justify additional interactions, so score and edge-cost scales should be chosen together.</p>
+<p><code class="docutils literal notranslate"><span class="pre">edge_costs</span></code> maps zero-based indices in <code class="docutils literal notranslate"><span class="pre">pkn.E</span></code> to costs. Negative costs are accepted and reward inclusion of an interaction, but should be used deliberately because they can add valid interactions that are not required to explain a negatively scored phosphosite.</p>
+<p>Before optimization, CORNETO removes interactions that cannot lie on a directed path from a perturbation to a measured phosphosite. Unreachable measurements are omitted from <code class="docutils literal notranslate"><span class="pre">method.processed_data</span></code>; a perturbation that cannot reach any measured site is reported as an input error.</p>
+</section>
+<section id="comparing-multiple-conditions">
+<h2>Comparing multiple conditions<a class="headerlink" href="#comparing-multiple-conditions" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">compute_phonemes_scores</span></code> handles one or many conditions through the same function. A pandas DataFrame uses phosphosites as rows and conditions as columns. Pandas is optional for CORNETO users, but convenient in typical phosphoproteomics workflows.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pvalues</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;control&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;ERK1_S123&quot;</span><span class="p">:</span> <span class="mf">0.001</span><span class="p">,</span> <span class="s2">&quot;AKT1_S473&quot;</span><span class="p">:</span> <span class="mf">0.20</span><span class="p">},</span>
+        <span class="s2">&quot;treated&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;ERK1_S123&quot;</span><span class="p">:</span> <span class="mf">0.20</span><span class="p">,</span> <span class="s2">&quot;AKT1_S473&quot;</span><span class="p">:</span> <span class="mf">0.002</span><span class="p">},</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+<span class="n">fold_changes</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;control&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;ERK1_S123&quot;</span><span class="p">:</span> <span class="mf">2.1</span><span class="p">,</span> <span class="s2">&quot;AKT1_S473&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">},</span>
+        <span class="s2">&quot;treated&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;ERK1_S123&quot;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span> <span class="s2">&quot;AKT1_S473&quot;</span><span class="p">:</span> <span class="mf">1.8</span><span class="p">},</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+
+<span class="n">score_table</span> <span class="o">=</span> <span class="n">compute_phonemes_scores</span><span class="p">(</span>
+    <span class="n">pvalues</span><span class="p">,</span>
+    <span class="n">fold_changes</span><span class="o">=</span><span class="n">fold_changes</span><span class="p">,</span>
+    <span class="n">pvalue_threshold</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span>
+    <span class="n">fold_change_threshold</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">score_table</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>control</th>
+      <th>treated</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>ERK1_S123</th>
+      <td>-1.0</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>AKT1_S473</th>
+      <td>1.0</td>
+      <td>-1.0</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>Pass the DataFrame directly to <code class="docutils literal notranslate"><span class="pre">build_many</span></code>, together with a named perturbation mapping. Condition names must match.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">many_method</span> <span class="o">=</span> <span class="n">PHONEMeS</span><span class="p">()</span>
+<span class="n">many_problem</span> <span class="o">=</span> <span class="n">many_method</span><span class="o">.</span><span class="n">build_many</span><span class="p">(</span>
+    <span class="n">pkn</span><span class="p">,</span>
+    <span class="n">perturbations</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;control&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;EGFR&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;treated&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;EGFR&quot;</span><span class="p">],</span>
+    <span class="p">},</span>
+    <span class="n">phosphosite_scores</span><span class="o">=</span><span class="n">score_table</span><span class="p">,</span>
+    <span class="n">edge_costs</span><span class="o">=</span><span class="n">edge_costs</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">many_problem</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;scipy&quot;</span><span class="p">)</span>
+
+<span class="n">control</span> <span class="o">=</span> <span class="n">many_problem</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">edge_selected</span><span class="o">.</span><span class="n">value</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.5</span>
+<span class="n">treated</span> <span class="o">=</span> <span class="n">many_problem</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">edge_selected</span><span class="o">.</span><span class="n">value</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.5</span>
+<span class="n">combined</span> <span class="o">=</span> <span class="n">many_problem</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">edge_selected_any</span><span class="o">.</span><span class="n">value</span> <span class="o">&gt;</span> <span class="mf">0.5</span>
+
+<span class="n">combined_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="n">combined</span><span class="p">)</span>
+<span class="n">combined_network</span> <span class="o">=</span> <span class="n">many_method</span><span class="o">.</span><span class="n">processed_graph</span><span class="o">.</span><span class="n">edge_subgraph</span><span class="p">(</span><span class="n">combined_indices</span><span class="p">)</span>
+<span class="n">edge_style</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">displayed_index</span><span class="p">,</span> <span class="n">original_index</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">combined_indices</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">control</span><span class="p">[</span><span class="n">original_index</span><span class="p">]</span> <span class="ow">and</span> <span class="n">treated</span><span class="p">[</span><span class="n">original_index</span><span class="p">]:</span>
+        <span class="n">color</span> <span class="o">=</span> <span class="s2">&quot;#7b2cbf&quot;</span>
+    <span class="k">elif</span> <span class="n">control</span><span class="p">[</span><span class="n">original_index</span><span class="p">]:</span>
+        <span class="n">color</span> <span class="o">=</span> <span class="s2">&quot;#277da1&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">color</span> <span class="o">=</span> <span class="s2">&quot;#f8961e&quot;</span>
+    <span class="n">edge_style</span><span class="p">[</span><span class="n">displayed_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="n">color</span><span class="p">,</span> <span class="s2">&quot;penwidth&quot;</span><span class="p">:</span> <span class="s2">&quot;3&quot;</span><span class="p">}</span>
+
+<span class="n">combined_network</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">graph_attr</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;rankdir&quot;</span><span class="p">:</span> <span class="s2">&quot;LR&quot;</span><span class="p">},</span>
+    <span class="n">node_attr</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;fixedsize&quot;</span><span class="p">:</span> <span class="s2">&quot;false&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="s2">&quot;box&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;style&quot;</span><span class="p">:</span> <span class="s2">&quot;rounded&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;margin&quot;</span><span class="p">:</span> <span class="s2">&quot;0.08,0.04&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="n">custom_edge_attr</span><span class="o">=</span><span class="n">edge_style</span><span class="p">,</span>
+    <span class="n">custom_vertex_attr</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;EGFR&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;fillcolor&quot;</span><span class="p">:</span> <span class="s2">&quot;#f3c969&quot;</span><span class="p">,</span> <span class="s2">&quot;style&quot;</span><span class="p">:</span> <span class="s2">&quot;rounded,filled&quot;</span><span class="p">},</span>
+        <span class="s2">&quot;ERK1_S123&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;fillcolor&quot;</span><span class="p">:</span> <span class="s2">&quot;#90be6d&quot;</span><span class="p">,</span> <span class="s2">&quot;style&quot;</span><span class="p">:</span> <span class="s2">&quot;rounded,filled&quot;</span><span class="p">},</span>
+        <span class="s2">&quot;AKT1_S473&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;fillcolor&quot;</span><span class="p">:</span> <span class="s2">&quot;#90be6d&quot;</span><span class="p">,</span> <span class="s2">&quot;style&quot;</span><span class="p">:</span> <span class="s2">&quot;rounded,filled&quot;</span><span class="p">},</span>
+    <span class="p">},</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/ae725356af3dacff928d2a783a30f22382b87f17b772a485c31642797eba6767.svg" src="../../_images/ae725356af3dacff928d2a783a30f22382b87f17b772a485c31642797eba6767.svg" />
+</div>
+</div>
+<p>Blue interactions are used in <code class="docutils literal notranslate"><span class="pre">control</span></code>, orange interactions in <code class="docutils literal notranslate"><span class="pre">treated</span></code>, and purple interactions would be shared.</p>
+<p>Each condition has its own phosphosite scores and inferred subnetwork, but PHONEMeS penalizes the size of their <strong>combined network</strong>. An interaction used in several conditions contributes its cost once, not once per condition. This encourages reuse of a common signaling backbone without requiring condition networks to be identical.</p>
+<p>Consequently, <code class="docutils literal notranslate"><span class="pre">edge_costs</span></code> defines one global cost per PKN interaction. It cannot assign different costs to the same interaction in different conditions.</p>
+</section>
+<section id="advanced-implementation-in-corneto">
+<h2>Advanced: implementation in CORNETO<a class="headerlink" href="#advanced-implementation-in-corneto" title="Link to this heading">#</a></h2>
+<p>This section explains how CORNETO represents the biological problem. It is not needed for routine analysis.</p>
+<p>For retained PKN edges, let <span class="math notranslate nohighlight">\(Z_{ec}\)</span> indicate whether edge <span class="math notranslate nohighlight">\(e\)</span> is selected in condition <span class="math notranslate nohighlight">\(c\)</span>, and let <span class="math notranslate nohighlight">\(X_{vc}\)</span> indicate whether vertex <span class="math notranslate nohighlight">\(v\)</span> is selected. CORNETO minimizes</p>
+<div class="math notranslate nohighlight">
+\[
+\sum_{v,c} s_{vc}X_{vc} + \sum_e c_eY_e,
+\qquad Y_e = \bigvee_c Z_{ec}.
+\]</div>
+<p>Here, <span class="math notranslate nohighlight">\(s_{vc}\)</span> is the phosphosite score, <span class="math notranslate nohighlight">\(c_e\)</span> is the interaction cost, and <span class="math notranslate nohighlight">\(Y_e\)</span> records whether an interaction is used by at least one condition.</p>
+<p>CORNETO implements connectivity with a nonnegative conserved flow. Condition-specific boundary interactions inject flow at perturbation targets and extract it at measured phosphosites. These are mathematical devices: they are not PKN interactions and do not appear in <code class="docutils literal notranslate"><span class="pre">edge_selected</span></code>, <code class="docutils literal notranslate"><span class="pre">edge_selected_any</span></code>, or the edge-cost term.</p>
+<p>Sparse incidence matrices connect selected interactions to their endpoint vertices. Layer variables exclude directed cycles while allowing convergent signaling, so an inferred node may have more than one parent. Constraints are constructed as vectorized matrix expressions.</p>
+<section id="internal-solution-variables">
+<h3>Internal solution variables<a class="headerlink" href="#internal-solution-variables" title="Link to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Expression</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">problem.expr.edge_selected</span></code></p></td>
+<td><p>Retained PKN interactions selected per condition</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">problem.expr.vertex_selected</span></code></p></td>
+<td><p>Retained PKN vertices selected per condition</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">problem.expr.edge_selected_any</span></code></p></td>
+<td><p>Union of selected retained interactions</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">problem.expr.flow</span></code></p></td>
+<td><p>Internal connectivity values on PKN and boundary interactions</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">problem.expr.dag_layer</span></code></p></td>
+<td><p>Internal acyclicity layer for each vertex</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Most analyses only need <code class="docutils literal notranslate"><span class="pre">edge_selected</span></code> and <code class="docutils literal notranslate"><span class="pre">vertex_selected</span></code>. Flow and layer values encode feasibility of the optimization model and should not be interpreted as biological measurements or signaling strength.</p>
+<p>Several subnetworks may have the same optimum, so different solvers or solver settings can return different but equally good interaction sets.</p>
+</section>
+<section id="advanced-data-interface">
+<h3>Advanced <code class="docutils literal notranslate"><span class="pre">Data</span></code> interface<a class="headerlink" href="#advanced-data-interface" title="Link to this heading">#</a></h3>
+<p>Most users should use <code class="docutils literal notranslate"><span class="pre">build</span></code> or <code class="docutils literal notranslate"><span class="pre">build_many</span></code>. Use <code class="docutils literal notranslate"><span class="pre">build_from_data</span></code> when inputs already exist as CORNETO features:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto</span><span class="w"> </span><span class="kn">import</span> <span class="n">Data</span>
+
+<span class="n">data</span> <span class="o">=</span> <span class="n">Data</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;treated&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;features&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;EGFR&quot;</span><span class="p">,</span> <span class="s2">&quot;mapping&quot;</span><span class="p">:</span> <span class="s2">&quot;vertex&quot;</span><span class="p">,</span> <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;perturbation&quot;</span><span class="p">},</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;ERK1_S123&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;mapping&quot;</span><span class="p">:</span> <span class="s2">&quot;vertex&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;phosphosite&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">2.4</span><span class="p">,</span>
+                <span class="p">},</span>
+                <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;mapping&quot;</span><span class="p">:</span> <span class="s2">&quot;edge&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mf">0.01</span><span class="p">},</span>
+            <span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+
+<span class="n">advanced_problem</span> <span class="o">=</span> <span class="n">PHONEMeS</span><span class="p">()</span><span class="o">.</span><span class="n">build_from_data</span><span class="p">(</span><span class="n">pkn</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>A vertex that is both perturbed and measured uses role <code class="docutils literal notranslate"><span class="pre">&quot;perturbation_phosphosite&quot;</span></code>. Repeated edge-cost features in multiple samples must agree because the model defines one global cost for each PKN interaction.</p>
+</section>
+<section id="reference-data-validation">
+<h3>Reference-data validation<a class="headerlink" href="#reference-data-validation" title="Link to this heading">#</a></h3>
+<p>The CORNETO test suite includes a compact conversion of the MTOR inhibition example from <code class="docutils literal notranslate"><span class="pre">inst/PHONEMeS_example/Cluster/data4cluster_3.RData</span></code> in the original PHONEMeS-ILP repository. It contains a prepared 229-edge PKN, the <code class="docutils literal notranslate"><span class="pre">MTOR_HUMAN</span></code> perturbation, and 17 phosphosite scores. Tests compare the objective at solver-appropriate precision and verify reachability with both supported backends.</p>
+<p>This implementation covers score construction, exact connectivity pruning, and the optimization core. Differential analysis, PKN construction, downsampling, and solver-specific solution pools remain separate workflows. See the original <a class="reference external" href="https://doi.org/10.1038/ncomms9033">PHONEMeS publication</a> and <a class="reference external" href="https://github.com/saezlab/PHONEMeS-ILP">reference implementation</a>.</p>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="multisample-carnival.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Multi-sample CARNIVAL</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="bidirectional-phonemes.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Global upstream and downstream PHONEMeS</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#choosing-the-appropriate-phonemes-workflow">Choosing the appropriate PHONEMeS workflow</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#understanding-phosphosite-scores">Understanding phosphosite scores</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#computing-scores-from-differential-results">Computing scores from differential results</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inferring-a-network-for-one-condition">Inferring a network for one condition</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reading-and-plotting-the-inferred-subnetwork">Reading and plotting the inferred subnetwork</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#controlling-network-size-with-edge-costs">Controlling network size with edge costs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#comparing-multiple-conditions">Comparing multiple conditions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#advanced-implementation-in-corneto">Advanced: implementation in CORNETO</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#internal-solution-variables">Internal solution variables</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#advanced-data-interface">Advanced <code class="docutils literal notranslate"><span class="pre">Data</span></code> interface</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#reference-data-validation">Reference-data validation</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2023-2026, Saez-Rodriguez lab. (EMBL-EBI, Heidelberg University).
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
