@@ -67,7 +67,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'guide/metabolism/flux-balance-analysis';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1785744119';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'stable';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
@@ -402,7 +402,6 @@
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../method-inputs.html">Building method problems from explicit inputs</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../intro/index.html">Getting started</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../intro/prior-knowledge.html">Prior Knowledge and Graphs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../intro/data.html">Working with data</a></li>
@@ -826,7 +825,7 @@ dtype: float64
 </div>
 <p>This reaction-count criterion is not the same as parsimonious FBA (pFBA), which conventionally minimizes total flux after fixing the primary objective. Sparse FBA instead penalizes how many reactions are active.</p>
 <p>For several conditions, CORNETO can apply structured sparsity to the union of active reactions. A reaction shared by several conditions is then counted once, encouraging compact shared metabolic programs while retaining a separate flux vector for every condition. Continue with <a class="reference internal" href="multicondition-sfba.html"><span class="std std-doc">Multi-condition FBA</span></a> for the general formulation and a worked example, followed by <a class="reference internal" href="imat.html"><span class="std std-doc">gene expression integration</span></a> for context-specific metabolic inference.</p>
-<p>The examples above use the method-specific <code class="docutils literal notranslate"><span class="pre">build</span></code> and <code class="docutils literal notranslate"><span class="pre">build_many</span></code> interfaces. The general <a class="reference internal" href="../method-inputs.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">Data</span></code> interface</span></a> remains available for workflows that require custom feature metadata or already represent measurements as CORNETO data objects.</p>
+<p>The examples above use the method-specific <code class="docutils literal notranslate"><span class="pre">build</span></code> and <code class="docutils literal notranslate"><span class="pre">build_many</span></code> interfaces. The general <a class="reference internal" href="../intro/data.html#guide-data-methods"><span class="std std-ref">Data interface</span></a> remains available for workflows that require custom feature metadata or already represent measurements as CORNETO data objects.</p>
 </section>
 </section>
 

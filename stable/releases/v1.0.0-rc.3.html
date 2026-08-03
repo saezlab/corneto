@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>CORNETO 1.0.0 RC3 &#8212; CORNETO  documentation</title>
+    <title>Release v1.0.0-rc.3 Pre-release &#8212; CORNETO  documentation</title>
   
   
   
@@ -65,7 +65,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'releases/v1.0.0-rc.3';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1785744119';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'stable';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
@@ -75,8 +75,8 @@
     <link rel="icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Migrating to CORNETO 1.0" href="migration-1.0.html" />
-    <link rel="prev" title="Release Notes" href="index.html" />
+    <link rel="next" title="Release v1.0.0-rc.2 Pre-release" href="v1.0.0-rc.2.html" />
+    <link rel="prev" title="Migrating to CORNETO 1.0" href="migration-1.0.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -400,8 +400,9 @@
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">CORNETO 1.0.0 RC3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="v1.0.0-rc.4.html">CORNETO 1.0.0 RC4</a></li>
 <li class="toctree-l1"><a class="reference internal" href="migration-1.0.html">Migrating to CORNETO 1.0</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Release v1.0.0-rc.3 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">Pre-release</span></a></li>
 <li class="toctree-l1"><a class="reference internal" href="v1.0.0-rc.2.html">Release v1.0.0-rc.2 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">Pre-release</span></a></li>
 <li class="toctree-l1"><a class="reference internal" href="v1.0.0-rc.1.html">Release v1.0.0-rc.1 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">Pre-release</span></a></li>
 <li class="toctree-l1"><a class="reference internal" href="v1.0.0-beta.8.html">Release v1.0.0-beta.8 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">Pre-release</span></a></li>
@@ -470,7 +471,7 @@
     
     <li class="breadcrumb-item"><a href="index.html" class="nav-link">Release Notes</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">CORNETO 1.0.0 RC3</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Release v1.0.0-rc.3 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">Pre-release</span></span></li>
   </ul>
 </nav>
 </div>
@@ -487,32 +488,48 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="corneto-1-0-0-rc3">
-<h1>CORNETO 1.0.0 RC3<a class="headerlink" href="#corneto-1-0-0-rc3" title="Link to this heading">#</a></h1>
-<p>CORNETO 1.0.0 RC3 expands the candidate 1.0 signaling and metabolism workflows
-and moves publication to a public-<code class="docutils literal notranslate"><span class="pre">main</span></code> release gate.</p>
-<section id="highlights">
-<h2>Highlights<a class="headerlink" href="#highlights" title="Link to this heading">#</a></h2>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">CellNOptDAG</span></code> provides class-based Boolean signaling-model inference,
-including dedicated model and fit visualizations.</p></li>
-<li><p>The FBA and iMAT guides have been overhauled, including a new standalone iMAT
-guide and refreshed multi-condition examples.</p></li>
-<li><p>Public releases now use one pull request directly into public <code class="docutils literal notranslate"><span class="pre">main</span></code>; that PR
-runs the Python 3.11–3.13 tests, quality checks, warning-free documentation
-build, and package smoke test before a release tag is created.</p></li>
-</ul>
-</section>
-<section id="experimental-api-cleanup">
-<h2>Experimental API cleanup<a class="headerlink" href="#experimental-api-cleanup" title="Link to this heading">#</a></h2>
-<p>The experimental <code class="docutils literal notranslate"><span class="pre">cellnoptILP</span></code> function and <code class="docutils literal notranslate"><span class="pre">corneto.methods.signal</span></code> namespace
-have been removed without compatibility shims. Use the supported class-based
-API instead:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods.signaling</span><span class="w"> </span><span class="kn">import</span> <span class="n">CellNOptDAG</span>
+  <section class="tex2jax_ignore mathjax_ignore" id="release-v1-0-0-rc-3-pre-release">
+<h1>Release v1.0.0-rc.3 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">Pre-release</span><a class="headerlink" href="#release-v1-0-0-rc-3-pre-release" title="Link to this heading">#</a></h1>
+<p><strong>Release Date</strong>: July 31, 2026</p>
+<section id="installation">
+<h2>📦 Installation<a class="headerlink" href="#installation" title="Link to this heading">#</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="nv">corneto</span><span class="o">==</span><span class="m">1</span>.0.0-rc.3
 </pre></div>
 </div>
-<p>See the <a class="reference internal" href="migration-1.0.html"><span class="std std-doc">1.0 migration guide</span></a> for the complete supported
-surface and intentional removals.</p>
+</section>
+<section id="documentation">
+<h2>📖 Documentation<a class="headerlink" href="#documentation" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://saezlab.github.io/corneto/stable/">📚 Documentation</a></p></li>
+<li><p><a class="reference external" href="https://saezlab.github.io/corneto/stable/install.html">🚀 Getting Started</a></p></li>
+<li><p><a class="reference external" href="https://saezlab.github.io/corneto/stable/api/">📑 API Reference</a></p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="what-s-changed">
+<h2>What’s Changed<a class="headerlink" href="#what-s-changed" title="Link to this heading">#</a></h2>
+<section id="other-changes">
+<h3>📦 Other Changes<a class="headerlink" href="#other-changes" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>release: CORNETO v1.0.0-rc.3 by &#64;pablormier in https://github.com/saezlab/corneto/pull/57</p></li>
+</ul>
+<p><strong>Full Changelog</strong>: https://github.com/saezlab/corneto/compare/v1.0.0-rc.2…v1.0.0-rc.3</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="links">
+<h2>Links<a class="headerlink" href="#links" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://pypi.org/project/corneto/1.0.0-rc.3/">📦 PyPI Package</a></p></li>
+<li><p><a class="reference external" href="https://github.com/saezlab/corneto/releases/tag/v1.0.0-rc.3">🏷️ GitHub Release</a></p></li>
+<li><p><a class="reference external" href="https://saezlab.github.io/corneto/">📚 Documentation</a></p></li>
+</ul>
+</section>
+<section id="id1">
+<h2>Installation<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="nv">corneto</span><span class="o">==</span><span class="m">1</span>.0.0-rc.3
+</pre></div>
+</div>
 </section>
 </section>
 
@@ -527,20 +544,20 @@ surface and intentional removals.</p>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="index.html"
+       href="migration-1.0.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Release Notes</p>
+        <p class="prev-next-title">Migrating to CORNETO 1.0</p>
       </div>
     </a>
     <a class="right-next"
-       href="migration-1.0.html"
+       href="v1.0.0-rc.2.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Migrating to CORNETO 1.0</p>
+        <p class="prev-next-title">Release v1.0.0-rc.2 <span class="sd-sphinx-override sd-badge sd-bg-warning sd-bg-text-warning">Pre-release</span></p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -563,8 +580,14 @@ surface and intentional removals.</p>
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#highlights">Highlights</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#experimental-api-cleanup">Experimental API cleanup</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">📦 Installation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#documentation">📖 Documentation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-s-changed">What’s Changed</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#other-changes">📦 Other Changes</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#links">Links</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Installation</a></li>
 </ul>
   </nav></div>
 
