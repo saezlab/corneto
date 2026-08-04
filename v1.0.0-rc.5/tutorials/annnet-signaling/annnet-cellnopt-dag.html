@@ -1,0 +1,1552 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Fitting a multi-condition signaling network stored in AnnNet &#8212; CORNETO  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=53e23fa6" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('consent', 'default', {
+                    'ad_storage': 'denied',
+                    'ad_user_data': 'denied',
+                    'ad_personalization': 'denied',
+                    'analytics_storage': 'denied'
+                });
+            </script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-Z263GN2PKK"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', 'G-Z263GN2PKK');
+            </script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/annnet-signaling/annnet-cellnopt-dag';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1785865436';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v1.0.0-rc.5';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://saezlab.github.io/corneto/tutorials/annnet-signaling/annnet-cellnopt-dag.html" />
+    <link rel="icon" href="../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Single sample intracellular signalling network inference" href="../carnival/single-sample-carnival-transcriptomics.html" />
+    <link rel="prev" title="Context-specific metabolic networks from omics" href="../fba/context-specific-metabolic-omics.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="light">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="../../_static/logo.png" class="logo__image only-light" alt="CORNETO  documentation - Home"/>
+    <img src="../../_static/logo.png" class="logo__image only-dark pst-js-only" alt="CORNETO  documentation - Home"/>
+  
+  
+</a></div>
+    
+      <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install.html">
+    Install
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../guide/index.html">
+    Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api/index.html">
+    Reference
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../releases/index.html">
+    Release Notes
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-external" href="https://github.com/saezlab/corneto">
+    GitHub
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install.html">
+    Install
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../guide/index.html">
+    Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api/index.html">
+    Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../releases/index.html">
+    Release Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/saezlab/corneto">
+    GitHub
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../fba/context-specific-metabolic-omics.html">Context-specific metabolic networks from omics</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Fitting a multi-condition signaling network stored in AnnNet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../carnival/single-sample-carnival-transcriptomics.html">Single sample intracellular signalling network inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../carnival/multi-receptor-integration.html">Multi-receptor integration with CARNIVAL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../carnival/network-sampler.html">Implementing an alternative network sampler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../carnival/network-sampler-example.html">Exploring alternative solutions with <span class="math notranslate nohighlight">\(\epsilon\)</span>-perturbation sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ml/kpnn-with-sc.html">Knowledge-primed Neural Networks (KPNNs) for single cell data</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../contrib/multi_condition_tutorial/multi_condition_carnival.html">Multi-condition signalling network inference</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Tutorials</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Fitting a multi-condition signaling network stored in AnnNet</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="fitting-a-multi-condition-signaling-network-stored-in-annnet">
+<h1>Fitting a multi-condition signaling network stored in AnnNet<a class="headerlink" href="#fitting-a-multi-condition-signaling-network-stored-in-annnet" title="Link to this heading">#</a></h1>
+<p>A signaling analysis contains more than a pathway diagram. We also need to know which proteins were stimulated or inhibited, what was measured in each condition, which interactions were selected by the model, and what the model predicts.</p>
+<p>In this tutorial, one AnnNet object keeps all of this information together. CORNETO provides the optimization method that fits the network.</p>
+<p>We will use AnnNet to hold:</p>
+<ul class="simple">
+<li><p>a signed prior-knowledge network;</p></li>
+<li><p>nine perturbation experiments;</p></li>
+<li><p>the network selected by <code class="docutils literal notranslate"><span class="pre">CellNOptDAG</span></code>; and</p></li>
+<li><p>predicted protein and reaction activities for every condition.</p></li>
+</ul>
+<p>The biological question is:</p>
+<blockquote>
+<div><p>Which routes through the candidate network are needed to explain the responses to TGFA, IGF1, and several kinase inhibitors?</p>
+</div></blockquote>
+<p>The complete analysis can be saved as one <code class="docutils literal notranslate"><span class="pre">.annnet</span></code> file and explored later without rerunning the optimization.</p>
+<section id="what-data-are-used">
+<h2>What data are used?<a class="headerlink" href="#what-data-are-used" title="Link to this heading">#</a></h2>
+<p>The protein names and candidate interactions come from a small part of the prior-knowledge network distributed with the <a class="reference external" href="https://pmc.ncbi.nlm.nih.gov/articles/PMC3465072/">DREAM4 Predictive Signaling Network Challenge</a>. The original challenge studied signaling responses in HepG2 cells after stimulation with ligands and treatment with kinase inhibitors.</p>
+<p>To keep the model easy to understand, we use a small <strong>synthetic perturbation experiment</strong>. Stimuli and inhibitors are binary, while the responses are normalized values between <code class="docutils literal notranslate"><span class="pre">0</span></code> and <code class="docutils literal notranslate"><span class="pre">1</span></code>. We deliberately include experimental variation, so a Boolean model is not expected to reproduce every value exactly. The example uses real pathway names, but the measurements are illustrative and are not taken from the original DREAM dataset.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">annnet</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">an</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">annnet.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot</span> <span class="k">as</span> <span class="n">plot_annnet</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">display</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods.signaling</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">CellNOptDAG</span><span class="p">,</span>
+    <span class="n">add_cellnopt_conditions</span><span class="p">,</span>
+    <span class="n">add_cellnopt_results</span><span class="p">,</span>
+    <span class="n">build_cellnopt_from_annnet</span><span class="p">,</span>
+    <span class="n">plot_cellnopt_fit</span><span class="p">,</span>
+    <span class="n">plot_cellnopt_model</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;figure.dpi&quot;</span><span class="p">:</span> <span class="mi">120</span><span class="p">,</span> <span class="s2">&quot;axes.spines.top&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;axes.spines.right&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">})</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="create-the-signaling-network-in-annnet">
+<h2>1. Create the signaling network in AnnNet<a class="headerlink" href="#create-the-signaling-network-in-annnet" title="Link to this heading">#</a></h2>
+<p>We begin with the biological network that will remain with us throughout the analysis. Each interaction has a sign: <code class="docutils literal notranslate"><span class="pre">+1</span></code> for activation and <code class="docutils literal notranslate"><span class="pre">−1</span></code> for inhibition.</p>
+<p>The network contains two familiar branches:</p>
+<ul class="simple">
+<li><p>TGFA activates EGFR and can signal toward ERK1/2 and HSP27;</p></li>
+<li><p>IGF1 activates IGFR and can signal toward PI3K and AKT.</p></li>
+</ul>
+<p>We also include several possible shortcuts and alternative routes. They are candidates that CORNETO may select if they help explain the experiments.</p>
+<p>The interactions are placed in an AnnNet slice called <code class="docutils literal notranslate"><span class="pre">prior</span></code>. A slice is a named selection within a network. Later, another slice will identify the interactions selected by CellNOptDAG, while the original candidate network remains available.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">display_name</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;tgfa&quot;</span><span class="p">:</span> <span class="s2">&quot;TGFA&quot;</span><span class="p">,</span> <span class="s2">&quot;egfr&quot;</span><span class="p">:</span> <span class="s2">&quot;EGFR&quot;</span><span class="p">,</span> <span class="s2">&quot;grb2&quot;</span><span class="p">:</span> <span class="s2">&quot;GRB2&quot;</span><span class="p">,</span> <span class="s2">&quot;shc&quot;</span><span class="p">:</span> <span class="s2">&quot;SHC&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;sos&quot;</span><span class="p">:</span> <span class="s2">&quot;SOS&quot;</span><span class="p">,</span> <span class="s2">&quot;ras&quot;</span><span class="p">:</span> <span class="s2">&quot;RAS&quot;</span><span class="p">,</span> <span class="s2">&quot;raf1&quot;</span><span class="p">:</span> <span class="s2">&quot;RAF1&quot;</span><span class="p">,</span> <span class="s2">&quot;mek12&quot;</span><span class="p">:</span> <span class="s2">&quot;MEK1/2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;erk12&quot;</span><span class="p">:</span> <span class="s2">&quot;ERK1/2&quot;</span><span class="p">,</span> <span class="s2">&quot;prak&quot;</span><span class="p">:</span> <span class="s2">&quot;PRAK&quot;</span><span class="p">,</span> <span class="s2">&quot;hsp27&quot;</span><span class="p">:</span> <span class="s2">&quot;HSP27&quot;</span><span class="p">,</span> <span class="s2">&quot;pi3k&quot;</span><span class="p">:</span> <span class="s2">&quot;PI3K&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;pip3&quot;</span><span class="p">:</span> <span class="s2">&quot;PIP3&quot;</span><span class="p">,</span> <span class="s2">&quot;pdk1&quot;</span><span class="p">:</span> <span class="s2">&quot;PDK1&quot;</span><span class="p">,</span> <span class="s2">&quot;akt&quot;</span><span class="p">:</span> <span class="s2">&quot;AKT&quot;</span><span class="p">,</span> <span class="s2">&quot;igf1&quot;</span><span class="p">:</span> <span class="s2">&quot;IGF1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;igfr&quot;</span><span class="p">:</span> <span class="s2">&quot;IGFR&quot;</span><span class="p">,</span> <span class="s2">&quot;irs1&quot;</span><span class="p">:</span> <span class="s2">&quot;IRS1&quot;</span><span class="p">,</span> <span class="s2">&quot;map3k1&quot;</span><span class="p">:</span> <span class="s2">&quot;MAP3K1&quot;</span><span class="p">,</span> <span class="s2">&quot;mkk4&quot;</span><span class="p">:</span> <span class="s2">&quot;MKK4&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;p38&quot;</span><span class="p">:</span> <span class="s2">&quot;p38&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">pkn_edges</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s2">&quot;tgfa&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;egfr&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;egfr&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;grb2&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;egfr&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;shc&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;shc&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;grb2&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;grb2&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;sos&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;sos&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;ras&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;ras&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;raf1&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;raf1&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;mek12&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;mek12&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;erk12&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;erk12&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;prak&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;prak&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;hsp27&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;egfr&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;pi3k&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;ras&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;pi3k&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;pi3k&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;pip3&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;pip3&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;pdk1&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;pdk1&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;akt&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;igf1&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;igfr&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;igfr&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;irs1&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;irs1&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;pi3k&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;igfr&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;shc&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;ras&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;map3k1&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;map3k1&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;mkk4&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;mkk4&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;p38&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;p38&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;prak&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;akt&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;raf1&quot;</span><span class="p">),</span>
+<span class="p">]</span>
+
+<span class="n">signaling</span> <span class="o">=</span> <span class="n">an</span><span class="o">.</span><span class="n">AnnNet</span><span class="p">(</span><span class="n">directed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">signaling</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">enable</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">signaling</span><span class="o">.</span><span class="n">slices</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;prior&quot;</span><span class="p">,</span> <span class="n">role</span><span class="o">=</span><span class="s2">&quot;prior_knowledge&quot;</span><span class="p">)</span>
+<span class="n">signaling</span><span class="o">.</span><span class="n">add_vertices</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">display_name</span><span class="p">))</span>
+
+<span class="k">for</span> <span class="n">protein</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">display_name</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">signaling</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">set_vertex_attrs</span><span class="p">(</span><span class="n">protein</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="n">entity_type</span><span class="o">=</span><span class="s2">&quot;protein&quot;</span><span class="p">)</span>
+
+<span class="n">prior_edge_ids</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">sign</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">pkn_edges</span><span class="p">):</span>
+    <span class="n">edge_id</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;liverdream_</span><span class="si">{</span><span class="n">index</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">signaling</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span>
+        <span class="n">source</span><span class="p">,</span>
+        <span class="n">target</span><span class="p">,</span>
+        <span class="n">edge_id</span><span class="o">=</span><span class="n">edge_id</span><span class="p">,</span>
+        <span class="nb">slice</span><span class="o">=</span><span class="s2">&quot;prior&quot;</span><span class="p">,</span>
+        <span class="n">directed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">parallel</span><span class="o">=</span><span class="s2">&quot;parallel&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">signaling</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">set_edge_attrs</span><span class="p">(</span>
+        <span class="n">edge_id</span><span class="p">,</span>
+        <span class="n">interaction</span><span class="o">=</span><span class="n">sign</span><span class="p">,</span>
+        <span class="n">source_dataset</span><span class="o">=</span><span class="s2">&quot;LiverDREAM&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">prior_edge_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">edge_id</span><span class="p">)</span>
+
+<span class="n">signaling</span><span class="o">.</span><span class="n">uns</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;LiverDREAM-derived signaling example&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;pkn_source&quot;</span><span class="p">:</span> <span class="s2">&quot;DREAM4 Predictive Signaling Network Challenge&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;data_scope&quot;</span><span class="p">:</span> <span class="s2">&quot;Synthetic normalized signaling responses for software demonstration&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+<span class="n">signaling</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">snapshot</span><span class="p">(</span><span class="s2">&quot;prior_loaded&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;AnnNet contains </span><span class="si">{</span><span class="n">signaling</span><span class="o">.</span><span class="n">nv</span><span class="si">}</span><span class="s2"> proteins and </span><span class="si">{</span><span class="n">signaling</span><span class="o">.</span><span class="n">ne</span><span class="si">}</span><span class="s2"> signed interactions&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>AnnNet contains 21 proteins and 25 signed interactions
+</pre></div>
+</div>
+</div>
+</div>
+<section id="inspect-the-candidate-network">
+<h3>Inspect the candidate network<a class="headerlink" href="#inspect-the-candidate-network" title="Link to this heading">#</a></h3>
+<p>AnnNet draws the signed network directly. Arrowheads show activation, while a bar indicates inhibition.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_annnet</span><span class="p">(</span>
+    <span class="n">signaling</span><span class="p">,</span>
+    <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;graphviz&quot;</span><span class="p">,</span>
+    <span class="n">layout</span><span class="o">=</span><span class="s2">&quot;dot&quot;</span><span class="p">,</span>
+    <span class="n">vertex_label_key</span><span class="o">=</span><span class="s2">&quot;label&quot;</span><span class="p">,</span>
+    <span class="n">use_weight_style</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">graph_attr</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;rankdir&quot;</span><span class="p">:</span> <span class="s2">&quot;LR&quot;</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="s2">&quot;12,7&quot;</span><span class="p">},</span>
+    <span class="n">node_attr</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="s2">&quot;ellipse&quot;</span><span class="p">,</span> <span class="s2">&quot;style&quot;</span><span class="p">:</span> <span class="s2">&quot;filled&quot;</span><span class="p">,</span> <span class="s2">&quot;fillcolor&quot;</span><span class="p">:</span> <span class="s2">&quot;#eef4fb&quot;</span><span class="p">},</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/07ec50c54b0ba4c663a5c1f1d682f160886a718f4101b8328ecea7161bca1998.svg" src="../../_images/07ec50c54b0ba4c663a5c1f1d682f160886a718f4101b8328ecea7161bca1998.svg" />
+</div>
+</div>
+</section>
+</section>
+<section id="add-the-perturbation-experiments-to-annnet">
+<h2>2. Add the perturbation experiments to AnnNet<a class="headerlink" href="#add-the-perturbation-experiments-to-annnet" title="Link to this heading">#</a></h2>
+<p>Each condition records which ligands are present, which internal proteins are inhibited, and the measured activity of ERK1/2, AKT, and HSP27.</p>
+<p>The conditions were chosen to distinguish alternative explanations:</p>
+<ul class="simple">
+<li><p><strong>TGFA with RAS inhibition</strong> tests whether TGFA reaches PI3K through RAS or through the shorter candidate edge from EGFR to PI3K.</p></li>
+<li><p><strong>TGFA with MEK inhibition</strong> blocks the ERK1/2–HSP27 branch while leaving the route to AKT available.</p></li>
+<li><p><strong>IGF1 alone</strong> supports the route from IGFR through IRS1 to PI3K and AKT.</p></li>
+<li><p><strong>IGF1 with PI3K inhibition</strong> tests whether the AKT response depends on PI3K, PIP3, and PDK1.</p></li>
+</ul>
+<p>We store every condition as an AnnNet layer. Inputs, inhibitors, and measurements become attributes of the corresponding protein in that layer.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">inputs</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;Basal&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;tgfa&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;igf1&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
+    <span class="s2">&quot;TGFA&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;tgfa&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;igf1&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
+    <span class="s2">&quot;TGFA + EGFRi&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;tgfa&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;igf1&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
+    <span class="s2">&quot;TGFA + RASi&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;tgfa&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;igf1&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
+    <span class="s2">&quot;TGFA + MEKi&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;tgfa&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;igf1&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
+    <span class="s2">&quot;IGF1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;tgfa&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;igf1&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+    <span class="s2">&quot;IGF1 + PI3Ki&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;tgfa&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;igf1&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+    <span class="s2">&quot;TGFA + IGF1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;tgfa&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;igf1&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+    <span class="s2">&quot;Dual + MEKi&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;tgfa&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;igf1&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+<span class="p">}</span>
+<span class="n">measurements</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;Basal&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;erk12&quot;</span><span class="p">:</span> <span class="mf">0.05</span><span class="p">,</span> <span class="s2">&quot;akt&quot;</span><span class="p">:</span> <span class="mf">0.08</span><span class="p">,</span> <span class="s2">&quot;hsp27&quot;</span><span class="p">:</span> <span class="mf">0.04</span><span class="p">},</span>
+    <span class="s2">&quot;TGFA&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;erk12&quot;</span><span class="p">:</span> <span class="mf">0.90</span><span class="p">,</span> <span class="s2">&quot;akt&quot;</span><span class="p">:</span> <span class="mf">0.85</span><span class="p">,</span> <span class="s2">&quot;hsp27&quot;</span><span class="p">:</span> <span class="mf">0.80</span><span class="p">},</span>
+    <span class="s2">&quot;TGFA + EGFRi&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;erk12&quot;</span><span class="p">:</span> <span class="mf">0.10</span><span class="p">,</span> <span class="s2">&quot;akt&quot;</span><span class="p">:</span> <span class="mf">0.15</span><span class="p">,</span> <span class="s2">&quot;hsp27&quot;</span><span class="p">:</span> <span class="mf">0.08</span><span class="p">},</span>
+    <span class="s2">&quot;TGFA + RASi&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;erk12&quot;</span><span class="p">:</span> <span class="mf">0.15</span><span class="p">,</span> <span class="s2">&quot;akt&quot;</span><span class="p">:</span> <span class="mf">0.25</span><span class="p">,</span> <span class="s2">&quot;hsp27&quot;</span><span class="p">:</span> <span class="mf">0.12</span><span class="p">},</span>
+    <span class="s2">&quot;TGFA + MEKi&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;erk12&quot;</span><span class="p">:</span> <span class="mf">0.20</span><span class="p">,</span> <span class="s2">&quot;akt&quot;</span><span class="p">:</span> <span class="mf">0.75</span><span class="p">,</span> <span class="s2">&quot;hsp27&quot;</span><span class="p">:</span> <span class="mf">0.18</span><span class="p">},</span>
+    <span class="s2">&quot;IGF1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;erk12&quot;</span><span class="p">:</span> <span class="mf">0.12</span><span class="p">,</span> <span class="s2">&quot;akt&quot;</span><span class="p">:</span> <span class="mf">0.88</span><span class="p">,</span> <span class="s2">&quot;hsp27&quot;</span><span class="p">:</span> <span class="mf">0.10</span><span class="p">},</span>
+    <span class="s2">&quot;IGF1 + PI3Ki&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;erk12&quot;</span><span class="p">:</span> <span class="mf">0.10</span><span class="p">,</span> <span class="s2">&quot;akt&quot;</span><span class="p">:</span> <span class="mf">0.20</span><span class="p">,</span> <span class="s2">&quot;hsp27&quot;</span><span class="p">:</span> <span class="mf">0.10</span><span class="p">},</span>
+    <span class="s2">&quot;TGFA + IGF1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;erk12&quot;</span><span class="p">:</span> <span class="mf">0.92</span><span class="p">,</span> <span class="s2">&quot;akt&quot;</span><span class="p">:</span> <span class="mf">0.90</span><span class="p">,</span> <span class="s2">&quot;hsp27&quot;</span><span class="p">:</span> <span class="mf">0.85</span><span class="p">},</span>
+    <span class="s2">&quot;Dual + MEKi&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;erk12&quot;</span><span class="p">:</span> <span class="mf">0.20</span><span class="p">,</span> <span class="s2">&quot;akt&quot;</span><span class="p">:</span> <span class="mf">0.82</span><span class="p">,</span> <span class="s2">&quot;hsp27&quot;</span><span class="p">:</span> <span class="mf">0.15</span><span class="p">},</span>
+<span class="p">}</span>
+<span class="n">inhibitors</span> <span class="o">=</span> <span class="p">{</span><span class="n">condition</span><span class="p">:</span> <span class="p">{}</span> <span class="k">for</span> <span class="n">condition</span> <span class="ow">in</span> <span class="n">inputs</span><span class="p">}</span>
+<span class="n">inhibitors</span><span class="p">[</span><span class="s2">&quot;TGFA + EGFRi&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;egfr&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+<span class="n">inhibitors</span><span class="p">[</span><span class="s2">&quot;TGFA + RASi&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;ras&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+<span class="n">inhibitors</span><span class="p">[</span><span class="s2">&quot;TGFA + MEKi&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;mek12&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+<span class="n">inhibitors</span><span class="p">[</span><span class="s2">&quot;IGF1 + PI3Ki&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;pi3k&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+<span class="n">inhibitors</span><span class="p">[</span><span class="s2">&quot;Dual + MEKi&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;mek12&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+
+<span class="n">condition_layers</span> <span class="o">=</span> <span class="n">add_cellnopt_conditions</span><span class="p">(</span>
+    <span class="n">signaling</span><span class="p">,</span>
+    <span class="n">inputs</span><span class="o">=</span><span class="n">inputs</span><span class="p">,</span>
+    <span class="n">inhibitors</span><span class="o">=</span><span class="n">inhibitors</span><span class="p">,</span>
+    <span class="n">measurements</span><span class="o">=</span><span class="n">measurements</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">signaling</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">snapshot</span><span class="p">(</span><span class="s2">&quot;conditions_added&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Condition layers:&quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">condition_layers</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Condition layers: [&#39;Basal&#39;, &#39;TGFA&#39;, &#39;TGFA + EGFRi&#39;, &#39;TGFA + RASi&#39;, &#39;TGFA + MEKi&#39;, &#39;IGF1&#39;, &#39;IGF1 + PI3Ki&#39;, &#39;TGFA + IGF1&#39;, &#39;Dual + MEKi&#39;]
+</pre></div>
+</div>
+</div>
+</div>
+<p>The AnnNet object now contains both the pathway and the experiment. The following small display helper reads selected protein attributes across its condition layers. It is independent of CellNOptDAG and is used only to make compact tables in this notebook.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">vertex_layer_table</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">layers</span><span class="p">,</span> <span class="n">columns</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return selected vertex-layer attributes as a pandas table.&quot;&quot;&quot;</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">condition</span><span class="p">,</span> <span class="n">layer</span> <span class="ow">in</span> <span class="n">layers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">rows</span><span class="p">[</span><span class="n">condition</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">label</span><span class="p">:</span> <span class="n">network</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">get_vertex_layer_attrs</span><span class="p">(</span><span class="n">protein</span><span class="p">,</span> <span class="n">layer</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">attribute</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="p">(</span><span class="n">protein</span><span class="p">,</span> <span class="n">attribute</span><span class="p">)</span> <span class="ow">in</span> <span class="n">columns</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">}</span>
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">orient</span><span class="o">=</span><span class="s2">&quot;index&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">rename_axis</span><span class="p">(</span><span class="s2">&quot;condition&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">experiment_columns</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;TGFA&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;tgfa&quot;</span><span class="p">,</span> <span class="s2">&quot;input&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;IGF1&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;igf1&quot;</span><span class="p">,</span> <span class="s2">&quot;input&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;EGFR inhibited&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;egfr&quot;</span><span class="p">,</span> <span class="s2">&quot;inhibited&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;RAS inhibited&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;ras&quot;</span><span class="p">,</span> <span class="s2">&quot;inhibited&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;MEK inhibited&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;mek12&quot;</span><span class="p">,</span> <span class="s2">&quot;inhibited&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;PI3K inhibited&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;pi3k&quot;</span><span class="p">,</span> <span class="s2">&quot;inhibited&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;ERK1/2 observed&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;erk12&quot;</span><span class="p">,</span> <span class="s2">&quot;observed&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;AKT observed&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;akt&quot;</span><span class="p">,</span> <span class="s2">&quot;observed&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;HSP27 observed&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;hsp27&quot;</span><span class="p">,</span> <span class="s2">&quot;observed&quot;</span><span class="p">),</span>
+<span class="p">}</span>
+<span class="n">experiment</span> <span class="o">=</span> <span class="n">vertex_layer_table</span><span class="p">(</span><span class="n">signaling</span><span class="p">,</span> <span class="n">condition_layers</span><span class="p">,</span> <span class="n">experiment_columns</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">experiment</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>TGFA</th>
+      <th>IGF1</th>
+      <th>EGFR inhibited</th>
+      <th>RAS inhibited</th>
+      <th>MEK inhibited</th>
+      <th>PI3K inhibited</th>
+      <th>ERK1/2 observed</th>
+      <th>AKT observed</th>
+      <th>HSP27 observed</th>
+    </tr>
+    <tr>
+      <th>condition</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>Basal</th>
+      <td>0</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.05</td>
+      <td>0.08</td>
+      <td>0.04</td>
+    </tr>
+    <tr>
+      <th>TGFA</th>
+      <td>1</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.90</td>
+      <td>0.85</td>
+      <td>0.80</td>
+    </tr>
+    <tr>
+      <th>TGFA + EGFRi</th>
+      <td>1</td>
+      <td>0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.10</td>
+      <td>0.15</td>
+      <td>0.08</td>
+    </tr>
+    <tr>
+      <th>TGFA + RASi</th>
+      <td>1</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.15</td>
+      <td>0.25</td>
+      <td>0.12</td>
+    </tr>
+    <tr>
+      <th>TGFA + MEKi</th>
+      <td>1</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.20</td>
+      <td>0.75</td>
+      <td>0.18</td>
+    </tr>
+    <tr>
+      <th>IGF1</th>
+      <td>0</td>
+      <td>1</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.12</td>
+      <td>0.88</td>
+      <td>0.10</td>
+    </tr>
+    <tr>
+      <th>IGF1 + PI3Ki</th>
+      <td>0</td>
+      <td>1</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.10</td>
+      <td>0.20</td>
+      <td>0.10</td>
+    </tr>
+    <tr>
+      <th>TGFA + IGF1</th>
+      <td>1</td>
+      <td>1</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.92</td>
+      <td>0.90</td>
+      <td>0.85</td>
+    </tr>
+    <tr>
+      <th>Dual + MEKi</th>
+      <td>1</td>
+      <td>1</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.20</td>
+      <td>0.82</td>
+      <td>0.15</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mf">4.8</span><span class="p">))</span>
+<span class="n">matrix</span> <span class="o">=</span> <span class="n">experiment</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Blues&quot;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">experiment</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">experiment</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">45</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;right&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">experiment</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">experiment</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">row</span><span class="p">,</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">ndindex</span><span class="p">(</span><span class="n">matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">):</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">column</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">matrix</span><span class="p">[</span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="n">column</span><span class="p">]</span><span class="si">:</span><span class="s2">.2g</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Perturbations and measurements stored in the AnnNet condition layers&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Experimental variable&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Condition&quot;</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/a6bbef317dfe43cda64d7fec8f4086f3292f9966854738558bf4bac9d2638fd7.png" src="../../_images/a6bbef317dfe43cda64d7fec8f4086f3292f9966854738558bf4bac9d2638fd7.png" />
+</div>
+</div>
+</section>
+<section id="fit-the-network-with-corneto">
+<h2>3. Fit the network with CORNETO<a class="headerlink" href="#fit-the-network-with-corneto" title="Link to this heading">#</a></h2>
+<p>CORNETO reads the signed interactions and experimental conditions stored in AnnNet. CellNOptDAG searches for one set of reactions that explains all nine experiments. The selected reactions are shared across the experiment, although their activity can change from one condition to another.</p>
+<p>CellNOptDAG predicts an inactive or active state for each protein, whereas the synthetic measurements vary continuously between <code class="docutils literal notranslate"><span class="pre">0</span></code> and <code class="docutils literal notranslate"><span class="pre">1</span></code>. It therefore searches for the binary response pattern that is closest to the observations rather than expecting a perfect numerical match.</p>
+<p>We use a small value of <code class="docutils literal notranslate"><span class="pre">lambda_reg</span></code>. Reducing disagreement with the measurements is the first priority; when two models perform equally well, this value favors the model with fewer reactions.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">method</span> <span class="o">=</span> <span class="n">CellNOptDAG</span><span class="p">(</span><span class="n">lambda_reg</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span>
+<span class="n">problem</span> <span class="o">=</span> <span class="n">build_cellnopt_from_annnet</span><span class="p">(</span>
+    <span class="n">method</span><span class="p">,</span>
+    <span class="n">signaling</span><span class="p">,</span>
+    <span class="n">network_slice</span><span class="o">=</span><span class="s2">&quot;prior&quot;</span><span class="p">,</span>
+    <span class="n">condition_layers</span><span class="o">=</span><span class="n">condition_layers</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">solution</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;SCIPY&quot;</span><span class="p">)</span>
+
+<span class="n">total_error</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">objectives</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+<span class="n">number_of_measurements</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="k">for</span> <span class="n">values</span> <span class="ow">in</span> <span class="n">measurements</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Solver status:&quot;</span><span class="p">,</span> <span class="n">solution</span><span class="o">.</span><span class="n">status</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total absolute error: </span><span class="si">{</span><span class="n">total_error</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mean absolute error per measurement: </span><span class="si">{</span><span class="n">total_error</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">number_of_measurements</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Solver status: optimal
+Total absolute error: 3.70
+Mean absolute error per measurement: 0.14
+</pre></div>
+</div>
+</div>
+</div>
+<section id="which-routes-were-selected">
+<h3>Which routes were selected?<a class="headerlink" href="#which-routes-were-selected" title="Link to this heading">#</a></h3>
+<p>The fitted network keeps both stimulus-to-readout branches. It also keeps <code class="docutils literal notranslate"><span class="pre">RAS</span> <span class="pre">→</span> <span class="pre">PI3K</span></code>, which helps explain why TGFA produces a strong AKT response while RAS inhibition strongly reduces it.</p>
+<p>The direct shortcut <code class="docutils literal notranslate"><span class="pre">EGFR</span> <span class="pre">→</span> <span class="pre">PI3K</span></code> is not selected. If it were present, PI3K could remain active after RAS inhibition, making the low AKT measurement harder to explain. The candidate routes from IGFR to ERK1/2 and from RAS through p38 to HSP27 are also unnecessary for this fit.</p>
+<p>An interaction that is not selected should not be interpreted as biologically false. It was available in the candidate network, but this experiment can be explained without it.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">display</span><span class="p">(</span><span class="n">plot_cellnopt_model</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">show_unselected</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<span class="n">plot_cellnopt_fit</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">view</span><span class="o">=</span><span class="s2">&quot;heatmap&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/c3c67c4d90356715a092403dbf7a5cf8a0d6179d00ec7562191f64d46a92481c.svg" src="../../_images/c3c67c4d90356715a092403dbf7a5cf8a0d6179d00ec7562191f64d46a92481c.svg" />
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(&lt;Figure size 1140x777.6 with 7 Axes&gt;,
+ array([&lt;Axes: title={&#39;center&#39;: &#39;Observed&#39;}&gt;,
+        &lt;Axes: title={&#39;center&#39;: &#39;Model&#39;}&gt;,
+        &lt;Axes: title={&#39;center&#39;: &#39;Absolute error&#39;}&gt;,
+        &lt;Axes: title={&#39;center&#39;: &#39;Cues&#39;}&gt;], dtype=object))
+</pre></div>
+</div>
+<img alt="../../_images/2e1437cd470614a86193de6af23343abd85d03fa563667679099bf1df40d35c0.png" src="../../_images/2e1437cd470614a86193de6af23343abd85d03fa563667679099bf1df40d35c0.png" />
+</div>
+</div>
+</section>
+</section>
+<section id="add-the-fitted-model-to-annnet">
+<h2>4. Add the fitted model to AnnNet<a class="headerlink" href="#add-the-fitted-model-to-annnet" title="Link to this heading">#</a></h2>
+<p>The optimization is complete, but the AnnNet object does not yet contain the inferred results. One signaling-specific CORNETO helper adds them:</p>
+<ul class="simple">
+<li><p>selected interactions are added to a slice called <code class="docutils literal notranslate"><span class="pre">cellnopt_selected</span></code>;</p></li>
+<li><p>predicted protein activities are added to each condition layer;</p></li>
+<li><p>selected reactions are marked as active or inactive in each condition; and</p></li>
+<li><p>fitting summaries are attached to the corresponding layers.</p></li>
+</ul>
+<p>This helper works from CellNOptDAG variables and standard AnnNet attributes. It does not contain any LiverDREAM-specific proteins or conditions.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">result_summary</span> <span class="o">=</span> <span class="n">add_cellnopt_results</span><span class="p">(</span>
+    <span class="n">signaling</span><span class="p">,</span>
+    <span class="n">method</span><span class="p">,</span>
+    <span class="n">problem</span><span class="p">,</span>
+    <span class="n">solution</span><span class="o">=</span><span class="n">solution</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;selected reactions&quot;</span><span class="p">:</span> <span class="n">result_summary</span><span class="p">[</span><span class="s2">&quot;selected_reactions&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;selected prior interactions&quot;</span><span class="p">:</span> <span class="n">result_summary</span><span class="p">[</span><span class="s2">&quot;selected_prior_edges&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;condition-specific interaction records&quot;</span><span class="p">:</span> <span class="n">result_summary</span><span class="p">[</span><span class="s2">&quot;condition_edges&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;total absolute error&quot;</span><span class="p">:</span> <span class="nb">sum</span><span class="p">(</span><span class="n">result_summary</span><span class="p">[</span><span class="s2">&quot;condition_errors&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span>
+    <span class="p">},</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;stored CellNOptDAG results&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>selected reactions                         16.0
+selected prior interactions                16.0
+condition-specific interaction records    144.0
+total absolute error                        3.7
+Name: stored CellNOptDAG results, dtype: float64
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="explore-the-complete-analysis-in-annnet">
+<h2>5. Explore the complete analysis in AnnNet<a class="headerlink" href="#explore-the-complete-analysis-in-annnet" title="Link to this heading">#</a></h2>
+<p>AnnNet now contains the candidate pathway, all experimental conditions, and the fitted results. We can answer biological questions from this object instead of combining solver variables with separate dictionaries.</p>
+<section id="which-candidate-interactions-belong-to-the-fitted-model">
+<h3>Which candidate interactions belong to the fitted model?<a class="headerlink" href="#which-candidate-interactions-belong-to-the-fitted-model" title="Link to this heading">#</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">prior</span></code> and <code class="docutils literal notranslate"><span class="pre">cellnopt_selected</span></code> slices can be compared without losing either version of the pathway.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">selected_prior_ids</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">prior_edge_ids</span><span class="p">)</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">signaling</span><span class="o">.</span><span class="n">slices</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="s2">&quot;cellnopt_selected&quot;</span><span class="p">))</span>
+<span class="n">selected_rows</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">edge_id</span> <span class="ow">in</span> <span class="n">prior_edge_ids</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">edge_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">selected_prior_ids</span><span class="p">:</span>
+        <span class="k">continue</span>
+    <span class="n">sources</span><span class="p">,</span> <span class="n">targets</span> <span class="o">=</span> <span class="n">signaling</span><span class="o">.</span><span class="n">get_edge</span><span class="p">(</span><span class="n">edge_id</span><span class="p">)</span>
+    <span class="n">source_node</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">sources</span><span class="p">))</span>
+    <span class="n">target_node</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">targets</span><span class="p">))</span>
+    <span class="n">source</span> <span class="o">=</span> <span class="n">source_node</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">source_node</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span> <span class="n">source_node</span>
+    <span class="n">target</span> <span class="o">=</span> <span class="n">target_node</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">target_node</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span> <span class="n">target_node</span>
+    <span class="n">sign</span> <span class="o">=</span> <span class="n">signaling</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">get_edge_attrs</span><span class="p">(</span><span class="n">edge_id</span><span class="p">)[</span><span class="s2">&quot;interaction&quot;</span><span class="p">]</span>
+    <span class="n">selected_rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="n">display_name</span><span class="p">[</span><span class="n">source</span><span class="p">],</span>
+            <span class="s2">&quot;sign&quot;</span><span class="p">:</span> <span class="s2">&quot;activates&quot;</span> <span class="k">if</span> <span class="n">sign</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;inhibits&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;target&quot;</span><span class="p">:</span> <span class="n">display_name</span><span class="p">[</span><span class="n">target</span><span class="p">],</span>
+        <span class="p">}</span>
+    <span class="p">)</span>
+
+<span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">selected_rows</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>source</th>
+      <th>sign</th>
+      <th>target</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>TGFA</td>
+      <td>activates</td>
+      <td>EGFR</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>EGFR</td>
+      <td>activates</td>
+      <td>GRB2</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>GRB2</td>
+      <td>activates</td>
+      <td>SOS</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>SOS</td>
+      <td>activates</td>
+      <td>RAS</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>RAS</td>
+      <td>activates</td>
+      <td>RAF1</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>RAF1</td>
+      <td>activates</td>
+      <td>MEK1/2</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>MEK1/2</td>
+      <td>activates</td>
+      <td>ERK1/2</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>ERK1/2</td>
+      <td>activates</td>
+      <td>PRAK</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>PRAK</td>
+      <td>activates</td>
+      <td>HSP27</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>RAS</td>
+      <td>activates</td>
+      <td>PI3K</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>PI3K</td>
+      <td>activates</td>
+      <td>PIP3</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>PIP3</td>
+      <td>activates</td>
+      <td>PDK1</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>PDK1</td>
+      <td>activates</td>
+      <td>AKT</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>IGF1</td>
+      <td>activates</td>
+      <td>IGFR</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>IGFR</td>
+      <td>activates</td>
+      <td>IRS1</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>IRS1</td>
+      <td>activates</td>
+      <td>PI3K</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="how-does-akt-respond-across-the-experiment">
+<h3>How does AKT respond across the experiment?<a class="headerlink" href="#how-does-akt-respond-across-the-experiment" title="Link to this heading">#</a></h3>
+<p>Observed and predicted AKT values are attributes of the same protein in different AnnNet layers. Reading them side by side shows both the perturbation response and the quality of the fit.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">akt_response</span> <span class="o">=</span> <span class="n">vertex_layer_table</span><span class="p">(</span>
+    <span class="n">signaling</span><span class="p">,</span>
+    <span class="n">condition_layers</span><span class="p">,</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;Observed AKT&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;akt&quot;</span><span class="p">,</span> <span class="s2">&quot;observed&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;Predicted AKT&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;akt&quot;</span><span class="p">,</span> <span class="s2">&quot;predicted&quot;</span><span class="p">),</span>
+    <span class="p">},</span>
+<span class="p">)</span>
+
+<span class="n">ax</span> <span class="o">=</span> <span class="n">akt_response</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mf">3.8</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;#9ecae1&quot;</span><span class="p">,</span> <span class="s2">&quot;#2166ac&quot;</span><span class="p">])</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.15</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Boolean activity&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;AKT measurements and predictions read from AnnNet&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ncol</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="n">akt_response</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/98f0187658c862bd5d2c04422571ee4eb778931944ca35d3490b635b535840f3.png" src="../../_images/98f0187658c862bd5d2c04422571ee4eb778931944ca35d3490b635b535840f3.png" />
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Observed AKT</th>
+      <th>Predicted AKT</th>
+    </tr>
+    <tr>
+      <th>condition</th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>Basal</th>
+      <td>0.08</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>TGFA</th>
+      <td>0.85</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>TGFA + EGFRi</th>
+      <td>0.15</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>TGFA + RASi</th>
+      <td>0.25</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>TGFA + MEKi</th>
+      <td>0.75</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>IGF1</th>
+      <td>0.88</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>IGF1 + PI3Ki</th>
+      <td>0.20</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>TGFA + IGF1</th>
+      <td>0.90</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>Dual + MEKi</th>
+      <td>0.82</td>
+      <td>1.0</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="which-reactions-are-active-after-a-perturbation">
+<h3>Which reactions are active after a perturbation?<a class="headerlink" href="#which-reactions-are-active-after-a-perturbation" title="Link to this heading">#</a></h3>
+<p>A reaction may belong to the fitted network but be inactive in a particular condition. The result layers preserve this distinction. For example, MEK inhibition removes activity from the ERK1/2 branch while leaving the route to AKT available.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">active_reactions_in</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">layer</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the distinct CellNOpt reactions active in one AnnNet layer.&quot;&quot;&quot;</span>
+    <span class="n">reactions</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">edge_id</span> <span class="ow">in</span> <span class="n">network</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">layer_edge_set</span><span class="p">(</span><span class="n">layer</span><span class="p">):</span>
+        <span class="n">attributes</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">get_edge_attrs</span><span class="p">(</span><span class="n">edge_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;selected&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;active&quot;</span><span class="p">):</span>
+            <span class="n">reactions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;reaction&quot;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">reactions</span><span class="p">)</span>
+
+
+<span class="n">condition</span> <span class="o">=</span> <span class="s2">&quot;TGFA + MEKi&quot;</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">active_reactions_in</span><span class="p">(</span><span class="n">signaling</span><span class="p">,</span> <span class="n">condition_layers</span><span class="p">[</span><span class="n">condition</span><span class="p">]),</span> <span class="n">name</span><span class="o">=</span><span class="n">condition</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0     egfr -&gt; grb2
+1      grb2 -&gt; sos
+2      pdk1 -&gt; akt
+3     pi3k -&gt; pip3
+4     pip3 -&gt; pdk1
+5    raf1 -&gt; mek12
+6      ras -&gt; pi3k
+7      ras -&gt; raf1
+8       sos -&gt; ras
+9     tgfa -&gt; egfr
+Name: TGFA + MEKi, dtype: object
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="save-the-analysis-and-use-it-again">
+<h2>6. Save the analysis and use it again<a class="headerlink" href="#save-the-analysis-and-use-it-again" title="Link to this heading">#</a></h2>
+<p>AnnNet’s native format preserves the network, annotations, slices, condition layers, and fitting results. To demonstrate that the saved object is useful on its own, we reopen it and read the AKT result again without using the CORNETO model or its solver variables.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">output_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;build&quot;</span><span class="p">)</span>
+<span class="n">output_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">analysis_path</span> <span class="o">=</span> <span class="n">output_dir</span> <span class="o">/</span> <span class="s2">&quot;annnet-cellnopt-liverdream.annnet&quot;</span>
+
+<span class="n">an</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">signaling</span><span class="p">,</span> <span class="n">analysis_path</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">restored</span> <span class="o">=</span> <span class="n">an</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">analysis_path</span><span class="p">)</span>
+
+<span class="n">restored_akt</span> <span class="o">=</span> <span class="n">vertex_layer_table</span><span class="p">(</span>
+    <span class="n">restored</span><span class="p">,</span>
+    <span class="n">condition_layers</span><span class="p">,</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;Observed AKT&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;akt&quot;</span><span class="p">,</span> <span class="s2">&quot;observed&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;Predicted AKT&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;akt&quot;</span><span class="p">,</span> <span class="s2">&quot;predicted&quot;</span><span class="p">),</span>
+    <span class="p">},</span>
+<span class="p">)</span>
+
+<span class="k">assert</span> <span class="n">restored_akt</span><span class="o">.</span><span class="n">equals</span><span class="p">(</span><span class="n">akt_response</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Saved analysis:&quot;</span><span class="p">,</span> <span class="n">analysis_path</span><span class="p">)</span>
+<span class="n">restored_akt</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Saved analysis: build/annnet-cellnopt-liverdream.annnet
+</pre></div>
+</div>
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Observed AKT</th>
+      <th>Predicted AKT</th>
+    </tr>
+    <tr>
+      <th>condition</th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>Basal</th>
+      <td>0.08</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>TGFA</th>
+      <td>0.85</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>TGFA + EGFRi</th>
+      <td>0.15</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>TGFA + RASi</th>
+      <td>0.25</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>TGFA + MEKi</th>
+      <td>0.75</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>IGF1</th>
+      <td>0.88</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>IGF1 + PI3Ki</th>
+      <td>0.20</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>TGFA + IGF1</th>
+      <td>0.90</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>Dual + MEKi</th>
+      <td>0.82</td>
+      <td>1.0</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="what-does-annnet-add">
+<h2>What does AnnNet add?<a class="headerlink" href="#what-does-annnet-add" title="Link to this heading">#</a></h2>
+<p>AnnNet is the central graph object for the analysis. It provides a common place for the biological network, experimental data, and inferred results:</p>
+<ul class="simple">
+<li><p><strong>Proteins keep the same identity across conditions.</strong> AKT is one protein with different measurements and predictions in different layers.</p></li>
+<li><p><strong>The candidate and fitted networks coexist.</strong> Slices make them easy to compare without overwriting the original pathway.</p></li>
+<li><p><strong>Results remain connected to the biology.</strong> Predictions and reaction activities are attached to the proteins, interactions, and conditions they describe.</p></li>
+<li><p><strong>The analysis can be exchanged and extended.</strong> Another researcher can reopen the file, inspect a condition, or add annotations without reconstructing the work from notebook variables.</p></li>
+<li><p><strong>CORNETO methods can share the same graph object.</strong> CORNETO supplies optimization methods; AnnNet supplies the annotated network that those methods read and enrich.</p></li>
+</ul>
+<p>For a small one-off calculation, separate edge lists and tables may be sufficient. AnnNet becomes particularly useful when an analysis contains many conditions, annotations, or results from several methods and needs to remain reusable beyond the notebook that created it.</p>
+</section>
+<section id="limitations-of-this-example">
+<h2>Limitations of this example<a class="headerlink" href="#limitations-of-this-example" title="Link to this heading">#</a></h2>
+<p>The normalized measurements are synthetic, so the selected pathway is not a new biological result. Their variation illustrates an imperfect fit, but it is not an estimate of experimental noise in HepG2 cells. Different perturbations, measurements, or regularization choices could support a different model.</p>
+<p>CellNOptDAG uses the signed protein interactions and condition data needed for this analysis. AnnNet can contain additional annotations and layers that are not used by this particular optimization method; they remain available for other analyses.</p>
+<p>CellNOptDAG requires the selected model to have no feedback loops. A feedback interaction can still be biologically plausible even when it is not included in this fitted model. CORNETO also checks that selected reactions connect experimental inputs to measured outputs. This is a mathematical connectivity requirement, not a biochemical flux or a measure of interaction strength.</p>
+<section id="further-reading">
+<h3>Further reading<a class="headerlink" href="#further-reading" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Rodriguez-Mier <em>et al.</em> <a class="reference external" href="https://doi.org/10.1038/s42256-025-01069-9">Unifying multi-sample network inference from prior knowledge and omics data with CORNETO</a>, <em>Nature Machine Intelligence</em> (2025).</p></li>
+<li><p>Prill <em>et al.</em> <a class="reference external" href="https://pmc.ncbi.nlm.nih.gov/articles/PMC3465072/">Crowdsourcing Network Inference: The DREAM Predictive Signaling Network Challenge</a>.</p></li>
+<li><p>AnnNet documentation: <a class="reference external" href="https://saezlab.github.io/annnet/reference/core/layers/">layers</a>, <a class="reference external" href="https://saezlab.github.io/annnet/reference/core/slices/">slices</a>, and <a class="reference external" href="https://saezlab.github.io/annnet/explanations/io-annnet/">native storage</a>.</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../fba/context-specific-metabolic-omics.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Context-specific metabolic networks from omics</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../carnival/single-sample-carnival-transcriptomics.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Single sample intracellular signalling network inference</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-data-are-used">What data are used?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#create-the-signaling-network-in-annnet">1. Create the signaling network in AnnNet</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inspect-the-candidate-network">Inspect the candidate network</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#add-the-perturbation-experiments-to-annnet">2. Add the perturbation experiments to AnnNet</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fit-the-network-with-corneto">3. Fit the network with CORNETO</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#which-routes-were-selected">Which routes were selected?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#add-the-fitted-model-to-annnet">4. Add the fitted model to AnnNet</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#explore-the-complete-analysis-in-annnet">5. Explore the complete analysis in AnnNet</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#which-candidate-interactions-belong-to-the-fitted-model">Which candidate interactions belong to the fitted model?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-does-akt-respond-across-the-experiment">How does AKT respond across the experiment?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#which-reactions-are-active-after-a-perturbation">Which reactions are active after a perturbation?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#save-the-analysis-and-use-it-again">6. Save the analysis and use it again</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-does-annnet-add">What does AnnNet add?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#limitations-of-this-example">Limitations of this example</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#further-reading">Further reading</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2023-2026, Saez-Rodriguez lab. (EMBL-EBI, Heidelberg University).
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
