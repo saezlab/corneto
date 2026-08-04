@@ -38,7 +38,40 @@ poetry run release v1.2.3
 Pre-release tags use the same flow, for example `v1.2.3-alpha.0`,
 `v1.2.3-beta.0`, or `v1.2.3-rc.0`. The helper confirms that the tree is clean,
 the checkout is on and matches the selected remote's `main`, and the tag does
-not already exist.
+not already exist. It also validates the committed release page before a tag
+can be created.
+
+## Preparing release notes
+
+Add `docs/releases/<tag>.md` and include it in `docs/releases/index.md` before
+opening the public release pull request. Use the tag exactly as written; do not
+rewrite `v1.0.0-rc.4` as `CORNETO 1.0.0 RC4`. Pre-releases include the same
+badge used by the documentation release synchronizer:
+
+```markdown
+# Release v1.0.0-rc.4 {bdg-warning}`Pre-release`
+
+One or two sentences describing the purpose of the release.
+
+## Highlights
+
+- The most important user-facing change.
+- Another important change.
+
+## Additional context
+
+Optional installation, migration, compatibility, or method-specific details.
+```
+
+For a stable release, omit the pre-release badge:
+
+```markdown
+# Release v1.0.0
+```
+
+The release helper and tag publication workflow both enforce the canonical
+title and the `## Highlights` section. This keeps manually prepared pages
+consistent with pages produced by `scripts/sync_releases.py`.
 
 Useful options:
 

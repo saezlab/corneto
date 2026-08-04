@@ -13,6 +13,13 @@ on:
     workflows: ["Publish Python Package"]
     types: [completed]
 
+permissions:
+  contents: write
+
+concurrency:
+  group: docs-pages
+  cancel-in-progress: false
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -83,9 +90,7 @@ jobs:
       - name: Sync GitHub Releases to Docs
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          sleep 30
-          python scripts/sync_releases.py --repo saezlab/corneto --docs-dir docs
+        run: python scripts/sync_releases.py --repo saezlab/corneto --docs-dir docs
 
       - name: Build Docs
         env:
@@ -93,57 +98,46 @@ jobs:
           DOCS_BASE_URL: https://corneto.org
         run: poetry run sphinx-build -W --keep-going -b html docs docs/_build/html
 
-      - name: Deploy “stable” docs
-        if: ${{ steps.set_version.outputs.version_folder == 'stable' }}
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs/_build/html
-          destination_dir: stable
-          keep_files: true
-
-      - name: Deploy versioned docs for release tag
-        if: ${{ steps.set_version.outputs.version_folder != 'stable' }}
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs/_build/html
-          destination_dir: ${{ steps.set_version.outputs.version_folder }}
-          keep_files: true
-
-      - name: Prepare root redirect
+      - name: Check out gh-pages
         run: |
-          mkdir -p temp_root
-          touch temp_root/.nojekyll
-          cp docs/custom-index.html temp_root/index.html
-      - name: Generate switcher.json
+          set -euo pipefail
+          git fetch origin gh-pages:refs/remotes/origin/gh-pages
+          git worktree add --detach gh-pages-worktree refs/remotes/origin/gh-pages
+
+      - name: Prepare Pages tree
         env:
           DOCS_BASE_URL: https://corneto.org
         run: |
-          python scripts/generate_switcher.py --output temp_root/switcher.json
-
-      - name: Deploy root redirect
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: temp_root
-          destination_dir: ./
-          keep_files: true
-
-      - name: Patch switcher URL in published HTML
-        run: |
-          git fetch origin gh-pages
-          git worktree add gh-pages-worktree gh-pages
-          python scripts/patch_switcher_urls.py \
-            --root gh-pages-worktree \
-            --new-url https://corneto.org/switcher.json
-          cd gh-pages-worktree
-          if [ -n "$(git status --porcelain)" ]; then
-            git config user.name "github-actions[bot]"
-            git config user.email "github-actions[bot]@users.noreply.github.com"
-            git add -A
-            git commit -m "chore: update switcher json url"
-            git push origin gh-pages
-          else
-            echo "No switcher URL changes detected."
+          set -euo pipefail
+          root_args=()
+          if [ "${{ steps.set_version.outputs.version_folder }}" = "stable" ]; then
+            root_args+=(--update-root)
           fi
+          poetry run python scripts/prepare_docs_pages.py \
+            --pages-dir gh-pages-worktree \
+            --build-dir docs/_build/html \
+            --landing-dir docs/landing \
+            --version-folder "${{ steps.set_version.outputs.version_folder }}" \
+            --base-url "${DOCS_BASE_URL}" \
+            "${root_args[@]}"
+
+      - name: Commit and deploy Pages tree
+        env:
+          VERSION_FOLDER: ${{ steps.set_version.outputs.version_folder }}
+        run: |
+          set -euo pipefail
+          cd gh-pages-worktree
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "No Pages changes to deploy."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "docs: deploy ${VERSION_FOLDER}"
+          git fetch origin gh-pages
+          if ! git merge --ff-only origin/gh-pages; then
+            echo "gh-pages advanced during deployment; refusing to overwrite it." >&2
+            exit 1
+          fi
+          git push origin HEAD:gh-pages

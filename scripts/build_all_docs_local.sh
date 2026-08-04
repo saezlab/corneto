@@ -133,7 +133,9 @@ for tag in $(git tag -l "v*" --sort=v:refname); do
 done
 
 echo "==> Updating root index and switcher"
-cp "${repo_root}/docs/custom-index.html" "${pages_wt}/index.html"
+cp "${repo_root}/docs/landing/index.html" "${pages_wt}/index.html"
+mkdir -p "${pages_wt}/assets"
+rsync -a --delete "${repo_root}/docs/landing/assets/" "${pages_wt}/assets/"
 touch "${pages_wt}/.nojekyll"
 "${poetry_bin}" run python "${repo_root}/scripts/generate_switcher.py" \
   --output "${pages_wt}/switcher.json" \
