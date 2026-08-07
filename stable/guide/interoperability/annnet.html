@@ -65,7 +65,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'guide/interoperability/annnet';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1785864839';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1786146192';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'stable';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
@@ -537,7 +537,7 @@ all other CORNETO use cases.</p>
 </pre></div>
 </div>
 <p>Directed binary edges and hyperedges, parallel edges, endpoint coefficients,
-and ordinary graph, vertex, and edge attributes are preserved. CORNETO edge
+and ordinary graph, node, and edge attributes are preserved. CORNETO edge
 indices become AnnNet IDs such as <code class="docutils literal notranslate"><span class="pre">corneto_edge_0</span></code>. When converting in the
 other direction, the original AnnNet ID is stored as the CORNETO edge
 attribute <code class="docutils literal notranslate"><span class="pre">_annnet_edge_id</span></code>.</p>
@@ -549,8 +549,8 @@ hypergraphs normally used by CORNETO:</p>
 <ul class="simple">
 <li><p>AnnNet layers, slice membership, edge-entities, and flexible direction
 policies are not reproduced in CORNETO.</p></li>
-<li><p>Vertex identifiers are converted to strings for AnnNet. A collision after
-conversion raises an error.</p></li>
+<li><p>A CORNETO vertex identifier becomes an AnnNet node id, as a string. A
+collision after conversion raises an error.</p></li>
 <li><p>CORNETO edges with an empty source or target set are not supported.</p></li>
 <li><p>An undirected hyperedge is converted as one member set. Its original
 CORNETO source/target partition cannot be recovered; converting it back uses
