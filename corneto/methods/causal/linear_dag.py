@@ -33,7 +33,7 @@ class LinearDAGDiscovery(FlowMethod):
 
     Args:
         lambda_edges: Penalty for every selected prior edge.
-        coefficient_bound: Absolute bound on linear edge coefficients.
+        coefficient_bound: Absolute bound on raw linear edge coefficients.
         fit_intercept: Whether to fit one intercept per vertex.
         intercept_bound: Absolute bound on vertex intercepts.
         max_parents: Optional global or vertex-specific parent limit.
@@ -45,10 +45,21 @@ class LinearDAGDiscovery(FlowMethod):
         sample_weights: Optional positive loss weight per sample.
         enforce_signs: Constrain coefficients using numeric PKN interactions
             ``+1`` and ``-1`` when present.
+        coefficient_support: ``"exact"`` requires every selected edge to have
+            a fitted coefficient with magnitude at least ``min_abs_coefficient``;
+            ``"structural"`` permits selected connector edges with zero
+            coefficients.
+        min_abs_coefficient: Minimum absolute fitted coefficient for selected
+            edges in ``"exact"`` mode, in normalized coefficient units. The
+            normalized coefficient for ``u -> v`` is
+            ``beta[u -> v] * scale[u] / scale[v]``.
+            The default ``0.25`` is a modeling assumption about normalized
+            direct effects, not a solver tolerance or a guarantee of a
+            nonzero total intervention effect.
         interaction_attribute: Edge attribute containing PKN interaction signs.
         intervention_key: Feature metadata key marking perfect interventions.
         flow_capacity: Upper bound on every commodity flow. By default, the
-            number of PKN edges is used.
+            number of PKN edges multiplied by ``flow_epsilon`` is used.
         flow_epsilon: Minimum positive flow on every used biological edge.
         min_commodity_coverage: Minimum fraction of intervention occurrences
             that must have a selected-edge path to a measured, non-intervened
@@ -83,11 +94,16 @@ class LinearDAGDiscovery(FlowMethod):
         min_commodity_coverage: float = 0.0,
         lambda_unexplained: float = 0.0,
         backend: Optional[Backend] = None,
+        coefficient_support: str = "exact",
+        min_abs_coefficient: float = 0.25,
     ):
         self._validate_nonnegative(lambda_edges, "lambda_edges")
         self._validate_positive(coefficient_bound, "coefficient_bound")
         self._validate_positive(intercept_bound, "intercept_bound")
         self._validate_positive(flow_epsilon, "flow_epsilon")
+        if coefficient_support not in {"exact", "structural"}:
+            raise ValueError("coefficient_support must be 'exact' or 'structural'.")
+        self._validate_positive(min_abs_coefficient, "min_abs_coefficient")
         if flow_capacity is not None:
             self._validate_positive(flow_capacity, "flow_capacity")
             if float(flow_capacity) < float(flow_epsilon):
@@ -134,6 +150,8 @@ class LinearDAGDiscovery(FlowMethod):
         self.vertex_weights = dict(vertex_weights or {})
         self.sample_weights = dict(sample_weights or {})
         self.enforce_signs = enforce_signs
+        self.coefficient_support = coefficient_support
+        self.min_abs_coefficient = float(min_abs_coefficient)
         self.interaction_attribute = interaction_attribute
         self.intervention_key = intervention_key
         self.flow_capacity = None if flow_capacity is None else float(flow_capacity)
@@ -149,6 +167,7 @@ class LinearDAGDiscovery(FlowMethod):
         self._observed = np.empty((0, 0), dtype=bool)
         self._valid_residual = np.empty((0, 0), dtype=bool)
         self._loss_scales = np.empty((0,))
+        self._coefficient_scales = np.empty((0,))
         self._observation_weights = np.empty((0, 0))
         self._intervened = np.empty((0, 0), dtype=bool)
         self._edge_sources = np.empty((0,), dtype=int)
@@ -308,6 +327,23 @@ class LinearDAGDiscovery(FlowMethod):
                     scale = float(np.std(fitted_values))
                     if np.isfinite(scale) and scale > np.finfo(float).eps:
                         self._loss_scales[vertex_index] = scale
+        predictor_scale_mask = np.zeros_like(self._observed)
+        for source, target in zip(self._edge_sources, self._edge_targets, strict=True):
+            predictor_scale_mask[source, :] |= self._valid_residual[target, :] & self._observed[source, :]
+
+        # A variable can appear on either side of an equation. Use both roles
+        # so that its coefficient scale transforms with its measurement units
+        # even when it is a terminal response or has no usable child equation.
+        coefficient_scale_mask = self._valid_residual | predictor_scale_mask
+        self._coefficient_scales = np.ones((graph.num_vertices,), dtype=float)
+        for vertex_index in range(graph.num_vertices):
+            coefficient_values = self._values[vertex_index, coefficient_scale_mask[vertex_index, :]]
+            if coefficient_values.size:
+                scale = float(np.std(coefficient_values)) if coefficient_values.size > 1 else 0.0
+                if not np.isfinite(scale) or scale <= np.finfo(float).eps:
+                    scale = float(np.max(np.abs(coefficient_values)))
+                if np.isfinite(scale) and scale > np.finfo(float).eps:
+                    self._coefficient_scales[vertex_index] = scale
 
         intervened_union = self._intervened.any(axis=1)
         measured_responses = self._observed & ~self._intervened
@@ -325,10 +361,6 @@ class LinearDAGDiscovery(FlowMethod):
         for sample_index in range(len(self._sample_names)):
             source_indices = np.flatnonzero(self._intervened[:, sample_index])
             sink_indices = np.flatnonzero(measured_responses[:, sample_index])
-            if source_indices.size and not sink_indices.size:
-                raise ValueError(
-                    f"Sample {self._sample_names[sample_index]!r} has interventions but no eligible sinks."
-                )
             sink_vertices = [graph.V[index] for index in sink_indices]
             sink_edges = [self._layout.outflow_edges[vertex] for vertex in sink_vertices]
             for source_index in source_indices:
@@ -342,7 +374,7 @@ class LinearDAGDiscovery(FlowMethod):
         num_flow_edges = self._layout.graph.num_edges
         flow_capacity = self.flow_capacity
         if flow_capacity is None:
-            flow_capacity = float(max(graph.num_edges, 1))
+            flow_capacity = float(max(graph.num_edges, 1)) * self.flow_epsilon
         if flow_capacity < self.flow_epsilon:
             raise ValueError("Resolved flow capacity must be greater than or equal to flow_epsilon.")
         self._resolved_flow_capacity = float(flow_capacity)
@@ -354,6 +386,8 @@ class LinearDAGDiscovery(FlowMethod):
         ):
             self._flow_ub[source_edge, commodity_index] = self._resolved_flow_capacity
             self._flow_ub[np.asarray(sink_edges, dtype=int), commodity_index] = self._resolved_flow_capacity
+            intervened_targets = self._intervened[self._edge_targets, self._commodity_samples[commodity_index]]
+            self._flow_ub[np.flatnonzero(intervened_targets), commodity_index] = 0.0
         return self._layout.graph, data.copy()
 
     def get_flow_bounds(self, graph: BaseGraph, data: Data):
@@ -422,9 +456,12 @@ class LinearDAGDiscovery(FlowMethod):
                 active = commodity_active[commodity_index]
                 problem += flow[source_edge, commodity_index] >= self.flow_epsilon * active
                 problem += flow[source_edge, commodity_index] <= self._resolved_flow_capacity * active
-                sink_index = np.asarray(sink_edges, dtype=int)
-                problem += flow[sink_index, commodity_index].sum() >= self.flow_epsilon * active
-                problem += flow[sink_index, commodity_index] <= self._resolved_flow_capacity * active
+                if sink_edges:
+                    sink_index = np.asarray(sink_edges, dtype=int)
+                    problem += flow[sink_index, commodity_index].sum() >= self.flow_epsilon * active
+                    problem += flow[sink_index, commodity_index] <= self._resolved_flow_capacity * active
+                else:
+                    problem += active == 0
 
             minimum_active = int(np.ceil(self.min_commodity_coverage * num_commodities))
             if minimum_active:
@@ -439,14 +476,41 @@ class LinearDAGDiscovery(FlowMethod):
                 name="commodity_coverage",
             )
 
-        edge_coefficient = self.backend.Variable(
-            "edge_coefficient",
-            (num_edges,),
-            lb=-self.coefficient_bound,
-            ub=self.coefficient_bound,
+        coefficient_normalization = (
+            self._coefficient_scales[self._edge_sources] / self._coefficient_scales[self._edge_targets]
         )
-        problem += edge_coefficient <= self.coefficient_bound * edge_selected
-        problem += edge_coefficient >= -self.coefficient_bound * edge_selected
+        if self.coefficient_support == "exact":
+            # Translate the raw coefficient bound to normalized units. This
+            # preserves the raw estimator bound without imposing a second
+            # normalized upper bound.
+            normalized_bound = self.coefficient_bound * coefficient_normalization
+            normalized_coefficient = self.backend.Variable(
+                "edge_coefficient_normalized",
+                (num_edges,),
+                lb=-normalized_bound,
+                ub=normalized_bound,
+            )
+            edge_coefficient = normalized_coefficient.multiply(1.0 / coefficient_normalization)
+            problem.register("edge_coefficient", edge_coefficient)
+            problem += self.backend.ExactSupport(
+                normalized_coefficient,
+                selected=edge_selected,
+                epsilon=self.min_abs_coefficient,
+                name="coefficient_support",
+                positive_name="coefficient_support_positive",
+                negative_name="coefficient_support_negative",
+            )
+        else:
+            edge_coefficient = self.backend.Variable(
+                "edge_coefficient",
+                (num_edges,),
+                lb=-self.coefficient_bound,
+                ub=self.coefficient_bound,
+            )
+            normalized_coefficient = edge_coefficient.multiply(coefficient_normalization)
+            problem.register("edge_coefficient_normalized", normalized_coefficient)
+            problem += edge_coefficient <= self.coefficient_bound * edge_selected
+            problem += edge_coefficient >= -self.coefficient_bound * edge_selected
 
         if self.enforce_signs:
             positive = []
@@ -526,7 +590,7 @@ class LinearDAGDiscovery(FlowMethod):
             problem.add_objective(fit, name="absolute_fit")
         else:
             standardized_residual = fitted_residual.multiply(np.sqrt(observation_weights) / scales)
-            fit = (standardized_residual**2).sum()
+            fit = standardized_residual.norm(2) ** 2
             problem.add_objective(fit, name="squared_fit")
 
         if self.lambda_edges:
@@ -542,25 +606,89 @@ class LinearDAGDiscovery(FlowMethod):
         """Return selected edge indices in the original PKN."""
         if self.problem is None:
             raise ValueError("The method has not been built.")
+        self.validate_solution_support()
         values = self.problem.expr.edge_selected.value
         if values is None:
             raise ValueError("The problem has not been solved.")
         return np.flatnonzero(np.asarray(values).reshape(-1) > threshold)
 
+    def validate_solution_support(self) -> None:
+        """Reject solved exact-support models that violate coefficient support."""
+        if self.problem is None:
+            raise ValueError("The method has not been built.")
+        selected_values = self.problem.expr.edge_selected.value
+        coefficient_values = self.problem.expr.edge_coefficient.value
+        if selected_values is None or coefficient_values is None:
+            raise ValueError("The problem has not been solved.")
+        if self.coefficient_support != "exact":
+            return
+
+        selected = np.asarray(selected_values).reshape(-1) > 0.5
+        coefficients = np.asarray(coefficient_values).reshape(-1)
+        normalized = coefficients * (
+            self._coefficient_scales[self._edge_sources] / self._coefficient_scales[self._edge_targets]
+        )
+        tolerance = min(1e-9, self.min_abs_coefficient * 0.5)
+        magnitude = np.abs(normalized)
+        invalid_selected = selected & (magnitude < self.min_abs_coefficient - tolerance)
+        invalid_unselected = ~selected & (magnitude > tolerance)
+        invalid = invalid_selected | invalid_unselected
+        if np.any(invalid):
+            edges = np.flatnonzero(invalid).tolist()
+            raise ValueError(
+                "Solved exact coefficient support is invalid for edges "
+                f"{edges!r}: selected edges must have normalized magnitude at least "
+                f"min_abs_coefficient={self.min_abs_coefficient:g} and unselected "
+                "edges must have zero normalized coefficients."
+            )
+
     def get_edge_usage(self, threshold: float = 0.5) -> np.ndarray:
         """Return the edge-by-commodity support matrix."""
         if self.problem is None:
             raise ValueError("The method has not been built.")
+        self.validate_solution_support()
         values = self.problem.expr.edge_used_by_commodity.value
         if values is None:
             raise ValueError("The problem has not been solved.")
         return np.asarray(values).reshape((self._original_graph.num_edges, len(self._commodity_sources))) > threshold
 
     def get_solution_graph(self, threshold: float = 0.5):
-        """Return the selected subgraph of the original PKN."""
+        """Return the selected PKN subgraph with fitted edge metadata.
+
+        Each solution edge receives ``coefficient`` and
+        ``normalized_coefficient`` attributes. The configured interaction
+        attribute is set to the sign of the fitted coefficient and, when the
+        original graph provided that attribute, its prior value is preserved
+        as ``prior_<interaction_attribute>``. Structural-support edges whose
+        fitted coefficient is numerically zero receive ``connector=True``.
+        """
         if self._original_graph is None:
             raise ValueError("The method has not been built.")
-        return self._original_graph.edge_subgraph(self.get_selected_edge_indices(threshold))
+        selected = self.get_selected_edge_indices(threshold)
+        extract_keep_order = getattr(self._original_graph, "_extract_subgraph_keep_order", None)
+        if callable(extract_keep_order):
+            solution_graph = extract_keep_order(edges=selected)
+        else:
+            solution_graph = self._original_graph.edge_subgraph(selected)
+
+        coefficients = np.asarray(self.problem.expr.edge_coefficient.value).reshape(-1)
+        normalized = coefficients * (
+            self._coefficient_scales[self._edge_sources] / self._coefficient_scales[self._edge_targets]
+        )
+        for solution_index, edge_index in enumerate(selected):
+            attributes = solution_graph.get_attr_edge(solution_index)
+            if self.interaction_attribute in attributes:
+                attributes[f"prior_{self.interaction_attribute}"] = attributes[self.interaction_attribute]
+            inferred_interaction = int(np.sign(coefficients[edge_index]))
+            attributes[self.interaction_attribute] = inferred_interaction
+            attributes["coefficient"] = float(coefficients[edge_index])
+            attributes["normalized_coefficient"] = float(normalized[edge_index])
+            attributes["inferred_interaction"] = inferred_interaction
+            attributes["connector"] = bool(
+                self.coefficient_support == "structural"
+                and np.isclose(coefficients[edge_index], 0.0, atol=1e-9, rtol=0.0)
+            )
+        return solution_graph
 
     @staticmethod
     def name() -> str:

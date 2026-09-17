@@ -1379,28 +1379,46 @@ class Backend(abc.ABC):
         *,
         selected: Optional[CExpression] = None,
         indexes: Optional[Union[int, slice, Tuple, List, np.ndarray]] = None,
-        epsilon: float = 1.0,
+        epsilon: Union[float, List[float], np.ndarray] = 1.0,
         nonnegative: bool = False,
         name: Optional[str] = None,
         positive_name: Optional[str] = None,
         negative_name: Optional[str] = None,
     ) -> ProblemDef:
-        """Link a bounded value exactly to binary structural support.
+        """Link a bounded value to binary structural support with a gap.
 
         ``selected == 0`` forces the value to zero. ``selected == 1`` forces
         its magnitude to be at least ``epsilon``. For nonnegative values this
         uses one binary per entry. Signed values use mutually exclusive
         positive and negative binaries and expose their sum as ``selected``.
 
-        An existing selector can be supplied to avoid introducing a redundant
-        binary variable, which is useful when a method already has a shared
-        structural edge-selection variable.
+        ``epsilon`` may be a scalar or an array explicitly broadcastable to
+        the selected value shape. "Exact" refers to this mathematical
+        minimum-magnitude gap; it is not a solver-tolerance guarantee, and
+        values smaller than the requested gap may still be returned by a
+        numerically inaccurate solve and should be checked by the caller.
+
+        An existing binary selector symbol can be supplied to avoid
+        introducing a redundant binary variable, which is useful when a
+        method already has a shared structural edge-selection variable. An
+        arbitrary selector expression is linked to an auxiliary binary
+        selector, so fractional expression values make the model infeasible
+        instead of relaxing the support constraints.
         """
-        if isinstance(epsilon, bool) or not isinstance(epsilon, numbers.Real):
-            raise TypeError("epsilon must be a finite positive number.")
-        epsilon = float(epsilon)
-        if not np.isfinite(epsilon) or epsilon <= 0:
-            raise ValueError("epsilon must be a finite positive number.")
+        if isinstance(epsilon, (bool, np.bool_)):
+            raise TypeError("epsilon must be a finite positive number or array.")
+        epsilon_input = np.asarray(epsilon)
+        if epsilon_input.dtype.kind in {"b", "c", "U", "S"}:
+            raise TypeError("epsilon must be a finite positive number or array.")
+        if epsilon_input.dtype.kind == "O" and any(
+            isinstance(value, (bool, np.bool_)) or not isinstance(value, numbers.Real) for value in epsilon_input.flat
+        ):
+            raise TypeError("epsilon must be a finite positive number or array.")
+        try:
+            epsilon_input = np.asarray(epsilon, dtype=float)
+        except (TypeError, ValueError) as error:
+            raise TypeError("epsilon must be a finite positive number or array.") from error
+
         if V._provided_lb is None or V._provided_ub is None:
             raise ValueError(f"The continuous variable {V.name} is unbounded, exact support cannot be created.")
 
@@ -1417,24 +1435,54 @@ class Backend(abc.ABC):
                 ub = ub.reshape(S.shape)
             else:
                 ub = np.broadcast_to(ub, S.shape)
+        if not np.all(np.isfinite(lb)) or not np.all(np.isfinite(ub)):
+            raise ValueError("ExactSupport requires finite lower and upper bounds.")
+        if np.any(lb > ub):
+            raise ValueError("ExactSupport requires lower bounds not to exceed upper bounds.")
+        try:
+            epsilon_values = np.broadcast_to(epsilon_input, S.shape)
+        except ValueError as error:
+            raise ValueError(
+                f"epsilon with shape {epsilon_input.shape} cannot be broadcast to selected value shape {S.shape}."
+            ) from error
+        if not np.all(np.isfinite(epsilon_values)) or np.any(epsilon_values <= 0):
+            raise ValueError("epsilon must be a finite positive number or array.")
 
         support_name = name or f"{V.name}_support"
         constraints = []
+        selector = None
+        if selected is not None:
+            if not isinstance(selected, CExpression):
+                raise TypeError("selected must be a binary-valued CExpression.")
+            if selected.shape != S.shape:
+                raise ValueError(f"selected has shape {selected.shape}; expected {S.shape}.")
+            if isinstance(selected, CSymbol):
+                if selected._vartype != VarType.BINARY:
+                    raise TypeError("selected must be a binary-valued selector.")
+                selector = selected
+            else:
+                selector = self.Variable(
+                    f"{support_name}_selector",
+                    S.shape,
+                    0,
+                    1,
+                    vartype=VarType.BINARY,
+                )
+                constraints.append(selector == selected)
+
         if nonnegative:
             if np.any(lb < 0):
                 raise ValueError("ExactSupport(..., nonnegative=True) requires nonnegative lower bounds.")
             if selected is None:
-                selected = self.Variable(support_name, S.shape, 0, 1, vartype=VarType.BINARY)
-            elif selected.shape != S.shape:
-                raise ValueError(f"selected has shape {selected.shape}; expected {S.shape}.")
+                selector = self.Variable(support_name, S.shape, 0, 1, vartype=VarType.BINARY)
 
-            possible = np.asarray(ub >= epsilon, dtype=float)
+            possible = np.asarray(ub >= epsilon_values, dtype=float)
             if not np.all(possible):
-                constraints.append(selected.multiply(1 - possible) == 0)
-            constraints += [S >= selected * epsilon, S <= selected.multiply(ub)]
+                constraints.append(selector.multiply(1 - possible) == 0)
+            constraints += [S >= selector.multiply(epsilon_values), S <= selector.multiply(ub)]
             problem = self.Problem(constraints)
-            if selected.name != support_name:
-                problem.register(support_name, selected)
+            if selector.name != support_name:
+                problem.register(support_name, selector)
             return problem
 
         if positive_name is None:
@@ -1444,22 +1492,20 @@ class Backend(abc.ABC):
         positive = self.Variable(positive_name, S.shape, 0, 1, vartype=VarType.BINARY)
         negative = self.Variable(negative_name, S.shape, 0, 1, vartype=VarType.BINARY)
         support = positive + negative
-        if selected is not None:
-            if selected.shape != S.shape:
-                raise ValueError(f"selected has shape {selected.shape}; expected {S.shape}.")
-            constraints.append(support == selected)
-            support = selected
+        if selector is not None:
+            constraints.append(support == selector)
+            support = selector
 
-        positive_possible = np.asarray(ub >= epsilon, dtype=float)
-        negative_possible = np.asarray(lb <= -epsilon, dtype=float)
+        positive_possible = np.asarray(ub >= epsilon_values, dtype=float)
+        negative_possible = np.asarray(lb <= -epsilon_values, dtype=float)
         if not np.all(positive_possible):
             constraints.append(positive.multiply(1 - positive_possible) == 0)
         if not np.all(negative_possible):
             constraints.append(negative.multiply(1 - negative_possible) == 0)
         constraints += [
             positive + negative <= 1,
-            S >= negative.multiply(lb) + positive * epsilon,
-            S <= positive.multiply(ub) - negative * epsilon,
+            S >= negative.multiply(lb) + positive.multiply(epsilon_values),
+            S <= positive.multiply(ub) - negative.multiply(epsilon_values),
         ]
         problem = self.Problem(constraints)
         if support.name != support_name:

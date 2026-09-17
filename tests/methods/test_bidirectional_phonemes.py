@@ -350,9 +350,10 @@ def test_cvxpy_formulation_selects_only_mapped_biological_blocks():
 
     boolean_count = sum(variable.size for variable in cvxpy_problem.variables() if variable.attributes["boolean"])
     # 4 directional biological supports + 2 edge/condition unions +
-    # 6 anchor selectors + 6 directional vertex selectors + 3 vertex unions.
-    assert boolean_count == 21
-    assert cvxpy_problem.size_metrics.num_scalar_variables == 38
+    # 6 anchor selectors + 6 directional vertex selectors + 3 vertex unions +
+    # 2 auxiliary selectors for the supplied sliced expressions.
+    assert boolean_count == 23
+    assert cvxpy_problem.size_metrics.num_scalar_variables == 40
     assert "_flow_ipos" not in problem.expr
     assert "_flow_ineg" not in problem.expr
     assert problem.expr.edge_selected_directional.shape == (2, 2)

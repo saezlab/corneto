@@ -1069,6 +1069,67 @@ def test_exact_support_reuses_nonnegative_selector(backend):
     assert [symbol.name for symbol in binary_symbols] == ["supplied_selector"]
 
 
+def test_exact_support_broadcasts_per_entry_epsilon(backend):
+    """ExactSupport should apply explicitly broadcastable gaps elementwise."""
+    epsilon = np.array([[0.25, 0.5]])
+    value = backend.Variable("array_supported_value", (2, 2), lb=0, ub=5)
+    problem = backend.Problem()
+    problem += backend.ExactSupport(
+        value,
+        epsilon=epsilon,
+        nonnegative=True,
+        name="array_support",
+    )
+    problem += problem.expr.array_support == np.ones((2, 2))
+    problem += value == np.broadcast_to(epsilon, value.shape)
+    problem.solve()
+
+    assert np.allclose(np.asarray(value.value), np.broadcast_to(epsilon, value.shape), atol=1e-8)
+
+
+def test_exact_support_rejects_nonbroadcastable_epsilon_shape(backend):
+    """ExactSupport should not reinterpret same-sized epsilon arrays by reshaping."""
+    value = backend.Variable("shape_checked_value", (3, 2), lb=-5, ub=5)
+
+    with pytest.raises(ValueError, match="broadcast"):
+        backend.ExactSupport(value, epsilon=np.ones((2, 3)))
+
+
+@pytest.mark.parametrize("lower, upper", [(-np.inf, 5), (-5, np.inf)])
+def test_exact_support_requires_finite_bounds(backend, lower, upper):
+    """ExactSupport should reject infinite bounds even when they were supplied."""
+    value = backend.Variable("finite_bound_value", (2,), lb=lower, ub=upper)
+
+    with pytest.raises(ValueError, match="finite"):
+        backend.ExactSupport(value, epsilon=1)
+
+
+@pytest.mark.parametrize("nonnegative", [False, True])
+def test_exact_support_requires_binary_supplied_selector(backend, nonnegative):
+    """A supplied selector must not relax ExactSupport into a continuous formulation."""
+    value = backend.Variable("selector_value", (2,), lb=0 if nonnegative else -5, ub=5)
+    selector = backend.Variable("continuous_selector", (2,), lb=0, ub=1)
+
+    with pytest.raises(TypeError, match="binary"):
+        backend.ExactSupport(value, selected=selector, epsilon=1, nonnegative=nonnegative)
+
+
+def test_exact_support_rejects_fractional_selector_expression(backend):
+    """A fractional selector expression must be linked to a binary selector."""
+    value = backend.Variable("fractional_selector_value", (1,), lb=0, ub=5)
+    binary = backend.Variable("selector_binary", (1,), vartype=VarType.BINARY)
+
+    problem = backend.Problem()
+    problem += backend.ExactSupport(value, selected=0.5 * binary, epsilon=1, nonnegative=True)
+    problem += binary == 1
+    if isinstance(backend, PicosBackend):
+        result = problem.solve(solver="glpk", primals=None)
+    else:
+        result = problem.solve()
+
+    assert str(result.status).lower() in {"infeasible", "infeasible_or_unbounded"}
+
+
 def test_exact_support_signed_value(backend):
     """Signed exact support should expose mutually exclusive directions."""
     value = backend.Variable("signed_value", (2,), lb=-4, ub=4)

@@ -318,14 +318,15 @@ def test_cvxpy_formulation_uses_only_required_integer_variables():
     integer_count = sum(variable.size for variable in cvxpy_problem.variables() if variable.attributes["integer"])
     continuous_count = cvxpy_problem.size_metrics.num_scalar_variables - boolean_count - integer_count
 
-    # E shared selectors + E*K edge/commodity selectors. Optional commodity
-    # activity binaries are omitted when no coverage term is requested.
-    assert boolean_count == 2 + 2 * 2
+    # E shared selectors + E*K edge/commodity selectors + two coefficient-sign
+    # binaries per edge from the default exact coefficient support. Optional
+    # commodity activity binaries are omitted when no coverage term is requested.
+    assert boolean_count == 2 + 2 * 2 + 2 * 2
     assert integer_count == 0
     # (E + 3 boundary edges)*K flows + V DAG layers + E coefficients
     # + one L1 residual for the sole non-intervened equation.
     assert continuous_count == 5 * 2 + 3 + 2 + 1
-    assert cvxpy_problem.size_metrics.num_scalar_variables == 22
+    assert cvxpy_problem.size_metrics.num_scalar_variables == 26
 
 
 def test_linear_dag_guide_notebook_executes_every_cell():
