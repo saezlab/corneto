@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from numbers import Real
 from typing import Any, Mapping, Optional
 
@@ -23,6 +24,83 @@ from corneto.methods._network_utils import BoundaryFlowLayout, augment_with_boun
 __all__ = ["LinearDAGDiscovery"]
 
 
+_MISSING = object()
+
+
+@dataclass(frozen=True)
+class _InterventionDesign:
+    """Validated intervention semantics aligned to vertex-by-sample arrays.
+
+    ``mapping`` maps estimated shift parameters to a Fortran-order flattened
+    vertex-by-sample matrix.  Its rows are therefore indexed as
+    ``vertex_index + num_vertices * sample_index``.  Keeping this indexing in
+    one object avoids duplicating the grouping and shape bookkeeping in the
+    optimization model.
+    """
+
+    hard: np.ndarray
+    shift: np.ndarray
+    known_shift: np.ndarray
+    mapping: csr_matrix
+    effect_keys: tuple[tuple[Any, Any], ...]
+
+    @classmethod
+    def build(
+        cls,
+        vertex_keys: tuple[Any, ...],
+        num_vertices: int,
+        num_samples: int,
+        annotations: Mapping[tuple[int, int], tuple[str, Any, Any]],
+    ) -> "_InterventionDesign":
+        hard = np.zeros((num_vertices, num_samples), dtype=bool)
+        shift = np.zeros((num_vertices, num_samples), dtype=bool)
+        known_shift = np.zeros((num_vertices, num_samples), dtype=float)
+        effect_indices: dict[tuple[int, Any], int] = {}
+        effect_keys: list[tuple[Any, Any]] = []
+        mapping_rows: list[int] = []
+        mapping_columns: list[int] = []
+
+        for (vertex_index, sample_index), (kind, shift_value, group) in annotations.items():
+            if kind == "hard":
+                hard[vertex_index, sample_index] = True
+                continue
+            if kind != "shift":
+                continue
+
+            shift[vertex_index, sample_index] = True
+            if shift_value is not None:
+                known_shift[vertex_index, sample_index] = float(shift_value)
+                continue
+            if group is _MISSING or group is None:
+                raise ValueError("Estimated shift interventions require a non-null intervention group.")
+            try:
+                effect_key = (vertex_index, group)
+                effect_index = effect_indices.get(effect_key)
+            except TypeError as error:
+                raise TypeError("Intervention groups must be hashable.") from error
+            if effect_index is None:
+                effect_index = len(effect_keys)
+                effect_indices[effect_key] = effect_index
+                effect_keys.append((vertex_keys[vertex_index], group))
+            mapping_rows.append(vertex_index + num_vertices * sample_index)
+            mapping_columns.append(effect_index)
+
+        mapping = csr_matrix(
+            (
+                np.ones(len(mapping_rows), dtype=float),
+                (mapping_rows, mapping_columns),
+            ),
+            shape=(num_vertices * num_samples, len(effect_keys)),
+        )
+        return cls(
+            hard=hard,
+            shift=shift,
+            known_shift=known_shift,
+            mapping=mapping,
+            effect_keys=tuple(effect_keys),
+        )
+
+
 class LinearDAGDiscovery(FlowMethod):
     """Discover a sparse linear DAG inside a directed prior network.
 
@@ -36,6 +114,14 @@ class LinearDAGDiscovery(FlowMethod):
     missing in a sample, the corresponding child equation is also excluded;
     this conservative complete-equation rule prevents missing predictors from
     being silently treated as zero while preserving a linear formulation.
+
+    Feature metadata may declare ``intervention="shift"`` for an additive
+    soft intervention. Its structural equation remains in the loss and its
+    measured value remains a flow source. Provide ``shift`` (or
+    ``intervention_shift``) for a known effect, or provide
+    ``intervention_group`` to estimate one bounded effect shared by its
+    replicates. The legacy ``intervened=True`` metadata remains a hard
+    intervention.
 
     Args:
         lambda_edges: Penalty for every selected prior edge.
@@ -51,6 +137,17 @@ class LinearDAGDiscovery(FlowMethod):
         sample_weights: Optional positive loss weight per sample.
         enforce_signs: Constrain coefficients using numeric PKN interactions
             ``+1`` and ``-1`` when present.
+        intervention_type_key: Feature metadata key containing ``"none"``,
+            ``"hard"``, or ``"shift"``. A boolean ``intervened=True`` under
+            ``intervention_key`` remains a hard intervention for compatibility.
+        intervention_shift_key: Feature metadata key containing a known
+            additive shift. If it is absent for a shift intervention, the
+            shift is estimated and shared by ``intervention_group_key``.
+        intervention_group_key: Feature metadata key identifying the group
+            shared by estimated shifts. The target vertex is always part of
+            the parameter key, so one group cannot couple different targets.
+        intervention_shift_bound: Absolute bound for each estimated shift.
+        lambda_intervention_shifts: Optional L1 penalty on estimated shifts.
         coefficient_support: ``"exact"`` requires every selected edge to have
             a fitted coefficient with magnitude at least ``min_abs_coefficient``;
             ``"structural"`` permits selected connector edges with zero
@@ -63,7 +160,8 @@ class LinearDAGDiscovery(FlowMethod):
             direct effects, not a solver tolerance or a guarantee of a
             nonzero total intervention effect.
         interaction_attribute: Edge attribute containing PKN interaction signs.
-        intervention_key: Feature metadata key marking perfect interventions.
+        intervention_key: Feature metadata key marking legacy hard
+            interventions.
         flow_capacity: Upper bound on every commodity flow. By default, the
             number of PKN edges multiplied by ``flow_epsilon`` is used.
         flow_epsilon: Minimum positive flow on every used biological edge.
@@ -95,6 +193,11 @@ class LinearDAGDiscovery(FlowMethod):
         enforce_signs: bool = False,
         interaction_attribute: str = "interaction",
         intervention_key: str = "intervened",
+        intervention_type_key: str = "intervention",
+        intervention_shift_key: str = "shift",
+        intervention_group_key: str = "intervention_group",
+        intervention_shift_bound: float = 10.0,
+        lambda_intervention_shifts: float = 0.0,
         flow_capacity: Optional[float] = None,
         flow_epsilon: float = 1.0,
         min_commodity_coverage: float = 0.0,
@@ -106,6 +209,7 @@ class LinearDAGDiscovery(FlowMethod):
         self._validate_nonnegative(lambda_edges, "lambda_edges")
         self._validate_positive(coefficient_bound, "coefficient_bound")
         self._validate_positive(intercept_bound, "intercept_bound")
+        self._validate_positive(intervention_shift_bound, "intervention_shift_bound")
         self._validate_positive(flow_epsilon, "flow_epsilon")
         if coefficient_support not in {"exact", "structural"}:
             raise ValueError("coefficient_support must be 'exact' or 'structural'.")
@@ -136,6 +240,7 @@ class LinearDAGDiscovery(FlowMethod):
         if not np.isfinite(min_commodity_coverage) or not 0 <= min_commodity_coverage <= 1:
             raise ValueError("min_commodity_coverage must be in [0, 1].")
         self._validate_nonnegative(lambda_unexplained, "lambda_unexplained")
+        self._validate_nonnegative(lambda_intervention_shifts, "lambda_intervention_shifts")
 
         super().__init__(
             flow_lower_bound=0,
@@ -160,6 +265,11 @@ class LinearDAGDiscovery(FlowMethod):
         self.min_abs_coefficient = float(min_abs_coefficient)
         self.interaction_attribute = interaction_attribute
         self.intervention_key = intervention_key
+        self.intervention_type_key = intervention_type_key
+        self.intervention_shift_key = intervention_shift_key
+        self.intervention_group_key = intervention_group_key
+        self.intervention_shift_bound = float(intervention_shift_bound)
+        self.lambda_intervention_shifts = float(lambda_intervention_shifts)
         self.flow_capacity = None if flow_capacity is None else float(flow_capacity)
         self.flow_epsilon = float(flow_epsilon)
         self.min_commodity_coverage = float(min_commodity_coverage)
@@ -176,6 +286,9 @@ class LinearDAGDiscovery(FlowMethod):
         self._coefficient_scales = np.empty((0,))
         self._observation_weights = np.empty((0, 0))
         self._intervened = np.empty((0, 0), dtype=bool)
+        self._hard_intervened = np.empty((0, 0), dtype=bool)
+        self._soft_intervened = np.empty((0, 0), dtype=bool)
+        self._intervention_design: Optional[_InterventionDesign] = None
         self._edge_sources = np.empty((0,), dtype=int)
         self._edge_targets = np.empty((0,), dtype=int)
         self._commodity_samples: list[int] = []
@@ -242,16 +355,91 @@ class LinearDAGDiscovery(FlowMethod):
             targets.append(vertex_index[next(iter(target))])
         return np.asarray(sources, dtype=int), np.asarray(targets, dtype=int)
 
+    @staticmethod
+    def _normalize_intervention_type(raw: Any, source: str) -> str:
+        if raw is None:
+            return "none"
+        if isinstance(raw, (bool, np.bool_)):
+            return "hard" if bool(raw) else "none"
+        if not isinstance(raw, str):
+            raise TypeError(f"{source} must be boolean or one of 'none', 'hard', and 'shift'.")
+        normalized = raw.strip().lower()
+        if normalized == "soft":
+            normalized = "shift"
+        if normalized not in {"none", "hard", "shift"}:
+            raise ValueError(f"{source} must be one of 'none', 'hard', and 'shift'; got {raw!r}.")
+        return normalized
+
+    def _get_intervention_type(self, feature: Any, sample_name: Any) -> str:
+        explicit_values = []
+        for key in (self.intervention_type_key, "intervention_type"):
+            if key not in explicit_values and key in feature.data:
+                explicit_values.append(key)
+        explicit = _MISSING
+        if explicit_values:
+            explicit = self._normalize_intervention_type(
+                feature.data[explicit_values[0]],
+                f"{explicit_values[0]!r} for vertex {feature.id!r} in sample {sample_name!r}",
+            )
+            for key in explicit_values[1:]:
+                other = self._normalize_intervention_type(
+                    feature.data[key],
+                    f"{key!r} for vertex {feature.id!r} in sample {sample_name!r}",
+                )
+                if other != explicit:
+                    raise ValueError(
+                        f"Conflicting intervention types for vertex {feature.id!r} in sample {sample_name!r}."
+                    )
+
+        legacy = _MISSING
+        if self.intervention_key in feature.data:
+            legacy = self._normalize_intervention_type(
+                feature.data[self.intervention_key],
+                f"{self.intervention_key!r} for vertex {feature.id!r} in sample {sample_name!r}",
+            )
+        if explicit is _MISSING:
+            return "none" if legacy is _MISSING else legacy
+        if legacy is not _MISSING and legacy != "none" and legacy != explicit:
+            raise ValueError(f"Conflicting intervention types for vertex {feature.id!r} in sample {sample_name!r}.")
+        return explicit
+
+    def _get_shift_value(self, feature: Any, sample_name: Any) -> Any:
+        keys = tuple(dict.fromkeys((self.intervention_shift_key, "shift", "shift_value", "intervention_shift")))
+        present = [key for key in keys if key in feature.data]
+        if not present:
+            return None
+        values = [feature.data[key] for key in present]
+        if any(value != values[0] for value in values[1:]):
+            raise ValueError(f"Conflicting shift values for vertex {feature.id!r} in sample {sample_name!r}.")
+        value = values[0]
+        if value is None:
+            return None
+        if isinstance(value, bool) or not isinstance(value, Real):
+            raise TypeError(
+                f"Intervention shift for vertex {feature.id!r} in sample {sample_name!r} "
+                "must be numeric or omitted for estimation."
+            )
+        value = float(value)
+        if not np.isfinite(value):
+            raise ValueError(f"Intervention shift for vertex {feature.id!r} in sample {sample_name!r} must be finite.")
+        return value
+
+    def _get_shift_group(self, feature: Any) -> Any:
+        for key in (self.intervention_group_key, "shift_group", "intervention_id"):
+            if key in feature.data:
+                return feature.data[key]
+        return _MISSING
+
     def _extract_data(
         self,
         graph: BaseGraph,
         data: Data,
-    ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    ) -> tuple[np.ndarray, np.ndarray, _InterventionDesign]:
         if not data.samples:
             raise ValueError("LinearDAGDiscovery requires at least one sample.")
         values = np.full((graph.num_vertices, len(data.samples)), np.nan, dtype=float)
         observed = np.zeros_like(values, dtype=bool)
-        intervened = np.zeros_like(values, dtype=bool)
+        annotations: dict[tuple[int, int], tuple[str, Any, Any]] = {}
         graph_vertices = set(graph.V)
 
         for sample_index, (sample_name, sample) in enumerate(data.samples.items()):
@@ -264,19 +452,34 @@ class LinearDAGDiscovery(FlowMethod):
                 if feature.id in seen:
                     raise ValueError(f"Duplicate vertex {feature.id!r} in sample {sample_name!r}.")
                 seen.add(feature.id)
-                raw_intervened = feature.data.get(self.intervention_key, False)
-                if not isinstance(raw_intervened, (bool, np.bool_)):
-                    raise TypeError(
-                        f"{self.intervention_key!r} for vertex {feature.id!r} "
-                        f"in sample {sample_name!r} must be boolean."
-                    )
                 vertex_index = self._vertex_index[feature.id]
-                intervened[vertex_index, sample_index] = bool(raw_intervened)
+                intervention_type = self._get_intervention_type(feature, sample_name)
+                shift_value = None
+                shift_group = _MISSING
+                if intervention_type == "shift":
+                    shift_value = self._get_shift_value(feature, sample_name)
+                    if shift_value is None:
+                        shift_group = self._get_shift_group(feature)
+                elif any(
+                    key in feature.data
+                    for key in dict.fromkeys(
+                        (self.intervention_shift_key, "shift", "shift_value", "intervention_shift")
+                    )
+                ):
+                    raise ValueError(
+                        f"A shift value is only valid for a 'shift' intervention "
+                        f"(vertex {feature.id!r}, sample {sample_name!r})."
+                    )
+                annotations[(vertex_index, sample_index)] = (
+                    intervention_type,
+                    shift_value,
+                    shift_group,
+                )
                 value = feature.value
                 if value is None or (
                     isinstance(value, Real) and not isinstance(value, bool) and np.isnan(float(value))
                 ):
-                    if raw_intervened:
+                    if intervention_type != "none":
                         raise ValueError(
                             f"Intervened vertex {feature.id!r} in sample {sample_name!r} requires an observed value."
                         )
@@ -293,12 +496,18 @@ class LinearDAGDiscovery(FlowMethod):
                 values[vertex_index, sample_index] = value
                 observed[vertex_index, sample_index] = True
 
-        if not np.any(intervened):
+        design = _InterventionDesign.build(
+            tuple(graph.V),
+            graph.num_vertices,
+            len(data.samples),
+            annotations,
+        )
+        if not np.any(design.hard | design.shift):
             raise ValueError("LinearDAGDiscovery requires at least one intervened vertex.")
         never_observed = [graph.V[index] for index in np.flatnonzero(~observed.any(axis=1))]
         if never_observed:
             raise ValueError(f"PKN vertices {never_observed!r} are never observed; latent vertices are not supported.")
-        return values, observed, intervened
+        return values, observed, design
 
     def preprocess(self, graph: BaseGraph, data: Data):
         """Validate data and construct commodity-specific flow boundaries."""
@@ -306,9 +515,12 @@ class LinearDAGDiscovery(FlowMethod):
         self._vertex_index = {vertex: index for index, vertex in enumerate(graph.V)}
         self._sample_names = tuple(data.samples)
         self._edge_sources, self._edge_targets = self._validate_graph(graph)
-        self._values, self._observed, self._intervened = self._extract_data(graph, data)
+        self._values, self._observed, self._intervention_design = self._extract_data(graph, data)
+        self._hard_intervened = self._intervention_design.hard
+        self._soft_intervened = self._intervention_design.shift
+        self._intervened = self._hard_intervened | self._soft_intervened
         vertices = tuple(graph.V)
-        self._valid_residual = self._observed & ~self._intervened
+        self._valid_residual = self._observed & ~self._hard_intervened
         for source, target in zip(self._edge_sources, self._edge_targets, strict=True):
             self._valid_residual[target, :] &= self._observed[source, :]
         if not np.any(self._valid_residual):
@@ -393,8 +605,8 @@ class LinearDAGDiscovery(FlowMethod):
         ):
             self._flow_ub[source_edge, commodity_index] = self._resolved_flow_capacity
             self._flow_ub[np.asarray(sink_edges, dtype=int), commodity_index] = self._resolved_flow_capacity
-            intervened_targets = self._intervened[self._edge_targets, self._commodity_samples[commodity_index]]
-            self._flow_ub[np.flatnonzero(intervened_targets), commodity_index] = 0.0
+            hard_targets = self._hard_intervened[self._edge_targets, self._commodity_samples[commodity_index]]
+            self._flow_ub[np.flatnonzero(hard_targets), commodity_index] = 0.0
         return self._layout.graph, data.copy()
 
     def get_flow_bounds(self, graph: BaseGraph, data: Data):
@@ -435,6 +647,8 @@ class LinearDAGDiscovery(FlowMethod):
         """Add commodity coverage and linear structural-equation fitting."""
         if self._original_graph is None:
             raise ValueError("LinearDAGDiscovery preprocessing has not been initialized.")
+        if self._intervention_design is None:
+            raise ValueError("LinearDAGDiscovery intervention preprocessing has not been initialized.")
         problem = flow_problem
         num_vertices = self._original_graph.num_vertices
         num_edges = self._original_graph.num_edges
@@ -616,6 +830,40 @@ class LinearDAGDiscovery(FlowMethod):
         if self.fit_intercept:
             intercept_matrix = self.backend.Constant(_sparse_vector_replication(num_vertices, num_samples)) @ intercept
             prediction = prediction + intercept_matrix.reshape((num_vertices, num_samples))
+
+        intervention_design = self._intervention_design
+        known_shift = self.backend.Constant(
+            csr_matrix(intervention_design.known_shift),
+            name="known_intervention_shift",
+        )
+        shift_prediction = known_shift
+        estimated_shift_parameters = None
+        if intervention_design.effect_keys:
+            estimated_shift_parameters = self.backend.Variable(
+                "intervention_shift_parameters",
+                (len(intervention_design.effect_keys), 1),
+                lb=-self.intervention_shift_bound,
+                ub=self.intervention_shift_bound,
+            )
+            shift_mapping = self.backend.Constant(
+                intervention_design.mapping,
+                name="intervention_shift_mapping",
+            )
+            estimated_shift = shift_mapping @ estimated_shift_parameters
+            shift_prediction = shift_prediction + estimated_shift.reshape((num_vertices, num_samples))
+        prediction = prediction + shift_prediction
+
+        problem.register("known_intervention_shift", known_shift)
+        problem.register("intervention_shift", shift_prediction)
+        if estimated_shift_parameters is not None:
+            problem.register("intervention_shift_mapping", shift_mapping)
+            problem.register("intervention_shift_parameters", estimated_shift_parameters)
+            if self.lambda_intervention_shifts:
+                problem.add_objective(
+                    estimated_shift_parameters.norm(1),
+                    weight=self.lambda_intervention_shifts,
+                    name="intervention_shift_sparsity",
+                )
 
         residual = self._values - prediction
         problem.register("prediction", prediction)

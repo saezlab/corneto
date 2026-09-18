@@ -77,6 +77,142 @@ def test_recovers_supported_linear_edge(backend):
     assert np.isclose(problem.expr.flow.value[0, 0], 1.0, atol=1e-7)
 
 
+def test_known_shift_keeps_soft_target_equation_and_flow_source(backend):
+    """Known additive shifts retain the target mechanism and its flow source."""
+    graph = Graph.from_tuples([("A", 1, "B"), ("B", 1, "C")])
+    data = Data.from_cdict(
+        {
+            "obs_0": {
+                "A": {"mapping": "vertex", "value": 0.0},
+                "B": {"mapping": "vertex", "value": 0.0},
+                "C": {"mapping": "vertex", "value": 0.0},
+            },
+            "obs_1": {
+                "A": {"mapping": "vertex", "value": 1.0},
+                "B": {"mapping": "vertex", "value": 2.0},
+                "C": {"mapping": "vertex", "value": 2.0},
+            },
+            "do_A": {
+                "A": {"mapping": "vertex", "value": 2.0, "intervened": True},
+                "B": {"mapping": "vertex", "value": 4.0},
+                "C": {"mapping": "vertex", "value": 4.0},
+            },
+            "shift_1": {
+                "A": {"mapping": "vertex", "value": 1.0},
+                "B": {
+                    "mapping": "vertex",
+                    "value": 5.0,
+                    "intervention": "shift",
+                    "shift": 3.0,
+                },
+                "C": {"mapping": "vertex", "value": 5.0},
+            },
+            "shift_2": {
+                "A": {"mapping": "vertex", "value": 2.0},
+                "B": {
+                    "mapping": "vertex",
+                    "value": 7.0,
+                    "intervention": "shift",
+                    "shift": 3.0,
+                },
+                "C": {"mapping": "vertex", "value": 7.0},
+            },
+        }
+    )
+    method = LinearDAGDiscovery(
+        fit_intercept=False,
+        min_commodity_coverage=1.0,
+        backend=backend,
+    )
+    problem = method.build(graph, data)
+    problem.solve()
+
+    assert np.array_equal(method.get_selected_edge_indices(), np.array([0, 1]))
+    assert method._soft_intervened[1].tolist() == [False, False, False, True, True]
+    assert method._valid_residual[1].tolist() == [True, True, True, True, True]
+    assert method._commodity_sources == ["A", "B", "B"]
+    assert np.all(method._flow_ub[0, 1:] > 0)
+    assert np.allclose(problem.expr.prediction.value[1, :], [0.0, 2.0, 4.0, 5.0, 7.0], atol=1e-7)
+
+    coefficients = np.asarray(problem.expr.edge_coefficient.value).reshape(-1)
+    assert np.allclose(coefficients, [2.0, 1.0], atol=1e-7)
+
+
+def test_estimated_shift_is_shared_by_target_and_intervention_group(backend):
+    """Replicates in one group use one bounded continuous shift parameter."""
+    graph = Graph.from_tuples([("A", 1, "B")])
+    data = Data.from_cdict(
+        {
+            "obs_0": {
+                "A": {"mapping": "vertex", "value": 0.0},
+                "B": {"mapping": "vertex", "value": 0.0},
+            },
+            "obs_1": {
+                "A": {"mapping": "vertex", "value": 1.0},
+                "B": {"mapping": "vertex", "value": 2.0},
+            },
+            "do_A": {
+                "A": {"mapping": "vertex", "value": 1.0, "intervened": True},
+                "B": {"mapping": "vertex", "value": 2.0},
+            },
+            "replicate_1": {
+                "A": {"mapping": "vertex", "value": 1.0},
+                "B": {
+                    "mapping": "vertex",
+                    "value": 5.0,
+                    "intervention": "shift",
+                    "intervention_group": "drug",
+                },
+            },
+            "replicate_2": {
+                "A": {"mapping": "vertex", "value": 2.0},
+                "B": {
+                    "mapping": "vertex",
+                    "value": 7.0,
+                    "intervention": "shift",
+                    "intervention_group": "drug",
+                },
+            },
+        }
+    )
+    method = LinearDAGDiscovery(
+        fit_intercept=False,
+        intervention_shift_bound=4.0,
+        lambda_intervention_shifts=0.01,
+        backend=backend,
+    )
+    problem = method.build(graph, data)
+
+    assert method._intervention_design is not None
+    assert method._intervention_design.effect_keys == (("B", "drug"),)
+    assert method._intervention_design.mapping.shape == (10, 1)
+    assert problem.expr.intervention_shift_parameters.shape == (1, 1)
+
+    problem.solve()
+
+    assert np.isclose(np.asarray(problem.expr.intervention_shift_parameters.value).reshape(-1)[0], 3.0, atol=1e-7)
+    assert np.isclose(np.asarray(problem.expr.edge_coefficient.value).reshape(-1)[0], 2.0, atol=1e-7)
+
+
+def test_estimated_shift_requires_a_group(backend):
+    graph = Graph.from_tuples([("A", 1, "B")])
+    data = Data.from_cdict(
+        {
+            "obs": {
+                "A": {"mapping": "vertex", "value": 0.0},
+                "B": {"mapping": "vertex", "value": 0.0},
+            },
+            "shift": {
+                "A": {"mapping": "vertex", "value": 1.0},
+                "B": {"mapping": "vertex", "value": 3.0, "intervention": "shift"},
+            },
+        }
+    )
+
+    with pytest.raises(ValueError, match="intervention group"):
+        LinearDAGDiscovery(backend=backend).build(graph, data)
+
+
 def test_recovers_identifiable_dag_from_cyclic_prior(backend):
     """Recover a multi-level SEM despite reverse and cross-edge distractors."""
     edges = [
