@@ -58,6 +58,7 @@ def test_methods_api_surface_and_identity():
         "BidirectionalPHONEMeS",
         "CarnivalFlow",
         "CarnivalILP",
+        "LinearDAGDiscovery",
         "MultiSampleFBA",
         "MultiSampleIMAT",
         "PHONEMeS",

@@ -51,6 +51,34 @@ def _get_unique_name(prefix: str = "_var") -> str:
     return prefix + hex(hash(uuid4()))
 
 
+def _sparse_vector_replication(vector_size: int, repetitions: int):
+    """Return a sparse map from a vector to repeated Fortran-order columns."""
+    from scipy.sparse import csr_matrix
+
+    if vector_size <= 0 or repetitions <= 0:
+        return csr_matrix((vector_size * repetitions, vector_size))
+    rows = np.arange(vector_size * repetitions, dtype=int)
+    columns = np.tile(np.arange(vector_size, dtype=int), repetitions)
+    return csr_matrix(
+        (np.ones(rows.size, dtype=float), (rows, columns)),
+        shape=(vector_size * repetitions, vector_size),
+    )
+
+
+def _sparse_vector_entry_repetition(vector_size: int, repetitions: int):
+    """Return a sparse map that repeats each vector entry consecutively."""
+    from scipy.sparse import csr_matrix
+
+    if vector_size <= 0 or repetitions <= 0:
+        return csr_matrix((vector_size * repetitions, vector_size))
+    rows = np.arange(vector_size * repetitions, dtype=int)
+    columns = np.repeat(np.arange(vector_size, dtype=int), repetitions)
+    return csr_matrix(
+        (np.ones(rows.size, dtype=float), (rows, columns)),
+        shape=(vector_size * repetitions, vector_size),
+    )
+
+
 class CExpression(abc.ABC):
     # Arithmetic operator overloading with Numpy
     # See: https://www.cvxpy.org/_modules/cvxpy/expressions/expression.html#Expression
@@ -369,6 +397,16 @@ class CSymbol(CExpression):
             shape = ()  # type: ignore
         self._shape = shape
         self._is_variable = variable
+
+        # Constants already carry their exact value in ``expr``. Creating
+        # synthetic +/-infinity bounds for them would allocate dense arrays
+        # with the full expression shape, defeating sparse constants.
+        if not variable and lb is None and ub is None:
+            self._lb = None
+            self._ub = None
+            self._name = name
+            self._vartype = vartype
+            return
 
         if lb is None:
             if vartype == VarType.CONTINUOUS:
@@ -910,7 +948,7 @@ class Backend(abc.ABC):
             if isinstance(ub, np.ndarray) and len(ub.shape) == 1:
                 ub = np.tile(ub, (n_flows, 1)).T
         F = self.Variable(name=varname, shape=shape, lb=lb, ub=ub)
-        A = self._sparse(g.get_vertex_incidence_matrix_as_lists(values=values))
+        A = self.Constant(self._sparse(g.get_vertex_incidence_matrix_as_lists(values=values)))
         P = self.Problem(A @ F == 0)
         if shared_bounds and n_flows > 1:
             # check num dims of lb
@@ -922,7 +960,7 @@ class Backend(abc.ABC):
             P += S <= ub[:, 0]
             P += S >= lb[:, 0]
         if create_nonzero_indicators:
-            P += NonZeroIndicator(tolerance=indicator_tolerance)
+            P += NonZeroIndicator(var_name=varname, tolerance=indicator_tolerance)
             Ip = P.get_symbol(varname + "_ipos")
             In = P.get_symbol(varname + "_ineg")
             P.register(alias_flow_ipos, Ip)
@@ -1147,21 +1185,52 @@ class Backend(abc.ABC):
         # selection traverses an edge in reverse, so it contributes a parent
         # at the edge's source rather than at its target.
         if max_parents is not None:
-            for v, max_val in max_parents.items():
-                parent_count = None
-                if Ip is not None:
-                    positive_edges = [i for i, _ in g.in_edges(v)]
-                    if positive_edges:
-                        parent_count = np.ones((len(positive_edges),)) @ Ip[positive_edges]
-                if In is not None:
-                    negative_edges = [i for i, _ in g.out_edges(v)]
-                    if negative_edges:
-                        negative_parent_count = np.ones((len(negative_edges),)) @ In[negative_edges]
-                        parent_count = (
-                            negative_parent_count if parent_count is None else parent_count + negative_parent_count
-                        )
-                if parent_count is not None:
-                    P += parent_count <= max_val
+            from scipy.sparse import csr_matrix
+
+            parent_vertices = list(max_parents)
+            parent_vertex_index = {vertex: index for index, vertex in enumerate(parent_vertices)}
+            positive_rows = []
+            positive_columns = []
+            negative_rows = []
+            negative_columns = []
+            for edge_index, (source, target) in enumerate(g.E):
+                if target:
+                    target_vertex = next(iter(target))
+                    if target_vertex in parent_vertex_index:
+                        positive_rows.append(parent_vertex_index[target_vertex])
+                        positive_columns.append(edge_index)
+                if source:
+                    source_vertex = next(iter(source))
+                    if source_vertex in parent_vertex_index:
+                        negative_rows.append(parent_vertex_index[source_vertex])
+                        negative_columns.append(edge_index)
+
+            parent_count = None
+            if Ip is not None and positive_rows:
+                positive_selector = csr_matrix(
+                    (
+                        np.ones(len(positive_rows), dtype=float),
+                        (positive_rows, positive_columns),
+                    ),
+                    shape=(len(parent_vertices), g.num_edges),
+                )
+                parent_count = self.Constant(positive_selector) @ Ip
+            if In is not None and negative_rows:
+                negative_selector = csr_matrix(
+                    (
+                        np.ones(len(negative_rows), dtype=float),
+                        (negative_rows, negative_columns),
+                    ),
+                    shape=(len(parent_vertices), g.num_edges),
+                )
+                negative_parent_count = self.Constant(negative_selector) @ In
+                parent_count = negative_parent_count if parent_count is None else parent_count + negative_parent_count
+            if parent_count is not None:
+                parent_count = parent_count.reshape((len(parent_vertices), 1))
+                max_values = np.asarray([max_parents[vertex] for vertex in parent_vertices], dtype=float).reshape(
+                    (-1, 1)
+                )
+                P += parent_count <= max_values
 
         # Determine number of samples (if the indicator is 1D, assume 1 sample)
         if len(indicator.shape) == 1:
@@ -1740,8 +1809,15 @@ class Backend(abc.ABC):
                 (num_selected_edges, num_selector_groups),
                 vartype=VarType.BINARY,
             )
-            group_matrix = np.zeros((num_mapped_flows, num_selector_groups), dtype=float)
-            group_matrix[np.arange(num_mapped_flows), selector_groups] = 1
+            from scipy.sparse import csr_matrix
+
+            group_matrix = csr_matrix(
+                (
+                    np.ones(num_mapped_flows, dtype=float),
+                    (np.arange(num_mapped_flows), selector_groups),
+                ),
+                shape=(num_mapped_flows, num_selector_groups),
+            )
             expanded_groups = selected_by_group @ group_matrix.T
             problem += selected_by_flow <= expanded_groups
             problem += selected_by_group <= selected_by_flow @ group_matrix
@@ -1765,7 +1841,8 @@ class Backend(abc.ABC):
                     (num_selected_edges,),
                     vartype=VarType.BINARY,
                 )
-                union_matrix = union.reshape((num_selected_edges, 1)) @ np.ones((1, num_value_columns))
+                union_matrix = self.Constant(_sparse_vector_replication(num_selected_edges, num_value_columns)) @ union
+                union_matrix = union_matrix.reshape((num_selected_edges, num_value_columns))
                 problem.add_constraints(values <= union_matrix)
                 problem.add_constraints(union <= values.sum(axis=1))
             if name not in problem.expressions:
@@ -1805,7 +1882,10 @@ class Backend(abc.ABC):
             if num_selector_groups == 1:
                 problem += selected_any == selected_by_group[:, 0]
             else:
-                selected_matrix = selected_any.reshape((num_selected_edges, 1)) @ np.ones((1, num_selector_groups))
+                selected_matrix = (
+                    self.Constant(_sparse_vector_replication(num_selected_edges, num_selector_groups)) @ selected_any
+                )
+                selected_matrix = selected_matrix.reshape((num_selected_edges, num_selector_groups))
                 problem += selected_by_group <= selected_matrix
                 problem += selected_any <= selected_by_group.sum(axis=1)
 
@@ -2010,7 +2090,7 @@ class NoBackend(Backend):
 
 def _find_continuous_var(p):
     # Search for continous vars
-    cvars = [k for k, v in p.symbols.items() if v._vartype == VarType.CONTINUOUS]
+    cvars = [k for k, v in p.symbols.items() if v.is_variable and v._vartype == VarType.CONTINUOUS]
     if len(cvars) == 0:
         raise ValueError("No available continuous vars for creating indicator vars")
     if len(cvars) == 1:

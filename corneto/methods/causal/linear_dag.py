@@ -6,9 +6,15 @@ from numbers import Real
 from typing import Any, Mapping, Optional
 
 import numpy as np
+from scipy.sparse import csr_matrix
 
 from corneto._constants import VarType
-from corneto.backend._base import Backend, ProblemDef
+from corneto.backend._base import (
+    Backend,
+    ProblemDef,
+    _sparse_vector_entry_repetition,
+    _sparse_vector_replication,
+)
 from corneto.data import Data
 from corneto.graph import Attr, BaseGraph, EdgeType
 from corneto.methods._base import FlowMethod
@@ -301,6 +307,7 @@ class LinearDAGDiscovery(FlowMethod):
         self._sample_names = tuple(data.samples)
         self._edge_sources, self._edge_targets = self._validate_graph(graph)
         self._values, self._observed, self._intervened = self._extract_data(graph, data)
+        vertices = tuple(graph.V)
         self._valid_residual = self._observed & ~self._intervened
         for source, target in zip(self._edge_sources, self._edge_targets, strict=True):
             self._valid_residual[target, :] &= self._observed[source, :]
@@ -350,8 +357,8 @@ class LinearDAGDiscovery(FlowMethod):
         sink_union = measured_responses.any(axis=1)
         self._layout = augment_with_boundaries(
             graph,
-            inflow_vertices=(vertex for vertex, include in zip(graph.V, intervened_union, strict=True) if include),
-            outflow_vertices=(vertex for vertex, include in zip(graph.V, sink_union, strict=True) if include),
+            inflow_vertices=(vertex for vertex, include in zip(vertices, intervened_union, strict=True) if include),
+            outflow_vertices=(vertex for vertex, include in zip(vertices, sink_union, strict=True) if include),
         )
 
         self._commodity_samples = []
@@ -361,10 +368,10 @@ class LinearDAGDiscovery(FlowMethod):
         for sample_index in range(len(self._sample_names)):
             source_indices = np.flatnonzero(self._intervened[:, sample_index])
             sink_indices = np.flatnonzero(measured_responses[:, sample_index])
-            sink_vertices = [graph.V[index] for index in sink_indices]
+            sink_vertices = [vertices[index] for index in sink_indices]
             sink_edges = [self._layout.outflow_edges[vertex] for vertex in sink_vertices]
             for source_index in source_indices:
-                source_vertex = graph.V[source_index]
+                source_vertex = vertices[source_index]
                 self._commodity_samples.append(sample_index)
                 self._commodity_sources.append(source_vertex)
                 self._commodity_source_edges.append(self._layout.inflow_edges[source_vertex])
@@ -444,24 +451,70 @@ class LinearDAGDiscovery(FlowMethod):
                 (num_commodities,),
                 vartype=VarType.BINARY,
             )
-            active_matrix = np.ones((num_edges, 1)) @ commodity_active.reshape((1, num_commodities))
+            active_matrix = (
+                self.backend.Constant(_sparse_vector_entry_repetition(num_commodities, num_edges)) @ commodity_active
+            )
+            active_matrix = active_matrix.reshape((num_edges, num_commodities))
             problem += edge_used <= active_matrix
             problem += commodity_active.reshape((num_commodities, 1)) <= edge_used.sum(axis=0).reshape(
                 (num_commodities, 1)
             )
 
-            for commodity_index, (source_edge, sink_edges) in enumerate(
-                zip(self._commodity_source_edges, self._commodity_sink_edges, strict=True)
-            ):
-                active = commodity_active[commodity_index]
-                problem += flow[source_edge, commodity_index] >= self.flow_epsilon * active
-                problem += flow[source_edge, commodity_index] <= self._resolved_flow_capacity * active
-                if sink_edges:
-                    sink_index = np.asarray(sink_edges, dtype=int)
-                    problem += flow[sink_index, commodity_index].sum() >= self.flow_epsilon * active
-                    problem += flow[sink_index, commodity_index] <= self._resolved_flow_capacity * active
-                else:
-                    problem += active == 0
+            num_flow_edges = graph.num_edges
+            flow_flat = flow.reshape((num_flow_edges * num_commodities, 1))
+            commodity_column = commodity_active.reshape((num_commodities, 1))
+            commodity_indices = np.arange(num_commodities, dtype=int)
+            source_edges = np.asarray(self._commodity_source_edges, dtype=int)
+            source_positions = source_edges + num_flow_edges * commodity_indices
+            source_selector = csr_matrix(
+                (
+                    np.ones(num_commodities, dtype=float),
+                    (commodity_indices, source_positions),
+                ),
+                shape=(num_commodities, num_flow_edges * num_commodities),
+            )
+            source_flow = self.backend.Constant(source_selector) @ flow_flat
+            problem += source_flow >= self.flow_epsilon * commodity_column
+            problem += source_flow <= self._resolved_flow_capacity * commodity_column
+
+            sink_commodities = np.asarray(
+                [commodity for commodity, sink_edges in enumerate(self._commodity_sink_edges) for _ in sink_edges],
+                dtype=int,
+            )
+            sink_edges = np.asarray(
+                [edge for sink_edges in self._commodity_sink_edges for edge in sink_edges],
+                dtype=int,
+            )
+            sink_positions = sink_edges + num_flow_edges * sink_commodities
+            sink_selector = csr_matrix(
+                (
+                    np.ones(sink_positions.size, dtype=float),
+                    (sink_commodities, sink_positions),
+                ),
+                shape=(num_commodities, num_flow_edges * num_commodities),
+            )
+            sink_flow = self.backend.Constant(sink_selector) @ flow_flat
+            problem += sink_flow >= self.flow_epsilon * commodity_column
+
+            if sink_positions.size:
+                sink_entry_rows = np.arange(sink_positions.size, dtype=int)
+                sink_entry_selector = csr_matrix(
+                    (
+                        np.ones(sink_positions.size, dtype=float),
+                        (sink_entry_rows, sink_positions),
+                    ),
+                    shape=(sink_positions.size, num_flow_edges * num_commodities),
+                )
+                sink_entry_flow = self.backend.Constant(sink_entry_selector) @ flow_flat
+                sink_active_selector = csr_matrix(
+                    (
+                        np.ones(sink_positions.size, dtype=float),
+                        (sink_entry_rows, sink_commodities),
+                    ),
+                    shape=(sink_positions.size, num_commodities),
+                )
+                sink_entry_active = self.backend.Constant(sink_active_selector) @ commodity_column
+                problem += sink_entry_flow <= self._resolved_flow_capacity * sink_entry_active
 
             minimum_active = int(np.ceil(self.min_commodity_coverage * num_commodities))
             if minimum_active:
@@ -540,13 +593,29 @@ class LinearDAGDiscovery(FlowMethod):
             intercept = self.backend.Constant(np.zeros((num_vertices,)), name="intercept_zero")
 
         parent_values = self._values[self._edge_sources, :]
-        coefficient_matrix = edge_coefficient.reshape((num_edges, 1)) @ np.ones((1, num_samples))
-        weighted_parents = coefficient_matrix.multiply(parent_values)
-        target_incidence = np.zeros((num_vertices, num_edges), dtype=float)
-        target_incidence[self._edge_targets, np.arange(num_edges)] = 1.0
-        prediction = target_incidence @ weighted_parents
+        parent_rows = np.arange(num_edges * num_samples, dtype=int)
+        parent_columns = np.tile(np.arange(num_edges, dtype=int), num_samples)
+        weighted_parent_operator = csr_matrix(
+            (
+                parent_values.reshape(-1, order="F"),
+                (parent_rows, parent_columns),
+            ),
+            shape=(num_edges * num_samples, num_edges),
+        )
+        weighted_parent_operator.eliminate_zeros()
+        weighted_parents = self.backend.Constant(weighted_parent_operator) @ edge_coefficient
+        weighted_parents = weighted_parents.reshape((num_edges, num_samples))
+        target_incidence = csr_matrix(
+            (
+                np.ones(num_edges, dtype=float),
+                (self._edge_targets, np.arange(num_edges, dtype=int)),
+            ),
+            shape=(num_vertices, num_edges),
+        )
+        prediction = self.backend.Constant(target_incidence) @ weighted_parents
         if self.fit_intercept:
-            prediction = prediction + intercept.reshape((num_vertices, 1)) @ np.ones((1, num_samples))
+            intercept_matrix = self.backend.Constant(_sparse_vector_replication(num_vertices, num_samples)) @ intercept
+            prediction = prediction + intercept_matrix.reshape((num_vertices, num_samples))
 
         residual = self._values - prediction
         problem.register("prediction", prediction)
