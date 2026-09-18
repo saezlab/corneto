@@ -44,6 +44,17 @@ class _InterventionDesign:
     mapping: csr_matrix
     effect_keys: tuple[tuple[Any, Any], ...]
 
+    @staticmethod
+    def _validate_group(group: Any) -> None:
+        if group is _MISSING or group is None:
+            raise ValueError("Estimated shift interventions require a non-null intervention group.")
+        if isinstance(group, Real) and not isinstance(group, bool) and not np.isfinite(float(group)):
+            raise ValueError("Estimated shift intervention groups must be finite when numeric.")
+        try:
+            hash(group)
+        except TypeError as error:
+            raise TypeError("Intervention groups must be hashable.") from error
+
     @classmethod
     def build(
         cls,
@@ -71,13 +82,9 @@ class _InterventionDesign:
             if shift_value is not None:
                 known_shift[vertex_index, sample_index] = float(shift_value)
                 continue
-            if group is _MISSING or group is None:
-                raise ValueError("Estimated shift interventions require a non-null intervention group.")
-            try:
-                effect_key = (vertex_index, group)
-                effect_index = effect_indices.get(effect_key)
-            except TypeError as error:
-                raise TypeError("Intervention groups must be hashable.") from error
+            cls._validate_group(group)
+            effect_key = (vertex_index, group)
+            effect_index = effect_indices.get(effect_key)
             if effect_index is None:
                 effect_index = len(effect_keys)
                 effect_indices[effect_key] = effect_index
@@ -193,11 +200,6 @@ class LinearDAGDiscovery(FlowMethod):
         enforce_signs: bool = False,
         interaction_attribute: str = "interaction",
         intervention_key: str = "intervened",
-        intervention_type_key: str = "intervention",
-        intervention_shift_key: str = "shift",
-        intervention_group_key: str = "intervention_group",
-        intervention_shift_bound: float = 10.0,
-        lambda_intervention_shifts: float = 0.0,
         flow_capacity: Optional[float] = None,
         flow_epsilon: float = 1.0,
         min_commodity_coverage: float = 0.0,
@@ -205,6 +207,12 @@ class LinearDAGDiscovery(FlowMethod):
         backend: Optional[Backend] = None,
         coefficient_support: str = "exact",
         min_abs_coefficient: float = 0.25,
+        *,
+        intervention_type_key: str = "intervention",
+        intervention_shift_key: str = "shift",
+        intervention_group_key: str = "intervention_group",
+        intervention_shift_bound: float = 10.0,
+        lambda_intervention_shifts: float = 0.0,
     ):
         self._validate_nonnegative(lambda_edges, "lambda_edges")
         self._validate_positive(coefficient_bound, "coefficient_bound")

@@ -213,6 +213,62 @@ def test_estimated_shift_requires_a_group(backend):
         LinearDAGDiscovery(backend=backend).build(graph, data)
 
 
+def test_existing_positional_flow_arguments_remain_compatible():
+    """New shift options must not change legacy positional argument bindings."""
+    method = LinearDAGDiscovery(
+        0.01,
+        5.0,
+        True,
+        10.0,
+        None,
+        "absolute",
+        True,
+        None,
+        None,
+        False,
+        "interaction",
+        "intervened",
+        7.0,
+    )
+
+    assert method.flow_capacity == 7.0
+    assert method.intervention_type_key == "intervention"
+
+
+def test_nan_shift_groups_are_rejected(backend):
+    """Missing numeric group labels cannot silently create separate effects."""
+    graph = Graph.from_tuples([("A", 1, "B")])
+    data = Data.from_cdict(
+        {
+            "obs": {
+                "A": {"mapping": "vertex", "value": 0.0},
+                "B": {"mapping": "vertex", "value": 0.0},
+            },
+            "shift_1": {
+                "A": {"mapping": "vertex", "value": 1.0},
+                "B": {
+                    "mapping": "vertex",
+                    "value": 3.0,
+                    "intervention": "shift",
+                    "intervention_group": float("nan"),
+                },
+            },
+            "shift_2": {
+                "A": {"mapping": "vertex", "value": 2.0},
+                "B": {
+                    "mapping": "vertex",
+                    "value": 5.0,
+                    "intervention": "shift",
+                    "intervention_group": float("nan"),
+                },
+            },
+        }
+    )
+
+    with pytest.raises(ValueError, match="finite"):
+        LinearDAGDiscovery(backend=backend).build(graph, data)
+
+
 def test_recovers_identifiable_dag_from_cyclic_prior(backend):
     """Recover a multi-level SEM despite reverse and cross-edge distractors."""
     edges = [
