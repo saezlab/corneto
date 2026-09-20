@@ -1,0 +1,16 @@
+[workspace]
+name = "annnet-signaling"
+channels = ["conda-forge"]
+platforms = ["linux-64", "osx-64", "osx-arm64", "win-64"]
+
+[dependencies]
+python = "3.11.*"
+matplotlib = "==3.10.3"
+networkx = "==3.5"
+pandas = "==2.3.3"
+graphviz = "*"
+pip = "*"
+
+[pypi-dependencies]
+corneto = { path = "../../..", editable = true, extras = ["plot"] }
+annnet = { git = "https://github.com/saezlab/annnet.git", rev = "e37ab0069c2882154582354ed0ba2b01dd9b1c37", extras = ["polars", "networkx", "zarr_io"] }

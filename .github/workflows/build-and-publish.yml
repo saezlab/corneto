@@ -82,6 +82,11 @@ jobs:
               ;;
           esac
 
+      - name: Validate committed release notes
+        if: steps.validate_tag.outputs.should_publish == 'true'
+        run: |
+          poetry run python -c "from corneto.release import _ensure_release_notes; _ensure_release_notes('${{ steps.validate_tag.outputs.version }}')"
+
       # 7. Build source & wheel (only if should publish)
       - name: Build package
         if: steps.validate_tag.outputs.should_publish == 'true'

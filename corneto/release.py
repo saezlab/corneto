@@ -6,6 +6,7 @@ import argparse
 import re
 import subprocess
 import sys
+from pathlib import Path
 from typing import Sequence
 
 VERSION_RE = re.compile(r"^v\d+\.\d+\.\d+(?:-(?:alpha|beta|rc)\.\d+)?$")
@@ -72,6 +73,27 @@ def _ensure_tag_does_not_exist(version: str, remote: str) -> None:
         raise ReleaseError(f"Tag already exists on {remote}: {version}")
 
 
+def _expected_release_heading(version: str) -> str:
+    heading = f"# Release {version}"
+    if re.search(r"-(?:alpha|beta|rc)\.\d+$", version):
+        heading += " {bdg-warning}`Pre-release`"
+    return heading
+
+
+def _ensure_release_notes(version: str, *, root: Path = Path(".")) -> None:
+    notes_path = root / "docs" / "releases" / f"{version}.md"
+    if not notes_path.is_file():
+        raise ReleaseError(f"Missing release notes: {notes_path}")
+
+    content = notes_path.read_text(encoding="utf-8")
+    first_line = next((line.strip() for line in content.splitlines() if line.strip()), "")
+    expected_heading = _expected_release_heading(version)
+    if first_line != expected_heading:
+        raise ReleaseError(f"Release notes must start with {expected_heading!r}; found {first_line!r} in {notes_path}.")
+    if not re.search(r"^## Highlights\s*$", content, flags=re.MULTILINE):
+        raise ReleaseError(f"Release notes must contain a '## Highlights' section: {notes_path}")
+
+
 def _create_and_push_tag(version: str, remote: str) -> None:
     _run(["git", "tag", "-a", version, "-m", version], check=True)
     _run(["git", "push", remote, version], check=True)
@@ -114,6 +136,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         _ensure_on_main()
         _ensure_up_to_date_with_remote_main(args.remote)
         _ensure_tag_does_not_exist(version, args.remote)
+        _ensure_release_notes(version)
 
         if args.dry_run:
             print(f"[dry-run] All checks passed. Would create and push tag: {version}")

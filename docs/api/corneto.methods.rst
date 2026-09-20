@@ -56,6 +56,19 @@ ensure that selected edges are supported by intervention-to-response paths.
 
     LinearDAGDiscovery
 
+CellNOpt and AnnNet
+~~~~~~~~~~~~~~~~~~~
+
+These helpers keep the signed network, perturbation conditions, and fitted
+CellNOptDAG results in one AnnNet object.
+
+.. autosummary::
+    :toctree: generated/
+
+    signaling.add_cellnopt_conditions
+    signaling.build_cellnopt_from_annnet
+    signaling.add_cellnopt_results
+
 Metabolism
 ----------
 
