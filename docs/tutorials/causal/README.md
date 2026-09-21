@@ -20,7 +20,7 @@ The notebook demonstrates:
 
 When a shift value is supplied, it is treated as known. When the value is
 omitted and an intervention group is supplied, `LinearDAGDiscovery` estimates
-one bounded additive offset per target/group. The Sachs archive is natural-log
+one bounded additive offset per target/group. The Sachs data are natural-log
 transformed, so these shifts are log-scale offsets. The tutorial uses the
 original reagent condition as the group; the estimates are not calibrated
 drug intensities or dose-response slopes.
@@ -49,19 +49,24 @@ The runner writes executed notebooks to `build/` unless `--rewrite` is used.
 
 ## Dataset provenance
 
-The bundled archive is the continuous Sachs cytometry dataset used by the
-earlier CORNETO Sachs experiment. It contains 7,466 observations of 11
-signaling proteins and phospholipids, together with an `intervention_label`
-column. The original study is:
+The `v1` dataset is the continuous Sachs cytometry dataset used by the earlier
+CORNETO Sachs experiment. It contains 7,466 observations of 11 signaling
+proteins and phospholipids, together with an `intervention_label` column. The
+original study is:
 
 > Sachs, K. et al. (2005). Causal protein-signaling networks derived from
 > multiparameter single-cell data. *Science*, 308(5721), 523–529.
 
-The archive is kept unchanged from that earlier experiment. Its SHA-256 is:
+The measurements are kept unchanged from that earlier experiment. The
+versioned dataset files are under `datasets/sachs/v1/`; installed users can
+resolve the same files with `corneto.datasets.fetch_dataset("sachs")`.
+
+The original archive SHA-256 is:
 
 ```text
 fb8ea1ce445c53c5ba194fbf182606b27408b2aed4d11a875d36048c4ab7bece
 ```
 
-See `data/sachs/README.md` and `data/sachs/condition_manifest.csv` for the
-file-level details, original-condition mapping, and corrected measured targets.
+See `datasets/sachs/v1/README.md` and
+`datasets/sachs/v1/condition_manifest.csv` for the file-level details,
+original-condition mapping, and corrected measured targets.
