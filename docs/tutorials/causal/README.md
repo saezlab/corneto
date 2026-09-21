@@ -49,23 +49,20 @@ The runner writes executed notebooks to `build/` unless `--rewrite` is used.
 
 ## Dataset provenance
 
-The `v1` dataset is the continuous Sachs cytometry dataset used by the earlier
-CORNETO Sachs experiment. It contains 7,466 observations of 11 signaling
-proteins and phospholipids, together with an `intervention_label` column. The
-original study is:
+The `v1` dataset contains 7,466 observations of 11 signaling proteins and
+phospholipids, together with an `intervention_label` column. It is a
+natural-log-transformed, tutorial-oriented representation of the nine measured
+conditions in the [Zenodo Sachs dataset](https://doi.org/10.5281/zenodo.7681811)
+(version 2); the simulated conditions and ground-truth file are not included.
+The source record identifies the data as [CC BY
+4.0](https://creativecommons.org/licenses/by/4.0/). The versioned dataset
+files are under `datasets/sachs/v1/`; installed users can resolve the same
+files with `corneto.datasets.fetch_dataset("sachs")`.
 
-> Sachs, K. et al. (2005). Causal protein-signaling networks derived from
-> multiparameter single-cell data. *Science*, 308(5721), 523–529.
-
-The measurements are kept unchanged from that earlier experiment. The
-versioned dataset files are under `datasets/sachs/v1/`; installed users can
-resolve the same files with `corneto.datasets.fetch_dataset("sachs")`.
-
-The original archive SHA-256 is:
-
-```text
-fb8ea1ce445c53c5ba194fbf182606b27408b2aed4d11a875d36048c4ab7bece
-```
+The original source archive is `sachs.zip`, with MD5
+`d50ccd7f88bb3705bcf6eda3978bcc41`. The transformed local representation is
+not byte-for-byte identical to that ZIP; see `datasets/sachs/v1/README.md` for
+the exact condition order, transformation, citation, and attribution.
 
 See `datasets/sachs/v1/README.md` and
 `datasets/sachs/v1/condition_manifest.csv` for the file-level details,

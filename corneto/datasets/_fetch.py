@@ -38,6 +38,8 @@ class DatasetSpec:
     remote_url: str | None
     archive_sha256: str
     file_sha256: Mapping[str, str]
+    provenance: str = ""
+    license: str = ""
 
     @property
     def relative_path(self) -> Path:
@@ -50,12 +52,14 @@ _SACHS_SPEC = DatasetSpec(
     # This path becomes available when the dataset revision is published. The
     # checksum prevents a mutable hosting path from silently changing data.
     remote_url="https://raw.githubusercontent.com/saezlab/corneto/main/datasets/sachs/v1/sachs-v1.tar.gz",
-    archive_sha256="0363e1888d353dbe8d17a3957f5a96a33b701a7c1caceaab20a2f05cd324b68d",
+    archive_sha256="78c23eb79223a9b03cea9f4ce4e832151be3c99c54b31e2ee3ea7ec983bdaca3",
     file_sha256={
         "measurements.tsv": "a40650c0fe6aa6581dca556202cd4e94fb0dfa1e6d121c710123bbc164509bcd",
         "condition_manifest.csv": "9f3083b5a2b20b8b2d4cbfab1f00153765c400fd76c94c5392c81b004ebf6fcb",
-        "README.md": "a1a195bcddfaa2383d639a7f4413eaddab03d038fbff0561310547f019ebb011",
+        "README.md": "979d829cbc105873c38b00d99733d0563c190bbb44f873b4697f13d8acccd777",
     },
+    provenance="https://doi.org/10.5281/zenodo.7681811",
+    license="CC BY 4.0",
 )
 
 _DATASETS: dict[tuple[str, str], DatasetSpec] = {
