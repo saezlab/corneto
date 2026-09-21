@@ -5,6 +5,7 @@ from pathlib import Path
 
 import pytest
 
+import corneto.datasets._catalog as catalog
 import corneto.datasets._fetch as fetch
 
 
@@ -42,7 +43,7 @@ def _make_remote_spec(tmp_path: Path, monkeypatch, *, unsafe_member: str | None 
             info.size = len(content)
             handle.addfile(info, fileobj=io.BytesIO(content))
 
-    spec = fetch.DatasetSpec(
+    spec = catalog.DatasetSpec(
         name="example",
         version="v1",
         remote_url="https://data.example.org/example-v1.tar.gz",
@@ -51,7 +52,7 @@ def _make_remote_spec(tmp_path: Path, monkeypatch, *, unsafe_member: str | None 
             filename: hashlib.sha256(content.encode("utf-8")).hexdigest() for filename, content in files.items()
         },
     )
-    monkeypatch.setitem(fetch._DATASETS, (spec.name, spec.version), spec)
+    monkeypatch.setitem(catalog.DATASETS, (spec.name, spec.version), spec)
 
     def open_archive(request, timeout):
         assert request.full_url == spec.remote_url
@@ -78,14 +79,14 @@ def test_explicit_future_version_can_use_local_source(tmp_path, monkeypatch):
         "README.md": "future dataset\n",
     }
     directory = _write_dataset(tmp_path / "datasets", "example", "v2", files)
-    spec = fetch.DatasetSpec(
+    spec = catalog.DatasetSpec(
         name="example",
         version="v2",
         remote_url=None,
         archive_sha256="unused",
         file_sha256={filename: hashlib.sha256(content.encode()).hexdigest() for filename, content in files.items()},
     )
-    monkeypatch.setitem(fetch._DATASETS, (spec.name, spec.version), spec)
+    monkeypatch.setitem(catalog.DATASETS, (spec.name, spec.version), spec)
 
     result = fetch.fetch_dataset("example", version="v2", source_dir=tmp_path / "datasets", auto_download=False)
 
@@ -104,14 +105,14 @@ def test_local_source_wins_over_remote(tmp_path, monkeypatch):
             "README.md": "local dataset\n",
         },
     )
-    local_spec = fetch.DatasetSpec(
+    local_spec = catalog.DatasetSpec(
         name=spec.name,
         version=spec.version,
         remote_url=spec.remote_url,
         archive_sha256=spec.archive_sha256,
         file_sha256={filename: _sha256(local / filename) for filename in spec.file_sha256},
     )
-    monkeypatch.setitem(fetch._DATASETS, (spec.name, spec.version), local_spec)
+    monkeypatch.setitem(catalog.DATASETS, (spec.name, spec.version), local_spec)
 
     def fail_download(*args, **kwargs):
         raise AssertionError("remote source should not be used")
@@ -154,14 +155,14 @@ def test_auto_download_false_does_not_use_remote(tmp_path, monkeypatch):
 
 def test_checksum_mismatch_is_rejected(tmp_path, monkeypatch):
     spec = _make_remote_spec(tmp_path, monkeypatch)
-    broken = fetch.DatasetSpec(
+    broken = catalog.DatasetSpec(
         name=spec.name,
         version=spec.version,
         remote_url=spec.remote_url,
         archive_sha256="0" * 64,
         file_sha256=spec.file_sha256,
     )
-    monkeypatch.setitem(fetch._DATASETS, (broken.name, broken.version), broken)
+    monkeypatch.setitem(catalog.DATASETS, (broken.name, broken.version), broken)
 
     with pytest.raises(fetch.DatasetIntegrityError, match="Checksum mismatch"):
         fetch.fetch_dataset(spec.name, source_dir=tmp_path / "missing", data_home=tmp_path / "cache")
