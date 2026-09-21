@@ -130,8 +130,11 @@ def test_known_shift_keeps_soft_target_equation_and_flow_source(backend):
     assert np.array_equal(method.get_selected_edge_indices(), np.array([0, 1]))
     assert method._soft_intervened[1].tolist() == [False, False, False, True, True]
     assert method._valid_residual[1].tolist() == [True, True, True, True, True]
-    assert method._commodity_sources == ["A", "B", "B"]
+    assert method._commodity_sources == ["A", "B"]
     assert np.all(method._flow_ub[0, 1:] > 0)
+    commodity_info = method.get_commodity_info()
+    assert commodity_info[1]["group_count"] == 1
+    assert commodity_info[1]["evidence_units"][0]["sample_names"] == ("shift_1", "shift_2")
     assert np.allclose(problem.expr.prediction.value[1, :], [0.0, 2.0, 4.0, 5.0, 7.0], atol=1e-7)
 
     coefficients = np.asarray(problem.expr.edge_coefficient.value).reshape(-1)
@@ -192,6 +195,222 @@ def test_estimated_shift_is_shared_by_target_and_intervention_group(backend):
 
     assert np.isclose(np.asarray(problem.expr.intervention_shift_parameters.value).reshape(-1)[0], 3.0, atol=1e-7)
     assert np.isclose(np.asarray(problem.expr.edge_coefficient.value).reshape(-1)[0], 2.0, atol=1e-7)
+
+
+def test_explicit_intervention_groups_share_one_structural_flow(backend):
+    """Replicate cells count once per group while equal signatures share a flow."""
+    graph = Graph.from_tuples([("A", 1, "B")])
+    data = Data.from_cdict(
+        {
+            "obs": {
+                "A": {"mapping": "vertex", "value": 0.0},
+                "B": {"mapping": "vertex", "value": 0.0},
+            },
+            "drug_1_cell_1": {
+                "A": {
+                    "mapping": "vertex",
+                    "value": 1.0,
+                    "intervened": True,
+                    "intervention_group": "drug_1",
+                },
+                "B": {"mapping": "vertex", "value": 1.0},
+            },
+            "drug_1_cell_2": {
+                "A": {
+                    "mapping": "vertex",
+                    "value": 2.0,
+                    "intervened": True,
+                    "intervention_group": "drug_1",
+                },
+                "B": {"mapping": "vertex", "value": 2.0},
+            },
+            "drug_2_cell_1": {
+                "A": {
+                    "mapping": "vertex",
+                    "value": 3.0,
+                    "intervened": True,
+                    "intervention_group": "drug_2",
+                },
+                "B": {"mapping": "vertex", "value": 3.0},
+            },
+        }
+    )
+
+    method = LinearDAGDiscovery(backend=backend)
+    method.build(graph, data)
+
+    assert method._values.shape[1] == 4
+    info = method.get_commodity_info()
+    assert len(info) == 1
+    assert info[0]["source"] == "A"
+    assert info[0]["group_count"] == 2
+    assert tuple(unit["intervention_group"] for unit in info[0]["evidence_units"]) == ("drug_1", "drug_2")
+    assert info[0]["evidence_units"][0]["sample_names"] == ("drug_1_cell_1", "drug_1_cell_2")
+
+
+def test_ungrouped_replicates_share_one_implicit_flow(backend):
+    """Absent group metadata creates one implicit unit per signature, not per cell."""
+    graph = Graph.from_tuples([("A", 1, "B")])
+    data = Data.from_cdict(
+        {
+            "do_A_1": {
+                "A": {"mapping": "vertex", "value": 1.0, "intervened": True},
+                "B": {"mapping": "vertex", "value": 1.0},
+            },
+            "do_A_2": {
+                "A": {"mapping": "vertex", "value": 2.0, "intervened": True},
+                "B": {"mapping": "vertex", "value": 2.0},
+            },
+        }
+    )
+
+    method = LinearDAGDiscovery(backend=backend)
+    method.build(graph, data)
+
+    info = method.get_commodity_info()
+    assert len(info) == 1
+    assert info[0]["group_count"] == 1
+    assert info[0]["evidence_units"][0]["explicit_group"] is False
+    assert info[0]["evidence_units"][0]["sample_names"] == ("do_A_1", "do_A_2")
+
+
+def test_explicit_intervention_group_requires_one_structural_signature(backend):
+    """Explicit replicate groups cannot hide different measurement masks."""
+    graph = Graph.from_tuples([("A", 1, "B"), ("A", 1, "C")])
+    data = Data.from_cdict(
+        {
+            "obs": {
+                "A": {"mapping": "vertex", "value": 0.0},
+                "B": {"mapping": "vertex", "value": 0.0},
+                "C": {"mapping": "vertex", "value": 0.0},
+            },
+            "do_A_complete": {
+                "A": {
+                    "mapping": "vertex",
+                    "value": 1.0,
+                    "intervened": True,
+                    "intervention_group": "drug",
+                },
+                "B": {"mapping": "vertex", "value": 1.0},
+                "C": {"mapping": "vertex", "value": 1.0},
+            },
+            "do_A_missing_C": {
+                "A": {
+                    "mapping": "vertex",
+                    "value": 2.0,
+                    "intervened": True,
+                    "intervention_group": "drug",
+                },
+                "B": {"mapping": "vertex", "value": 2.0},
+                "C": {"mapping": "vertex", "value": None},
+            },
+        }
+    )
+
+    with pytest.raises(ValueError, match="inconsistent structural signatures"):
+        LinearDAGDiscovery(backend=backend).build(graph, data)
+
+
+def test_different_implicit_signatures_remain_separate(backend):
+    """Ungrouped cells with different eligible sinks require distinct flows."""
+    graph = Graph.from_tuples([("A", 1, "B"), ("A", 1, "C")])
+    data = Data.from_cdict(
+        {
+            "obs": {
+                "A": {"mapping": "vertex", "value": 0.0},
+                "B": {"mapping": "vertex", "value": 0.0},
+                "C": {"mapping": "vertex", "value": 0.0},
+            },
+            "do_A_complete": {
+                "A": {"mapping": "vertex", "value": 1.0, "intervened": True},
+                "B": {"mapping": "vertex", "value": 1.0},
+                "C": {"mapping": "vertex", "value": 1.0},
+            },
+            "do_A_missing_C": {
+                "A": {"mapping": "vertex", "value": 2.0, "intervened": True},
+                "B": {"mapping": "vertex", "value": 2.0},
+                "C": {"mapping": "vertex", "value": None},
+            },
+        }
+    )
+
+    method = LinearDAGDiscovery(backend=backend)
+    method.build(graph, data)
+
+    info = method.get_commodity_info()
+    assert len(info) == 2
+    assert {record["sink_vertices"] for record in info} == {("B", "C"), ("B",)}
+
+
+def test_coverage_counts_intervention_groups_instead_of_cells(backend):
+    """Two explicit groups sharing a reachable flow satisfy two coverage units."""
+    graph = Graph.from_tuples([("A", 1, "C"), ("D", 1, "B")])
+    data = Data.from_cdict(
+        {
+            "obs": {
+                "A": {"mapping": "vertex", "value": 0.0},
+                "B": {"mapping": "vertex", "value": 0.0},
+                "C": {"mapping": "vertex", "value": 0.0},
+                "D": {"mapping": "vertex", "value": 0.0},
+            },
+            "do_A_1": {
+                "A": {
+                    "mapping": "vertex",
+                    "value": 1.0,
+                    "intervened": True,
+                    "intervention_group": "drug_1",
+                },
+                "B": {"mapping": "vertex", "value": 0.0},
+                "C": {"mapping": "vertex", "value": 1.0},
+                "D": {"mapping": "vertex", "value": 0.0},
+            },
+            "do_A_2": {
+                "A": {
+                    "mapping": "vertex",
+                    "value": 2.0,
+                    "intervened": True,
+                    "intervention_group": "drug_2",
+                },
+                "B": {"mapping": "vertex", "value": 0.0},
+                "C": {"mapping": "vertex", "value": 2.0},
+                "D": {"mapping": "vertex", "value": 0.0},
+            },
+            "do_B": {
+                "A": {"mapping": "vertex", "value": 0.0},
+                "B": {
+                    "mapping": "vertex",
+                    "value": 1.0,
+                    "intervened": True,
+                    "intervention_group": "drug_B",
+                },
+                "C": {"mapping": "vertex", "value": 0.0},
+                "D": {"mapping": "vertex", "value": 0.0},
+            },
+        }
+    )
+    method = LinearDAGDiscovery(
+        fit_intercept=False,
+        min_commodity_coverage=2 / 3,
+        backend=backend,
+    )
+    problem = method.build(graph, data)
+    problem.solve()
+
+    assert np.array_equal(
+        np.asarray(problem.expr.commodity_group_count.value).reshape(-1),
+        np.array([2.0, 1.0]),
+    )
+    active = np.asarray(problem.expr.commodity_active.value).reshape(-1) > 0.5
+    assert active.tolist() == [True, False]
+
+    strict_problem = LinearDAGDiscovery(
+        fit_intercept=False,
+        min_commodity_coverage=1.0,
+        backend=backend,
+    ).build(graph, data)
+    solve_options = {"primals": None} if str(backend) == "PICOS" else {}
+    result = strict_problem.solve(**solve_options)
+    assert str(result.status).lower() in {"infeasible", "infeasible_or_unbounded"}
 
 
 def test_estimated_shift_requires_a_group(backend):

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from numbers import Real
+from types import MappingProxyType
 from typing import Any, Mapping, Optional
 
 import numpy as np
@@ -40,6 +41,7 @@ class _InterventionDesign:
 
     hard: np.ndarray
     shift: np.ndarray
+    groups: np.ndarray
     known_shift: np.ndarray
     mapping: csr_matrix
     effect_keys: tuple[tuple[Any, Any], ...]
@@ -65,6 +67,7 @@ class _InterventionDesign:
     ) -> "_InterventionDesign":
         hard = np.zeros((num_vertices, num_samples), dtype=bool)
         shift = np.zeros((num_vertices, num_samples), dtype=bool)
+        groups = np.full((num_vertices, num_samples), _MISSING, dtype=object)
         known_shift = np.zeros((num_vertices, num_samples), dtype=float)
         effect_indices: dict[tuple[int, Any], int] = {}
         effect_keys: list[tuple[Any, Any]] = []
@@ -72,6 +75,8 @@ class _InterventionDesign:
         mapping_columns: list[int] = []
 
         for (vertex_index, sample_index), (kind, shift_value, group) in annotations.items():
+            if kind != "none" and group is not _MISSING:
+                groups[vertex_index, sample_index] = group
             if kind == "hard":
                 hard[vertex_index, sample_index] = True
                 continue
@@ -102,20 +107,56 @@ class _InterventionDesign:
         return cls(
             hard=hard,
             shift=shift,
+            groups=groups,
             known_shift=known_shift,
             mapping=mapping,
             effect_keys=tuple(effect_keys),
         )
 
 
+@dataclass(frozen=True)
+class _EvidenceUnit:
+    """One distinct intervention unit contributing to a flow signature."""
+
+    source: Any
+    intervention_group: Any
+    sample_indices: tuple[int, ...]
+    explicit_group: bool
+
+
+@dataclass(frozen=True)
+class _Commodity:
+    """Immutable structural flow column and its evidence units.
+
+    Several intervention groups can share one structural column.  In that
+    case ``evidence_units`` retains the distinct groups for coverage and
+    unexplained-commodity weighting, while the flow itself is represented
+    only once.
+    """
+
+    source: Any
+    source_edge: int
+    sink_edges: tuple[int, ...]
+    hard_blocked_edges: tuple[int, ...]
+    evidence_units: tuple[_EvidenceUnit, ...]
+
+    @property
+    def group_count(self) -> int:
+        """Number of distinct intervention evidence units represented."""
+        return len(self.evidence_units)
+
+
 class LinearDAGDiscovery(FlowMethod):
     """Discover a sparse linear DAG inside a directed prior network.
 
     A linear structural equation is fitted for every vertex. One nonnegative
-    flow commodity is created for each intervened vertex in each condition.
-    Every selected biological edge must be used by at least one commodity, so
-    the learned DAG is structurally supported by intervention-to-measurement
-    paths without requiring every intervention to be explained.
+    flow commodity is created for each unique intervention-to-measurement
+    structural signature. Repeated cells and explicitly grouped intervention
+    evidence therefore share a flow column when their source, eligible sinks,
+    and hard-intervention edge blocks agree. Every selected biological edge
+    must be used by at least one commodity, so the learned DAG is structurally
+    supported by intervention-to-measurement paths without requiring every
+    intervention to be explained.
 
     Missing outcomes are excluded from the loss. If a candidate parent is
     missing in a sample, the corresponding child equation is also excluded;
@@ -150,9 +191,11 @@ class LinearDAGDiscovery(FlowMethod):
         intervention_shift_key: Feature metadata key containing a known
             additive shift. If it is absent for a shift intervention, the
             shift is estimated and shared by ``intervention_group_key``.
-        intervention_group_key: Feature metadata key identifying the group
-            shared by estimated shifts. The target vertex is always part of
-            the parameter key, so one group cannot couple different targets.
+        intervention_group_key: Feature metadata key identifying an explicit
+            intervention evidence group. The target vertex is always part of
+            the group key, so one group cannot couple different sources. For
+            estimated shifts, the same key also shares one bounded effect
+            parameter across its replicates.
         intervention_shift_bound: Absolute bound for each estimated shift.
         lambda_intervention_shifts: Optional L1 penalty on estimated shifts.
         coefficient_support: ``"exact"`` requires every selected edge to have
@@ -172,15 +215,16 @@ class LinearDAGDiscovery(FlowMethod):
         flow_capacity: Upper bound on every commodity flow. By default, the
             number of PKN edges multiplied by ``flow_epsilon`` is used.
         flow_epsilon: Minimum positive flow on every used biological edge.
-        min_commodity_coverage: Minimum fraction of intervention occurrences
-            that must have a selected-edge path to a measured, non-intervened
-            response in the same sample. Each intervened vertex in each sample
-            is one commodity, so a value ``f`` requires at least
-            ``ceil(f * K)`` of the ``K`` commodities to be structurally
-            connected. This does not measure prediction accuracy. Zero does
+        min_commodity_coverage: Minimum fraction of distinct intervention
+            evidence units that must have a selected-edge path to a measured,
+            non-intervened response. Repeated cells in one explicit group count
+            once, while separate groups sharing one flow signature each count
+            once. If the unique flows represent ``K`` evidence units in total,
+            a value ``f`` requires at least ``ceil(f * K)`` of those units to
+            be connected. This does not measure prediction accuracy. Zero does
             not force any intervention to be connected.
         lambda_unexplained: Optional objective penalty for every intervention
-            commodity without such a structural path. Unlike
+            evidence unit without such a structural path. Unlike
             ``min_commodity_coverage``, this is a soft preference rather than
             a minimum feasibility requirement.
         backend: Optimization backend.
@@ -299,13 +343,30 @@ class LinearDAGDiscovery(FlowMethod):
         self._intervention_design: Optional[_InterventionDesign] = None
         self._edge_sources = np.empty((0,), dtype=int)
         self._edge_targets = np.empty((0,), dtype=int)
-        self._commodity_samples: list[int] = []
-        self._commodity_sources: list[Any] = []
-        self._commodity_source_edges: list[int] = []
-        self._commodity_sink_edges: list[list[int]] = []
+        self._commodities: tuple[_Commodity, ...] = ()
         self._flow_lb = np.empty((0, 0))
         self._flow_ub = np.empty((0, 0))
         self._resolved_flow_capacity = 0.0
+
+    @property
+    def _commodity_samples(self) -> list[int]:
+        """Compatibility view of the first sample supporting each flow."""
+        return [unit.sample_indices[0] for commodity in self._commodities for unit in commodity.evidence_units[:1]]
+
+    @property
+    def _commodity_sources(self) -> list[Any]:
+        """Compatibility view of structural flow sources."""
+        return [commodity.source for commodity in self._commodities]
+
+    @property
+    def _commodity_source_edges(self) -> list[int]:
+        """Compatibility view of structural flow source boundary edges."""
+        return [commodity.source_edge for commodity in self._commodities]
+
+    @property
+    def _commodity_sink_edges(self) -> list[list[int]]:
+        """Compatibility view of structural flow sink boundary edges."""
+        return [list(commodity.sink_edges) for commodity in self._commodities]
 
     @staticmethod
     def _validate_positive(value: Any, name: str) -> None:
@@ -432,11 +493,15 @@ class LinearDAGDiscovery(FlowMethod):
             raise ValueError(f"Intervention shift for vertex {feature.id!r} in sample {sample_name!r} must be finite.")
         return value
 
-    def _get_shift_group(self, feature: Any) -> Any:
+    def _get_intervention_group(self, feature: Any) -> Any:
         for key in (self.intervention_group_key, "shift_group", "intervention_id"):
             if key in feature.data:
                 return feature.data[key]
         return _MISSING
+
+    # Keep the old private helper name for downstream code that may have used
+    # it while making the broader intervention-group semantics explicit.
+    _get_shift_group = _get_intervention_group
 
     def _extract_data(
         self,
@@ -464,10 +529,14 @@ class LinearDAGDiscovery(FlowMethod):
                 intervention_type = self._get_intervention_type(feature, sample_name)
                 shift_value = None
                 shift_group = _MISSING
+                if intervention_type != "none":
+                    shift_group = self._get_intervention_group(feature)
+                    if shift_group is None:
+                        shift_group = _MISSING
+                    if shift_group is not _MISSING:
+                        _InterventionDesign._validate_group(shift_group)
                 if intervention_type == "shift":
                     shift_value = self._get_shift_value(feature, sample_name)
-                    if shift_value is None:
-                        shift_group = self._get_shift_group(feature)
                 elif any(
                     key in feature.data
                     for key in dict.fromkeys(
@@ -517,8 +586,100 @@ class LinearDAGDiscovery(FlowMethod):
             raise ValueError(f"PKN vertices {never_observed!r} are never observed; latent vertices are not supported.")
         return values, observed, design
 
+    def _build_commodities(self, graph: BaseGraph) -> tuple[_Commodity, ...]:
+        """Resolve intervention cells into unique structural flow signatures.
+
+        Cells remain independent observations for regression, but flow
+        evidence is deduplicated by explicit ``(source, group)`` units or by
+        one implicit unit per structural signature.  A repeated explicit unit
+        is only valid when all of its cells have the same signature.
+        """
+        if self._layout is None or self._intervention_design is None:
+            raise ValueError("LinearDAGDiscovery intervention preprocessing has not been initialized.")
+
+        vertices = tuple(graph.V)
+        measured_responses = self._observed & ~self._intervened
+        explicit_signatures: dict[tuple[int, Any], tuple[int, tuple[int, ...], tuple[int, ...]]] = {}
+        explicit_samples: dict[tuple[int, Any], list[int]] = {}
+        implicit_samples: dict[tuple[int, tuple[int, ...], tuple[int, ...]], list[int]] = {}
+        signature_refs: dict[
+            tuple[int, tuple[int, ...], tuple[int, ...]],
+            list[tuple[str, Any]],
+        ] = {}
+        signature_order: list[tuple[int, tuple[int, ...], tuple[int, ...]]] = []
+
+        for sample_index in range(len(self._sample_names)):
+            sink_indices = np.flatnonzero(measured_responses[:, sample_index])
+            sink_edges = tuple(self._layout.outflow_edges[vertices[index]] for index in sink_indices)
+            blocked_edges = tuple(np.flatnonzero(self._hard_intervened[self._edge_targets, sample_index]).tolist())
+            source_indices = np.flatnonzero(self._intervened[:, sample_index])
+            for source_index in source_indices:
+                source = vertices[source_index]
+                signature = (int(source_index), sink_edges, blocked_edges)
+                if signature not in signature_refs:
+                    signature_refs[signature] = []
+                    signature_order.append(signature)
+
+                group = self._intervention_design.groups[source_index, sample_index]
+                if group is _MISSING:
+                    if signature not in implicit_samples:
+                        implicit_samples[signature] = []
+                        signature_refs[signature].append(("implicit", signature))
+                    implicit_samples[signature].append(sample_index)
+                    continue
+
+                unit_key = (int(source_index), group)
+                prior_signature = explicit_signatures.get(unit_key)
+                if prior_signature is not None and prior_signature != signature:
+                    raise ValueError(
+                        "Intervention evidence unit for source "
+                        f"{source!r} and intervention_group {group!r} has inconsistent "
+                        "structural signatures across samples. Repeated explicit groups "
+                        "must have the same eligible sinks and hard-intervention blocks."
+                    )
+                if prior_signature is None:
+                    explicit_signatures[unit_key] = signature
+                    explicit_samples[unit_key] = []
+                    signature_refs[signature].append(("explicit", unit_key))
+                explicit_samples[unit_key].append(sample_index)
+
+        commodities: list[_Commodity] = []
+        for signature in signature_order:
+            source_index, sink_edges, blocked_edges = signature
+            units = []
+            for kind, reference in signature_refs[signature]:
+                if kind == "explicit":
+                    unit_source_index, group = reference
+                    units.append(
+                        _EvidenceUnit(
+                            source=vertices[unit_source_index],
+                            intervention_group=group,
+                            sample_indices=tuple(explicit_samples[reference]),
+                            explicit_group=True,
+                        )
+                    )
+                else:
+                    units.append(
+                        _EvidenceUnit(
+                            source=vertices[source_index],
+                            intervention_group=None,
+                            sample_indices=tuple(implicit_samples[reference]),
+                            explicit_group=False,
+                        )
+                    )
+            commodities.append(
+                _Commodity(
+                    source=vertices[source_index],
+                    source_edge=self._layout.inflow_edges[vertices[source_index]],
+                    sink_edges=sink_edges,
+                    hard_blocked_edges=blocked_edges,
+                    evidence_units=tuple(units),
+                )
+            )
+        return tuple(commodities)
+
     def preprocess(self, graph: BaseGraph, data: Data):
-        """Validate data and construct commodity-specific flow boundaries."""
+        """Validate data and construct signature-specific flow boundaries."""
         self._original_graph = graph.copy()
         self._vertex_index = {vertex: index for index, vertex in enumerate(graph.V)}
         self._sample_names = tuple(data.samples)
@@ -581,23 +742,8 @@ class LinearDAGDiscovery(FlowMethod):
             outflow_vertices=(vertex for vertex, include in zip(vertices, sink_union, strict=True) if include),
         )
 
-        self._commodity_samples = []
-        self._commodity_sources = []
-        self._commodity_source_edges = []
-        self._commodity_sink_edges = []
-        for sample_index in range(len(self._sample_names)):
-            source_indices = np.flatnonzero(self._intervened[:, sample_index])
-            sink_indices = np.flatnonzero(measured_responses[:, sample_index])
-            sink_vertices = [vertices[index] for index in sink_indices]
-            sink_edges = [self._layout.outflow_edges[vertex] for vertex in sink_vertices]
-            for source_index in source_indices:
-                source_vertex = vertices[source_index]
-                self._commodity_samples.append(sample_index)
-                self._commodity_sources.append(source_vertex)
-                self._commodity_source_edges.append(self._layout.inflow_edges[source_vertex])
-                self._commodity_sink_edges.append(sink_edges)
-
-        num_commodities = len(self._commodity_sources)
+        self._commodities = self._build_commodities(graph)
+        num_commodities = len(self._commodities)
         num_flow_edges = self._layout.graph.num_edges
         flow_capacity = self.flow_capacity
         if flow_capacity is None:
@@ -608,13 +754,10 @@ class LinearDAGDiscovery(FlowMethod):
         self._flow_lb = np.zeros((num_flow_edges, num_commodities), dtype=float)
         self._flow_ub = np.zeros((num_flow_edges, num_commodities), dtype=float)
         self._flow_ub[: graph.num_edges, :] = self._resolved_flow_capacity
-        for commodity_index, (source_edge, sink_edges) in enumerate(
-            zip(self._commodity_source_edges, self._commodity_sink_edges, strict=True)
-        ):
-            self._flow_ub[source_edge, commodity_index] = self._resolved_flow_capacity
-            self._flow_ub[np.asarray(sink_edges, dtype=int), commodity_index] = self._resolved_flow_capacity
-            hard_targets = self._hard_intervened[self._edge_targets, self._commodity_samples[commodity_index]]
-            self._flow_ub[np.flatnonzero(hard_targets), commodity_index] = 0.0
+        for commodity_index, commodity in enumerate(self._commodities):
+            self._flow_ub[commodity.source_edge, commodity_index] = self._resolved_flow_capacity
+            self._flow_ub[np.asarray(commodity.sink_edges, dtype=int), commodity_index] = self._resolved_flow_capacity
+            self._flow_ub[np.asarray(commodity.hard_blocked_edges, dtype=int), commodity_index] = 0.0
         return self._layout.graph, data.copy()
 
     def get_flow_bounds(self, graph: BaseGraph, data: Data):
@@ -622,7 +765,7 @@ class LinearDAGDiscovery(FlowMethod):
         return {
             "lb": self._flow_lb,
             "ub": self._flow_ub,
-            "n_flows": len(self._commodity_sources),
+            "n_flows": len(self._commodities),
             "shared_bounds": False,
         }
 
@@ -640,7 +783,7 @@ class LinearDAGDiscovery(FlowMethod):
             graph,
             lb=self._flow_lb,
             ub=self._flow_ub,
-            n_flows=len(self._commodity_sources),
+            n_flows=len(self._commodities),
             edge_indices=range(num_edges),
             epsilon=self.flow_epsilon,
             selected=edge_selected,
@@ -661,7 +804,7 @@ class LinearDAGDiscovery(FlowMethod):
         num_vertices = self._original_graph.num_vertices
         num_edges = self._original_graph.num_edges
         num_samples = self._values.shape[1]
-        num_commodities = len(self._commodity_sources)
+        num_commodities = len(self._commodities)
 
         flow = problem.expr.flow
         edge_selected = problem.expr.edge_selected
@@ -686,7 +829,7 @@ class LinearDAGDiscovery(FlowMethod):
             flow_flat = flow.reshape((num_flow_edges * num_commodities, 1))
             commodity_column = commodity_active.reshape((num_commodities, 1))
             commodity_indices = np.arange(num_commodities, dtype=int)
-            source_edges = np.asarray(self._commodity_source_edges, dtype=int)
+            source_edges = np.asarray([commodity.source_edge for commodity in self._commodities], dtype=int)
             source_positions = source_edges + num_flow_edges * commodity_indices
             source_selector = csr_matrix(
                 (
@@ -700,11 +843,15 @@ class LinearDAGDiscovery(FlowMethod):
             problem += source_flow <= self._resolved_flow_capacity * commodity_column
 
             sink_commodities = np.asarray(
-                [commodity for commodity, sink_edges in enumerate(self._commodity_sink_edges) for _ in sink_edges],
+                [
+                    commodity_index
+                    for commodity_index, commodity in enumerate(self._commodities)
+                    for _ in commodity.sink_edges
+                ],
                 dtype=int,
             )
             sink_edges = np.asarray(
-                [edge for sink_edges in self._commodity_sink_edges for edge in sink_edges],
+                [edge for commodity in self._commodities for edge in commodity.sink_edges],
                 dtype=int,
             )
             sink_positions = sink_edges + num_flow_edges * sink_commodities
@@ -738,12 +885,23 @@ class LinearDAGDiscovery(FlowMethod):
                 sink_entry_active = self.backend.Constant(sink_active_selector) @ commodity_column
                 problem += sink_entry_flow <= self._resolved_flow_capacity * sink_entry_active
 
-            minimum_active = int(np.ceil(self.min_commodity_coverage * num_commodities))
+            group_counts = np.asarray([commodity.group_count for commodity in self._commodities], dtype=float)
+            problem.register(
+                "commodity_group_count",
+                self.backend.Constant(group_counts, name="commodity_group_count"),
+            )
+            minimum_active = int(np.ceil(self.min_commodity_coverage * group_counts.sum()))
             if minimum_active:
-                problem += commodity_active.sum() >= minimum_active
+                weighted_active = self.backend.Constant(csr_matrix(group_counts.reshape((1, num_commodities)))) @ (
+                    commodity_active.reshape((num_commodities, 1))
+                )
+                problem += weighted_active >= minimum_active
 
         if self.lambda_unexplained:
-            unexplained = self.backend.Constant(np.ones((num_commodities,))) - commodity_active
+            group_counts = np.asarray([commodity.group_count for commodity in self._commodities], dtype=float)
+            unexplained = self.backend.Constant(group_counts).multiply(
+                self.backend.Constant(np.ones((num_commodities,))) - commodity_active
+            )
             problem.register("commodity_unexplained", unexplained)
             problem.add_objective(
                 unexplained.sum(),
@@ -927,6 +1085,48 @@ class LinearDAGDiscovery(FlowMethod):
         problem.register("dag_layer", problem.expr._dag_layer)
         return problem
 
+    def get_commodity_info(self) -> tuple[Mapping[str, Any], ...]:
+        """Return read-only metadata for the resolved structural flows.
+
+        The result is a tuple of mapping-like records, one per flow column.
+        ``group_count`` is the number of distinct intervention evidence units
+        represented by that column; repeated cells in one explicit group are
+        listed in that unit's ``sample_names`` but do not increase the count.
+        An absent group is reported as ``None`` and is represented by one
+        implicit unit per structural signature.
+        """
+        if self._original_graph is None or self._layout is None:
+            raise ValueError("The method has not been preprocessed.")
+        vertex_by_outflow = {edge: vertex for vertex, edge in self._layout.outflow_edges.items()}
+        records = []
+        for index, commodity in enumerate(self._commodities):
+            evidence_units = []
+            for unit in commodity.evidence_units:
+                evidence_units.append(
+                    MappingProxyType(
+                        {
+                            "source": unit.source,
+                            "intervention_group": unit.intervention_group,
+                            "explicit_group": unit.explicit_group,
+                            "sample_names": tuple(self._sample_names[i] for i in unit.sample_indices),
+                        }
+                    )
+                )
+            records.append(
+                MappingProxyType(
+                    {
+                        "index": index,
+                        "source": commodity.source,
+                        "sink_vertices": tuple(vertex_by_outflow[edge] for edge in commodity.sink_edges),
+                        "sink_edges": commodity.sink_edges,
+                        "hard_blocked_edges": commodity.hard_blocked_edges,
+                        "group_count": commodity.group_count,
+                        "evidence_units": tuple(evidence_units),
+                    }
+                )
+            )
+        return tuple(records)
+
     def get_selected_edge_indices(self, threshold: float = 0.5) -> np.ndarray:
         """Return selected edge indices in the original PKN."""
         if self.problem is None:
@@ -975,7 +1175,7 @@ class LinearDAGDiscovery(FlowMethod):
         values = self.problem.expr.edge_used_by_commodity.value
         if values is None:
             raise ValueError("The problem has not been solved.")
-        return np.asarray(values).reshape((self._original_graph.num_edges, len(self._commodity_sources))) > threshold
+        return np.asarray(values).reshape((self._original_graph.num_edges, len(self._commodities))) > threshold
 
     def get_solution_graph(self, threshold: float = 0.5):
         """Return the selected PKN subgraph with fitted edge metadata.
