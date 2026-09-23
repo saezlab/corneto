@@ -13,7 +13,7 @@ For notebook execution in tutorials, we also support [Pixi](https://pixi.sh/) en
 Once installed, clone the repository and install it with poetry. This will create a virtual environment ready for development:
 
 ```bash
-git clone git+https://github.com/saezlab/corneto.git@dev
+git clone https://github.com/saezlab/corneto.git
 cd corneto
 poetry install --with dev
 ```
@@ -243,7 +243,7 @@ poetry run python docs/tutorials/run_notebooks.py
 - **Pixi integration**: Tutorial notebooks can use individual `pixi.toml` files for isolated execution environments with specific dependencies.
 - **Poetry and PEP 621**: The project uses both Poetry (legacy) and modern PEP 621 project configuration in `pyproject.toml`.
 
-Please see [contributing with tutorials](https://github.com/saezlab/corneto/blob/dev/docs/tutorials/README.md) for more information on how to contribute tutorials.
+Please see [contributing with tutorials](https://github.com/saezlab/corneto/blob/main/docs/tutorials/README.md) for more information on how to contribute tutorials.
 
 ## Releases
 

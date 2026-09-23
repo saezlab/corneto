@@ -6,6 +6,7 @@ import argparse
 import re
 import subprocess
 import sys
+from pathlib import Path
 from typing import Sequence
 
 VERSION_RE = re.compile(r"^v\d+\.\d+\.\d+(?:-(?:alpha|beta|rc)\.\d+)?$")
@@ -55,25 +56,11 @@ def _ensure_remote_exists(remote: str) -> None:
 
 
 def _ensure_up_to_date_with_remote_main(remote: str) -> None:
-    _run(["git", "fetch", remote, "main", "dev"], check=True)
+    _run(["git", "fetch", remote, "main"], check=True)
     head = _run(["git", "rev-parse", "HEAD"], check=True)
     remote_main = _run(["git", "rev-parse", f"{remote}/main"], check=True)
     if head != remote_main:
-        raise ReleaseError(f"HEAD is not at {remote}/main. Pull main after merging dev -> main.")
-
-
-def _ensure_dev_is_merged(remote: str) -> None:
-    # `merge-base --is-ancestor A B` succeeds when A is reachable from B.
-    result = subprocess.run(
-        ["git", "merge-base", "--is-ancestor", f"{remote}/dev", "HEAD"],
-        text=True,
-        capture_output=True,
-        check=False,
-    )
-    if result.returncode != 0:
-        raise ReleaseError(
-            f"{remote}/dev is not merged into current main commit yet. Merge dev -> main before releasing."
-        )
+        raise ReleaseError(f"HEAD is not at {remote}/main. Pull main before releasing.")
 
 
 def _ensure_tag_does_not_exist(version: str, remote: str) -> None:
@@ -84,6 +71,27 @@ def _ensure_tag_does_not_exist(version: str, remote: str) -> None:
     remote_tags = _run(["git", "ls-remote", "--tags", remote, version], check=True)
     if remote_tags:
         raise ReleaseError(f"Tag already exists on {remote}: {version}")
+
+
+def _expected_release_heading(version: str) -> str:
+    heading = f"# Release {version}"
+    if re.search(r"-(?:alpha|beta|rc)\.\d+$", version):
+        heading += " {bdg-warning}`Pre-release`"
+    return heading
+
+
+def _ensure_release_notes(version: str, *, root: Path = Path(".")) -> None:
+    notes_path = root / "docs" / "releases" / f"{version}.md"
+    if not notes_path.is_file():
+        raise ReleaseError(f"Missing release notes: {notes_path}")
+
+    content = notes_path.read_text(encoding="utf-8")
+    first_line = next((line.strip() for line in content.splitlines() if line.strip()), "")
+    expected_heading = _expected_release_heading(version)
+    if first_line != expected_heading:
+        raise ReleaseError(f"Release notes must start with {expected_heading!r}; found {first_line!r} in {notes_path}.")
+    if not re.search(r"^## Highlights\s*$", content, flags=re.MULTILINE):
+        raise ReleaseError(f"Release notes must contain a '## Highlights' section: {notes_path}")
 
 
 def _create_and_push_tag(version: str, remote: str) -> None:
@@ -103,7 +111,7 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
     parser.add_argument(
         "--remote",
         default="origin",
-        help="Git remote containing the release main/dev branches (default: origin).",
+        help="Git remote containing the release main branch (default: origin).",
     )
     parser.add_argument(
         "--yes",
@@ -127,8 +135,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         _ensure_clean_tree()
         _ensure_on_main()
         _ensure_up_to_date_with_remote_main(args.remote)
-        _ensure_dev_is_merged(args.remote)
         _ensure_tag_does_not_exist(version, args.remote)
+        _ensure_release_notes(version)
 
         if args.dry_run:
             print(f"[dry-run] All checks passed. Would create and push tag: {version}")
@@ -143,12 +151,6 @@ def main(argv: Sequence[str] | None = None) -> int:
         _create_and_push_tag(version, args.remote)
         print(f"Release tag pushed to {args.remote}: {version}")
         print("GitHub Actions will now build, publish, and create the GitHub release.")
-        print("Post-release sync reminder:")
-        print("  git checkout dev")
-        print(f"  git pull --ff-only {args.remote} dev")
-        print(f"  git merge --ff-only {args.remote}/main")
-        print(f"  git push {args.remote} dev")
-        print("This keeps dev aligned with the latest release tag ancestry for dynamic versioning.")
         return 0
     except ReleaseError as exc:
         print(f"Release aborted: {exc}", file=sys.stderr)

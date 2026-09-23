@@ -72,9 +72,9 @@ git clone https://github.com/saezlab/corneto
 cd corneto
 ```
 
-### 2. Switch to the `dev` Branch
+### 2. Start from the `main` Branch
 ```bash
-git checkout dev
+git checkout main
 ```
 
 ### 3. Create a New Branch
@@ -121,7 +121,7 @@ git push origin contrib/my-tutorial-name
 
 ### 8. Open a Pull Request
 
-Open a **PR against `dev`** with title:
+Open a **PR against `main`** with title:
 ```
 docs(tutorial): add my_tutorial_name example
 ```

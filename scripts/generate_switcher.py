@@ -37,12 +37,7 @@ def build_entries(base_url: str) -> list[dict[str, object]]:
             "version": "stable",
             "url": f"{base_url}/stable/",
             "preferred": True,
-        },
-        {
-            "name": "latest",
-            "version": "latest",
-            "url": f"{base_url}/latest/",
-        },
+        }
     ]
     for tag in _get_tags():
         entries.append(

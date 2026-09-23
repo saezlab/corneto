@@ -60,6 +60,52 @@ def _as_values(value: Any) -> Optional[np.ndarray]:
     return np.array(value)
 
 
+def _scaled_magnitudes(
+    values: Any,
+    *,
+    zero_threshold: float = 1e-6,
+    scale: Optional[str] = "log",
+    clip_quantile: Optional[float] = 0.05,
+) -> np.ndarray:
+    """Return finite edge magnitudes normalized to ``[0, 1]``.
+
+    Zeros remain zero, including after quantile clipping. ``clip_quantile`` is
+    the fraction clipped from the upper tail, matching the historical plotting
+    option while avoiding lower-tail inflation of small or zero values.
+    """
+    array = np.asarray(values, dtype=float)
+    if array.ndim != 1:
+        raise ValueError(f"Plot values must be one-dimensional; got shape {array.shape}.")
+    if not np.all(np.isfinite(array)):
+        raise ValueError("Plot values must be finite.")
+    if zero_threshold < 0:
+        raise ValueError("zero_threshold must be nonnegative.")
+
+    magnitudes = np.abs(array)
+    magnitudes[magnitudes < zero_threshold] = 0.0
+    if scale == "log":
+        magnitudes = np.log1p(magnitudes)
+    elif scale == "std":
+        std = float(np.std(magnitudes))
+        if std > 0:
+            magnitudes = magnitudes / std
+    elif scale is not None:
+        raise ValueError(f"Unknown scale '{scale}'. Use None, 'log', or 'std'.")
+
+    nonzero = magnitudes > 0
+    if clip_quantile is not None:
+        if not 0 <= clip_quantile <= 1:
+            raise ValueError(f"Clipping value must be between 0 and 1, got {clip_quantile}")
+        if np.any(nonzero):
+            upper = float(np.quantile(magnitudes[nonzero], 1 - clip_quantile))
+            magnitudes[nonzero] = np.minimum(magnitudes[nonzero], upper)
+
+    maximum = float(np.max(magnitudes)) if magnitudes.size else 0.0
+    if maximum <= 0:
+        return np.zeros_like(magnitudes)
+    return magnitudes / maximum
+
+
 def _processor_sign_magnitude(graph: BaseGraph, data: Dict[str, Any], theme: Theme) -> ProcessorOutput:
     edge_attrs: Dict[int, Dict[str, str]] = {}
     vertex_attrs: Dict[Union[int, str], Dict[str, str]] = {}
@@ -101,28 +147,21 @@ def _processor_metabolism_flux(graph: BaseGraph, data: Dict[str, Any], theme: Th
     scale = data.get("scale", "log")
     clip_quantil = data.get("clip_quantil", 0.05)
 
-    flow = np.array(flux_values, dtype=float)
-    flow[np.abs(flow) < zero_flow_threshold] = 0
-    if scale is not None:
-        if scale == "log":
-            flow = np.sign(flow) * np.log10(np.abs(flow) + 1.0)
-        elif scale == "std":
-            std = float(np.std(flow))
-            if std > 0:
-                flow = flow / std
-        else:
-            raise ValueError(f"Unknown scale '{scale}'. Use None, 'log', or 'std'.")
-    if clip_quantil is not None:
-        flow = clip_quantiles(flow, float(clip_quantil))
-    max_flow = max(float(np.max(np.abs(flow))), 1e-6)
+    flow = np.asarray(flux_values, dtype=float)
+    magnitudes = _scaled_magnitudes(
+        flow,
+        zero_threshold=zero_flow_threshold,
+        scale=scale,
+        clip_quantile=None if clip_quantil is None else float(clip_quantil),
+    )
     min_w = float(theme["min_edge_width"])
     max_w = float(theme["max_edge_width"])
 
-    for i, v in enumerate(flow):
+    for i, (v, magnitude) in enumerate(zip(flow, magnitudes)):
         if scale is None:
-            edge_width = max_w if abs(v) > 0 else min_w
+            edge_width = max_w if magnitude > 0 else min_w
         else:
-            edge_width = min_w + (max_w - min_w) * abs(v / max_flow)
+            edge_width = min_w + (max_w - min_w) * magnitude
         edge_attrs[i] = {"penwidth": str(edge_width)}
         if v > 0:
             edge_attrs[i]["color"] = str(theme["positive_color"])
@@ -234,6 +273,59 @@ def _merge_solution_data(
         if value is not None:
             merged[data_key] = value
     return merged
+
+
+def _resolve_sample_index(
+    sample: Optional[Union[int, str]],
+    *,
+    feature_data: Any,
+    num_samples: int,
+) -> Optional[int]:
+    if sample is None:
+        return None
+    if isinstance(sample, int):
+        if sample < 0 or sample >= num_samples:
+            raise ValueError(f"sample index {sample} out of range for {num_samples} samples.")
+        return sample
+    samples = getattr(feature_data, "samples", None)
+    if samples is None:
+        raise ValueError("A string sample requires feature_data with named samples.")
+    names = list(samples)
+    if sample not in samples:
+        raise ValueError(f"sample '{sample}' not found in feature_data samples.")
+    index = names.index(sample)
+    if index >= num_samples:
+        raise ValueError(f"sample '{sample}' maps to column {index}, but solution data has only {num_samples} columns.")
+    return index
+
+
+def _select_solution_sample(
+    data: Dict[str, Any],
+    *,
+    sample: Optional[Union[int, str]],
+    feature_data: Any,
+) -> Dict[str, Any]:
+    selected = dict(data)
+    for key in ("vertex_values", "edge_values", "flux_values"):
+        if key not in selected:
+            continue
+        values = _as_values(selected[key])
+        if values is None or values.ndim <= 1:
+            continue
+        if values.ndim != 2:
+            raise ValueError(f"Plot data '{key}' must be a vector or matrix; got shape {values.shape}.")
+        if values.shape[1] == 1 and sample is None:
+            selected[key] = values[:, 0]
+            continue
+        index = _resolve_sample_index(
+            sample,
+            feature_data=feature_data,
+            num_samples=values.shape[1],
+        )
+        if index is None:
+            raise ValueError(f"Plot data '{key}' contains {values.shape[1]} samples; select one with sample=.")
+        selected[key] = values[:, index]
+    return selected
 
 
 def _resolve_role_styles(
@@ -348,27 +440,144 @@ def _merge_attrs(
 
 
 def _plot_with_networkx(graph: BaseGraph, **kwargs) -> Any:
-    import matplotlib.pyplot as plt
-    import networkx as nx
+    try:
+        import matplotlib.colors as mcolors
+        import matplotlib.pyplot as plt
+        import networkx as nx
+    except ImportError as exc:
+        raise ImportError(
+            "The NetworkX renderer requires optional plotting dependencies. "
+            "Install CORNETO with `pip install 'corneto[plot]'`."
+        ) from exc
 
-    from corneto.contrib.networkx import corneto_graph_to_networkx
-
-    skip_unsupported_edges = bool(kwargs.get("skip_unsupported_edges", True))
-    nx_graph = corneto_graph_to_networkx(graph, skip_unsupported_edges=skip_unsupported_edges)
+    model_keys = {
+        "graph_attr",
+        "node_attr",
+        "edge_attr",
+        "custom_edge_attr",
+        "custom_vertex_attr",
+        "edge_indexes",
+        "orphan_edges",
+    }
+    model = _build_plot_model(graph, **{key: kwargs[key] for key in model_keys if key in kwargs})
+    nx_graph = nx.MultiDiGraph()
+    node_defaults = dict(model["node_defaults"] or {})
+    edge_defaults = dict(model["edge_attr"] or {})
+    for name, attrs in model["nodes"]:
+        merged = dict(node_defaults)
+        merged.update(attrs)
+        nx_graph.add_node(name, **merged)
+    for edge_index, (source, target, attrs) in enumerate(model["edges"]):
+        merged = dict(edge_defaults)
+        merged.update(attrs)
+        nx_graph.add_edge(source, target, key=edge_index, **merged)
 
     pos = kwargs.get("pos")
-    if pos is None:
-        pos = nx.spring_layout(nx_graph)
+    if pos is not None:
+        pos = {str(key): value for key, value in pos.items()}
+    else:
+        pos = nx.spring_layout(nx_graph, seed=kwargs.get("seed", 0))
 
     ax = kwargs.get("ax")
     if ax is None:
-        fig, ax = plt.subplots(figsize=kwargs.get("figsize"))
+        fig, ax = plt.subplots(figsize=kwargs.get("figsize"), constrained_layout=True)
     else:
         fig = ax.figure
 
-    nx.draw_networkx(nx_graph, pos=pos, ax=ax, with_labels=kwargs.get("node_labels") is None)
-    if kwargs.get("node_labels") is not None:
-        nx.draw_networkx_labels(nx_graph, pos=pos, labels=kwargs["node_labels"], ax=ax)
+    graphviz_colors = {
+        "firebrick4": "#8b1a1a",
+        "dodgerblue4": "#00688b",
+        "olivedrab3": "#9acd32",
+        "orangered": "#ff4500",
+    }
+
+    def mpl_color(value: Any, default: str) -> str:
+        color = str(value or default)
+        color = graphviz_colors.get(color.lower(), color)
+        return color if mcolors.is_color_like(color) else default
+
+    shape_map = {
+        "box": "s",
+        "rect": "s",
+        "rectangle": "s",
+        "square": "s",
+        "diamond": "D",
+        "triangle": "^",
+        "point": ".",
+        "circle": "o",
+        "ellipse": "o",
+    }
+    grouped_nodes: Dict[str, List[str]] = {}
+    for node, attrs in nx_graph.nodes(data=True):
+        shape = shape_map.get(str(attrs.get("shape", "circle")).lower(), "o")
+        grouped_nodes.setdefault(shape, []).append(node)
+    for shape, nodes in grouped_nodes.items():
+        attrs = [nx_graph.nodes[node] for node in nodes]
+        sizes = [float(attr.get("nodesize", 60 if shape == "." else 900)) for attr in attrs]
+        nx.draw_networkx_nodes(
+            nx_graph,
+            pos,
+            nodelist=nodes,
+            node_shape=shape,
+            node_size=sizes,
+            node_color=[
+                mpl_color(attr.get("fillcolor"), "white") if "filled" in str(attr.get("style", "")) else "white"
+                for attr in attrs
+            ],
+            edgecolors=[mpl_color(attr.get("color"), "black") for attr in attrs],
+            linewidths=[float(attr.get("penwidth", 1.0)) for attr in attrs],
+            ax=ax,
+        )
+
+    for source, target, key, attrs in nx_graph.edges(keys=True, data=True):
+        style = str(attrs.get("style", "solid")).split(",")[0]
+        arrowhead = str(attrs.get("arrowhead", "normal"))
+        arrowstyle = "-[" if arrowhead == "tee" else ("-" if arrowhead == "none" else "-|>")
+        nx.draw_networkx_edges(
+            nx_graph,
+            pos,
+            edgelist=[(source, target, key)],
+            edge_color=mpl_color(attrs.get("color"), "black"),
+            width=float(attrs.get("penwidth", 1.0)),
+            style=style if style in {"solid", "dashed", "dotted", "dashdot"} else "solid",
+            arrows=arrowhead != "none",
+            arrowstyle=arrowstyle,
+            connectionstyle="arc3,rad=0.05",
+            ax=ax,
+        )
+
+    requested_labels = kwargs.get("node_labels")
+    if requested_labels is not None:
+        requested_labels = {str(node): label for node, label in requested_labels.items()}
+    labels = {}
+    for node, attrs in nx_graph.nodes(data=True):
+        if requested_labels is not None:
+            labels[node] = requested_labels.get(node, node)
+        else:
+            labels[node] = attrs.get("label", node)
+    font_colors = {mpl_color(attrs.get("fontcolor"), "black") for _, attrs in nx_graph.nodes(data=True)}
+    nx.draw_networkx_labels(
+        nx_graph,
+        pos,
+        labels=labels,
+        font_color=next(iter(font_colors)) if len(font_colors) == 1 else "black",
+        font_size=kwargs.get("font_size", 9),
+        ax=ax,
+    )
+
+    edge_labels = {
+        (source, target, key): attrs["label"]
+        for source, target, key, attrs in nx_graph.edges(keys=True, data=True)
+        if attrs.get("label") not in (None, "")
+    }
+    if edge_labels:
+        nx.draw_networkx_edge_labels(
+            nx_graph,
+            pos,
+            edge_labels=edge_labels,
+            font_size=kwargs.get("edge_font_size", 8),
+            ax=ax,
+        )
     ax.set_axis_off()
     return fig
 
@@ -410,6 +619,7 @@ def plot_graph(graph: BaseGraph, renderer: str = "auto", **kwargs) -> Any:
     if solution_map is not None:
         merged_solution_map.update(solution_map)
     data = _merge_solution_data(data, solution, merged_solution_map)
+    data = _select_solution_sample(data, sample=sample, feature_data=feature_data)
 
     if node_roles is None and feature_data is not None:
         node_roles = _infer_node_roles_from_feature_data(feature_data, sample=sample, role_key=role_key)
@@ -613,27 +823,22 @@ def flow_style(
     scale: Optional[Literal["log", "std"]] = "log",
     clip_quantil: Optional[float] = 0.05,
 ):
-    flow = np.array(P.expr[flow_name].value)
-    flow[np.abs(flow) < zero_flow_threshold] = 0
-    if scale is not None:
-        if scale == "log":
-            flow = np.sign(flow) * np.log10(np.abs(flow) + 1.0)
-        elif scale == "std":
-            flow = flow / np.std(flow)
-        else:
-            raise ValueError(f"Unknown normalization method: {scale}")
-    if clip_quantil is not None:
-        flow = clip_quantiles(flow, clip_quantil)
-    max_flow = max(np.max(np.abs(flow)), 1e-6)
+    flow = np.asarray(P.expr[flow_name].value, dtype=float)
+    magnitudes = _scaled_magnitudes(
+        flow,
+        zero_threshold=zero_flow_threshold,
+        scale=scale,
+        clip_quantile=clip_quantil,
+    )
     edge_attrs = dict()
-    for i, v in enumerate(flow):
+    for i, (v, magnitude) in enumerate(zip(flow, magnitudes)):
         # Apply threshold edge width
-        if abs(v) > 0:
+        if magnitude > 0:
             edge_width = max_edge_width
         else:
             edge_width = min_edge_width
         if scale is not None:
-            edge_width = min_edge_width + (max_edge_width - min_edge_width) * abs(v / max_flow)
+            edge_width = min_edge_width + (max_edge_width - min_edge_width) * magnitude
         edge_attrs[i] = {"penwidth": str(edge_width)}
         if flow[i] > 0:
             edge_attrs[i]["color"] = positive_color
@@ -726,6 +931,8 @@ def _build_plot_model(
     edges: List[Tuple[str, str, Dict[str, str]]] = []
     is_hypergraph = False
 
+    included_nodes = set()
+    connected_nodes = {str(vertex) for source, target in graph.E for vertex in (*source, *target)}
     for i, e in enumerate(graph.edges()):
         if edge_indexes is not None and i not in edge_indexes:
             continue
@@ -743,6 +950,7 @@ def _build_plot_model(
             if v_name in custom_vertex_attr_str:
                 attrs.update(custom_vertex_attr_str[v_name])
             nodes.append((v_name, attrs))
+            included_nodes.add(v_name)
 
         if len(s) == 0:
             v_name = f"e_{i}_source"
@@ -784,6 +992,17 @@ def _build_plot_model(
                 attrs = dict(arrowhead=head)
                 attrs.update(custom_edge_attr.get(i, {}))
             edges.append((v_s[0], v_t[0], attrs))
+
+    for vertex in graph.V:
+        vertex_name = str(vertex)
+        if vertex_name in included_nodes or vertex_name in connected_nodes:
+            continue
+        attrs = {}
+        if "shape" not in node_defaults:
+            attrs["shape"] = "circle"
+        if vertex_name in custom_vertex_attr_str:
+            attrs.update(custom_vertex_attr_str[vertex_name])
+        nodes.append((vertex_name, attrs))
 
     return {
         "graph_attr": graph_attr,

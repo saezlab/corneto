@@ -4,14 +4,13 @@ set -euo pipefail
 usage() {
   cat <<'EOF'
 Usage:
-  scripts/publish_docs_tag.sh --tag vX.Y.Z[-suffix] [--base-url URL] [--remote origin] [--python /path/to/python] [--poetry /path/to/poetry] [--update-root] [--keep-temp] [--dry-run]
+  scripts/publish_docs_tag.sh --tag vX.Y.Z[-suffix] [--base-url URL] [--remote origin] [--python /path/to/python] [--poetry /path/to/poetry] [--keep-temp] [--dry-run]
 
 Examples:
   scripts/publish_docs_tag.sh --tag v1.0.0-beta.3
   scripts/publish_docs_tag.sh --tag v1.0.0-beta.3 --base-url https://corneto.org
   scripts/publish_docs_tag.sh --tag v1.0.0-beta.3 --python /opt/homebrew/bin/python3.11
   scripts/publish_docs_tag.sh --tag v1.0.0-beta.3 --poetry /opt/homebrew/bin/poetry
-  scripts/publish_docs_tag.sh --tag v1.0.0-beta.3 --update-root
 EOF
 }
 
@@ -20,7 +19,6 @@ base_url="https://corneto.org"
 remote="origin"
 python_bin=""
 poetry_bin=""
-update_root=0
 keep_temp=0
 dry_run=0
 
@@ -45,10 +43,6 @@ while [[ $# -gt 0 ]]; do
     --poetry)
       poetry_bin="${2:-}"
       shift 2
-      ;;
-    --update-root)
-      update_root=1
-      shift
       ;;
     --keep-temp)
       keep_temp=1
@@ -153,20 +147,13 @@ fi
 mkdir -p "${pages_wt}/${tag}"
 rsync -a --delete "${tag_wt}/docs/_build/html/" "${pages_wt}/${tag}/"
 
-if [[ "${update_root}" -eq 1 ]]; then
-  echo "==> Updating root index and switcher"
-  mkdir -p "${pages_wt}"
-  cp "${tag_wt}/docs/custom-index.html" "${pages_wt}/index.html"
-  touch "${pages_wt}/.nojekyll"
-  "${poetry_bin}" run python "${repo_root}/scripts/generate_switcher.py" \
-    --output "${pages_wt}/switcher.json" \
-    --base-url "${base_url}"
-  "${poetry_bin}" run python "${repo_root}/scripts/patch_switcher_urls.py" \
-    --root "${pages_wt}" \
-    --new-url "${base_url}/switcher.json"
-else
-  echo "==> Skipping root index/switcher update (use --update-root to enable)"
-fi
+echo "==> Updating switcher"
+"${poetry_bin}" run python "${repo_root}/scripts/generate_switcher.py" \
+  --output "${pages_wt}/switcher.json" \
+  --base-url "${base_url}"
+"${poetry_bin}" run python "${repo_root}/scripts/patch_switcher_urls.py" \
+  --root "${pages_wt}" \
+  --new-url "${base_url}/switcher.json"
 
 echo "==> Committing and pushing gh-pages changes"
 cd "${pages_wt}"
@@ -179,7 +166,7 @@ if [[ -n "$(git status --porcelain)" ]]; then
   fi
   git fetch "${remote}" gh-pages >/dev/null 2>&1 || true
   if ! git merge --ff-only "${remote}/gh-pages" >/dev/null 2>&1; then
-    echo "Remote gh-pages moved. Refusing to overwrite. Re-run after updating, or use --update-root with a manual merge." >&2
+    echo "Remote gh-pages moved. Refusing to overwrite; re-run after updating." >&2
     exit 1
   fi
   git push "${remote}" gh-pages

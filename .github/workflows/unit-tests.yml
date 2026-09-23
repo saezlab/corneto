@@ -4,8 +4,15 @@
 name: Unit tests
 
 on:
-  push:
   pull_request:
+    branches:
+      - main
+
+# A PR into the public trunk is the release gate.  Do not repeat this matrix
+# for every temporary branch push, merge to main, or release tag.
+concurrency:
+  group: unit-tests-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
 
 env:
   POETRY_VERSION: "2.4.1"

@@ -2,9 +2,10 @@ from numbers import Number
 from typing import Any, List, Optional, Set, Tuple, Union
 
 import numpy as np
+from scipy.sparse import csr_matrix
 
 from corneto._constants import Direction, Solver, VarType
-from corneto._settings import _numpy_array
+from corneto._decorators import _delegate
 from corneto.backend._base import (
     Backend,
     CExpression,
@@ -20,9 +21,13 @@ except ImportError:
 
 
 def _get_shape(a: Any):
+    if hasattr(a, "_corneto_shape"):
+        return a._corneto_shape
     if hasattr(a, "_csymbol_shape"):
         return a._csymbol_shape
     if hasattr(a, "_expr"):
+        if hasattr(a._expr, "_corneto_shape"):
+            return a._expr._corneto_shape
         return a._expr._csymbol_shape if hasattr(a._expr, "_csymbol_shape") else a._expr.shape
     if hasattr(a, "shape"):
         return a.shape
@@ -32,6 +37,8 @@ def _get_shape(a: Any):
 def _infer_shape(c: Any):
     shape = _get_shape(c)
     if len(shape) == 2 and (shape[0] == 1 or shape[1] == 1):
+        if hasattr(c, "_corneto_shape") or (hasattr(c, "_expr") and hasattr(c._expr, "_corneto_shape")):
+            return shape
         # This is the problematic case, as any transformation
         # using PICOS will result in a 2D array.
         if hasattr(c, "_proxy_symbols"):
@@ -58,6 +65,12 @@ class PicosExpression(CExpression):
     def _create_proxy_expr(self, expr: Any, symbols: Optional[Set["CSymbol"]] = None) -> "PicosExpression":
         return PicosExpression(expr, symbols)
 
+    @property
+    def T(self):
+        result = self._expr.T
+        result._corneto_shape = tuple(result.shape)
+        return self._create(result, {})
+
     def _elementwise_mul(self, other: Any) -> Any:
         return self._expr ^ other
 
@@ -65,7 +78,64 @@ class PicosExpression(CExpression):
         return pc.Norm(self._expr, p=p)
 
     def _sum(self, axis: Optional[int] = None) -> Any:
-        return pc.sum(self._expr, axis=axis)
+        shape = _infer_shape(self)
+        if len(shape) > 2:
+            return pc.sum(self._expr, axis=axis)
+
+        if len(shape) == 0:
+            return self._expr
+
+        if len(shape) == 1:
+            if axis not in (None, 0, -1):
+                return pc.sum(self._expr, axis=axis)
+            rows, columns = shape[0], 1
+        else:
+            rows, columns = shape
+            if axis is not None and axis not in (0, 1, -1, -2):
+                return pc.sum(self._expr, axis=axis)
+
+        if axis is None or len(shape) == 1:
+            size = rows * columns
+            operator = csr_matrix(
+                (
+                    np.ones(size, dtype=float),
+                    (np.zeros(size, dtype=int), np.arange(size, dtype=int)),
+                ),
+                shape=(1, size),
+            )
+            flattened = self._expr.reshaped((size, 1))
+            result = pc.Constant(_get_unique_name("sum"), value=operator) * flattened
+            output_shape = (1,) if len(shape) == 1 else (1, 1)
+            result._corneto_shape = output_shape
+            return result
+
+        if axis in (0, -2):
+            operator = csr_matrix(
+                (
+                    np.ones(rows, dtype=float),
+                    (np.zeros(rows, dtype=int), np.arange(rows, dtype=int)),
+                ),
+                shape=(1, rows),
+            )
+            result = pc.Constant(_get_unique_name("sum"), value=operator) * self._expr
+            result._corneto_shape = (1, columns)
+            return result
+
+        operator = csr_matrix(
+            (
+                np.ones(columns, dtype=float),
+                (np.arange(columns, dtype=int), np.zeros(columns, dtype=int)),
+            ),
+            shape=(columns, 1),
+        )
+        result = self._expr * pc.Constant(_get_unique_name("sum"), value=operator)
+        result._corneto_shape = (rows, 1)
+        return result
+
+    @_delegate(override=True)
+    def sum(self, axis: Optional[int] = None) -> CExpression:
+        """Reduce with sparse affine operators instead of PICOS dense sums."""
+        return self._sum(axis=axis)
 
     def _max(self, axis: Optional[int] = None) -> Any:
         raise NotImplementedError()
@@ -100,7 +170,9 @@ class PicosExpression(CExpression):
         return a // b
 
     def _reshape(self, shape: Tuple[int, ...]) -> Any:
-        return self._expr.reshaped(shape)
+        result = self._expr.reshaped(shape)
+        result._corneto_shape = tuple(shape)
+        return result
 
     @property
     def value(self) -> np.ndarray:
@@ -153,7 +225,10 @@ class PicosSymbol(CSymbol, PicosExpression):
 
 class PicosBackend(Backend):
     def __init__(self, default_solver: Optional[str] = None) -> None:
-        super().__init__(default_solver, _numpy_array)
+        # PICOS accepts scipy CSR matrices as affine constants. Keep the
+        # backend's graph operators sparse; dense conversion is only needed
+        # for the data-loading helpers used by older callers.
+        super().__init__(default_solver, csr_matrix)
 
     def _load(self):
         import picos

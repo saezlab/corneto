@@ -1,9 +1,10 @@
 import sys
 from types import ModuleType
 
+import numpy as np
 import pytest
 
-from corneto._plotting import to_dot_source
+from corneto._plotting import _scaled_magnitudes, _select_solution_sample, to_dot_source
 from corneto._util import supports_html
 from corneto.contrib._util import (
     DEFAULT_WASM_GRAPHVIZ_JS_URL,
@@ -53,6 +54,64 @@ def test_to_dot_source_honors_global_biological_node_shape():
     assert '"A" [shape="circle"]' not in src
     assert '"B" [shape="circle"]' not in src
     assert '"e_0_source" [shape="point"]' in src
+
+
+def test_to_dot_source_includes_isolated_vertices():
+    g = Graph()
+    g.add_vertex("isolated")
+
+    src = to_dot_source(
+        g,
+        custom_vertex_attr={"isolated": {"shape": "box", "label": "Cue"}},
+    )
+
+    assert '"isolated" [shape="box", label="Cue"]' in src
+
+
+def test_scaled_magnitudes_preserve_zero_and_handle_constant_values():
+    assert np.allclose(_scaled_magnitudes(np.zeros(3)), np.zeros(3))
+    assert np.allclose(
+        _scaled_magnitudes(np.array([2.0, 2.0, 0.0]), scale="log", clip_quantile=0.05),
+        [1.0, 1.0, 0.0],
+    )
+    scaled = _scaled_magnitudes(
+        np.array([0.0, 1.0, 10.0, 1e6]),
+        scale="log",
+        clip_quantile=0.25,
+    )
+    assert np.all(np.isfinite(scaled))
+    assert scaled[0] == 0
+    assert np.all(np.diff(scaled) >= 0)
+    assert scaled[-1] == 1
+
+
+def test_solution_sample_selection_supports_named_samples():
+    data = Data.from_cdict(
+        {
+            "first": {},
+            "second": {},
+        }
+    )
+    selected = _select_solution_sample(
+        {
+            "vertex_values": np.array([[1.0, -1.0], [0.0, 2.0]]),
+            "edge_values": np.array([[3.0, 4.0]]),
+        },
+        sample="second",
+        feature_data=data,
+    )
+
+    assert np.allclose(selected["vertex_values"], [-1.0, 2.0])
+    assert np.allclose(selected["edge_values"], [4.0])
+
+
+def test_solution_sample_selection_requires_sample_for_matrix():
+    with pytest.raises(ValueError, match="select one with sample"):
+        _select_solution_sample(
+            {"vertex_values": np.ones((2, 2))},
+            sample=None,
+            feature_data=None,
+        )
 
 
 def test_dot_wasm_html_accepts_raw_dot_source():
@@ -176,6 +235,31 @@ def test_plot_networkx_renderer(monkeypatch):
 
     obj = g.plot(renderer="networkx")
     assert obj is sentinel_fig
+
+
+def test_networkx_renderer_uses_filtered_shared_plot_model():
+    pytest.importorskip("matplotlib")
+    pytest.importorskip("networkx")
+    g = Graph()
+    g.add_edge("A", "B")
+    g.add_edge("B", "C")
+
+    figure = g.plot(
+        renderer="networkx",
+        edge_indexes=[1],
+        custom_vertex_attr={
+            "B": {"shape": "box", "fillcolor": "#9ACD32", "style": "filled"},
+            "C": {"shape": "diamond", "label": "Output"},
+        },
+        custom_edge_attr={1: {"color": "#C43C39", "penwidth": "3", "arrowhead": "tee"}},
+    )
+
+    axis = figure.axes[0]
+    labels = {text.get_text() for text in axis.texts}
+    assert "A" not in labels
+    assert "B" in labels
+    assert "Output" in labels
+    assert len(axis.patches) == 1
 
 
 def test_plot_values_uses_plot_renderer_path(monkeypatch):

@@ -10,11 +10,13 @@
 :maxdepth: 1
 
 fba/context-specific-metabolic-omics.ipynb
+annnet-signaling/annnet-cellnopt-dag.ipynb
 carnival/single-sample-carnival-transcriptomics.ipynb
 carnival/multi-receptor-integration.ipynb
 carnival/network-sampler.ipynb
 carnival/network-sampler-example.ipynb
 ml/kpnn-with-sc.ipynb
+causal/linear-dag-discovery-sachs.ipynb
 ```
 
 ## Additional Tutorials

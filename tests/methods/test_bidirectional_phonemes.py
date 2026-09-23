@@ -4,6 +4,7 @@ import numpy as np
 import pytest
 
 from corneto import Data, Graph
+from corneto.backend import CvxpyBackend
 from corneto.methods import BidirectionalPHONEMeS, PHONEMeS
 
 
@@ -330,6 +331,40 @@ def test_exposed_shapes_and_auxiliary_edges(backend):
     assert problem.expr.vertex_selected.shape == (3, 1)
     assert problem.expr.dag_layer.shape == (3, 1)
     assert method.processed_graph.num_edges == 7
+
+
+def test_cvxpy_formulation_selects_only_mapped_biological_blocks():
+    """Forward/reverse mapping should avoid indicators on unused flow entries."""
+    graph = Graph()
+    graph.add_edges([("A", "K"), ("K", "B")])
+    problem = BidirectionalPHONEMeS(
+        default_edge_cost=0,
+        anchor_policy="both",
+        backend=CvxpyBackend(),
+    ).build(
+        graph,
+        regulated_kinases=["K"],
+        phosphosite_scores={"A": -2, "B": -2},
+    )
+    cvxpy_problem = problem.solve(solver="SCIPY")
+
+    boolean_count = sum(variable.size for variable in cvxpy_problem.variables() if variable.attributes["boolean"])
+    # 4 directional biological supports + 2 edge/condition unions +
+    # 6 anchor selectors + 6 directional vertex selectors + 3 vertex unions +
+    # 2 auxiliary selectors for the supplied sliced expressions.
+    assert boolean_count == 23
+    assert cvxpy_problem.size_metrics.num_scalar_variables == 40
+    assert "_flow_ipos" not in problem.expr
+    assert "_flow_ineg" not in problem.expr
+    assert problem.expr.edge_selected_directional.shape == (2, 2)
+    assert np.allclose(
+        np.asarray(problem.expr.anchor_flow_downstream.value),
+        np.asarray(problem.expr.anchor_active_downstream.value)[[1], :],
+    )
+    assert np.allclose(
+        np.asarray(problem.expr.anchor_flow_upstream.value),
+        np.asarray(problem.expr.anchor_active_upstream.value)[[1], :],
+    )
 
 
 def test_constraint_blocks_are_vectorized(backend):

@@ -1,7 +1,5 @@
 """Tests for compatibility APIs retained during the CORNETO 1.x line."""
 
-import importlib
-
 import pytest
 
 import corneto as cn
@@ -24,14 +22,3 @@ def test_undocumented_backend_compatibility_apis_are_removed():
 
     with pytest.raises(TypeError, match="unexpected keyword argument 'graph'"):
         ProblemDef(graph=object())
-
-
-def test_signal_package_warns_and_reexports_canonical_cellnopt():
-    """The old CellNOpt path warns and preserves function identity."""
-    canonical = importlib.import_module("corneto.methods.signaling.cellnopt_ilp")
-
-    with pytest.warns(FutureWarning, match=r"corneto\.methods\.signal is deprecated"):
-        legacy = importlib.import_module("corneto.methods.signal.cellnopt_ilp")
-
-    assert legacy.cellnoptILP is canonical.cellnoptILP
-    assert legacy.expand_graph_for_flows is canonical.expand_graph_for_flows
