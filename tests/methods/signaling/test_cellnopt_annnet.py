@@ -39,10 +39,10 @@ def test_cellnopt_reads_conditions_and_adds_results_to_annnet(backend):
 
     assert solution.status == "optimal"
     assert layers == {"off": ("off",), "on": ("on",), "blocked": ("blocked",)}
-    assert graph.layers.get_vertex_layer_attrs("L", ("on",))["input"] == 1
-    assert graph.layers.get_vertex_layer_attrs("A", ("blocked",))["inhibited"] == 1
-    assert graph.layers.get_vertex_layer_attrs("Y", ("on",))["predicted"] == 1
-    assert graph.layers.get_layer_attrs(("blocked",))["endpoint_absolute_error"] == 0
+    assert graph.layers.node_attrs("L", ("on",))["input"] == 1
+    assert graph.layers.node_attrs("A", ("blocked",))["inhibited"] == 1
+    assert graph.layers.node_attrs("Y", ("on",))["predicted"] == 1
+    assert graph.layers.attrs(("blocked",))["endpoint_absolute_error"] == 0
     assert graph.slices.exists("cellnopt_selected")
     assert summary["selected_reactions"] == 2
     assert summary["condition_errors"] == {"off": 0.0, "on": 0.0, "blocked": 0.0}
