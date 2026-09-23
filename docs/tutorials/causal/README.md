@@ -1,4 +1,4 @@
-# Linear DAG discovery on the Sachs dataset
+# Running the LinearDAG Sachs tutorial
 
 This tutorial uses `LinearDAGDiscovery` to find a network that helps explain
 single-cell signaling measurements from the Sachs study. It includes two
