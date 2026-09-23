@@ -19,6 +19,19 @@ formulation.
 mappings. ``build_many`` infers one shared connected reaction model while
 evaluating its Boolean state independently in every named condition.
 
+``LinearDAGDiscovery`` and ``signaling.CellNOptDAG`` are reusable mechanistic
+models. Both provide a thin ``fit(...)`` convenience wrapper that returns the
+same method instance, while retaining the composable
+``build(...)``/``build_many(...) -> ProblemDef -> solve(...)`` lifecycle. After
+a usable solution has been obtained, ``predict(...)`` applies the fixed model
+to new externally specified conditions and ``evaluate(...)`` compares those
+predictions with supplied measurements. ``LinearDAGDiscovery`` also exposes
+``residuals(...)`` for local structural-equation diagnostics: its forward loss
+and local loss have different semantics. ``CellNOptDAG`` evaluates its fixed
+selected reactions by deterministic Boolean propagation. Most other
+``Method`` subclasses remain explanatory optimization methods; the base class
+does not expose an sklearn-style fit/predict API.
+
 .. autosummary::
     :toctree: generated/
 

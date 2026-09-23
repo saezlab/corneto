@@ -13,10 +13,12 @@ The notebook demonstrates:
   interventions;
 - fitting a sparse, acyclic linear structural model to all conditions;
 - reading fitted coefficients and inferred signs from the solution graph;
-- comparing exact coefficient support with structural support; and
-- inspecting prediction error and intervention-to-response flow usage;
-- comparing fixed hard-target semantics with condition-level shift estimates;
-- distinguishing in-sample equation-fit diagnostics from held-out prediction.
+- comparing exact coefficient support with structural support;
+- inspecting in-sample equation-fit diagnostics and intervention-to-response flow usage; and
+- comparing fixed hard-target semantics with condition-level shift estimates.
+
+For leakage-safe held-out prediction with a fixed fitted model, see the
+[`LinearDAGDiscovery` guide](../../guide/causal/linear-dag-discovery.ipynb).
 
 When a shift value is supplied, it is treated as known. When the value is
 omitted and an intervention group is supplied, `LinearDAGDiscovery` estimates

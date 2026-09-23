@@ -21,6 +21,13 @@ from corneto.data import Data
 from corneto.graph import Attr, BaseGraph, EdgeType
 from corneto.methods._base import FlowMethod
 from corneto.methods._network_utils import BoundaryFlowLayout, augment_with_boundaries
+from corneto.methods._predictive import (
+    require_expression_value,
+    validate_solve_result,
+)
+from corneto.methods._predictive import (
+    solve_options as normalize_solve_options,
+)
 
 __all__ = ["LinearDAGDiscovery"]
 
@@ -347,6 +354,11 @@ class LinearDAGDiscovery(FlowMethod):
         self._flow_lb = np.empty((0, 0))
         self._flow_ub = np.empty((0, 0))
         self._resolved_flow_capacity = 0.0
+        # ``fit`` records the backend result for callers who use the
+        # convenience API.  Manual ``build``/``problem.solve`` remains fully
+        # supported; prediction checks expression values directly in that
+        # case, because ProblemDef.solve cannot notify its owning method.
+        self.solve_result = None
 
     @property
     def _commodity_samples(self) -> list[int]:
@@ -403,7 +415,39 @@ class LinearDAGDiscovery(FlowMethod):
         """Build a discovery problem from vertex measurements and interventions."""
         if not isinstance(data, Data):
             raise TypeError("data must be a corneto.data.Data object.")
+        self.solve_result = None
         return self.build_from_data(pkn, data)
+
+    def fit(
+        self,
+        pkn: BaseGraph,
+        data: Data,
+        *,
+        solve_options: Optional[Mapping[str, Any]] = None,
+        **solver_options: Any,
+    ) -> "LinearDAGDiscovery":
+        """Build and solve the model, returning this reusable estimator.
+
+        ``fit`` is intentionally a thin convenience wrapper.  Use
+        ``solve_options`` (or solver keyword arguments) only for backend
+        options; scientific inputs remain the ``pkn`` and ``data`` arguments.
+        The constructed :attr:`problem` is retained, and the backend result is
+        available as :attr:`solve_result`.  A time-limited incumbent is
+        accepted when all expressions needed by prediction have finite values.
+        """
+        options = normalize_solve_options(solve_options, solver_options)
+        problem = self.build(pkn, data)
+        result = problem.solve(**options)
+        required = ["edge_selected", "edge_coefficient"]
+        if self._intervention_design is not None and self._intervention_design.effect_keys:
+            required.append("intervention_shift_parameters")
+        validate_solve_result(result, problem.expr, tuple(required), self.name())
+        # ``intercept`` is a symbol when fitting is enabled and a registered
+        # constant otherwise; both are checked before prediction is allowed.
+        if self.fit_intercept:
+            require_expression_value(problem, "intercept", self.name())
+        self.solve_result = result
+        return self
 
     def _validate_graph(self, graph: BaseGraph) -> tuple[np.ndarray, np.ndarray]:
         if graph.num_vertices == 0 or graph.num_edges == 0:
@@ -680,6 +724,7 @@ class LinearDAGDiscovery(FlowMethod):
 
     def preprocess(self, graph: BaseGraph, data: Data):
         """Validate data and construct signature-specific flow boundaries."""
+        self.solve_result = None
         self._original_graph = graph.copy()
         self._vertex_index = {vertex: index for index, vertex in enumerate(graph.V)}
         self._sample_names = tuple(data.samples)
@@ -971,6 +1016,12 @@ class LinearDAGDiscovery(FlowMethod):
             )
         else:
             intercept = self.backend.Constant(np.zeros((num_vertices,)), name="intercept_zero")
+        # The fitted case is already visible as the ``intercept`` symbol.  A
+        # stable registered alias also makes the fixed zero-intercept case
+        # inspectable through the normal CORNETO expression API.
+        problem.register("intercept_value", intercept)
+        if not self.fit_intercept:
+            problem.register("intercept", intercept)
 
         parent_values = self._values[self._edge_sources, :]
         parent_rows = np.arange(num_edges * num_samples, dtype=int)
@@ -1084,6 +1135,434 @@ class LinearDAGDiscovery(FlowMethod):
             )
         problem.register("dag_layer", problem.expr._dag_layer)
         return problem
+
+    # ------------------------------------------------------------------
+    # Fixed-model prediction and evaluation
+    # ------------------------------------------------------------------
+    @property
+    def loss_scales(self) -> np.ndarray:
+        """Training-derived response scales used by held-out losses."""
+        if self._loss_scales.size == 0:
+            raise ValueError("LinearDAGDiscovery has not been built.")
+        return self._loss_scales.copy()
+
+    @property
+    def intercepts(self) -> np.ndarray:
+        """Return fitted vertex intercepts in graph-vertex order."""
+        if self._original_graph is None:
+            raise ValueError("LinearDAGDiscovery has not been built.")
+        require_expression_value(self.problem, "edge_selected", self.name())
+        if not self.fit_intercept:
+            return np.zeros((self._original_graph.num_vertices,), dtype=float)
+        return require_expression_value(self.problem, "intercept", self.name()).reshape(-1).copy()
+
+    @property
+    def edge_coefficients(self) -> np.ndarray:
+        """Return fitted coefficients in original PKN edge order."""
+        return require_expression_value(self.problem, "edge_coefficient", self.name()).reshape(-1).copy()
+
+    def _fitted_parameters(self) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+        """Return selected edges, coefficients, and intercepts after solving."""
+        selected = require_expression_value(self.problem, "edge_selected", self.name()).reshape(-1) > 0.5
+        coefficients = require_expression_value(self.problem, "edge_coefficient", self.name()).reshape(-1)
+        intercept = (
+            require_expression_value(self.problem, "intercept", self.name()).reshape(-1)
+            if self.fit_intercept
+            else np.zeros((self._original_graph.num_vertices,), dtype=float)
+        )
+        if self._original_graph is None or coefficients.size != self._original_graph.num_edges:
+            raise ValueError("LinearDAGDiscovery has no usable fitted edge parameters.")
+        return selected, coefficients, intercept
+
+    def _prediction_input_arrays(
+        self,
+        data: Data,
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray, tuple[Any, ...]]:
+        """Parse new observations without applying training-time fitting rules."""
+        if not isinstance(data, Data):
+            raise TypeError("data must be a corneto.data.Data object.")
+        if self._original_graph is None or self._intervention_design is None:
+            raise ValueError("LinearDAGDiscovery has not been built; call build or fit first.")
+        if not data.samples:
+            raise ValueError("Prediction data must contain at least one sample.")
+
+        n_vertices = self._original_graph.num_vertices
+        n_samples = len(data.samples)
+        values = np.full((n_vertices, n_samples), np.nan, dtype=float)
+        observed = np.zeros((n_vertices, n_samples), dtype=bool)
+        hard = np.zeros((n_vertices, n_samples), dtype=bool)
+        soft = np.zeros((n_vertices, n_samples), dtype=bool)
+        shifts = np.zeros((n_vertices, n_samples), dtype=float)
+        explicit_shift = np.zeros((n_vertices, n_samples), dtype=bool)
+        groups = np.full((n_vertices, n_samples), _MISSING, dtype=object)
+        vertices = set(self._original_graph.V)
+
+        for sample_index, (sample_name, sample) in enumerate(data.samples.items()):
+            seen = set()
+            for feature in sample.features:
+                if feature.mapping != "vertex":
+                    continue
+                if feature.id not in vertices:
+                    raise ValueError(f"Unknown vertex {feature.id!r} in sample {sample_name!r}.")
+                if feature.id in seen:
+                    raise ValueError(f"Duplicate vertex {feature.id!r} in sample {sample_name!r}.")
+                seen.add(feature.id)
+                vertex_index = self._vertex_index[feature.id]
+                intervention_type = self._get_intervention_type(feature, sample_name)
+                if intervention_type == "hard":
+                    hard[vertex_index, sample_index] = True
+                elif intervention_type == "shift":
+                    soft[vertex_index, sample_index] = True
+                elif any(
+                    key in feature.data
+                    for key in dict.fromkeys(
+                        (self.intervention_shift_key, "shift", "shift_value", "intervention_shift")
+                    )
+                ):
+                    raise ValueError(
+                        f"A shift value is only valid for a 'shift' intervention "
+                        f"(vertex {feature.id!r}, sample {sample_name!r})."
+                    )
+
+                if intervention_type != "none":
+                    group = self._get_intervention_group(feature)
+                    if group is not _MISSING and group is not None:
+                        _InterventionDesign._validate_group(group)
+                        groups[vertex_index, sample_index] = group
+                shift_value = None
+                if intervention_type == "shift":
+                    shift_value = self._get_shift_value(feature, sample_name)
+                    if shift_value is not None:
+                        shifts[vertex_index, sample_index] = shift_value
+                        explicit_shift[vertex_index, sample_index] = True
+                value = feature.value
+                if value is None or (
+                    isinstance(value, Real) and not isinstance(value, bool) and np.isnan(float(value))
+                ):
+                    if intervention_type == "hard":
+                        raise ValueError(
+                            f"Hard-intervened vertex {feature.id!r} in sample {sample_name!r} "
+                            "requires an observed value."
+                        )
+                    continue
+                if isinstance(value, bool) or not isinstance(value, Real):
+                    raise TypeError(
+                        f"Measurement for vertex {feature.id!r} in sample {sample_name!r} must be numeric or missing."
+                    )
+                value = float(value)
+                if not np.isfinite(value):
+                    raise ValueError(
+                        f"Measurement for vertex {feature.id!r} in sample {sample_name!r} must be finite or missing."
+                    )
+                values[vertex_index, sample_index] = value
+                observed[vertex_index, sample_index] = True
+
+        # Fill omitted estimated shifts only from their fitted training group.
+        fitted_shifts: dict[tuple[Any, Any], float] = {}
+        if self._intervention_design.effect_keys:
+            parameters = require_expression_value(
+                self.problem,
+                "intervention_shift_parameters",
+                self.name(),
+            ).reshape(-1)
+            fitted_shifts = dict(zip(self._intervention_design.effect_keys, parameters, strict=True))
+        for vertex_index, sample_index in zip(*np.where(soft), strict=True):
+            # An explicit numeric shift wins and is already in ``shifts``.
+            feature_group = groups[vertex_index, sample_index]
+            if explicit_shift[vertex_index, sample_index]:
+                continue
+            if feature_group is _MISSING:
+                raise ValueError(
+                    "Soft-intervention prediction requires an explicit shift or a fitted intervention_group; "
+                    f"none was supplied for vertex {self._original_graph.V[vertex_index]!r}."
+                )
+            key = (self._original_graph.V[vertex_index], feature_group)
+            if key not in fitted_shifts:
+                raise ValueError(
+                    f"No fitted soft-intervention shift is available for vertex/group {key!r}; "
+                    "test outcomes are never used to estimate it."
+                )
+            shifts[vertex_index, sample_index] = float(fitted_shifts[key])
+        return values, observed, hard, soft, shifts, tuple(data.samples)
+
+    def _selected_order(self, selected: np.ndarray) -> tuple[list[int], list[list[int]]]:
+        """Topologically order the fitted selected DAG."""
+        if self._original_graph is None:
+            raise ValueError("LinearDAGDiscovery has not been built.")
+        incoming = [[] for _ in range(self._original_graph.num_vertices)]
+        outgoing = [[] for _ in range(self._original_graph.num_vertices)]
+        indegree = np.zeros((self._original_graph.num_vertices,), dtype=int)
+        for edge_index in np.flatnonzero(selected):
+            source = int(self._edge_sources[edge_index])
+            target = int(self._edge_targets[edge_index])
+            incoming[target].append(int(edge_index))
+            outgoing[source].append(target)
+            indegree[target] += 1
+        queue = [index for index, degree in enumerate(indegree) if degree == 0]
+        order = []
+        while queue:
+            vertex = queue.pop(0)
+            order.append(vertex)
+            for target in outgoing[vertex]:
+                indegree[target] -= 1
+                if indegree[target] == 0:
+                    queue.append(target)
+        if len(order) != self._original_graph.num_vertices:
+            raise ValueError("The fitted LinearDAGDiscovery support is cyclic and cannot be predicted.")
+        return order, incoming
+
+    def _forward_prediction_arrays(
+        self,
+        data: Optional[Data] = None,
+        parsed: Optional[tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray, tuple[Any, ...]]] = None,
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray, tuple[Any, ...]]:
+        if parsed is None:
+            if data is None:
+                raise ValueError("Prediction data is required.")
+            parsed = self._prediction_input_arrays(data)
+        values, observed, hard, soft, shifts, sample_names = parsed
+        selected, coefficients, intercept = self._fitted_parameters()
+        order, incoming = self._selected_order(selected)
+        predictions = np.zeros_like(values)
+        n_samples = values.shape[1]
+        for sample_index in range(n_samples):
+            for vertex in order:
+                if hard[vertex, sample_index]:
+                    predictions[vertex, sample_index] = values[vertex, sample_index]
+                    continue
+                edge_indices = incoming[vertex]
+                prediction = intercept[vertex]
+                for edge_index in edge_indices:
+                    source = self._edge_sources[edge_index]
+                    prediction += coefficients[edge_index] * predictions[source, sample_index]
+                if soft[vertex, sample_index]:
+                    prediction += shifts[vertex, sample_index]
+                predictions[vertex, sample_index] = prediction
+        return predictions, observed, hard, sample_names
+
+    @staticmethod
+    def _data_from_arrays(
+        vertices: tuple[Any, ...],
+        sample_names: tuple[Any, ...],
+        values: np.ndarray,
+        *,
+        observed: Optional[np.ndarray] = None,
+        valid: Optional[np.ndarray] = None,
+        predicted_mask: Optional[np.ndarray] = None,
+        clamped: Optional[np.ndarray] = None,
+        equation_prediction: Optional[np.ndarray] = None,
+    ) -> Data:
+        samples = {}
+        for sample_index, sample_name in enumerate(sample_names):
+            features = {}
+            for vertex_index, vertex in enumerate(vertices):
+                value = values[vertex_index, sample_index]
+                features[vertex] = {
+                    "mapping": "vertex",
+                    "value": None if not np.isfinite(value) else float(value),
+                    "predicted": bool(predicted_mask[vertex_index, sample_index])
+                    if predicted_mask is not None
+                    else False,
+                }
+                if observed is not None:
+                    features[vertex]["observed"] = bool(observed[vertex_index, sample_index])
+                if valid is not None:
+                    features[vertex]["valid"] = bool(valid[vertex_index, sample_index])
+                if clamped is not None:
+                    features[vertex]["clamped"] = bool(clamped[vertex_index, sample_index])
+                if equation_prediction is not None and np.isfinite(equation_prediction[vertex_index, sample_index]):
+                    features[vertex]["equation_prediction"] = float(equation_prediction[vertex_index, sample_index])
+            samples[sample_name] = features
+        return Data.from_cdict(samples)
+
+    def predict(self, data: Data) -> Data:
+        """Predict held-out vertex values using the fixed fitted DAG.
+
+        All non-hard measurements, including roots, are ignored as predictors.
+        Roots use their fitted intercept baseline; hard interventions are
+        clamped, soft shifts are applied to their equations, and descendants
+        use previously predicted parents. This method never calls a solver.
+        """
+        predictions, observed, _hard, sample_names = self._forward_prediction_arrays(data)
+        if self._original_graph is None:
+            raise ValueError("LinearDAGDiscovery has not been built.")
+        return self._data_from_arrays(
+            tuple(self._original_graph.V),
+            sample_names,
+            predictions,
+            observed=observed,
+            predicted_mask=~_hard,
+            clamped=_hard,
+        )
+
+    def _local_prediction_arrays(
+        self,
+        data: Optional[Data] = None,
+        parsed: Optional[tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray, tuple[Any, ...]]] = None,
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray, tuple[Any, ...]]:
+        if parsed is None:
+            if data is None:
+                raise ValueError("Prediction data is required.")
+            parsed = self._prediction_input_arrays(data)
+        values, observed, hard, soft, shifts, sample_names = parsed
+        _selected, coefficients, intercept = self._fitted_parameters()
+        # Training's complete-equation mask is based on every candidate PKN
+        # parent, even when its fitted coefficient is zero.  Retain that
+        # conservative mask here so local diagnostics remain comparable to
+        # the optimization objective.
+        all_incoming = [[] for _ in range(values.shape[0])]
+        for edge_index, target in enumerate(self._edge_targets):
+            all_incoming[int(target)].append(edge_index)
+        local = np.full_like(values, np.nan)
+        valid = observed & ~hard
+        for sample_index in range(values.shape[1]):
+            for vertex in range(values.shape[0]):
+                if not valid[vertex, sample_index]:
+                    continue
+                parent_edges = all_incoming[vertex]
+                if any(not observed[self._edge_sources[e], sample_index] for e in parent_edges):
+                    valid[vertex, sample_index] = False
+                    continue
+                value = intercept[vertex]
+                for edge_index in parent_edges:
+                    value += coefficients[edge_index] * values[self._edge_sources[edge_index], sample_index]
+                if soft[vertex, sample_index]:
+                    value += shifts[vertex, sample_index]
+                local[vertex, sample_index] = value
+        return local, values, valid, sample_names
+
+    def residuals(self, data: Data) -> Data:
+        """Return observed-minus-local-equation residuals.
+
+        Unlike :meth:`predict`, this diagnostic intentionally uses observed
+        parent values. It mirrors the structural-equation training objective,
+        including its complete candidate-parent missingness mask, and is useful
+        for local fit auditing but is not a forward intervention forecast.
+        """
+        local, values, valid, sample_names = self._local_prediction_arrays(data)
+        residual = np.full_like(values, np.nan)
+        residual[valid] = values[valid] - local[valid]
+        if self._original_graph is None:
+            raise ValueError("LinearDAGDiscovery has not been built.")
+        return self._data_from_arrays(
+            tuple(self._original_graph.V),
+            sample_names,
+            residual,
+            observed=np.isfinite(values),
+            valid=valid,
+            equation_prediction=local,
+        )
+
+    def evaluate(
+        self,
+        data: Data,
+        *,
+        sample_weights: Optional[Mapping[Any, float]] = None,
+    ) -> dict[str, Any]:
+        """Evaluate fixed forward and local losses on supplied measurements.
+
+        Forward loss excludes hard-intervention targets (which are clamped) and
+        never uses observed descendants as predictors. Local loss uses observed
+        values for every candidate PKN parent (with zero coefficients for
+        unselected edges), matching the training equation objective. Both use
+        training-derived response scales and report valid counts plus
+        per-vertex and per-sample normalized losses. Reported losses are
+        weighted means (configured vertex weights and optional held-out
+        ``sample_weights``), not the raw summed optimization objective; training
+        sample weights are never reused for unrelated held-out names.
+        """
+        parsed = self._prediction_input_arrays(data)
+        values, observed, hard, _soft, _shifts, sample_names = parsed
+        predictions, observed, hard, sample_names = self._forward_prediction_arrays(parsed=parsed)
+        local, values, local_valid, _ = self._local_prediction_arrays(parsed=parsed)
+        forward_valid = observed & ~hard
+        if self._original_graph is None:
+            raise ValueError("LinearDAGDiscovery has not been built.")
+
+        if sample_weights is not None and not isinstance(sample_weights, Mapping):
+            raise TypeError("sample_weights must be a mapping or None.")
+        evaluation_sample_weights = self._resolve_positive_weights(
+            tuple(sample_names),
+            dict(sample_weights or {}),
+            "sample_weights",
+        )
+        evaluation_vertex_weights = self._resolve_positive_weights(
+            tuple(self._original_graph.V),
+            self.vertex_weights,
+            "vertex_weights",
+        )
+
+        def metrics(
+            errors: np.ndarray,
+            valid: np.ndarray,
+        ) -> tuple[float, int, dict[Any, float], dict[Any, float]]:
+            normalized = errors / self._loss_scales[:, None]
+            score = np.abs(normalized) if self.loss == "absolute" else normalized**2
+            weights = evaluation_vertex_weights[:, None] * evaluation_sample_weights[None, :]
+            count = int(np.count_nonzero(valid))
+            denominator = float(np.sum(weights[valid])) if count else 0.0
+            loss = float(np.sum(score[valid] * weights[valid]) / denominator) if denominator else float("nan")
+            per_vertex = {
+                vertex: (
+                    float(
+                        np.sum(score[index, valid[index]] * evaluation_sample_weights[valid[index]])
+                        / np.sum(evaluation_sample_weights[valid[index]])
+                    )
+                    if np.any(valid[index])
+                    else float("nan")
+                )
+                for index, vertex in enumerate(self._original_graph.V)
+            }
+            per_sample = {
+                sample: (
+                    float(
+                        np.sum(score[valid[:, index], index] * evaluation_vertex_weights[valid[:, index]])
+                        / np.sum(evaluation_vertex_weights[valid[:, index]])
+                    )
+                    if np.any(valid[:, index])
+                    else float("nan")
+                )
+                for index, sample in enumerate(sample_names)
+            }
+            return loss, count, per_vertex, per_sample
+
+        forward_loss, forward_count, forward_by_vertex, forward_by_sample = metrics(
+            values - predictions,
+            forward_valid,
+        )
+        local_loss, local_count, local_by_vertex, local_by_sample = metrics(values - local, local_valid)
+        residual = np.full_like(values, np.nan)
+        residual[local_valid] = values[local_valid] - local[local_valid]
+        return {
+            "forward_loss": forward_loss,
+            "forward_count": forward_count,
+            "forward_by_vertex": forward_by_vertex,
+            "forward_by_sample": forward_by_sample,
+            "forward_by_condition": forward_by_sample,
+            "local_loss": local_loss,
+            "local_count": local_count,
+            "local_by_vertex": local_by_vertex,
+            "local_by_sample": local_by_sample,
+            "local_by_condition": local_by_sample,
+            "loss_is_weighted_mean": True,
+            "sample_weights": dict(zip(sample_names, evaluation_sample_weights, strict=True)),
+            "predictions": self._data_from_arrays(
+                tuple(self._original_graph.V),
+                sample_names,
+                predictions,
+                observed=observed,
+                predicted_mask=~hard,
+                clamped=hard,
+            ),
+            "residuals": self._data_from_arrays(
+                tuple(self._original_graph.V),
+                sample_names,
+                residual,
+                observed=np.isfinite(values),
+                valid=local_valid,
+                equation_prediction=local,
+            ),
+        }
 
     def get_commodity_info(self) -> tuple[Mapping[str, Any], ...]:
         """Return read-only metadata for the resolved structural flows.
