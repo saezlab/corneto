@@ -62,4 +62,3 @@ def require_expression_value(problem: Any, name: str, method: str) -> np.ndarray
     if not np.all(np.isfinite(array)):
         raise ValueError(f"{method} has no usable finite solution for {name!r}.")
     return array
-

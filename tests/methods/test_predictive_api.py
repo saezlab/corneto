@@ -246,8 +246,7 @@ def test_linear_evaluation_honors_vertex_and_held_out_sample_weights(backend):
     metrics = model.evaluate(held_out)
     assert np.isclose(metrics["forward_loss"], expected_vertex_weighted)
     expected_sample_weighted = (
-        5.0 * (4.0 * 1.0 / scales[0] + 1.0 * 2.0 / scales[0])
-        + (4.0 * 2.0 / scales[1] + 1.0 * 4.0 / scales[1])
+        5.0 * (4.0 * 1.0 / scales[0] + 1.0 * 2.0 / scales[0]) + (4.0 * 2.0 / scales[1] + 1.0 * 4.0 / scales[1])
     ) / 30.0
     weighted = model.evaluate(held_out, sample_weights={"s1": 4.0, "s2": 1.0})
     assert np.isclose(weighted["forward_loss"], expected_sample_weighted)
@@ -316,9 +315,7 @@ def test_rebuilding_linear_model_invalidates_the_previous_solution(backend):
     model.build(graph, _linear_training_data())
     assert model.solve_result is None
     with pytest.raises(ValueError, match="not been solved"):
-        model.predict(
-            Data.from_cdict({"test": {"A": {"mapping": "vertex", "value": 1.0, "intervened": True}}})
-        )
+        model.predict(Data.from_cdict({"test": {"A": {"mapping": "vertex", "value": 1.0, "intervened": True}}}))
 
 
 def test_rebuilding_cellnopt_model_invalidates_the_previous_solution(backend):
@@ -355,10 +352,7 @@ def test_cellnopt_fixed_prediction_matches_solved_training_values(backend):
         "e_only": {"E": 1, "C": 1},
         "inhibited": {"A": 1, "C": 1},
     }
-    inhibitors = {
-        condition: ({"Y": 1} if condition == "inhibited" else {})
-        for condition in inputs
-    }
+    inhibitors = {condition: ({"Y": 1} if condition == "inhibited" else {}) for condition in inputs}
     measurements = {
         "a": {"Y": 1, "Z": 0},
         "b": {"Y": 1, "Z": 0},
