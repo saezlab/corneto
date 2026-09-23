@@ -1,0 +1,2102 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Discovering a linear causal signaling network from perturbation data &#8212; CORNETO  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=53e23fa6" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('consent', 'default', {
+                    'ad_storage': 'denied',
+                    'ad_user_data': 'denied',
+                    'ad_personalization': 'denied',
+                    'analytics_storage': 'denied'
+                });
+            </script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-Z263GN2PKK"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', 'G-Z263GN2PKK');
+            </script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'guide/causal/linear-dag-discovery';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.21.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1790177872';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'stable';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://saezlab.github.io/corneto/guide/causal/linear-dag-discovery.html" />
+    <link rel="icon" href="../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Metabolism" href="../metabolism/index.html" />
+    <link rel="prev" title="Causal and structural modeling" href="index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="light">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="../../_static/logo.png" class="logo__image only-light" alt="CORNETO  documentation - Home"/>
+    <img src="../../_static/logo.png" class="logo__image only-dark pst-js-only" alt="CORNETO  documentation - Home"/>
+  
+  
+</a></div>
+    
+      <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install.html">
+    Install
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api/index.html">
+    Reference
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../releases/index.html">
+    Release Notes
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-external" href="https://github.com/saezlab/corneto">
+    GitHub
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install.html">
+    Install
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api/index.html">
+    Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../releases/index.html">
+    Release Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/saezlab/corneto">
+    GitHub
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../intro/index.html">Getting started</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../intro/prior-knowledge.html">Prior Knowledge and Graphs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/data.html">Working with data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/plotting.html">Plotting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/constrained-optimization.html">Constrained Optimization</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../networks/index.html">Network methods</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../networks/shortest-paths.html">Shortest paths</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../networks/multi-sample-shortest-paths.html">Multi-sample shortest paths</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../networks/multi-commodity-network-flows.html">Multi-commodity Network Flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../networks/acyclic-flows.html">Acyclic Flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../networks/steiner-trees.html">Steiner trees</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../networks/pcst.html">Prize-Collecting Steiner Trees (PCST)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../networks/multi-pcst-grb.html">Multi-sample PCST</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Causal and structural modeling</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Discovering a linear causal signaling network from perturbation data</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../metabolism/index.html">Metabolism</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../metabolism/flux-balance-analysis.html">Flux balance analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metabolism/multicondition-sfba.html">Multi-condition FBA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metabolism/imat.html">Integrating gene expression into metabolic models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metabolism/multicondition-imat.html">Multi-condition gene expression integration</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../signaling/index.html">Signaling</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../signaling/carnival.html">CARNIVAL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../signaling/multisample-carnival.html">Multi-sample CARNIVAL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../signaling/phonemes.html">PHONEMeS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../signaling/bidirectional-phonemes.html">Global upstream and downstream PHONEMeS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../signaling/cellnopt_dag.html">Inferring intracellular signaling models with CellNOptDAG</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../interoperability/index.html">Interoperability</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../interoperability/cobrapy.html">COBRApy: Constraint-based metabolic modeling in Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../interoperability/liana.html">LIANA+: An all-in-one cell-cell communication framework</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../interoperability/decoupler.html">Decoupler: Ensemble of methods to infer biological activities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../interoperability/omnipath.html">Omnipath: intra- &amp; intercellular signaling knowledge</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../interoperability/networkx.html">NetworkX: Network Analysis in Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../interoperability/annnet.html">AnnNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../interoperability/cvxpy.html">CVXPY: Convex optimization, for everyone</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../interoperability/picos.html">PICOS: A Python interface to conic optimization solvers</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Guide</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Causal and structural modeling</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Discovering a linear causal signaling network from perturbation data</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="discovering-a-linear-causal-signaling-network-from-perturbation-data">
+<h1>Discovering a linear causal signaling network from perturbation data<a class="headerlink" href="#discovering-a-linear-causal-signaling-network-from-perturbation-data" title="Link to this heading">#</a></h1>
+<p>Perturbation experiments often measure continuous molecular responses: log-fold changes in phosphoproteins, reporter intensities, or expression signatures after stimulating or inhibiting a pathway component.</p>
+<p>This guide starts from one question:</p>
+<blockquote>
+<div><p><strong>Which directed interactions from a prior-knowledge network produce a linear model that fits the measured responses across observational and intervention conditions?</strong></p>
+</div></blockquote>
+<p><code class="docutils literal notranslate"><span class="pre">LinearDAGDiscovery</span></code> selects a subset of edges from a directed prior-knowledge network (PKN), requires the selected graph to contain no directed cycles, and fits one linear equation for each measured vertex. Each selected edge has one coefficient that is shared across all samples. A hard intervention removes the equation for its target in that sample; a shift intervention keeps the equation and adds a known or fitted offset.</p>
+<p>As many other methods implemented in CORNETO, the optimization uses auxiliary flow variables for connectivity. Every selected edge must belong to at least one directed route from an intervened vertex to a measured response. These variables enforce connectivity only; they are not biochemical fluxes, effect sizes, or confidence scores.</p>
+<p>CORNETO calls each row in <code class="docutils literal notranslate"><span class="pre">Data</span></code> a <strong>sample</strong>. A sample may be one bulk experimental condition or one cell. The intervention metadata is attached to the measured target within each sample, as shown below.</p>
+<section id="when-is-this-method-useful">
+<h2>When is this method useful?<a class="headerlink" href="#when-is-this-method-useful" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Experimental setting</p></th>
+<th class="head"><p>Interpretation</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Continuous molecular measurements</p></td>
+<td><p>Values may be signed and need not be discretized</p></td>
+</tr>
+<tr class="row-odd"><td><p>Several perturbation conditions</p></td>
+<td><p>Perturbations help orient otherwise ambiguous associations</p></td>
+</tr>
+<tr class="row-even"><td><p>Directed PKN with alternatives or feedback</p></td>
+<td><p>The method chooses a subset with no directed cycles</p></td>
+</tr>
+<tr class="row-odd"><td><p>One linear relationship shared across samples</p></td>
+<td><p>Each edge coefficient is the same in every sample or condition</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Use <code class="docutils literal notranslate"><span class="pre">CellNOptDAG</span></code> instead when you have a more mechanistic prior knowledge of a pathway from perturbations to readouts or phenotypes
+and you want to use boolean logic.</p>
+</section>
+<section id="what-corneto-adds">
+<h2>What CORNETO adds<a class="headerlink" href="#what-corneto-adds" title="Link to this heading">#</a></h2>
+<p>Many causal-discovery methods are run on a dataset and return a DAG. CORNETO instead uses the graph as part of a model of the experiment. In <code class="docutils literal notranslate"><span class="pre">LinearDAGDiscovery</span></code>, the linear equations fit the measured responses, the PKN defines which biological interactions are possible, and the intervention annotations specify which equations are modified by the experiment. The result therefore contains both a network and a fitted explanation of the experimental data.</p>
+<p>Prior knowledge does not have to stop at the initial PKN. Before solving, users can add assumptions such as requiring or forbidding an interaction, constraining its sign or coefficient, or limiting which mechanisms may be selected. The complete model is then fitted again under that hypothesis. Comparing the original and constrained models shows whether the hypothesis is compatible with the data, how much it changes held-out prediction, and which other interactions must change to accommodate it.</p>
+<p>This modeling flexibility is the main reason to use CORNETO instead. The trade-off is computational cost: enforcing graph structure, interventions, prior knowledge, and additional constraints together requires mixed-integer optimization. It is worthwhile when these modeling choices are central to the analysis; if the goal is only to obtain a graph quickly, a more scalable causal-discovery method may be preferable.</p>
+</section>
+<section id="example-separating-the-akt-and-erk-branches-downstream-of-egfr">
+<h2>Example: separating the AKT and ERK branches downstream of EGFR<a class="headerlink" href="#example-separating-the-akt-and-erk-branches-downstream-of-egfr" title="Link to this heading">#</a></h2>
+<p>Consider a small perturbation panel measuring five signaling activities. The biological hypothesis is that EGFR activates both AKT and ERK, AKT inhibits FOXO, and ERK activates ELK1.</p>
+<p>The PKN is intentionally less certain. It also contains reverse interactions and AKT–ERK cross-talk that could form cycles. The fit will show which of these candidate edges are selected under the chosen loss and penalties.</p>
+<p>The values below are simulated, centered log-fold changes coming from the assumed linear signaling in every condition, with a small noise.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">corneto</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cn</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">corneto.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">Data</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearDAGDiscovery</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="define-the-candidate-biology">
+<h3>Define the candidate biology<a class="headerlink" href="#define-the-candidate-biology" title="Link to this heading">#</a></h3>
+<p>Interaction signs are stored in the PKN. When <code class="docutils literal notranslate"><span class="pre">enforce_signs=True</span></code>, an activating sign constrains the fitted coefficient to be nonnegative and an inhibitory sign constrains it to be nonpositive. The candidate graph contains several pairs of edges pointing in opposite directions; the selected graph, but not the PKN, is required to have no directed cycles.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pkn_edges</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s2">"EGFR"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"AKT"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"EGFR"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"ERK"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"AKT"</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">"FOXO"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"ERK"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"ELK1"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"AKT"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"EGFR"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"ERK"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"EGFR"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"FOXO"</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">"AKT"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"ELK1"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"ERK"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"AKT"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"ERK"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"ERK"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"AKT"</span><span class="p">),</span>
+<span class="p">]</span>
+<span class="n">pkn</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Graph</span><span class="o">.</span><span class="n">from_tuples</span><span class="p">(</span><span class="n">pkn_edges</span><span class="p">)</span>
+
+<span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">pkn_edges</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"source"</span><span class="p">,</span> <span class="s2">"sign"</span><span class="p">,</span> <span class="s2">"target"</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>source</th>
+      <th>sign</th>
+      <th>target</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>EGFR</td>
+      <td>1</td>
+      <td>AKT</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>EGFR</td>
+      <td>1</td>
+      <td>ERK</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>AKT</td>
+      <td>-1</td>
+      <td>FOXO</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>ERK</td>
+      <td>1</td>
+      <td>ELK1</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>AKT</td>
+      <td>1</td>
+      <td>EGFR</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>ERK</td>
+      <td>1</td>
+      <td>EGFR</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>FOXO</td>
+      <td>-1</td>
+      <td>AKT</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>ELK1</td>
+      <td>1</td>
+      <td>ERK</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>AKT</td>
+      <td>1</td>
+      <td>ERK</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>ERK</td>
+      <td>1</td>
+      <td>AKT</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pkn</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">graph_attr</span><span class="o">=</span><span class="p">{</span><span class="s2">"rankdir"</span><span class="p">:</span> <span class="s2">"LR"</span><span class="p">})</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/9e99dca1073411debb9d29e3dd624b7ecf52bdb582b577d6b6f7923281aa59b7.svg" src="../../_images/9e99dca1073411debb9d29e3dd624b7ecf52bdb582b577d6b6f7923281aa59b7.svg" />
+</div>
+</div>
+</section>
+<section id="define-the-perturbation-experiment">
+<h3>Define the perturbation experiment<a class="headerlink" href="#define-the-perturbation-experiment" title="Link to this heading">#</a></h3>
+<p>Observational conditions vary EGFR without marking it as experimentally fixed. Intervention conditions mark EGFR, AKT, or ERK as a <strong>hard intervention</strong>. This means that the target is fixed to its supplied value: its own equation is omitted for that condition, while the fixed value can still be used in equations for downstream proteins.</p>
+<p>One ELK1 measurement is missing. CORNETO will omit that response from the loss rather than replace it with zero.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">13</span><span class="p">)</span>
+<span class="n">noise_sd</span> <span class="o">=</span> <span class="mf">0.08</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">signaling_state</span><span class="p">(</span><span class="n">egfr</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">akt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">erk</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="c1"># Intervened values are fixed by the experiment; endogenous values include noise.</span>
+    <span class="n">akt</span> <span class="o">=</span> <span class="mf">1.1</span> <span class="o">*</span> <span class="n">egfr</span> <span class="o">+</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">noise_sd</span><span class="p">)</span> <span class="k">if</span> <span class="n">akt</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">akt</span>
+    <span class="n">erk</span> <span class="o">=</span> <span class="mf">0.8</span> <span class="o">*</span> <span class="n">egfr</span> <span class="o">+</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">noise_sd</span><span class="p">)</span> <span class="k">if</span> <span class="n">erk</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">erk</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">"EGFR"</span><span class="p">:</span> <span class="n">egfr</span><span class="p">,</span>
+        <span class="s2">"AKT"</span><span class="p">:</span> <span class="n">akt</span><span class="p">,</span>
+        <span class="s2">"ERK"</span><span class="p">:</span> <span class="n">erk</span><span class="p">,</span>
+        <span class="s2">"FOXO"</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.9</span> <span class="o">*</span> <span class="n">akt</span> <span class="o">+</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">noise_sd</span><span class="p">),</span>
+        <span class="s2">"ELK1"</span><span class="p">:</span> <span class="mf">1.2</span> <span class="o">*</span> <span class="n">erk</span> <span class="o">+</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">noise_sd</span><span class="p">),</span>
+    <span class="p">}</span>
+
+
+<span class="n">conditions</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s2">"obs_1"</span><span class="p">,</span> <span class="n">signaling_state</span><span class="p">(</span><span class="o">-</span><span class="mf">1.4</span><span class="p">),</span> <span class="kc">None</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"obs_2"</span><span class="p">,</span> <span class="n">signaling_state</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">),</span> <span class="kc">None</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"obs_3"</span><span class="p">,</span> <span class="n">signaling_state</span><span class="p">(</span><span class="mf">0.7</span><span class="p">),</span> <span class="kc">None</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"obs_4"</span><span class="p">,</span> <span class="n">signaling_state</span><span class="p">(</span><span class="mf">1.5</span><span class="p">),</span> <span class="kc">None</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"EGFR_low"</span><span class="p">,</span> <span class="n">signaling_state</span><span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">),</span> <span class="s2">"EGFR"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"EGFR_high"</span><span class="p">,</span> <span class="n">signaling_state</span><span class="p">(</span><span class="mf">2.1</span><span class="p">),</span> <span class="s2">"EGFR"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"AKT_on"</span><span class="p">,</span> <span class="n">signaling_state</span><span class="p">(</span><span class="o">-</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">akt</span><span class="o">=</span><span class="mf">1.8</span><span class="p">),</span> <span class="s2">"AKT"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"AKT_off"</span><span class="p">,</span> <span class="n">signaling_state</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">akt</span><span class="o">=-</span><span class="mf">1.5</span><span class="p">),</span> <span class="s2">"AKT"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"ERK_on"</span><span class="p">,</span> <span class="n">signaling_state</span><span class="p">(</span><span class="o">-</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">erk</span><span class="o">=</span><span class="mf">1.7</span><span class="p">),</span> <span class="s2">"ERK"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"ERK_off"</span><span class="p">,</span> <span class="n">signaling_state</span><span class="p">(</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">erk</span><span class="o">=-</span><span class="mf">1.6</span><span class="p">),</span> <span class="s2">"ERK"</span><span class="p">),</span>
+<span class="p">]</span>
+
+<span class="c1"># Demonstrate a genuinely missing response.</span>
+<span class="n">conditions</span><span class="p">[</span><span class="mi">6</span><span class="p">][</span><span class="mi">1</span><span class="p">][</span><span class="s2">"ELK1"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="n">experiment</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="p">[</span><span class="n">values</span> <span class="o">|</span> <span class="p">{</span><span class="s2">"intervention"</span><span class="p">:</span> <span class="n">target</span> <span class="ow">or</span> <span class="s2">"observational"</span><span class="p">}</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">conditions</span><span class="p">],</span>
+    <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">conditions</span><span class="p">],</span>
+<span class="p">)</span>
+<span class="n">experiment</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">"condition"</span>
+<span class="n">experiment</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>EGFR</th>
+      <th>AKT</th>
+      <th>ERK</th>
+      <th>FOXO</th>
+      <th>ELK1</th>
+      <th>intervention</th>
+    </tr>
+    <tr>
+      <th>condition</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>obs_1</th>
+      <td>-1.4</td>
+      <td>-1.394</td>
+      <td>-1.366</td>
+      <td>1.331</td>
+      <td>-1.634</td>
+      <td>observational</td>
+    </tr>
+    <tr>
+      <th>obs_2</th>
+      <td>-0.5</td>
+      <td>-0.445</td>
+      <td>-0.369</td>
+      <td>0.546</td>
+      <td>-0.440</td>
+      <td>observational</td>
+    </tr>
+    <tr>
+      <th>obs_3</th>
+      <td>0.7</td>
+      <td>0.729</td>
+      <td>0.606</td>
+      <td>-0.621</td>
+      <td>0.699</td>
+      <td>observational</td>
+    </tr>
+    <tr>
+      <th>obs_4</th>
+      <td>1.5</td>
+      <td>1.630</td>
+      <td>1.258</td>
+      <td>-1.411</td>
+      <td>1.470</td>
+      <td>observational</td>
+    </tr>
+    <tr>
+      <th>EGFR_low</th>
+      <td>-2.0</td>
+      <td>-2.229</td>
+      <td>-1.745</td>
+      <td>2.141</td>
+      <td>-2.111</td>
+      <td>EGFR</td>
+    </tr>
+    <tr>
+      <th>EGFR_high</th>
+      <td>2.1</td>
+      <td>2.417</td>
+      <td>1.713</td>
+      <td>-2.020</td>
+      <td>2.179</td>
+      <td>EGFR</td>
+    </tr>
+    <tr>
+      <th>AKT_on</th>
+      <td>-0.7</td>
+      <td>1.800</td>
+      <td>-0.535</td>
+      <td>-1.502</td>
+      <td>NaN</td>
+      <td>AKT</td>
+    </tr>
+    <tr>
+      <th>AKT_off</th>
+      <td>1.0</td>
+      <td>-1.500</td>
+      <td>0.901</td>
+      <td>1.232</td>
+      <td>1.108</td>
+      <td>AKT</td>
+    </tr>
+    <tr>
+      <th>ERK_on</th>
+      <td>-0.8</td>
+      <td>-0.795</td>
+      <td>1.700</td>
+      <td>0.733</td>
+      <td>2.011</td>
+      <td>ERK</td>
+    </tr>
+    <tr>
+      <th>ERK_off</th>
+      <td>0.6</td>
+      <td>0.596</td>
+      <td>-1.600</td>
+      <td>-0.563</td>
+      <td>-1.836</td>
+      <td>ERK</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="mark-interventions-in-data">
+<span id="linear-dag-intervention-metadata"></span><h3>Mark interventions in <code class="docutils literal notranslate"><span class="pre">Data</span></code><a class="headerlink" href="#mark-interventions-in-data" title="Link to this heading">#</a></h3>
+<p>Each sample contains a feature for each measured PKN vertex. The feature’s <code class="docutils literal notranslate"><span class="pre">value</span></code> is the measurement; its metadata tells <code class="docutils literal notranslate"><span class="pre">LinearDAGDiscovery</span></code> whether that vertex was directly intervened on in that sample. Put intervention metadata on the target feature only.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Feature field</p></th>
+<th class="head"><p>Expected value</p></th>
+<th class="head"><p>When to use it</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">mapping</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;vertex&quot;</span></code></p></td>
+<td><p>Required for a feature to represent a PKN vertex.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">value</span></code></p></td>
+<td><p>Numeric measurement</p></td>
+<td><p>Required for an intervened target when fitting.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">intervention</span></code></p></td>
+<td><p>Omit for an observational feature; use <code class="docutils literal notranslate"><span class="pre">&quot;hard&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;shift&quot;</span></code> for an intervened target</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;hard&quot;</span></code> removes the target’s equation for that sample. <code class="docutils literal notranslate"><span class="pre">&quot;shift&quot;</span></code> keeps the equation and adds an offset.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">shift</span></code></p></td>
+<td><p>Numeric offset</p></td>
+<td><p>Supply with <code class="docutils literal notranslate"><span class="pre">intervention=&quot;shift&quot;</span></code> when the offset is known; otherwise omit it so the model estimates the offset.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">intervention_group</span></code></p></td>
+<td><p>A condition identifier shared by replicate samples</p></td>
+<td><p>Optional for hard interventions; required when estimating a shift shared by replicates. It groups their connectivity evidence while each sample still contributes its own measurement to the fit.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">intervention</span></code> column in the table above names the target for display. In a <code class="docutils literal notranslate"><span class="pre">Data</span></code> feature, <code class="docutils literal notranslate"><span class="pre">intervention</span></code> instead names the intervention type. <code class="docutils literal notranslate"><span class="pre">intervened=True</span></code> is also accepted as an older spelling of <code class="docutils literal notranslate"><span class="pre">intervention=&quot;hard&quot;</span></code>; use one form per feature. The example below uses <code class="docutils literal notranslate"><span class="pre">intervention=&quot;hard&quot;</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">samples</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">condition</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">conditions</span><span class="p">:</span>
+    <span class="n">samples</span><span class="p">[</span><span class="n">condition</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">vertex</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">feature</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"mapping"</span><span class="p">:</span> <span class="s2">"vertex"</span><span class="p">,</span> <span class="s2">"value"</span><span class="p">:</span> <span class="n">value</span><span class="p">}</span>
+        <span class="k">if</span> <span class="n">vertex</span> <span class="o">==</span> <span class="n">target</span><span class="p">:</span>
+            <span class="n">feature</span><span class="p">[</span><span class="s2">"intervention"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"hard"</span>
+        <span class="n">samples</span><span class="p">[</span><span class="n">condition</span><span class="p">][</span><span class="n">vertex</span><span class="p">]</span> <span class="o">=</span> <span class="n">feature</span>
+
+<span class="n">data</span> <span class="o">=</span> <span class="n">Data</span><span class="o">.</span><span class="n">from_cdict</span><span class="p">(</span><span class="n">samples</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="fit-one-linear-dag-to-all-conditions">
+<h2>Fit one linear DAG to all conditions<a class="headerlink" href="#fit-one-linear-dag-to-all-conditions" title="Link to this heading">#</a></h2>
+<p>The objective adds <code class="docutils literal notranslate"><span class="pre">lambda_edges</span></code> for every selected edge, so the optimizer trades a lower fitting error against selecting fewer edges. <code class="docutils literal notranslate"><span class="pre">max_parents=2</span></code> imposes a literal graph constraint: no vertex may have more than two selected incoming edges. <code class="docutils literal notranslate"><span class="pre">enforce_signs=True</span></code> requires coefficients on PKN edges marked <code class="docutils literal notranslate"><span class="pre">+1</span></code> to be nonnegative and coefficients on edges marked <code class="docutils literal notranslate"><span class="pre">-1</span></code> to be nonpositive.</p>
+<p>The default <code class="docutils literal notranslate"><span class="pre">coefficient_support=&quot;exact&quot;</span></code> requires every selected edge to have a fitted coefficient whose normalized magnitude is at least <code class="docutils literal notranslate"><span class="pre">min_abs_coefficient=0.25</span></code>. This is a model choice about the smallest allowed coefficient, not a solver tolerance. With <code class="docutils literal notranslate"><span class="pre">coefficient_support=&quot;structural&quot;</span></code>, an edge may be selected to complete an intervention-to-response route even when its regression coefficient is zero.</p>
+<p>Standardized loss is enabled by default. For each target, CORNETO divides residuals by the standard deviation computed from training rows where the target is observed, is not hard-intervened, and has all candidate parents observed. This puts errors on a scale relative to that target’s observed variation; it does not standardize the stored measurements or the fitted coefficients.</p>
+<p>For this simulated dataset, <code class="docutils literal notranslate"><span class="pre">lambda_edges=0.1</span></code> yields the four generating edges. At <code class="docutils literal notranslate"><span class="pre">0.05</span></code>, the selected optimum also contains ERK → AKT with a raw coefficient near <code class="docutils literal notranslate"><span class="pre">0.03</span></code>. The penalty does not declare an edge biologically real or unreal; users should rerun plausible values and report which edges remain selected.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">method</span> <span class="o">=</span> <span class="n">LinearDAGDiscovery</span><span class="p">(</span>
+    <span class="n">lambda_edges</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">coefficient_bound</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span>
+    <span class="n">fit_intercept</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">max_parents</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">enforce_signs</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">coefficient_support</span><span class="o">=</span><span class="s2">"exact"</span><span class="p">,</span>
+    <span class="n">min_abs_coefficient</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">problem</span> <span class="o">=</span> <span class="n">method</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">pkn</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">"SCIPY"</span><span class="p">)</span>
+<span class="n">result</span><span class="o">.</span><span class="n">status</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>'optimal'
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="which-pkn-edges-were-selected">
+<h2>Which PKN edges were selected?<a class="headerlink" href="#which-pkn-edges-were-selected" title="Link to this heading">#</a></h2>
+<p>A fitted edge coefficient is the number multiplying the source value in the target’s linear equation. Holding the other included parent values fixed, increasing the source by one measurement unit changes the model’s predicted target by that coefficient. This is a model slope; interpreting it as a causal effect requires the assumptions discussed at the end of the guide.</p>
+<p>Only the loss is standardized, so the displayed coefficients remain in the original source and target units. For thresholding, CORNETO rescales a coefficient as <code class="docutils literal notranslate"><span class="pre">coefficient</span> <span class="pre">×</span> <span class="pre">source_scale</span> <span class="pre">/</span> <span class="pre">target_scale</span></code>. In exact mode, a selected edge must have normalized magnitude at least <code class="docutils literal notranslate"><span class="pre">min_abs_coefficient</span></code>; every unselected edge has coefficient zero. This threshold can exclude weak but genuine relationships.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">selected</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">edge_selected</span><span class="o">.</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.5</span>
+<span class="n">coefficients</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">edge_coefficient</span><span class="o">.</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">edge_rows</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">edge_index</span><span class="p">,</span> <span class="p">(</span><span class="n">source_set</span><span class="p">,</span> <span class="n">target_set</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">pkn</span><span class="o">.</span><span class="n">E</span><span class="p">):</span>
+    <span class="n">edge_rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="p">{</span>
+            <span class="s2">"source"</span><span class="p">:</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">source_set</span><span class="p">)),</span>
+            <span class="s2">"target"</span><span class="p">:</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">target_set</span><span class="p">)),</span>
+            <span class="s2">"selected"</span><span class="p">:</span> <span class="nb">bool</span><span class="p">(</span><span class="n">selected</span><span class="p">[</span><span class="n">edge_index</span><span class="p">]),</span>
+            <span class="s2">"coefficient"</span><span class="p">:</span> <span class="n">coefficients</span><span class="p">[</span><span class="n">edge_index</span><span class="p">],</span>
+        <span class="p">}</span>
+    <span class="p">)</span>
+<span class="n">edge_table</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">edge_rows</span><span class="p">)</span>
+<span class="n">edge_table</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>source</th>
+      <th>target</th>
+      <th>selected</th>
+      <th>coefficient</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>EGFR</td>
+      <td>AKT</td>
+      <td>True</td>
+      <td>1.086810e+00</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>EGFR</td>
+      <td>ERK</td>
+      <td>True</td>
+      <td>8.663411e-01</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>AKT</td>
+      <td>FOXO</td>
+      <td>True</td>
+      <td>-8.654369e-01</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>ERK</td>
+      <td>ELK1</td>
+      <td>True</td>
+      <td>1.195922e+00</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>AKT</td>
+      <td>EGFR</td>
+      <td>False</td>
+      <td>-0.000000e+00</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>ERK</td>
+      <td>EGFR</td>
+      <td>False</td>
+      <td>-0.000000e+00</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>FOXO</td>
+      <td>AKT</td>
+      <td>False</td>
+      <td>0.000000e+00</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>ELK1</td>
+      <td>ERK</td>
+      <td>False</td>
+      <td>-0.000000e+00</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>AKT</td>
+      <td>ERK</td>
+      <td>False</td>
+      <td>-0.000000e+00</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>ERK</td>
+      <td>AKT</td>
+      <td>False</td>
+      <td>2.073862e-15</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<section id="compare-the-candidate-network-with-the-inferred-model">
+<h3>Compare the candidate network with the inferred model<a class="headerlink" href="#compare-the-candidate-network-with-the-inferred-model" title="Link to this heading">#</a></h3>
+<p>Selected activating edges are blue, the selected inhibitory edge is orange, and rejected candidates remain visible as pale dotted arrows. Labels show fitted coefficients.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">edge_styles</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">edge_index</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">edge_table</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="s2">"selected"</span><span class="p">]:</span>
+        <span class="n">edge_styles</span><span class="p">[</span><span class="n">edge_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">"color"</span><span class="p">:</span> <span class="s2">"#D55E00"</span> <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="s2">"coefficient"</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="s2">"#0072B2"</span><span class="p">,</span>
+            <span class="s2">"fontcolor"</span><span class="p">:</span> <span class="s2">"#333333"</span><span class="p">,</span>
+            <span class="s2">"label"</span><span class="p">:</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s2">"coefficient"</span><span class="p">]</span><span class="si">:</span><span class="s1">+.2f</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
+            <span class="s2">"penwidth"</span><span class="p">:</span> <span class="s2">"3"</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">edge_styles</span><span class="p">[</span><span class="n">edge_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">"color"</span><span class="p">:</span> <span class="s2">"#C7C7C7"</span><span class="p">,</span>
+            <span class="s2">"style"</span><span class="p">:</span> <span class="s2">"dotted"</span><span class="p">,</span>
+        <span class="p">}</span>
+
+<span class="n">pkn</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">custom_edge_attr</span><span class="o">=</span><span class="n">edge_styles</span><span class="p">,</span> <span class="n">graph_attr</span><span class="o">=</span><span class="p">{</span><span class="s2">"rankdir"</span><span class="p">:</span> <span class="s2">"LR"</span><span class="p">})</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/6671b9f648c47cc4b1f2dc338b4d0517bfffc5d7a7a94163e81ab3cf896adb4e.svg" src="../../_images/6671b9f648c47cc4b1f2dc338b4d0517bfffc5d7a7a94163e81ab3cf896adb4e.svg" />
+</div>
+</div>
+</section>
+<section id="inspect-fitted-edge-metadata">
+<span id="linear-dag-edge-metadata"></span><h3>Inspect fitted edge metadata<a class="headerlink" href="#inspect-fitted-edge-metadata" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">get_solution_graph()</span></code> makes the interpretation explicit. It preserves a prior interaction sign as <code class="docutils literal notranslate"><span class="pre">prior_interaction</span></code>, records the fitted sign as <code class="docutils literal notranslate"><span class="pre">inferred_interaction</span></code>, and marks structural-only zero-coefficient edges as <code class="docutils literal notranslate"><span class="pre">connector</span></code>. In exact mode, connectors should be absent because selected edges must have a nonzero normalized coefficient.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">solution_graph</span> <span class="o">=</span> <span class="n">method</span><span class="o">.</span><span class="n">get_solution_graph</span><span class="p">()</span>
+<span class="n">solution_rows</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">edge_index</span><span class="p">,</span> <span class="p">(</span><span class="n">source_set</span><span class="p">,</span> <span class="n">target_set</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">solution_graph</span><span class="o">.</span><span class="n">E</span><span class="p">):</span>
+    <span class="n">attributes</span> <span class="o">=</span> <span class="n">solution_graph</span><span class="o">.</span><span class="n">get_attr_edge</span><span class="p">(</span><span class="n">edge_index</span><span class="p">)</span>
+    <span class="n">solution_rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="p">{</span>
+            <span class="s2">"source"</span><span class="p">:</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">source_set</span><span class="p">)),</span>
+            <span class="s2">"target"</span><span class="p">:</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">target_set</span><span class="p">)),</span>
+            <span class="s2">"coefficient"</span><span class="p">:</span> <span class="n">attributes</span><span class="p">[</span><span class="s2">"coefficient"</span><span class="p">],</span>
+            <span class="s2">"normalized_coefficient"</span><span class="p">:</span> <span class="n">attributes</span><span class="p">[</span><span class="s2">"normalized_coefficient"</span><span class="p">],</span>
+            <span class="s2">"prior_interaction"</span><span class="p">:</span> <span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"prior_interaction"</span><span class="p">),</span>
+            <span class="s2">"inferred_interaction"</span><span class="p">:</span> <span class="n">attributes</span><span class="p">[</span><span class="s2">"inferred_interaction"</span><span class="p">],</span>
+            <span class="s2">"connector"</span><span class="p">:</span> <span class="n">attributes</span><span class="p">[</span><span class="s2">"connector"</span><span class="p">],</span>
+        <span class="p">}</span>
+    <span class="p">)</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">solution_rows</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>source</th>
+      <th>target</th>
+      <th>coefficient</th>
+      <th>normalized_coefficient</th>
+      <th>prior_interaction</th>
+      <th>inferred_interaction</th>
+      <th>connector</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>EGFR</td>
+      <td>AKT</td>
+      <td>1.086810</td>
+      <td>0.910399</td>
+      <td>1</td>
+      <td>1</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>EGFR</td>
+      <td>ERK</td>
+      <td>0.866341</td>
+      <td>0.849813</td>
+      <td>1</td>
+      <td>1</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>AKT</td>
+      <td>FOXO</td>
+      <td>-0.865437</td>
+      <td>-0.975949</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>ERK</td>
+      <td>ELK1</td>
+      <td>1.195922</td>
+      <td>0.956738</td>
+      <td>1</td>
+      <td>1</td>
+      <td>False</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>At these parameter values, the optimizer selects the four interactions used to generate the synthetic data. Their coefficients are close to, but not exactly, the generating values <span class="math notranslate nohighlight">\(1.1\)</span>, <span class="math notranslate nohighlight">\(0.8\)</span>, <span class="math notranslate nohighlight">\(-0.9\)</span>, and <span class="math notranslate nohighlight">\(1.2\)</span>. The available reverse edges, feedback edges, and AKT–ERK cross-talk are not selected in this fit; that result does not establish that such interactions are absent in real biology. The selected graph has no directed cycles even though the PKN contains them.</p>
+</section>
+</section>
+<section id="reuse-the-fitted-model-for-held-out-prediction">
+<span id="linear-dag-prediction"></span><h2>Reuse the fitted model for held-out prediction<a class="headerlink" href="#reuse-the-fitted-model-for-held-out-prediction" title="Link to this heading">#</a></h2>
+<p>The example above calls <code class="docutils literal notranslate"><span class="pre">build()</span></code> and <code class="docutils literal notranslate"><span class="pre">solve()</span></code> separately. Use that form when you need to add constraints to the optimization problem before solving it. If you do not need custom constraints, <code class="docutils literal notranslate"><span class="pre">fit()</span></code> performs those two steps and returns the fitted <code class="docutils literal notranslate"><span class="pre">LinearDAGDiscovery</span></code> object.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Operation</p></th>
+<th class="head"><p>Values used from the new data</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">predict(data)</span></code></p></td>
+<td><p>Hard-intervention target values and explicit or previously fitted shift interventions</p></td>
+<td><p>Applies the fixed selected graph recursively. It does not solve again and does not use ordinary observed values as inputs.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">evaluate(data)</span></code> forward loss</p></td>
+<td><p>The predictions above, followed by the observed values used only for scoring</p></td>
+<td><p>Measures recursive forward prediction error without feeding observed descendants into the model. Every observed vertex that is not hard-intervened is scored, including roots.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">evaluate(data)</span></code> local loss</p></td>
+<td><p>Observed target and observed values for every incoming PKN parent</p></td>
+<td><p>Measures how well each fitted equation reconstructs its target when its parent measurements are supplied. This is a diagnostic, not an independent forward prediction.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">residuals(data)</span></code></p></td>
+<td><p>The same observed-parent calculation as local loss</p></td>
+<td><p>Returns <code class="docutils literal notranslate"><span class="pre">observed</span> <span class="pre">target</span> <span class="pre">−</span> <span class="pre">equation</span> <span class="pre">reconstruction</span></code> for each usable target and sample.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>A <strong>root</strong> is a vertex with no selected incoming edge. <code class="docutils literal notranslate"><span class="pre">predict()</span></code> uses its fitted intercept, not an ordinary observed value. This example sets <code class="docutils literal notranslate"><span class="pre">fit_intercept=False</span></code>, so a root that is not hard-intervened is predicted as zero. In the held-out <code class="docutils literal notranslate"><span class="pre">ERK_on</span></code> row, ERK is fixed by the intervention but EGFR is not; the observed EGFR value is therefore ignored as an input and its prediction is zero. Because <code class="docutils literal notranslate"><span class="pre">evaluate()</span></code> scores observed non-hard vertices, the EGFR error contributes to <code class="docutils literal notranslate"><span class="pre">forward_loss</span></code>. If a root value is an externally supplied input rather than an outcome to predict, mark it as a hard intervention; <code class="docutils literal notranslate"><span class="pre">predict()</span></code> will then fix it to the supplied value and <code class="docutils literal notranslate"><span class="pre">evaluate()</span></code> will exclude that target from the loss.</p>
+<p>The reported losses are weighted means after dividing errors by the response scales learned from the training data; they are not the raw summed optimization objective. Configured <code class="docutils literal notranslate"><span class="pre">vertex_weights</span></code> apply. Evaluation <code class="docutils literal notranslate"><span class="pre">sample_weights</span></code> must be supplied using the held-out sample names—training weights are not automatically transferred to different samples. Select penalties and other model settings using training or validation data, not the final test report. Holding out replicate cells tests prediction for new cells under familiar interventions; holding out an entire condition tests prediction for an intervention condition not used in fitting.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Hold out one complete hard-intervention condition while retaining the</span>
+<span class="c1"># observational and other intervention conditions for training.</span>
+<span class="n">heldout_name</span> <span class="o">=</span> <span class="s2">"ERK_on"</span>
+<span class="n">train_data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">item</span><span class="p">:</span> <span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">heldout_name</span><span class="p">)</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+<span class="n">test_data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">item</span><span class="p">:</span> <span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">heldout_name</span><span class="p">)</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+
+<span class="n">heldout_model</span> <span class="o">=</span> <span class="n">LinearDAGDiscovery</span><span class="p">(</span>
+    <span class="n">lambda_edges</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">coefficient_bound</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span>
+    <span class="n">fit_intercept</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">max_parents</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">enforce_signs</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">coefficient_support</span><span class="o">=</span><span class="s2">"exact"</span><span class="p">,</span>
+    <span class="n">min_abs_coefficient</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span>
+<span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">pkn</span><span class="p">,</span> <span class="n">train_data</span><span class="p">,</span> <span class="n">solve_options</span><span class="o">=</span><span class="p">{</span><span class="s2">"solver"</span><span class="p">:</span> <span class="s2">"SCIPY"</span><span class="p">})</span>
+
+<span class="n">predictions</span> <span class="o">=</span> <span class="n">heldout_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">test_data</span><span class="p">)</span>
+<span class="n">report</span> <span class="o">=</span> <span class="n">heldout_model</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">test_data</span><span class="p">)</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">"forward_loss"</span><span class="p">:</span> <span class="n">report</span><span class="p">[</span><span class="s2">"forward_by_condition"</span><span class="p">],</span>
+        <span class="s2">"local_loss"</span><span class="p">:</span> <span class="n">report</span><span class="p">[</span><span class="s2">"local_by_condition"</span><span class="p">],</span>
+    <span class="p">}</span>
+<span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>forward_loss</th>
+      <th>local_loss</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>ERK_on</th>
+      <td>0.473</td>
+      <td>0.232</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Prediction Data keeps sample/vertex labels and identifies clamped values.</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="p">[</span><span class="n">feature</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">predictions</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="n">heldout_name</span><span class="p">]</span><span class="o">.</span><span class="n">features</span><span class="p">]</span>
+<span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">"id"</span><span class="p">)[[</span><span class="s2">"value"</span><span class="p">,</span> <span class="s2">"predicted"</span><span class="p">,</span> <span class="s2">"clamped"</span><span class="p">,</span> <span class="s2">"observed"</span><span class="p">]]</span><span class="o">.</span><span class="n">loc</span><span class="p">[[</span><span class="s2">"ERK"</span><span class="p">,</span> <span class="s2">"ELK1"</span><span class="p">]]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>value</th>
+      <th>predicted</th>
+      <th>clamped</th>
+      <th>observed</th>
+    </tr>
+    <tr>
+      <th>id</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>ERK</th>
+      <td>1.700000</td>
+      <td>False</td>
+      <td>True</td>
+      <td>True</td>
+    </tr>
+    <tr>
+      <th>ELK1</th>
+      <td>2.033068</td>
+      <td>True</td>
+      <td>False</td>
+      <td>True</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>Prediction and residual results retain their sample and vertex labels. Their feature metadata states exactly how each value was produced:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Metadata</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">predicted</span></code></p></td>
+<td><p>The value was produced by the fixed forward model</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">clamped</span></code></p></td>
+<td><p>The value was fixed to a supplied hard-intervention value rather than predicted</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">observed</span></code></p></td>
+<td><p>The input data contained a value. <code class="docutils literal notranslate"><span class="pre">predict()</span></code> ignores it unless it belongs to a hard intervention; <code class="docutils literal notranslate"><span class="pre">evaluate()</span></code> may use it as the value to score.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">valid</span></code></p></td>
+<td><p>The target and every required parent were observed, so the local residual can be computed</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">equation_prediction</span></code></p></td>
+<td><p>The target value reconstructed from its observed parents for the local residual</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>For a shift intervention, the target measurement may be missing when the shift value is supplied explicitly. A shift estimated during fitting can be reused only for the same <code class="docutils literal notranslate"><span class="pre">intervention_group</span></code>. A numeric shift supplied in the training data is not memorized for later samples; supply it again at prediction time. For a new group, also supply the shift explicitly because test outcomes are never used to estimate it.</p>
+</section>
+<section id="inspect-the-in-sample-equation-reconstructions">
+<h2>Inspect the in-sample equation reconstructions<a class="headerlink" href="#inspect-the-in-sample-equation-reconstructions" title="Link to this heading">#</a></h2>
+<p>This plot is an in-sample fitting diagnostic, not a held-out prediction test. For each target, <code class="docutils literal notranslate"><span class="pre">problem.expr.prediction</span></code> substitutes the observed parent measurements into that target’s fitted equation. A point near the diagonal therefore shows that one equation reconstructs its observed target; it does not show that the complete graph can predict the sample without those parent measurements.</p>
+<p>The plot includes only vertices with at least one selected incoming edge and only rows marked by <code class="docutils literal notranslate"><span class="pre">fitted_mask</span></code>. A hard-intervention target, a missing target, or a target with any missing candidate parent is excluded. The table reports mean absolute reconstruction error in the original measurement units.</p>
+<p>EGFR is omitted because it has no selected incoming edge. In this example, <code class="docutils literal notranslate"><span class="pre">fit_intercept=False</span></code> makes its non-hard equation simply <code class="docutils literal notranslate"><span class="pre">EGFR</span> <span class="pre">=</span> <span class="pre">0</span></code>; those residuals are constant with respect to edge selection and are not informative about downstream fit.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">prediction</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">prediction</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+<span class="n">fitted_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">fitted_mask</span><span class="o">.</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
+<span class="n">modeled_vertices</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">edge_table</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">selected</span><span class="p">,</span> <span class="s2">"target"</span><span class="p">])</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">colors</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">tab10</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">pkn</span><span class="o">.</span><span class="n">num_vertices</span><span class="p">))</span>
+<span class="n">fit_summary</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">vertex_index</span><span class="p">,</span> <span class="n">vertex</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">pkn</span><span class="o">.</span><span class="n">V</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">vertex</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">modeled_vertices</span><span class="p">:</span>
+        <span class="k">continue</span>
+    <span class="n">keep</span> <span class="o">=</span> <span class="n">fitted_mask</span><span class="p">[</span><span class="n">vertex_index</span><span class="p">]</span>
+    <span class="n">observed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">samples</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">sample_index</span><span class="p">,</span> <span class="n">sample_name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">samples</span><span class="p">):</span>
+        <span class="n">feature</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">feature</span> <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="n">sample_name</span><span class="p">]</span><span class="o">.</span><span class="n">features</span> <span class="k">if</span> <span class="n">feature</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">vertex</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">feature</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">feature</span><span class="o">.</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">observed</span><span class="p">[</span><span class="n">sample_index</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">feature</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+    <span class="n">observed</span> <span class="o">=</span> <span class="n">observed</span><span class="p">[</span><span class="n">keep</span><span class="p">]</span>
+    <span class="n">modeled</span> <span class="o">=</span> <span class="n">prediction</span><span class="p">[</span><span class="n">vertex_index</span><span class="p">,</span> <span class="n">keep</span><span class="p">]</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span>
+        <span class="n">observed</span><span class="p">,</span>
+        <span class="n">modeled</span><span class="p">,</span>
+        <span class="n">label</span><span class="o">=</span><span class="n">vertex</span><span class="p">,</span>
+        <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="n">vertex_index</span><span class="p">],</span>
+        <span class="n">s</span><span class="o">=</span><span class="mi">45</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">fit_summary</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="p">{</span>
+            <span class="s2">"protein"</span><span class="p">:</span> <span class="n">vertex</span><span class="p">,</span>
+            <span class="s2">"fitted observations"</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">keep</span><span class="o">.</span><span class="n">sum</span><span class="p">()),</span>
+            <span class="s2">"mean absolute error"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">observed</span> <span class="o">-</span> <span class="n">modeled</span><span class="p">)),</span>
+        <span class="p">}</span>
+    <span class="p">)</span>
+<span class="n">limits</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">2.5</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">]</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">limits</span><span class="p">,</span> <span class="n">limits</span><span class="p">,</span> <span class="s2">"--"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"0.4"</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">"observed response"</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">"model prediction"</span><span class="p">,</span> <span class="n">xlim</span><span class="o">=</span><span class="n">limits</span><span class="p">,</span> <span class="n">ylim</span><span class="o">=</span><span class="n">limits</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">1.02</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">loc</span><span class="o">=</span><span class="s2">"upper left"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Modeled downstream equations"</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+
+<span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">fit_summary</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">"protein"</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>fitted observations</th>
+      <th>mean absolute error</th>
+    </tr>
+    <tr>
+      <th>protein</th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>AKT</th>
+      <td>8</td>
+      <td>0.073</td>
+    </tr>
+    <tr>
+      <th>ERK</th>
+      <td>7</td>
+      <td>0.059</td>
+    </tr>
+    <tr>
+      <th>FOXO</th>
+      <td>10</td>
+      <td>0.080</td>
+    </tr>
+    <tr>
+      <th>ELK1</th>
+      <td>9</td>
+      <td>0.039</td>
+    </tr>
+  </tbody>
+</table>
+</div></div><img alt="../../_images/448677e9368ddef8ddae15180222c5b896e4d10bd40047e4ff8e05363bd7afcf.png" src="../../_images/448677e9368ddef8ddae15180222c5b896e4d10bd40047e4ff8e05363bd7afcf.png" />
+</div>
+</div>
+</section>
+<section id="check-what-was-actually-fitted">
+<h2>Check what was actually fitted<a class="headerlink" href="#check-what-was-actually-fitted" title="Link to this heading">#</a></h2>
+<p>This table shows which values enter the fitting loss. <code class="docutils literal notranslate"><span class="pre">observed_mask</span></code> is true whenever a measurement is present. <code class="docutils literal notranslate"><span class="pre">fitted_mask</span></code> is more restrictive: it is false for hard-intervention targets and whenever the target or any of its candidate parents is missing. Here a <strong>candidate parent</strong> means any vertex with an incoming PKN edge to the target, even when that edge is not selected.</p>
+<p>Consequently, one missing candidate-parent value can remove a target equation from that sample. This uses fewer observations than a workflow that first fills in missing values, but it guarantees that CORNETO never silently replaces a missing parent with zero.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">observed_mask</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">observed_mask</span><span class="o">.</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+    <span class="n">index</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">samples</span><span class="p">),</span>
+    <span class="n">columns</span><span class="o">=</span><span class="n">pkn</span><span class="o">.</span><span class="n">V</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">used_for_fit</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="n">fitted_mask</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+    <span class="n">index</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">samples</span><span class="p">),</span>
+    <span class="n">columns</span><span class="o">=</span><span class="n">pkn</span><span class="o">.</span><span class="n">V</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
+    <span class="p">{</span><span class="s2">"observed"</span><span class="p">:</span> <span class="n">observed_mask</span><span class="p">,</span> <span class="s2">"used in loss"</span><span class="p">:</span> <span class="n">used_for_fit</span><span class="p">},</span>
+    <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead tr th {
+        text-align: left;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr>
+      <th></th>
+      <th colspan="5" halign="left">observed</th>
+      <th colspan="5" halign="left">used in loss</th>
+    </tr>
+    <tr>
+      <th></th>
+      <th>EGFR</th>
+      <th>AKT</th>
+      <th>ERK</th>
+      <th>FOXO</th>
+      <th>ELK1</th>
+      <th>EGFR</th>
+      <th>AKT</th>
+      <th>ERK</th>
+      <th>FOXO</th>
+      <th>ELK1</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>obs_1</th>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+    </tr>
+    <tr>
+      <th>obs_2</th>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+    </tr>
+    <tr>
+      <th>obs_3</th>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+    </tr>
+    <tr>
+      <th>obs_4</th>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+    </tr>
+    <tr>
+      <th>EGFR_low</th>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>False</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+    </tr>
+    <tr>
+      <th>EGFR_high</th>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>False</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+    </tr>
+    <tr>
+      <th>AKT_on</th>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>False</td>
+      <td>True</td>
+      <td>False</td>
+      <td>False</td>
+      <td>True</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>AKT_off</th>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>False</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+    </tr>
+    <tr>
+      <th>ERK_on</th>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>False</td>
+      <td>True</td>
+      <td>True</td>
+    </tr>
+    <tr>
+      <th>ERK_off</th>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>False</td>
+      <td>True</td>
+      <td>True</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="adapting-the-workflow-to-your-experiment">
+<h2>Adapting the workflow to your experiment<a class="headerlink" href="#adapting-the-workflow-to-your-experiment" title="Link to this heading">#</a></h2>
+<p>For a real perturbation panel:</p>
+<ol class="arabic simple">
+<li><p>use centered continuous measurements, such as log-fold changes relative to an appropriate control;</p></li>
+<li><p>map every feature identifier to the same identifiers used by the PKN;</p></li>
+<li><p>annotate the intervened target feature using the metadata described above;</p></li>
+<li><p>represent missing measurements as absent features, <code class="docutils literal notranslate"><span class="pre">None</span></code>, or <code class="docutils literal notranslate"><span class="pre">NaN</span></code>;</p></li>
+<li><p>inspect <code class="docutils literal notranslate"><span class="pre">fitted_mask</span></code>, then rerun plausible <code class="docutils literal notranslate"><span class="pre">lambda_edges</span></code> and <code class="docutils literal notranslate"><span class="pre">min_abs_coefficient</span></code> values and report which edges change.</p></li>
+</ol>
+<p>Optional weights can reflect assay reliability or unequal sample importance:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">method</span> <span class="o">=</span> <span class="n">LinearDAGDiscovery</span><span class="p">(</span>
+    <span class="n">vertex_weights</span><span class="o">=</span><span class="p">{</span><span class="s2">"FOXO"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">},</span>       <span class="c1"># noisier readout</span>
+    <span class="n">sample_weights</span><span class="o">=</span><span class="p">{</span><span class="s2">"replicate_3"</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">},</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Weights must be positive and multiply the corresponding contribution to the fitting loss. Standardization can be disabled with <code class="docutils literal notranslate"><span class="pre">standardize_loss=False</span></code>; leave it enabled when errors should be judged relative to each target’s observed training variation, and disable it when the raw measurement scale itself should determine their relative importance.</p>
+<p>With exact coefficient support, <code class="docutils literal notranslate"><span class="pre">min_abs_coefficient</span></code> applies to <code class="docutils literal notranslate"><span class="pre">coefficient</span> <span class="pre">×</span> <span class="pre">source_scale</span> <span class="pre">/</span> <span class="pre">target_scale</span></code>, not to the displayed raw coefficient. With structural support, a selected edge may instead have coefficient zero and serve only to complete a connectivity route.</p>
+</section>
+<section id="advanced-options-and-formulation">
+<h2>Advanced options and formulation<a class="headerlink" href="#advanced-options-and-formulation" title="Link to this heading">#</a></h2>
+<p>The sections below are useful when tuning the method or diagnosing a difficult dataset; they are not required for the basic workflow.</p>
+<section id="model-choices-and-their-exact-effects">
+<span id="linear-dag-model-choices"></span><h3>Model choices and their exact effects<a class="headerlink" href="#model-choices-and-their-exact-effects" title="Link to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Effect</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">lambda_edges</span></code></p></td>
+<td><p>Adds this amount to the objective for every selected edge. Increasing it trades more fitting error for fewer selected edges.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">max_parents</span></code></p></td>
+<td><p>Maximum number of selected incoming edges allowed at each vertex. An integer applies to every vertex; a mapping can set vertex-specific limits.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">enforce_signs</span></code></p></td>
+<td><p>When true, a PKN sign of <code class="docutils literal notranslate"><span class="pre">+1</span></code> requires a nonnegative coefficient and <code class="docutils literal notranslate"><span class="pre">-1</span></code> requires a nonpositive coefficient.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">coefficient_support</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">exact</span></code> requires every selected edge to have a sufficiently large nonzero coefficient; <code class="docutils literal notranslate"><span class="pre">structural</span></code> allows a selected connectivity edge to have coefficient zero.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">min_abs_coefficient</span></code></p></td>
+<td><p>In exact mode, the minimum of <code class="docutils literal notranslate"><span class="pre">abs(coefficient</span> <span class="pre">×</span> <span class="pre">source_scale</span> <span class="pre">/</span> <span class="pre">target_scale)</span></code> for a selected edge.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">min_commodity_coverage</span></code></p></td>
+<td><p>Minimum fraction of intervention evidence units whose shared flow column must contain a complete route to at least one measured, non-intervened response.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">lambda_unexplained</span></code></p></td>
+<td><p>Adds a penalty for evidence units whose shared flow column has no complete route; unlike the minimum above, it does not make that coverage mandatory.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">loss=&quot;absolute&quot;</span></code></p></td>
+<td><p>Default: minimizes absolute standardized errors, which reduces the influence of individual large errors.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">loss=&quot;squared&quot;</span></code></p></td>
+<td><p>Minimizes squared standardized errors, so large errors receive much more weight. This also changes the problem from a mixed-integer linear program to a mixed-integer quadratic program.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">flow_epsilon</span></code> and <code class="docutils literal notranslate"><span class="pre">flow_capacity</span></code> are technical bounds for the auxiliary connectivity variables, not descriptions of biology. <code class="docutils literal notranslate"><span class="pre">flow_epsilon</span></code> is the smallest positive value assigned to an edge used by a flow; <code class="docutils literal notranslate"><span class="pre">flow_capacity</span></code> is its upper bound. The default capacity is the number of PKN edges multiplied by <code class="docutils literal notranslate"><span class="pre">flow_epsilon</span></code>. Normally these values should not be used to express biological confidence or effect size.</p>
+<p>For a real analysis, solve several scientifically plausible edge penalties and coefficient thresholds and report which edges remain selected. One optimized graph is not an uncertainty estimate.</p>
+</section>
+<section id="what-does-min-commodity-coverage-mean">
+<h3>What does <code class="docutils literal notranslate"><span class="pre">min_commodity_coverage</span></code> mean?<a class="headerlink" href="#what-does-min-commodity-coverage-mean" title="Link to this heading">#</a></h3>
+<p>The parameter retains the internal term <em>commodity</em> from flow problems, but it controls intervention-to-response connectivity. Three levels must be distinguished:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Level</p></th>
+<th class="head"><p>Exact meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Sample</p></td>
+<td><p>One row in <code class="docutils literal notranslate"><span class="pre">Data</span></code>, such as one cell or one bulk condition. Every sample remains a separate regression observation.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Evidence unit</p></td>
+<td><p>One explicit <code class="docutils literal notranslate"><span class="pre">(intervened</span> <span class="pre">source,</span> <span class="pre">intervention_group)</span></code> pair. Replicate cells in that group count as one unit. Samples without a group are pooled into one implicit unit when they have the same flow pattern.</p></td>
+</tr>
+<tr class="row-even"><td><p>Flow column</p></td>
+<td><p>One auxiliary connectivity problem for a unique pattern: the intervened source, the measured non-intervened responses available as endpoints, and the edges blocked by hard interventions.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Several explicit evidence units can have the same pattern and therefore share one flow column. They are counted separately through that column’s <code class="docutils literal notranslate"><span class="pre">group_count</span></code>, but they cannot receive different coverage decisions: when the shared flow is active, all those units count as covered; when it is inactive, none do. Ungrouped samples with the same pattern are pooled into one implicit evidence unit and therefore count once.</p>
+<p>An evidence unit counts as covered when its shared flow column contains a directed route from the intervened source to at least one measured response that is not itself intervened, using at least one selected PKN edge. This says only that the route exists. It does not use prediction error or require a route to every response.</p>
+<p>If there are ten evidence units:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">min_commodity_coverage=0</span></code> does not require any evidence unit to be connected;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">min_commodity_coverage=0.6</span></code> requires shared active flow columns representing at least <code class="docutils literal notranslate"><span class="pre">ceil(0.6</span> <span class="pre">×</span> <span class="pre">10)</span> <span class="pre">=</span> <span class="pre">6</span></code> evidence units;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">min_commodity_coverage=1</span></code> requires flow columns representing all ten evidence units and makes the problem infeasible if the PKN cannot provide every required route.</p></li>
+</ul>
+<p>Coverage is only a graph-connectivity requirement. A covered unit may still be predicted poorly, and coverage is not a significance test or confidence score. Use <code class="docutils literal notranslate"><span class="pre">1</span></code> only when every evidence unit should have a route to at least one measured downstream vertex in the PKN. Otherwise leave the minimum at zero, choose a smaller fraction, or use <code class="docutils literal notranslate"><span class="pre">lambda_unexplained</span></code> to penalize missing routes without making them mandatory.</p>
+</section>
+</section>
+<section id="method-details">
+<h2>Method details<a class="headerlink" href="#method-details" title="Link to this heading">#</a></h2>
+<section id="linear-structural-equations">
+<h3>Linear structural equations<a class="headerlink" href="#linear-structural-equations" title="Link to this heading">#</a></h3>
+<p>For every usable measurement whose target is not hard-intervened, the fitted equation for vertex <span class="math notranslate nohighlight">\(v\)</span> in sample <span class="math notranslate nohighlight">\(s\)</span> is</p>
+<div class="math notranslate nohighlight">
+\[
+\hat{x}_{v,s} = \alpha_v + \sum_{u\to v} \beta_{u\to v}x_{u,s} + d_{v,s}.
+\]</div>
+<p>Here <span class="math notranslate nohighlight">\(\alpha_v\)</span> is the optional intercept, <span class="math notranslate nohighlight">\(\beta_{u\to v}\)</span> is the fitted edge coefficient, and <span class="math notranslate nohighlight">\(d_{v,s}\)</span> is zero unless that target has a shift intervention. A shift can be supplied numerically or estimated from an <code class="docutils literal notranslate"><span class="pre">intervention_group</span></code>. An unselected edge has coefficient zero. A hard-intervention target has no fitted equation in that sample; its supplied value can still appear as a parent value in downstream equations.</p>
+<p>With the default absolute-error loss and no optional shift or coverage penalties, the objective is</p>
+<div class="math notranslate nohighlight">
+\[
+\sum_{(v,s)\,\mathrm{fitted}}
+\frac{w_v w_s}{\sigma_v}\left|x_{v,s}-\hat{x}_{v,s}\right|
++ \lambda_E\sum_e z_e.
+\]</div>
+<p>In this expression, <span class="math notranslate nohighlight">\(w_v\)</span> and <span class="math notranslate nohighlight">\(w_s\)</span> are the optional vertex and sample weights, <span class="math notranslate nohighlight">\(\sigma_v\)</span> is the training-derived response scale, and <span class="math notranslate nohighlight">\(z_e\)</span> is 1 when edge <span class="math notranslate nohighlight">\(e\)</span> is selected. The target scale is computed from observations where the target is not hard-intervened and every candidate parent is present. A missing parent is never replaced with zero.</p>
+<p>In exact coefficient-support mode, selecting edge <span class="math notranslate nohighlight">\(e:u\to v\)</span> also requires <span class="math notranslate nohighlight">\(|\tilde{\beta}_e|\ge\delta\)</span>, where <span class="math notranslate nohighlight">\(\tilde{\beta}_e=\beta_e\,\mathrm{scale}(u)/\mathrm{scale}(v)\)</span> and <span class="math notranslate nohighlight">\(\delta\)</span> is <code class="docutils literal notranslate"><span class="pre">min_abs_coefficient</span></code>.</p>
+<p>During fitting and local residual calculation, <span class="math notranslate nohighlight">\(x_{u,s}\)</span> is the observed parent value. During forward prediction, it is the model’s previously predicted parent value. Ordinary observed values in the new data—including observed roots—are not substituted into the forward calculation. A hard-intervention target is fixed to its supplied value, and a root that is not hard-intervened uses only its fitted intercept.</p>
+</section>
+<section id="relationship-to-sems-and-scms">
+<h3>Relationship to SEMs and SCMs<a class="headerlink" href="#relationship-to-sems-and-scms" title="Link to this heading">#</a></h3>
+<p>A structural equation model (SEM) describes each variable using an equation based on its parent variables. In a linear SEM, the equation for vertex <span class="math notranslate nohighlight">\(v\)</span> is</p>
+<div class="math notranslate nohighlight">
+\[
+X_v = \alpha_v + \sum_{u\in\mathrm{Pa}(v)} \beta_{uv}X_u + \varepsilon_v.
+\]</div>
+<p>Here, <span class="math notranslate nohighlight">\(\mathrm{Pa}(v)\)</span> is the set of parents of <span class="math notranslate nohighlight">\(v\)</span>, <span class="math notranslate nohighlight">\(\alpha_v\)</span> is its baseline value, <span class="math notranslate nohighlight">\(\beta_{uv}\)</span> is the coefficient for the edge <span class="math notranslate nohighlight">\(u\rightarrow v\)</span>, and <span class="math notranslate nohighlight">\(\varepsilon_v\)</span> represents variation not explained by the modeled parents. An SEM is not necessarily causal: the equations may describe statistical relationships without claiming what would happen if a variable were manipulated.</p>
+<p>A structural causal model (SCM) gives the equations a causal interpretation. Each equation is treated as the mechanism that produces its variable. An intervention replaces or modifies one mechanism while the remaining equations stay unchanged. For example, a hard intervention <span class="math notranslate nohighlight">\(\operatorname{do}(X_v=x)\)</span> replaces the equation for <span class="math notranslate nohighlight">\(X_v\)</span> with the fixed value <span class="math notranslate nohighlight">\(x\)</span>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">LinearDAGDiscovery</span></code> selects the parent relationships from the candidate edges in the PKN and estimates their linear coefficients. It therefore fits a PKN-constrained linear SEM. Hard interventions fix the target and remove its usual equation for that sample, while shift interventions add an offset to the equation. Under suitable causal assumptions, these intervention semantics allow the fitted model to be interpreted as a linear acyclic SCM.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Result</p></th>
+<th class="head"><p>What it contains</p></th>
+<th class="head"><p>Causal interpretation</p></th>
+<th class="head"><p>Interventions</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Directed graph or DAG</p></td>
+<td><p>Variables and directed edges</p></td>
+<td><p>Not established by the graph alone</p></td>
+<td><p>Not defined by the graph alone</p></td>
+</tr>
+<tr class="row-odd"><td><p>Linear SEM</p></td>
+<td><p>Graph, linear equations, coefficients, and unexplained variation</p></td>
+<td><p>Optional; equations may be statistical</p></td>
+<td><p>Not defined unless causal meaning is added</p></td>
+</tr>
+<tr class="row-even"><td><p>Linear SCM</p></td>
+<td><p>Linear equations interpreted as causal mechanisms</p></td>
+<td><p>Yes, by assumption</p></td>
+<td><p>Replace or modify the target equation</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">LinearDAGDiscovery</span></code></p></td>
+<td><p>A DAG selected from the PKN, fitted linear equations, and intervention annotations</p></td>
+<td><p>Valid when the PKN, intervention design, absence of important hidden common causes, and mechanism stability assumptions are appropriate</p></td>
+<td><p>Hard interventions replace the target equation; shift interventions modify it</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The optimization cannot verify the assumptions required for the SCM interpretation. Without them, the result should be treated as an intervention-aware linear SEM rather than proof of a causal model. CORNETO’s auxiliary flows are not part of the SEM or SCM; they only restrict graph selection by requiring selected edges to participate in intervention-to-measurement routes.</p>
+</section>
+<section id="how-the-connectivity-constraints-work">
+<h3>How the connectivity constraints work<a class="headerlink" href="#how-the-connectivity-constraints-work" title="Link to this heading">#</a></h3>
+<p>For each unique flow pattern described above, CORNETO creates auxiliary variables that must obey these rules:</p>
+<ol class="arabic simple">
+<li><p>flow enters at that pattern’s intervened source;</p></li>
+<li><p>it can leave only through responses measured and not intervened in the corresponding samples;</p></li>
+<li><p>it can use only selected PKN edges;</p></li>
+<li><p>every selected PKN edge must be used by at least one flow column; and</p></li>
+<li><p>an incoming edge to a hard-intervention target is unavailable in that flow column, although it remains available in other intervention patterns and in the regression equations where applicable.</p></li>
+</ol>
+<p>These rules ensure that selected edges form intervention-to-measurement routes rather than disconnected graph fragments. By default, <code class="docutils literal notranslate"><span class="pre">min_commodity_coverage=0</span></code>, so a particular flow column may remain inactive. When coverage or unexplained-route penalties are enabled, each flow column is weighted by the number of evidence units it represents (<code class="docutils literal notranslate"><span class="pre">group_count</span></code>), including explicit groups and any pooled implicit unit. The table below shows which auxiliary flow columns use each selected edge.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span> <span class="o">=</span> <span class="n">method</span><span class="o">.</span><span class="n">get_edge_usage</span><span class="p">()</span>
+<span class="n">commodity_labels</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">info</span> <span class="ow">in</span> <span class="n">method</span><span class="o">.</span><span class="n">get_commodity_info</span><span class="p">():</span>
+    <span class="n">evidence</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">unit</span><span class="p">[</span><span class="s1">'intervention_group'</span><span class="p">]</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s1">'implicit'</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span><span class="w"> </span><span class="n">unit</span><span class="p">[</span><span class="s1">'sample_names'</span><span class="p">]))</span><span class="si">}</span><span class="s2">"</span>
+        <span class="k">for</span> <span class="n">unit</span> <span class="ow">in</span> <span class="n">info</span><span class="p">[</span><span class="s1">'evidence_units'</span><span class="p">]</span>
+    <span class="p">]</span>
+    <span class="n">commodity_labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"flow </span><span class="si">{</span><span class="n">info</span><span class="p">[</span><span class="s1">'index'</span><span class="p">]</span><span class="si">}</span><span class="s2">: do(</span><span class="si">{</span><span class="n">info</span><span class="p">[</span><span class="s1">'source'</span><span class="p">]</span><span class="si">}</span><span class="s2">) [</span><span class="si">{</span><span class="s1">'; '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">evidence</span><span class="p">)</span><span class="si">}</span><span class="s2">]"</span><span class="p">)</span>
+<span class="n">selected_labels</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">row</span><span class="o">.</span><span class="n">source</span><span class="si">}</span><span class="s1"> → </span><span class="si">{</span><span class="n">row</span><span class="o">.</span><span class="n">target</span><span class="si">}</span><span class="s1">'</span>
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">edge_table</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">selected</span><span class="p">]</span><span class="o">.</span><span class="n">itertuples</span><span class="p">()</span>
+<span class="p">]</span>
+
+<span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="n">usage</span><span class="p">[</span><span class="n">selected</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">),</span>
+    <span class="n">index</span><span class="o">=</span><span class="n">selected_labels</span><span class="p">,</span>
+    <span class="n">columns</span><span class="o">=</span><span class="n">commodity_labels</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>flow 0: do(EGFR) [implicit: EGFR_low, EGFR_high]</th>
+      <th>flow 1: do(AKT) [implicit: AKT_on]</th>
+      <th>flow 2: do(AKT) [implicit: AKT_off]</th>
+      <th>flow 3: do(ERK) [implicit: ERK_on, ERK_off]</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>EGFR → AKT</th>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>EGFR → ERK</th>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>AKT → FOXO</th>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>ERK → ELK1</th>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>A <code class="docutils literal notranslate"><span class="pre">1</span></code> means that the auxiliary connectivity route uses that edge. It does <strong>not</strong> measure signaling strength, confidence, molecule abundance, or causal effect size. The fitted coefficient—not the flow value—determines how an edge contributes to a linear equation.</p>
+</section>
+</section>
+<section id="interpretation-and-limitations">
+<h2>Interpretation and limitations<a class="headerlink" href="#interpretation-and-limitations" title="Link to this heading">#</a></h2>
+<p>The result is one acyclic linear model minimizing the configured combination of fitting error, edge penalty, and any enabled intervention-shift or missing-route penalties. It is not necessarily the graph with the fewest edges. A time-limited solver result may be only the best feasible graph found before the limit, rather than a proven optimum.</p>
+<p>With exact coefficient support, every selected edge has a normalized coefficient at least as large as the chosen threshold. With structural support, an edge may be selected only to complete a connectivity route and still have coefficient zero. Neither choice guarantees a nonzero total effect from an intervention to a response: effects along different paths can cancel.</p>
+<p>Its interpretation depends on several assumptions:</p>
+<ul class="simple">
+<li><p>coefficients can be learned only from samples containing the required target and parent measurements; a fully unobserved internal vertex has no data from which to estimate its equation;</p></li>
+<li><p>coefficients are shared across conditions and effects are additive and linear;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">intervention=&quot;hard&quot;</span></code> fixes the target and removes its equation for that sample;</p></li>
+<li><p>hidden common causes, feedback dynamics, and condition-specific coefficients are not modeled;</p></li>
+<li><p>an edge can be selected only if at least one auxiliary intervention-to-response route uses it, even if an excluded edge is biologically real;</p></li>
+<li><p>alternative graphs may fit noisy data similarly.</p></li>
+</ul>
+<p>Before drawing conclusions, repeat the analysis across plausible edge penalties and coefficient thresholds, resample conditions or cells where appropriate, and test reasonable PKN variants. Report which interactions remain selected and which alternative graphs explain the data similarly.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="index.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Causal and structural modeling</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../metabolism/index.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Metabolism</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#when-is-this-method-useful">When is this method useful?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-corneto-adds">What CORNETO adds</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-separating-the-akt-and-erk-branches-downstream-of-egfr">Example: separating the AKT and ERK branches downstream of EGFR</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#define-the-candidate-biology">Define the candidate biology</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#define-the-perturbation-experiment">Define the perturbation experiment</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mark-interventions-in-data">Mark interventions in <code class="docutils literal notranslate"><span class="pre">Data</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fit-one-linear-dag-to-all-conditions">Fit one linear DAG to all conditions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#which-pkn-edges-were-selected">Which PKN edges were selected?</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#compare-the-candidate-network-with-the-inferred-model">Compare the candidate network with the inferred model</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inspect-fitted-edge-metadata">Inspect fitted edge metadata</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reuse-the-fitted-model-for-held-out-prediction">Reuse the fitted model for held-out prediction</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inspect-the-in-sample-equation-reconstructions">Inspect the in-sample equation reconstructions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#check-what-was-actually-fitted">Check what was actually fitted</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#adapting-the-workflow-to-your-experiment">Adapting the workflow to your experiment</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#advanced-options-and-formulation">Advanced options and formulation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#model-choices-and-their-exact-effects">Model choices and their exact effects</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-does-min-commodity-coverage-mean">What does <code class="docutils literal notranslate"><span class="pre">min_commodity_coverage</span></code> mean?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#method-details">Method details</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#linear-structural-equations">Linear structural equations</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#relationship-to-sems-and-scms">Relationship to SEMs and SCMs</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-the-connectivity-constraints-work">How the connectivity constraints work</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#interpretation-and-limitations">Interpretation and limitations</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2023-2026, Saez-Rodriguez lab. (EMBL-EBI, Heidelberg University).
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

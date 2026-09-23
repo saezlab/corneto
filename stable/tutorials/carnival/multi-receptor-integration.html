@@ -27,8 +27,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
@@ -36,10 +36,10 @@
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=53e23fa6" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
     <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
@@ -64,8 +64,8 @@
             </script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/carnival/multi-receptor-integration';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1786146192';
+        DOCUMENTATION_OPTIONS.theme_version = '0.21.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1790177872';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'stable';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
@@ -403,6 +403,8 @@
 <li class="toctree-l1"><a class="reference internal" href="network-sampler.html">Implementing an alternative network sampler</a></li>
 <li class="toctree-l1"><a class="reference internal" href="network-sampler-example.html">Exploring alternative solutions with <span class="math notranslate nohighlight">\(\epsilon\)</span>-perturbation sampling</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ml/kpnn-with-sc.html">Knowledge-primed Neural Networks (KPNNs) for single cell data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../causal/README.html">Running the LinearDAG Sachs tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../causal/linear-dag-discovery-sachs.html">Find an explanatory signaling network in the Sachs data</a></li>
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../contrib/multi_condition_tutorial/multi_condition_carnival.html">Multi-condition signalling network inference</a></li>
@@ -500,30 +502,30 @@
 
 <span class="n">G</span> <span class="o">=</span> <span class="n">Graph</span><span class="o">.</span><span class="n">from_tuples</span><span class="p">(</span>
     <span class="p">[</span>
-        <span class="p">(</span><span class="s2">&quot;rec1&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">),</span>
-        <span class="p">(</span><span class="s2">&quot;rec1&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">),</span>
-        <span class="p">(</span><span class="s2">&quot;rec1&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;f&quot;</span><span class="p">),</span>
-        <span class="p">(</span><span class="s2">&quot;rec1&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">),</span>
-        <span class="p">(</span><span class="s2">&quot;rec2&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">),</span>
-        <span class="p">(</span><span class="s2">&quot;rec2&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;tf2&quot;</span><span class="p">),</span>
-        <span class="p">(</span><span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;g&quot;</span><span class="p">),</span>
-        <span class="p">(</span><span class="s2">&quot;g&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">),</span>
-        <span class="p">(</span><span class="s2">&quot;rec2&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">),</span>
-        <span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">),</span>
-        <span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">),</span>
-        <span class="p">(</span><span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">),</span>
-        <span class="p">(</span><span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;e&quot;</span><span class="p">),</span>
-        <span class="p">(</span><span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;tf3&quot;</span><span class="p">),</span>
-        <span class="p">(</span><span class="s2">&quot;e&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">),</span>
-        <span class="p">(</span><span class="s2">&quot;d&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">),</span>
-        <span class="p">(</span><span class="s2">&quot;e&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;tf1&quot;</span><span class="p">),</span>
-        <span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;tf1&quot;</span><span class="p">),</span>
-        <span class="p">(</span><span class="s2">&quot;d&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;tf2&quot;</span><span class="p">),</span>
-        <span class="p">(</span><span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;tf2&quot;</span><span class="p">),</span>
-        <span class="p">(</span><span class="s2">&quot;tf1&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;tf2&quot;</span><span class="p">),</span>
-        <span class="p">(</span><span class="s2">&quot;tf1&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;rec2&quot;</span><span class="p">),</span>
-        <span class="p">(</span><span class="s2">&quot;tf2&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;rec1&quot;</span><span class="p">),</span>
-        <span class="p">(</span><span class="s2">&quot;tf1&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;f&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">"rec1"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"a"</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">"rec1"</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">"b"</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">"rec1"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"f"</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">"rec1"</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">"c"</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">"rec2"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"b"</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">"rec2"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"tf2"</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">"b"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"g"</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">"g"</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">"d"</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">"rec2"</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">"d"</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">"a"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"c"</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">"a"</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">"d"</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">"c"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"d"</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">"c"</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">"e"</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">"c"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"tf3"</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">"e"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"a"</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">"d"</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">"c"</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">"e"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"tf1"</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">"a"</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">"tf1"</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">"d"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"tf2"</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">"c"</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">"tf2"</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">"tf1"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"tf2"</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">"tf1"</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">"rec2"</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">"tf2"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"rec1"</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">"tf1"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"f"</span><span class="p">),</span>
     <span class="p">]</span>
 <span class="p">)</span>
 <span class="c1"># Plot our PKN</span>
@@ -540,14 +542,14 @@
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods.carnival</span><span class="w"> </span><span class="kn">import</span> <span class="n">CarnivalFlow</span>
 
 <span class="n">samples</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;receptor1_sample&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;rec1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;mapping&quot;</span><span class="p">:</span> <span class="s2">&quot;vertex&quot;</span><span class="p">,</span> <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;input&quot;</span><span class="p">},</span>
-        <span class="s2">&quot;tf2&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;mapping&quot;</span><span class="p">:</span> <span class="s2">&quot;vertex&quot;</span><span class="p">,</span> <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;output&quot;</span><span class="p">},</span>
+    <span class="s2">"receptor1_sample"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"rec1"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"value"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"mapping"</span><span class="p">:</span> <span class="s2">"vertex"</span><span class="p">,</span> <span class="s2">"role"</span><span class="p">:</span> <span class="s2">"input"</span><span class="p">},</span>
+        <span class="s2">"tf2"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"value"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"mapping"</span><span class="p">:</span> <span class="s2">"vertex"</span><span class="p">,</span> <span class="s2">"role"</span><span class="p">:</span> <span class="s2">"output"</span><span class="p">},</span>
     <span class="p">},</span>
-    <span class="s2">&quot;receptor2_sample&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;rec2&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;mapping&quot;</span><span class="p">:</span> <span class="s2">&quot;vertex&quot;</span><span class="p">,</span> <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;input&quot;</span><span class="p">},</span>
-        <span class="s2">&quot;tf1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;mapping&quot;</span><span class="p">:</span> <span class="s2">&quot;vertex&quot;</span><span class="p">,</span> <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;output&quot;</span><span class="p">},</span>
-        <span class="s2">&quot;tf2&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;mapping&quot;</span><span class="p">:</span> <span class="s2">&quot;vertex&quot;</span><span class="p">,</span> <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;output&quot;</span><span class="p">},</span>
+    <span class="s2">"receptor2_sample"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"rec2"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"value"</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">"mapping"</span><span class="p">:</span> <span class="s2">"vertex"</span><span class="p">,</span> <span class="s2">"role"</span><span class="p">:</span> <span class="s2">"input"</span><span class="p">},</span>
+        <span class="s2">"tf1"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"value"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"mapping"</span><span class="p">:</span> <span class="s2">"vertex"</span><span class="p">,</span> <span class="s2">"role"</span><span class="p">:</span> <span class="s2">"output"</span><span class="p">},</span>
+        <span class="s2">"tf2"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"value"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"mapping"</span><span class="p">:</span> <span class="s2">"vertex"</span><span class="p">,</span> <span class="s2">"role"</span><span class="p">:</span> <span class="s2">"output"</span><span class="p">},</span>
     <span class="p">},</span>
 <span class="p">}</span>
 
@@ -566,7 +568,7 @@
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">c</span> <span class="o">=</span> <span class="n">CarnivalFlow</span><span class="p">(</span><span class="n">lambda_reg</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span>
 <span class="n">P</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
-<span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">verbosity</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">solver</span><span class="o">=</span><span class="s2">&quot;scipy&quot;</span><span class="p">)</span>
+<span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">verbosity</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">solver</span><span class="o">=</span><span class="s2">"scipy"</span><span class="p">)</span>
 
 <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">P</span><span class="o">.</span><span class="n">objectives</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
@@ -590,20 +592,20 @@ Unreachable vertices for sample: 0
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_flow&#39;: _flow: Variable((25,), _flow),
- &#39;edge_inhibits&#39;: edge_inhibits: Variable((25, 2), edge_inhibits, boolean=True),
- &#39;edge_activates&#39;: edge_activates: Variable((25, 2), edge_activates, boolean=True),
- &#39;const0x14df77c05f4ea025&#39;: const0x14df77c05f4ea025: Constant(CONSTANT, NONNEGATIVE, (10, 25)),
- &#39;_dag_layer&#39;: _dag_layer: Variable((10, 2), _dag_layer),
- &#39;const0x19c99d63116ef5a0&#39;: const0x19c99d63116ef5a0: Constant(CONSTANT, NONNEGATIVE, (10, 25)),
- &#39;edge_has_signal_OR&#39;: edge_has_signal_OR: Variable((25,), edge_has_signal_OR, boolean=True),
- &#39;flow&#39;: _flow: Variable((25,), _flow),
- &#39;vertex_value&#39;: Expression(AFFINE, UNKNOWN, (10, 2)),
- &#39;vertex_activated&#39;: Expression(AFFINE, NONNEGATIVE, (10, 2)),
- &#39;vertex_inhibited&#39;: Expression(AFFINE, NONNEGATIVE, (10, 2)),
- &#39;edge_value&#39;: Expression(AFFINE, UNKNOWN, (25, 2)),
- &#39;edge_has_signal&#39;: Expression(AFFINE, NONNEGATIVE, (25, 2)),
- &#39;vertex_max_depth&#39;: _dag_layer: Variable((10, 2), _dag_layer)}
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{'_flow': _flow: Variable((25,), _flow),
+ 'edge_inhibits': edge_inhibits: Variable((25, 2), edge_inhibits, boolean=True),
+ 'edge_activates': edge_activates: Variable((25, 2), edge_activates, boolean=True),
+ 'const0x14df77c05f4ea025': const0x14df77c05f4ea025: Constant(CONSTANT, NONNEGATIVE, (10, 25)),
+ '_dag_layer': _dag_layer: Variable((10, 2), _dag_layer),
+ 'const0x19c99d63116ef5a0': const0x19c99d63116ef5a0: Constant(CONSTANT, NONNEGATIVE, (10, 25)),
+ 'edge_has_signal_OR': edge_has_signal_OR: Variable((25,), edge_has_signal_OR, boolean=True),
+ 'flow': _flow: Variable((25,), _flow),
+ 'vertex_value': Expression(AFFINE, UNKNOWN, (10, 2)),
+ 'vertex_activated': Expression(AFFINE, NONNEGATIVE, (10, 2)),
+ 'vertex_inhibited': Expression(AFFINE, NONNEGATIVE, (10, 2)),
+ 'edge_value': Expression(AFFINE, UNKNOWN, (25, 2)),
+ 'edge_has_signal': Expression(AFFINE, NONNEGATIVE, (25, 2)),
+ 'vertex_max_depth': _dag_layer: Variable((10, 2), _dag_layer)}
 </pre></div>
 </div>
 </div>
@@ -709,8 +711,8 @@ Unreachable vertices for sample: 0
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -736,7 +738,7 @@ Unreachable vertices for sample: 0
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
 </p></div>
       
     </div>

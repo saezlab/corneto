@@ -27,8 +27,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
@@ -36,10 +36,10 @@
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=53e23fa6" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
     <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
@@ -64,8 +64,8 @@
             </script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/carnival/single-sample-carnival-transcriptomics';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1786146192';
+        DOCUMENTATION_OPTIONS.theme_version = '0.21.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1790177872';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'stable';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
@@ -407,6 +407,8 @@
 <li class="toctree-l1"><a class="reference internal" href="network-sampler.html">Implementing an alternative network sampler</a></li>
 <li class="toctree-l1"><a class="reference internal" href="network-sampler-example.html">Exploring alternative solutions with <span class="math notranslate nohighlight">\(\epsilon\)</span>-perturbation sampling</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ml/kpnn-with-sc.html">Knowledge-primed Neural Networks (KPNNs) for single cell data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../causal/README.html">Running the LinearDAG Sachs tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../causal/linear-dag-discovery-sachs.html">Find an explanatory signaling network in the Sachs data</a></li>
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../contrib/multi_condition_tutorial/multi_condition_carnival.html">Multi-condition signalling network inference</a></li>
@@ -522,7 +524,7 @@ Underlying pathway repositories may exhibit incomplete coverage and annotation b
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&#39;2.0.6&#39;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>'2.0.6'
 </pre></div>
 </div>
 </div>
@@ -545,7 +547,7 @@ Underlying pathway repositories may exhibit incomplete coverage and annotation b
 </div>
 <div class="cell_output docutils container">
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>AnnData object with n_obs × n_vars = 6 × 58674
-    obs: &#39;condition&#39;, &#39;sample_id&#39;
+    obs: 'condition', 'sample_id'
 </pre></div>
 </div>
 </div>
@@ -558,7 +560,7 @@ Underlying pathway repositories may exhibit incomplete coverage and annotation b
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Obtain genes that pass the thresholds</span>
 <span class="n">dc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">filter_by_expr</span><span class="p">(</span>
     <span class="n">adata</span><span class="o">=</span><span class="n">adata</span><span class="p">,</span>
-    <span class="n">group</span><span class="o">=</span><span class="s2">&quot;condition&quot;</span><span class="p">,</span>
+    <span class="n">group</span><span class="o">=</span><span class="s2">"condition"</span><span class="p">,</span>
     <span class="n">min_count</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
     <span class="n">min_total_count</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span>
     <span class="n">large_n</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
@@ -570,7 +572,7 @@ Underlying pathway repositories may exhibit incomplete coverage and annotation b
 </div>
 <div class="cell_output docutils container">
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>AnnData object with n_obs × n_vars = 6 × 19510
-    obs: &#39;condition&#39;, &#39;sample_id&#39;
+    obs: 'condition', 'sample_id'
 </pre></div>
 </div>
 </div>
@@ -581,7 +583,7 @@ Underlying pathway repositories may exhibit incomplete coverage and annotation b
 <span class="n">inference</span> <span class="o">=</span> <span class="n">DefaultInference</span><span class="p">(</span><span class="n">n_cpus</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
 <span class="n">dds</span> <span class="o">=</span> <span class="n">DeseqDataSet</span><span class="p">(</span>
     <span class="n">adata</span><span class="o">=</span><span class="n">adata</span><span class="p">,</span>
-    <span class="n">design_factors</span><span class="o">=</span><span class="s2">&quot;condition&quot;</span><span class="p">,</span>
+    <span class="n">design_factors</span><span class="o">=</span><span class="s2">"condition"</span><span class="p">,</span>
     <span class="n">refit_cooks</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">inference</span><span class="o">=</span><span class="n">inference</span><span class="p">,</span>
 <span class="p">)</span>
@@ -590,7 +592,7 @@ Underlying pathway repositories may exhibit incomplete coverage and annotation b
 <span class="n">dds</span><span class="o">.</span><span class="n">deseq2</span><span class="p">()</span>
 
 <span class="c1"># Extract contrast between conditions</span>
-<span class="n">stat_res</span> <span class="o">=</span> <span class="n">DeseqStats</span><span class="p">(</span><span class="n">dds</span><span class="p">,</span> <span class="n">contrast</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;condition&quot;</span><span class="p">,</span> <span class="s2">&quot;treatment&quot;</span><span class="p">,</span> <span class="s2">&quot;control&quot;</span><span class="p">],</span> <span class="n">inference</span><span class="o">=</span><span class="n">inference</span><span class="p">)</span>
+<span class="n">stat_res</span> <span class="o">=</span> <span class="n">DeseqStats</span><span class="p">(</span><span class="n">dds</span><span class="p">,</span> <span class="n">contrast</span><span class="o">=</span><span class="p">[</span><span class="s2">"condition"</span><span class="p">,</span> <span class="s2">"treatment"</span><span class="p">,</span> <span class="s2">"control"</span><span class="p">],</span> <span class="n">inference</span><span class="o">=</span><span class="n">inference</span><span class="p">)</span>
 
 <span class="c1"># Compute Wald test</span>
 <span class="n">stat_res</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span>
@@ -772,7 +774,7 @@ RP11-91I8.3     3.557244e-05   1.474439e-04
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">results_df</span><span class="p">[[</span><span class="s2">&quot;stat&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;stat&quot;</span><span class="p">:</span> <span class="s2">&quot;treatment.vs.control&quot;</span><span class="p">})</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">results_df</span><span class="p">[[</span><span class="s2">"stat"</span><span class="p">]]</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="p">{</span><span class="s2">"stat"</span><span class="p">:</span> <span class="s2">"treatment.vs.control"</span><span class="p">})</span>
 <span class="n">data</span>
 </pre></div>
 </div>
@@ -857,7 +859,7 @@ RP11-91I8.3     3.557244e-05   1.474439e-04
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Retrieve CollecTRI gene regulatory network (through Omnipath).</span>
 <span class="c1"># These are regulons that we will use for enrichment tests</span>
 <span class="c1"># to infer TF activities</span>
-<span class="n">collectri</span> <span class="o">=</span> <span class="n">dc</span><span class="o">.</span><span class="n">op</span><span class="o">.</span><span class="n">collectri</span><span class="p">(</span><span class="n">organism</span><span class="o">=</span><span class="s2">&quot;human&quot;</span><span class="p">)</span>
+<span class="n">collectri</span> <span class="o">=</span> <span class="n">dc</span><span class="o">.</span><span class="n">op</span><span class="o">.</span><span class="n">collectri</span><span class="p">(</span><span class="n">organism</span><span class="o">=</span><span class="s2">"human"</span><span class="p">)</span>
 <span class="n">collectri</span>
 </pre></div>
 </div>
@@ -1081,7 +1083,7 @@ RP11-91I8.3     3.557244e-05   1.474439e-04
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">barplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">tf_acts</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;treatment.vs.control&quot;</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">barplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">tf_acts</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"treatment.vs.control"</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
@@ -1100,7 +1102,7 @@ RP11-91I8.3     3.557244e-05   1.474439e-04
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We obtain ligand-receptor interactions from Omnipath, and we keep only the receptors</span>
 <span class="c1"># This is our list of a prior potential receptors from which we will infer the network</span>
-<span class="n">unique_receptors</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">interactions</span><span class="o">.</span><span class="n">LigRecExtra</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">genesymbols</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="s2">&quot;target_genesymbol&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+<span class="n">unique_receptors</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">interactions</span><span class="o">.</span><span class="n">LigRecExtra</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">genesymbols</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="s2">"target_genesymbol"</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
 <span class="nb">len</span><span class="p">(</span><span class="n">unique_receptors</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -1115,7 +1117,7 @@ RP11-91I8.3     3.557244e-05   1.474439e-04
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We load the RIDDEN matrix</span>
 <span class="n">df_ridden</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
-    <span class="s2">&quot;https://github.com/basvaat/RIDDEN_tool/raw/aa3c9d9880f135e95a079865ee20ebec984cf54d/ridden_model/ridden_model_matrix.csv&quot;</span><span class="p">,</span>
+    <span class="s2">"https://github.com/basvaat/RIDDEN_tool/raw/aa3c9d9880f135e95a079865ee20ebec984cf54d/ridden_model/ridden_model_matrix.csv"</span><span class="p">,</span>
     <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">df_ridden</span>
@@ -1515,8 +1517,8 @@ RP11-91I8.3     3.557244e-05   1.474439e-04
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ridden_pkn</span> <span class="o">=</span> <span class="n">df_ridden</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span><span class="o">.</span><span class="n">melt</span><span class="p">(</span><span class="n">id_vars</span><span class="o">=</span><span class="s2">&quot;index&quot;</span><span class="p">)</span>
-<span class="n">ridden_pkn</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;source&quot;</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="p">,</span> <span class="s2">&quot;weight&quot;</span><span class="p">]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ridden_pkn</span> <span class="o">=</span> <span class="n">df_ridden</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span><span class="o">.</span><span class="n">melt</span><span class="p">(</span><span class="n">id_vars</span><span class="o">=</span><span class="s2">"index"</span><span class="p">)</span>
+<span class="n">ridden_pkn</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"source"</span><span class="p">,</span> <span class="s2">"target"</span><span class="p">,</span> <span class="s2">"weight"</span><span class="p">]</span>
 <span class="n">ridden_pkn</span>
 </pre></div>
 </div>
@@ -1636,7 +1638,7 @@ RP11-91I8.3     3.557244e-05   1.474439e-04
 <span class="n">pw_acts</span><span class="p">,</span> <span class="n">pw_padj</span> <span class="o">=</span> <span class="n">dc</span><span class="o">.</span><span class="n">mt</span><span class="o">.</span><span class="n">ulm</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df_receptor_de</span><span class="p">,</span> <span class="n">net</span><span class="o">=</span><span class="n">ridden_pkn</span><span class="p">)</span>
 
 <span class="n">df_ridden_stats</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">pw_acts</span><span class="p">,</span> <span class="n">pw_padj</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
-<span class="n">df_ridden_stats</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;activity&quot;</span><span class="p">,</span> <span class="s2">&quot;padj&quot;</span><span class="p">]</span>
+<span class="n">df_ridden_stats</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"activity"</span><span class="p">,</span> <span class="s2">"padj"</span><span class="p">]</span>
 <span class="n">df_ridden_stats</span>
 </pre></div>
 </div>
@@ -1728,7 +1730,7 @@ RP11-91I8.3     3.557244e-05   1.474439e-04
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We inferred from gene expression that TGFBR1 is the most active receptor</span>
-<span class="n">df_ridden_stats</span><span class="p">[</span><span class="n">df_ridden_stats</span><span class="o">.</span><span class="n">padj</span> <span class="o">&lt;=</span> <span class="mf">0.0001</span><span class="p">][[</span><span class="s2">&quot;activity&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s2">&quot;activity&quot;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">barh</span><span class="p">(</span>
+<span class="n">df_ridden_stats</span><span class="p">[</span><span class="n">df_ridden_stats</span><span class="o">.</span><span class="n">padj</span> <span class="o">&lt;=</span> <span class="mf">0.0001</span><span class="p">][[</span><span class="s2">"activity"</span><span class="p">]]</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s2">"activity"</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">barh</span><span class="p">(</span>
     <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
 <span class="p">)</span>
 </pre></div>
@@ -1780,7 +1782,7 @@ RP11-91I8.3     3.557244e-05   1.474439e-04
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We get only interactions from SIGNOR http://signor.uniroma2.it/</span>
-<span class="n">pkn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">interactions</span><span class="o">.</span><span class="n">OmniPath</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">databases</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;SIGNOR&quot;</span><span class="p">],</span> <span class="n">genesymbols</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">pkn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">interactions</span><span class="o">.</span><span class="n">OmniPath</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">databases</span><span class="o">=</span><span class="p">[</span><span class="s2">"SIGNOR"</span><span class="p">],</span> <span class="n">genesymbols</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">pkn</span> <span class="o">=</span> <span class="n">pkn</span><span class="p">[</span><span class="n">pkn</span><span class="o">.</span><span class="n">consensus_direction</span> <span class="o">==</span> <span class="kc">True</span><span class="p">]</span>
 <span class="n">pkn</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
@@ -1931,8 +1933,8 @@ RP11-91I8.3     3.557244e-05   1.474439e-04
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pkn</span><span class="p">[</span><span class="s2">&quot;interaction&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pkn</span><span class="p">[</span><span class="s2">&quot;is_stimulation&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="o">-</span> <span class="n">pkn</span><span class="p">[</span><span class="s2">&quot;is_inhibition&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
-<span class="n">sel_pkn</span> <span class="o">=</span> <span class="n">pkn</span><span class="p">[[</span><span class="s2">&quot;source_genesymbol&quot;</span><span class="p">,</span> <span class="s2">&quot;interaction&quot;</span><span class="p">,</span> <span class="s2">&quot;target_genesymbol&quot;</span><span class="p">]]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pkn</span><span class="p">[</span><span class="s2">"interaction"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pkn</span><span class="p">[</span><span class="s2">"is_stimulation"</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="o">-</span> <span class="n">pkn</span><span class="p">[</span><span class="s2">"is_inhibition"</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<span class="n">sel_pkn</span> <span class="o">=</span> <span class="n">pkn</span><span class="p">[[</span><span class="s2">"source_genesymbol"</span><span class="p">,</span> <span class="s2">"interaction"</span><span class="p">,</span> <span class="s2">"target_genesymbol"</span><span class="p">]]</span>
 <span class="n">sel_pkn</span>
 </pre></div>
 </div>
@@ -2052,7 +2054,7 @@ RP11-91I8.3     3.557244e-05   1.474439e-04
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># As measurements, we take the estimated TFs, we will filter out TFs with p-val &gt; 0.001</span>
-<span class="n">significant_tfs</span> <span class="o">=</span> <span class="n">tf_acts</span><span class="p">[</span><span class="n">tf_padj</span> <span class="o">&lt;=</span> <span class="mf">0.001</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s2">&quot;treatment.vs.control&quot;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">significant_tfs</span> <span class="o">=</span> <span class="n">tf_acts</span><span class="p">[</span><span class="n">tf_padj</span> <span class="o">&lt;=</span> <span class="mf">0.001</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s2">"treatment.vs.control"</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">significant_tfs</span>
 </pre></div>
 </div>
@@ -2259,52 +2261,52 @@ RP11-91I8.3     3.557244e-05   1.474439e-04
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We keep only the ones in the PKN graph</span>
-<span class="n">measurements</span> <span class="o">=</span> <span class="n">significant_tfs</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">significant_tfs</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">V</span><span class="p">)]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()[</span><span class="s2">&quot;treatment.vs.control&quot;</span><span class="p">]</span>
+<span class="n">measurements</span> <span class="o">=</span> <span class="n">significant_tfs</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">significant_tfs</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">V</span><span class="p">)]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()[</span><span class="s2">"treatment.vs.control"</span><span class="p">]</span>
 <span class="n">measurements</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;SRF&#39;: 7.3906108743123164,
- &#39;MYOCD&#39;: 7.342672817892572,
- &#39;SMAD3&#39;: 7.0844294103820795,
- &#39;ZEB2&#39;: 5.787311392244455,
- &#39;SMAD2&#39;: 5.614427728369875,
- &#39;JUNB&#39;: 5.610473028026834,
- &#39;HMGA2&#39;: 4.918146140281221,
- &#39;POU3F1&#39;: 4.903790337294035,
- &#39;RORA&#39;: 4.748799034758163,
- &#39;SMAD4&#39;: 4.4402600755156145,
- &#39;MEF2A&#39;: 4.232877334898612,
- &#39;FGF2&#39;: 4.207761616198675,
- &#39;SMAD5&#39;: -4.004015430616565,
- &#39;CIITA&#39;: -4.133309143328191,
- &#39;NFKBIB&#39;: -4.154074213081593,
- &#39;REL&#39;: -4.165033347663166,
- &#39;PITX3&#39;: -4.198048894427097,
- &#39;IRF3&#39;: -4.272799795168503,
- &#39;PITX1&#39;: -4.340665200624415,
- &#39;KLF8&#39;: -4.467109049496403,
- &#39;DNMT3A&#39;: -4.622449958822471,
- &#39;RELB&#39;: -4.681915557899264,
- &#39;NFE2L2&#39;: -4.911003015915443,
- &#39;MECOM&#39;: -4.942361740804518,
- &#39;STAT1&#39;: -5.189258911506045,
- &#39;HOXC6&#39;: -5.2154678064628905,
- &#39;IRF2&#39;: -5.269444375678524,
- &#39;KLF11&#39;: -5.269652535831714,
- &#39;SPI1&#39;: -5.431022120705177,
- &#39;NR4A3&#39;: -5.72350500604796,
- &#39;NR1H4&#39;: -6.055602968386476,
- &#39;SKIL&#39;: -7.433281684514384,
- &#39;IRF1&#39;: -9.357500631318382}
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{'SRF': 7.3906108743123164,
+ 'MYOCD': 7.342672817892572,
+ 'SMAD3': 7.0844294103820795,
+ 'ZEB2': 5.787311392244455,
+ 'SMAD2': 5.614427728369875,
+ 'JUNB': 5.610473028026834,
+ 'HMGA2': 4.918146140281221,
+ 'POU3F1': 4.903790337294035,
+ 'RORA': 4.748799034758163,
+ 'SMAD4': 4.4402600755156145,
+ 'MEF2A': 4.232877334898612,
+ 'FGF2': 4.207761616198675,
+ 'SMAD5': -4.004015430616565,
+ 'CIITA': -4.133309143328191,
+ 'NFKBIB': -4.154074213081593,
+ 'REL': -4.165033347663166,
+ 'PITX3': -4.198048894427097,
+ 'IRF3': -4.272799795168503,
+ 'PITX1': -4.340665200624415,
+ 'KLF8': -4.467109049496403,
+ 'DNMT3A': -4.622449958822471,
+ 'RELB': -4.681915557899264,
+ 'NFE2L2': -4.911003015915443,
+ 'MECOM': -4.942361740804518,
+ 'STAT1': -5.189258911506045,
+ 'HOXC6': -5.2154678064628905,
+ 'IRF2': -5.269444375678524,
+ 'KLF11': -5.269652535831714,
+ 'SPI1': -5.431022120705177,
+ 'NR4A3': -5.72350500604796,
+ 'NR1H4': -6.055602968386476,
+ 'SKIL': -7.433281684514384,
+ 'IRF1': -9.357500631318382}
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;TGFBR1&quot;</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">V</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="s2">"TGFBR1"</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">V</span>
 </pre></div>
 </div>
 </div>
@@ -2316,15 +2318,15 @@ RP11-91I8.3     3.557244e-05   1.474439e-04
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Here we pass the receptors. We&#39;re going to use the top receptor inferred by RIDDEN</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Here we pass the receptors. We're going to use the top receptor inferred by RIDDEN</span>
 <span class="c1"># (TGFBR1)</span>
-<span class="n">inputs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;TGFBR1&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>  <span class="c1"># 1=up, -1=down</span>
+<span class="n">inputs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"TGFBR1"</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>  <span class="c1"># 1=up, -1=down</span>
 <span class="n">inputs</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;TGFBR1&#39;: 1}
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{'TGFBR1': 1}
 </pre></div>
 </div>
 </div>
@@ -2334,10 +2336,10 @@ RP11-91I8.3     3.557244e-05   1.474439e-04
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create the dataset in standard format</span>
 <span class="n">carnival_data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
 <span class="k">for</span> <span class="n">inp</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">inputs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-    <span class="n">carnival_data</span><span class="p">[</span><span class="n">inp</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">v</span><span class="p">,</span> <span class="n">role</span><span class="o">=</span><span class="s2">&quot;input&quot;</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="s2">&quot;vertex&quot;</span><span class="p">)</span>
+    <span class="n">carnival_data</span><span class="p">[</span><span class="n">inp</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">v</span><span class="p">,</span> <span class="n">role</span><span class="o">=</span><span class="s2">"input"</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="s2">"vertex"</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">out</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">measurements</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-    <span class="n">carnival_data</span><span class="p">[</span><span class="n">out</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">v</span><span class="p">,</span> <span class="n">role</span><span class="o">=</span><span class="s2">&quot;output&quot;</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="s2">&quot;vertex&quot;</span><span class="p">)</span>
-<span class="n">data</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Data</span><span class="o">.</span><span class="n">from_cdict</span><span class="p">({</span><span class="s2">&quot;sample1&quot;</span><span class="p">:</span> <span class="n">carnival_data</span><span class="p">})</span>
+    <span class="n">carnival_data</span><span class="p">[</span><span class="n">out</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">v</span><span class="p">,</span> <span class="n">role</span><span class="o">=</span><span class="s2">"output"</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="s2">"vertex"</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Data</span><span class="o">.</span><span class="n">from_cdict</span><span class="p">({</span><span class="s2">"sample1"</span><span class="p">:</span> <span class="n">carnival_data</span><span class="p">})</span>
 <span class="n">data</span>
 </pre></div>
 </div>
@@ -2368,26 +2370,26 @@ RP11-91I8.3     3.557244e-05   1.474439e-04
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Unreachable vertices for sample: 0
 </pre></div>
 </div>
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_flow&#39;: _flow: Variable((3251,), _flow),
- &#39;edge_activates&#39;: edge_activates: Variable((3251, 1), edge_activates, boolean=True),
- &#39;edge_inhibits&#39;: edge_inhibits: Variable((3251, 1), edge_inhibits, boolean=True),
- &#39;const0x689caa490bb1d38&#39;: const0x689caa490bb1d38: Constant(CONSTANT, NONNEGATIVE, (937, 3251)),
- &#39;_dag_layer&#39;: _dag_layer: Variable((937, 1), _dag_layer),
- &#39;const0x1f364c592f0a234&#39;: const0x1f364c592f0a234: Constant(CONSTANT, NONNEGATIVE, (937, 3251)),
- &#39;flow&#39;: _flow: Variable((3251,), _flow),
- &#39;vertex_value&#39;: Expression(AFFINE, UNKNOWN, (937, 1)),
- &#39;vertex_activated&#39;: Expression(AFFINE, NONNEGATIVE, (937, 1)),
- &#39;vertex_inhibited&#39;: Expression(AFFINE, NONNEGATIVE, (937, 1)),
- &#39;edge_value&#39;: Expression(AFFINE, UNKNOWN, (3251, 1)),
- &#39;edge_has_signal&#39;: Expression(AFFINE, NONNEGATIVE, (3251, 1)),
- &#39;vertex_max_depth&#39;: _dag_layer: Variable((937, 1), _dag_layer)}
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{'_flow': _flow: Variable((3251,), _flow),
+ 'edge_activates': edge_activates: Variable((3251, 1), edge_activates, boolean=True),
+ 'edge_inhibits': edge_inhibits: Variable((3251, 1), edge_inhibits, boolean=True),
+ 'const0x689caa490bb1d38': const0x689caa490bb1d38: Constant(CONSTANT, NONNEGATIVE, (937, 3251)),
+ '_dag_layer': _dag_layer: Variable((937, 1), _dag_layer),
+ 'const0x1f364c592f0a234': const0x1f364c592f0a234: Constant(CONSTANT, NONNEGATIVE, (937, 3251)),
+ 'flow': _flow: Variable((3251,), _flow),
+ 'vertex_value': Expression(AFFINE, UNKNOWN, (937, 1)),
+ 'vertex_activated': Expression(AFFINE, NONNEGATIVE, (937, 1)),
+ 'vertex_inhibited': Expression(AFFINE, NONNEGATIVE, (937, 1)),
+ 'edge_value': Expression(AFFINE, UNKNOWN, (3251, 1)),
+ 'edge_has_signal': Expression(AFFINE, NONNEGATIVE, (3251, 1)),
+ 'vertex_max_depth': _dag_layer: Variable((937, 1), _dag_layer)}
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;highs&quot;</span><span class="p">,</span> <span class="n">max_seconds</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">1</span><span class="p">);</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">"highs"</span><span class="p">,</span> <span class="n">max_seconds</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">1</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -2510,7 +2512,7 @@ Solving report
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Error for sample is 0, meaning that all reachable TFs (from receptors) are correctly explained</span>
 <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">P</span><span class="o">.</span><span class="n">objectives</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;-&gt;&quot;</span><span class="p">,</span> <span class="n">o</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">"-&gt;"</span><span class="p">,</span> <span class="n">o</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -2557,7 +2559,7 @@ regularization_edge_has_signal -&gt; 28.0
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
     <span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">vertex_value</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
     <span class="n">index</span><span class="o">=</span><span class="n">carnival</span><span class="o">.</span><span class="n">processed_graph</span><span class="o">.</span><span class="n">V</span><span class="p">,</span>
-    <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;node_activity&quot;</span><span class="p">],</span>
+    <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"node_activity"</span><span class="p">],</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -2636,7 +2638,7 @@ regularization_edge_has_signal -&gt; 28.0
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">edge_value</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">carnival</span><span class="o">.</span><span class="n">processed_graph</span><span class="o">.</span><span class="n">E</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;edge_activity&quot;</span><span class="p">])</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">edge_value</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">carnival</span><span class="o">.</span><span class="n">processed_graph</span><span class="o">.</span><span class="n">E</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"edge_activity"</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -2729,7 +2731,7 @@ regularization_edge_has_signal -&gt; 28.0
 <h2>Saving the processed dataset<a class="headerlink" href="#saving-the-processed-dataset" title="Link to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cn</span><span class="o">.</span><span class="n">GraphData</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;data/carnival_transcriptomics_dataset&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cn</span><span class="o">.</span><span class="n">GraphData</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">"data/carnival_transcriptomics_dataset"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -2806,8 +2808,8 @@ regularization_edge_has_signal -&gt; 28.0
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -2833,7 +2835,7 @@ regularization_edge_has_signal -&gt; 28.0
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
 </p></div>
       
     </div>

@@ -27,8 +27,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
@@ -36,10 +36,10 @@
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=53e23fa6" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
     <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
@@ -64,8 +64,8 @@
             </script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'guide/metabolism/multicondition-sfba';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1786146192';
+        DOCUMENTATION_OPTIONS.theme_version = '0.21.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1790177872';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'stable';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
@@ -417,6 +417,10 @@
 <li class="toctree-l2"><a class="reference internal" href="../networks/multi-pcst-grb.html">Multi-sample PCST</a></li>
 </ul>
 </details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../causal/index.html">Causal and structural modeling</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../causal/linear-dag-discovery.html">Discovering a linear causal signaling network from perturbation data</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Metabolism</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="flux-balance-analysis.html">Flux balance analysis</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Multi-condition FBA</a></li>
@@ -576,11 +580,11 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiSampleFBA</span>
 
 <span class="k">with</span> <span class="n">redirect_stdout</span><span class="p">(</span><span class="n">StringIO</span><span class="p">()):</span>
-    <span class="n">cobra_model</span> <span class="o">=</span> <span class="n">load_model</span><span class="p">(</span><span class="s2">&quot;textbook&quot;</span><span class="p">)</span>
+    <span class="n">cobra_model</span> <span class="o">=</span> <span class="n">load_model</span><span class="p">(</span><span class="s2">"textbook"</span><span class="p">)</span>
 
 <span class="n">G</span> <span class="o">=</span> <span class="n">cobra_model_to_graph</span><span class="p">(</span><span class="n">cobra_model</span><span class="p">)</span>
-<span class="n">reaction_ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">get_attr_from_edges</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">))</span>
-<span class="n">biomass_id</span> <span class="o">=</span> <span class="s2">&quot;Biomass_Ecoli_core&quot;</span>
+<span class="n">reaction_ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">get_attr_from_edges</span><span class="p">(</span><span class="s2">"id"</span><span class="p">))</span>
+<span class="n">biomass_id</span> <span class="o">=</span> <span class="s2">"Biomass_Ecoli_core"</span>
 <span class="n">biomass_index</span> <span class="o">=</span> <span class="n">reaction_ids</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">biomass_id</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -619,23 +623,23 @@
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">condition_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;glucose aerobic&quot;</span><span class="p">,</span> <span class="s2">&quot;acetate aerobic&quot;</span><span class="p">,</span> <span class="s2">&quot;glucose anaerobic&quot;</span><span class="p">]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">condition_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"glucose aerobic"</span><span class="p">,</span> <span class="s2">"acetate aerobic"</span><span class="p">,</span> <span class="s2">"glucose anaerobic"</span><span class="p">]</span>
 
 <span class="n">media_bounds</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;glucose aerobic&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;EX_glc__D_e&quot;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
-        <span class="s2">&quot;EX_ac_e&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
-        <span class="s2">&quot;EX_o2_e&quot;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">20.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
+    <span class="s2">"glucose aerobic"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"EX_glc__D_e"</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
+        <span class="s2">"EX_ac_e"</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
+        <span class="s2">"EX_o2_e"</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">20.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
     <span class="p">},</span>
-    <span class="s2">&quot;acetate aerobic&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;EX_glc__D_e&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
-        <span class="s2">&quot;EX_ac_e&quot;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
-        <span class="s2">&quot;EX_o2_e&quot;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">20.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
+    <span class="s2">"acetate aerobic"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"EX_glc__D_e"</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
+        <span class="s2">"EX_ac_e"</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
+        <span class="s2">"EX_o2_e"</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">20.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
     <span class="p">},</span>
-    <span class="s2">&quot;glucose anaerobic&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;EX_glc__D_e&quot;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
-        <span class="s2">&quot;EX_ac_e&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
-        <span class="s2">&quot;EX_o2_e&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
+    <span class="s2">"glucose anaerobic"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"EX_glc__D_e"</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
+        <span class="s2">"EX_ac_e"</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
+        <span class="s2">"EX_o2_e"</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
     <span class="p">},</span>
 <span class="p">}</span>
 <span class="n">biomass_objectives</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="p">{</span><span class="n">biomass_id</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">}</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">condition_names</span><span class="p">}</span>
@@ -654,12 +658,12 @@
     <span class="n">objectives</span><span class="o">=</span><span class="n">biomass_objectives</span><span class="p">,</span>
     <span class="n">reaction_bounds</span><span class="o">=</span><span class="n">media_bounds</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="n">standard_problem</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;scipy&quot;</span><span class="p">)</span>
+<span class="n">standard_problem</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">"scipy"</span><span class="p">)</span>
 
 <span class="n">maximum_biomass</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
     <span class="n">standard_problem</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">biomass_index</span><span class="p">,</span> <span class="p">:],</span>
     <span class="n">index</span><span class="o">=</span><span class="n">condition_names</span><span class="p">,</span>
-    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;maximum biomass&quot;</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"maximum biomass"</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="k">assert</span> <span class="p">(</span><span class="n">maximum_biomass</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
@@ -720,7 +724,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">build_sparse_problem</span><span class="p">(</span><span class="n">names</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build and solve sparse FBA for the requested conditions.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Build and solve sparse FBA for the requested conditions."""</span>
     <span class="n">objectives</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">biomass_objectives</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">}</span>
     <span class="n">bounds</span> <span class="o">=</span> <span class="p">{</span>
         <span class="n">name</span><span class="p">:</span> <span class="p">{</span>
@@ -734,12 +738,12 @@
         <span class="n">objectives</span><span class="o">=</span><span class="n">objectives</span><span class="p">,</span>
         <span class="n">reaction_bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">problem</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;highs&quot;</span><span class="p">)</span>
+    <span class="n">problem</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">"highs"</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">problem</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">labeled_fluxes</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">names</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the solved flux matrix with reaction and condition labels.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Return the solved flux matrix with reaction and condition labels."""</span>
     <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
         <span class="n">problem</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
         <span class="n">index</span><span class="o">=</span><span class="n">reaction_ids</span><span class="p">,</span>
@@ -756,8 +760,8 @@
 <p>Because these are independent optimizations, glucose aerobic is solved twice. We compare the active reactions selected for that identical glucose-aerobic condition in the two results.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">control_acetate_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;glucose aerobic&quot;</span><span class="p">,</span> <span class="s2">&quot;acetate aerobic&quot;</span><span class="p">]</span>
-<span class="n">control_anaerobic_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;glucose aerobic&quot;</span><span class="p">,</span> <span class="s2">&quot;glucose anaerobic&quot;</span><span class="p">]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">control_acetate_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"glucose aerobic"</span><span class="p">,</span> <span class="s2">"acetate aerobic"</span><span class="p">]</span>
+<span class="n">control_anaerobic_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"glucose aerobic"</span><span class="p">,</span> <span class="s2">"glucose anaerobic"</span><span class="p">]</span>
 
 <span class="n">control_acetate_problem</span> <span class="o">=</span> <span class="n">build_sparse_problem</span><span class="p">(</span><span class="n">control_acetate_names</span><span class="p">)</span>
 <span class="n">control_anaerobic_problem</span> <span class="o">=</span> <span class="n">build_sparse_problem</span><span class="p">(</span><span class="n">control_anaerobic_names</span><span class="p">)</span>
@@ -767,22 +771,22 @@
 
 <span class="n">pairwise_control_summary</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
     <span class="p">{</span>
-        <span class="s2">&quot;analyzed with acetate aerobic&quot;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">&quot;biomass&quot;</span><span class="p">:</span> <span class="n">control_acetate_fluxes</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">biomass_id</span><span class="p">,</span> <span class="s2">&quot;glucose aerobic&quot;</span><span class="p">],</span>
-            <span class="s2">&quot;active reactions&quot;</span><span class="p">:</span> <span class="p">(</span>
-                <span class="n">control_acetate_fluxes</span><span class="p">[</span><span class="s2">&quot;glucose aerobic&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">activity_tolerance</span>
+        <span class="s2">"analyzed with acetate aerobic"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">"biomass"</span><span class="p">:</span> <span class="n">control_acetate_fluxes</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">biomass_id</span><span class="p">,</span> <span class="s2">"glucose aerobic"</span><span class="p">],</span>
+            <span class="s2">"active reactions"</span><span class="p">:</span> <span class="p">(</span>
+                <span class="n">control_acetate_fluxes</span><span class="p">[</span><span class="s2">"glucose aerobic"</span><span class="p">]</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">activity_tolerance</span>
             <span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span>
         <span class="p">},</span>
-        <span class="s2">&quot;analyzed with glucose anaerobic&quot;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">&quot;biomass&quot;</span><span class="p">:</span> <span class="n">control_anaerobic_fluxes</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">biomass_id</span><span class="p">,</span> <span class="s2">&quot;glucose aerobic&quot;</span><span class="p">],</span>
-            <span class="s2">&quot;active reactions&quot;</span><span class="p">:</span> <span class="p">(</span>
-                <span class="n">control_anaerobic_fluxes</span><span class="p">[</span><span class="s2">&quot;glucose aerobic&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">activity_tolerance</span>
+        <span class="s2">"analyzed with glucose anaerobic"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">"biomass"</span><span class="p">:</span> <span class="n">control_anaerobic_fluxes</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">biomass_id</span><span class="p">,</span> <span class="s2">"glucose aerobic"</span><span class="p">],</span>
+            <span class="s2">"active reactions"</span><span class="p">:</span> <span class="p">(</span>
+                <span class="n">control_anaerobic_fluxes</span><span class="p">[</span><span class="s2">"glucose aerobic"</span><span class="p">]</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">activity_tolerance</span>
             <span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span>
         <span class="p">},</span>
     <span class="p">}</span>
 <span class="p">)</span>
 
-<span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">pairwise_control_summary</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;biomass&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pairwise_control_summary</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;biomass&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">pairwise_control_summary</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">"biomass"</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pairwise_control_summary</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">"biomass"</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 <span class="n">pairwise_control_summary</span>
 </pre></div>
 </div>
@@ -829,11 +833,11 @@
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">control_activity</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
     <span class="p">{</span>
-        <span class="s2">&quot;analyzed with acetate aerobic&quot;</span><span class="p">:</span> <span class="p">(</span>
-            <span class="n">control_acetate_fluxes</span><span class="p">[</span><span class="s2">&quot;glucose aerobic&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">activity_tolerance</span>
+        <span class="s2">"analyzed with acetate aerobic"</span><span class="p">:</span> <span class="p">(</span>
+            <span class="n">control_acetate_fluxes</span><span class="p">[</span><span class="s2">"glucose aerobic"</span><span class="p">]</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">activity_tolerance</span>
         <span class="p">),</span>
-        <span class="s2">&quot;analyzed with glucose anaerobic&quot;</span><span class="p">:</span> <span class="p">(</span>
-            <span class="n">control_anaerobic_fluxes</span><span class="p">[</span><span class="s2">&quot;glucose aerobic&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">activity_tolerance</span>
+        <span class="s2">"analyzed with glucose anaerobic"</span><span class="p">:</span> <span class="p">(</span>
+            <span class="n">control_anaerobic_fluxes</span><span class="p">[</span><span class="s2">"glucose aerobic"</span><span class="p">]</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">activity_tolerance</span>
         <span class="p">),</span>
     <span class="p">}</span>
 <span class="p">)</span>
@@ -841,7 +845,7 @@
 <span class="n">different_control_reactions</span> <span class="o">=</span> <span class="n">control_activity</span><span class="p">[</span>
     <span class="n">control_activity</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">control_activity</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
 <span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-<span class="n">different_control_reactions</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;reaction&quot;</span><span class="p">,</span> <span class="n">different_control_reactions</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+<span class="n">different_control_reactions</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">"reaction"</span><span class="p">,</span> <span class="n">different_control_reactions</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
 
 <span class="k">assert</span> <span class="ow">not</span> <span class="n">different_control_reactions</span><span class="o">.</span><span class="n">empty</span>
 <span class="n">different_control_reactions</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -962,13 +966,13 @@
 
 <span class="n">condition_summary</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
     <span class="p">{</span>
-        <span class="s2">&quot;biomass target&quot;</span><span class="p">:</span> <span class="n">biomass_targets</span><span class="p">,</span>
-        <span class="s2">&quot;solved biomass&quot;</span><span class="p">:</span> <span class="n">joint_fluxes</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">biomass_id</span><span class="p">],</span>
-        <span class="s2">&quot;active reactions&quot;</span><span class="p">:</span> <span class="n">joint_activity</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+        <span class="s2">"biomass target"</span><span class="p">:</span> <span class="n">biomass_targets</span><span class="p">,</span>
+        <span class="s2">"solved biomass"</span><span class="p">:</span> <span class="n">joint_fluxes</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">biomass_id</span><span class="p">],</span>
+        <span class="s2">"active reactions"</span><span class="p">:</span> <span class="n">joint_activity</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
     <span class="p">}</span>
 <span class="p">)</span>
 
-<span class="k">assert</span> <span class="p">(</span><span class="n">condition_summary</span><span class="p">[</span><span class="s2">&quot;solved biomass&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">condition_summary</span><span class="p">[</span><span class="s2">&quot;biomass target&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="mf">1e-7</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+<span class="k">assert</span> <span class="p">(</span><span class="n">condition_summary</span><span class="p">[</span><span class="s2">"solved biomass"</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">condition_summary</span><span class="p">[</span><span class="s2">"biomass target"</span><span class="p">]</span> <span class="o">-</span> <span class="mf">1e-7</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
 <span class="n">condition_summary</span>
 </pre></div>
 </div>
@@ -1030,26 +1034,26 @@
 
 <span class="n">reaction_usage</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
     <span class="p">{</span>
-        <span class="s2">&quot;reaction&quot;</span><span class="p">:</span> <span class="n">joint_activity</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">joint_union</span><span class="p">],</span>
-        <span class="s2">&quot;active in&quot;</span><span class="p">:</span> <span class="p">[</span>
-            <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">joint_activity</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="n">row</span><span class="p">])</span>
+        <span class="s2">"reaction"</span><span class="p">:</span> <span class="n">joint_activity</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">joint_union</span><span class="p">],</span>
+        <span class="s2">"active in"</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">joint_activity</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="n">row</span><span class="p">])</span>
             <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">joint_activity</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">joint_union</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
         <span class="p">],</span>
-        <span class="s2">&quot;category&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">select</span><span class="p">(</span>
+        <span class="s2">"category"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">select</span><span class="p">(</span>
             <span class="p">[</span>
                 <span class="n">active_condition_count</span><span class="p">[</span><span class="n">joint_union</span><span class="p">]</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">condition_names</span><span class="p">),</span>
                 <span class="n">active_condition_count</span><span class="p">[</span><span class="n">joint_union</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span>
             <span class="p">],</span>
-            <span class="p">[</span><span class="s2">&quot;shared core&quot;</span><span class="p">,</span> <span class="s2">&quot;context-specific&quot;</span><span class="p">],</span>
-            <span class="n">default</span><span class="o">=</span><span class="s2">&quot;partially shared&quot;</span><span class="p">,</span>
+            <span class="p">[</span><span class="s2">"shared core"</span><span class="p">,</span> <span class="s2">"context-specific"</span><span class="p">],</span>
+            <span class="n">default</span><span class="o">=</span><span class="s2">"partially shared"</span><span class="p">,</span>
         <span class="p">),</span>
     <span class="p">}</span>
 <span class="p">)</span>
 
-<span class="n">category_counts</span> <span class="o">=</span> <span class="n">reaction_usage</span><span class="p">[</span><span class="s2">&quot;category&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="s2">&quot;reactions&quot;</span><span class="p">)</span>
-<span class="n">expected_categories</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;shared core&quot;</span><span class="p">,</span> <span class="s2">&quot;partially shared&quot;</span><span class="p">,</span> <span class="s2">&quot;context-specific&quot;</span><span class="p">}</span>
+<span class="n">category_counts</span> <span class="o">=</span> <span class="n">reaction_usage</span><span class="p">[</span><span class="s2">"category"</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="s2">"reactions"</span><span class="p">)</span>
+<span class="n">expected_categories</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"shared core"</span><span class="p">,</span> <span class="s2">"partially shared"</span><span class="p">,</span> <span class="s2">"context-specific"</span><span class="p">}</span>
 
-<span class="k">assert</span> <span class="nb">set</span><span class="p">(</span><span class="n">reaction_usage</span><span class="p">[</span><span class="s2">&quot;category&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="n">expected_categories</span>
+<span class="k">assert</span> <span class="nb">set</span><span class="p">(</span><span class="n">reaction_usage</span><span class="p">[</span><span class="s2">"category"</span><span class="p">])</span> <span class="o">==</span> <span class="n">expected_categories</span>
 <span class="k">assert</span> <span class="nb">int</span><span class="p">(</span><span class="n">category_counts</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span> <span class="o">==</span> <span class="nb">int</span><span class="p">(</span><span class="n">joint_union</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
 <span class="n">category_counts</span><span class="o">.</span><span class="n">to_frame</span><span class="p">()</span>
 </pre></div>
@@ -1101,10 +1105,10 @@
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">usage_patterns</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="n">reaction_usage</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s2">&quot;category&quot;</span><span class="p">,</span> <span class="s2">&quot;active in&quot;</span><span class="p">],</span> <span class="n">sort</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">reaction_usage</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s2">"category"</span><span class="p">,</span> <span class="s2">"active in"</span><span class="p">],</span> <span class="n">sort</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="o">.</span><span class="n">agg</span><span class="p">(</span>
-        <span class="n">reactions</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;reaction&quot;</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="p">),</span>
-        <span class="n">examples</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;reaction&quot;</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">values</span><span class="p">:</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">values</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="mi">6</span><span class="p">])),</span>
+        <span class="n">reactions</span><span class="o">=</span><span class="p">(</span><span class="s2">"reaction"</span><span class="p">,</span> <span class="s2">"size"</span><span class="p">),</span>
+        <span class="n">examples</span><span class="o">=</span><span class="p">(</span><span class="s2">"reaction"</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">values</span><span class="p">:</span> <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">values</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="mi">6</span><span class="p">])),</span>
     <span class="p">)</span>
     <span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
 <span class="p">)</span>
@@ -1242,17 +1246,17 @@
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">reaction_groups</span> <span class="o">=</span> <span class="n">reaction_usage</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;reaction&quot;</span><span class="p">)[</span><span class="s2">&quot;active in&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
-    <span class="p">{</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">condition_names</span><span class="p">):</span> <span class="s2">&quot;shared core&quot;</span><span class="p">}</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">reaction_groups</span> <span class="o">=</span> <span class="n">reaction_usage</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">"reaction"</span><span class="p">)[</span><span class="s2">"active in"</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+    <span class="p">{</span><span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">condition_names</span><span class="p">):</span> <span class="s2">"shared core"</span><span class="p">}</span>
 <span class="p">)</span>
 
 <span class="n">group_colors</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;shared core&quot;</span><span class="p">:</span> <span class="s2">&quot;#b0b0b0&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;glucose aerobic, acetate aerobic&quot;</span><span class="p">:</span> <span class="s2">&quot;#277da1&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;glucose aerobic, glucose anaerobic&quot;</span><span class="p">:</span> <span class="s2">&quot;#43aa8b&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;acetate aerobic, glucose anaerobic&quot;</span><span class="p">:</span> <span class="s2">&quot;#7b2cbf&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;acetate aerobic&quot;</span><span class="p">:</span> <span class="s2">&quot;#f8961e&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;glucose anaerobic&quot;</span><span class="p">:</span> <span class="s2">&quot;#e63946&quot;</span><span class="p">,</span>
+    <span class="s2">"shared core"</span><span class="p">:</span> <span class="s2">"#b0b0b0"</span><span class="p">,</span>
+    <span class="s2">"glucose aerobic, acetate aerobic"</span><span class="p">:</span> <span class="s2">"#277da1"</span><span class="p">,</span>
+    <span class="s2">"glucose aerobic, glucose anaerobic"</span><span class="p">:</span> <span class="s2">"#43aa8b"</span><span class="p">,</span>
+    <span class="s2">"acetate aerobic, glucose anaerobic"</span><span class="p">:</span> <span class="s2">"#7b2cbf"</span><span class="p">,</span>
+    <span class="s2">"acetate aerobic"</span><span class="p">:</span> <span class="s2">"#f8961e"</span><span class="p">,</span>
+    <span class="s2">"glucose anaerobic"</span><span class="p">:</span> <span class="s2">"#e63946"</span><span class="p">,</span>
 <span class="p">}</span>
 
 <span class="n">selected_reactions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="n">joint_union</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">())</span>
@@ -1262,20 +1266,20 @@
 <span class="k">for</span> <span class="n">displayed_index</span><span class="p">,</span> <span class="n">original_index</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">selected_reactions</span><span class="p">):</span>
     <span class="n">reaction_id</span> <span class="o">=</span> <span class="n">reaction_ids</span><span class="p">[</span><span class="n">original_index</span><span class="p">]</span>
     <span class="n">group</span> <span class="o">=</span> <span class="n">reaction_groups</span><span class="p">[</span><span class="n">reaction_id</span><span class="p">]</span>
-    <span class="n">is_shared_core</span> <span class="o">=</span> <span class="n">group</span> <span class="o">==</span> <span class="s2">&quot;shared core&quot;</span>
+    <span class="n">is_shared_core</span> <span class="o">=</span> <span class="n">group</span> <span class="o">==</span> <span class="s2">"shared core"</span>
 
     <span class="n">edge_style</span><span class="p">[</span><span class="n">displayed_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="n">group_colors</span><span class="p">[</span><span class="n">group</span><span class="p">],</span>
-        <span class="s2">&quot;penwidth&quot;</span><span class="p">:</span> <span class="s2">&quot;1.5&quot;</span> <span class="k">if</span> <span class="n">is_shared_core</span> <span class="k">else</span> <span class="s2">&quot;3&quot;</span><span class="p">,</span>
+        <span class="s2">"color"</span><span class="p">:</span> <span class="n">group_colors</span><span class="p">[</span><span class="n">group</span><span class="p">],</span>
+        <span class="s2">"penwidth"</span><span class="p">:</span> <span class="s2">"1.5"</span> <span class="k">if</span> <span class="n">is_shared_core</span> <span class="k">else</span> <span class="s2">"3"</span><span class="p">,</span>
     <span class="p">}</span>
 
 <span class="n">joint_network</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
-    <span class="n">graph_attr</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;rankdir&quot;</span><span class="p">:</span> <span class="s2">&quot;LR&quot;</span><span class="p">},</span>
+    <span class="n">graph_attr</span><span class="o">=</span><span class="p">{</span><span class="s2">"rankdir"</span><span class="p">:</span> <span class="s2">"LR"</span><span class="p">},</span>
     <span class="n">node_attr</span><span class="o">=</span><span class="p">{</span>
-        <span class="s2">&quot;fixedsize&quot;</span><span class="p">:</span> <span class="s2">&quot;false&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="s2">&quot;box&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;style&quot;</span><span class="p">:</span> <span class="s2">&quot;rounded&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;margin&quot;</span><span class="p">:</span> <span class="s2">&quot;0.05,0.03&quot;</span><span class="p">,</span>
+        <span class="s2">"fixedsize"</span><span class="p">:</span> <span class="s2">"false"</span><span class="p">,</span>
+        <span class="s2">"shape"</span><span class="p">:</span> <span class="s2">"box"</span><span class="p">,</span>
+        <span class="s2">"style"</span><span class="p">:</span> <span class="s2">"rounded"</span><span class="p">,</span>
+        <span class="s2">"margin"</span><span class="p">:</span> <span class="s2">"0.05,0.03"</span><span class="p">,</span>
     <span class="p">},</span>
     <span class="n">custom_edge_attr</span><span class="o">=</span><span class="n">edge_style</span><span class="p">,</span>
 <span class="p">)</span>
@@ -1283,7 +1287,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/753bc17d7a4fae14af7c07c1db79a662a5b90b2d6bbe85a3064e927e2d144011.svg" src="../../_images/753bc17d7a4fae14af7c07c1db79a662a5b90b2d6bbe85a3064e927e2d144011.svg" />
+<img alt="../../_images/98d010fe5542620d9768ec885e947d2f28bc2064db481d952c3653aa3a2d9e72.svg" src="../../_images/98d010fe5542620d9768ec885e947d2f28bc2064db481d952c3653aa3a2d9e72.svg" />
 </div>
 </div>
 </section>
@@ -1303,10 +1307,10 @@
 
 <span class="n">union_comparison</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
     <span class="p">{</span>
-        <span class="s2">&quot;aggregate union from separate comparisons&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">pairwise_union</span><span class="o">.</span><span class="n">sum</span><span class="p">()),</span>
-        <span class="s2">&quot;union from one joint analysis&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">joint_union</span><span class="o">.</span><span class="n">sum</span><span class="p">()),</span>
+        <span class="s2">"aggregate union from separate comparisons"</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">pairwise_union</span><span class="o">.</span><span class="n">sum</span><span class="p">()),</span>
+        <span class="s2">"union from one joint analysis"</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">joint_union</span><span class="o">.</span><span class="n">sum</span><span class="p">()),</span>
     <span class="p">},</span>
-    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;active reactions&quot;</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"active reactions"</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="k">assert</span> <span class="n">joint_union</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">pairwise_union</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
@@ -1438,8 +1442,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1465,7 +1469,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
 </p></div>
       
     </div>

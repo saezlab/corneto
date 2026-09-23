@@ -27,8 +27,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
@@ -36,10 +36,10 @@
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=53e23fa6" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
     <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
@@ -64,8 +64,8 @@
             </script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'api/generated/corneto.methods.sampler.sample_alternative_solutions';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1786146192';
+        DOCUMENTATION_OPTIONS.theme_version = '0.21.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1790177872';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'stable';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
@@ -408,6 +408,10 @@
 <li class="toctree-l2"><a class="reference internal" href="corneto.data.util.html">corneto.data.util</a></li>
 </ul>
 </details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../corneto.datasets.html">Datasets (<code class="xref py py-mod docutils literal notranslate"><span class="pre">corneto.datasets</span></code>)</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="corneto.datasets.fetch_dataset.html">corneto.datasets.fetch_dataset</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../corneto.io.html">Input and Output (<code class="xref py py-mod docutils literal notranslate"><span class="pre">corneto.io</span></code>)</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="corneto.io.parse_cobra_model.html">corneto.io.parse_cobra_model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="corneto.io.cobra_model_to_graph.html">corneto.io.cobra_model_to_graph</a></li>
@@ -434,6 +438,7 @@
 <li class="toctree-l2"><a class="reference internal" href="corneto.methods.milp_carnival.html">corneto.methods.milp_carnival</a></li>
 <li class="toctree-l2"><a class="reference internal" href="corneto.methods.signaling.plot_cellnopt_model.html">corneto.methods.signaling.plot_cellnopt_model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="corneto.methods.signaling.plot_cellnopt_fit.html">corneto.methods.signaling.plot_cellnopt_fit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="corneto.methods.LinearDAGDiscovery.html">corneto.methods.LinearDAGDiscovery</a></li>
 <li class="toctree-l2"><a class="reference internal" href="corneto.methods.signaling.add_cellnopt_conditions.html">corneto.methods.signaling.add_cellnopt_conditions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="corneto.methods.signaling.build_cellnopt_from_annnet.html">corneto.methods.signaling.build_cellnopt_from_annnet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="corneto.methods.signaling.add_cellnopt_results.html">corneto.methods.signaling.add_cellnopt_results</a></li>
@@ -538,30 +543,30 @@ of the baseline are accepted.</p>
 - <cite>expr</cite>: mapping of variable names to variable objects
 - <cite>solve(…)</cite>: method to solve the problem
 - <cite>objectives</cite>: list of objective objects (each with <cite>.name</cite> and <cite>.value</cite>)</p></li>
-<li><p><strong>variable_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Name of the variable in <cite>problem.expr</cite> to perturb.</p></li>
-<li><p><strong>percentage</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Fraction of the variable’s entries to
+<li><p><strong>variable_name</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Name of the variable in <cite>problem.expr</cite> to perturb.</p></li>
+<li><p><strong>percentage</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Fraction of the variable’s entries to
 perturb in each trial. Defaults to <cite>0.10</cite>.</p></li>
-<li><p><strong>scale</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Standard deviation of the normal random noise.
+<li><p><strong>scale</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Standard deviation of the normal random noise.
 Defaults to <cite>0.03</cite>.</p></li>
-<li><p><strong>rel_opt_tol</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Maximum allowed relative deviation of any
+<li><p><strong>rel_opt_tol</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Maximum allowed relative deviation of any
 original, non-excluded objective from its baseline value. Defaults to <cite>0.05</cite>.</p></li>
-<li><p><strong>max_samples</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) – Maximum number of perturbation trials to
+<li><p><strong>max_samples</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) – Maximum number of perturbation trials to
 attempt. Defaults to <cite>30</cite>.</p></li>
-<li><p><strong>perturbation_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – Name to assign to the added
+<li><p><strong>perturbation_name</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – Name to assign to the added
 perturbation objective. Defaults to <cite>“perturbation”</cite>.</p></li>
-<li><p><strong>solver_kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em> | </em><em>None</em><em>, </em><em>optional</em>) – Extra keyword arguments passed
+<li><p><strong>solver_kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em> | </em><em>None</em><em>, </em><em>optional</em>) – Extra keyword arguments passed
 to <cite>problem.solve()</cite>. Defaults to <cite>None</cite>.</p></li>
-<li><p><strong>rng</strong> (<em>np.random.Generator</em><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em> | </em><em>None</em><em>, </em><em>optional</em>) – Random number
+<li><p><strong>rng</strong> (<em>np.random.Generator</em><em> | </em><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em> | </em><em>None</em><em>, </em><em>optional</em>) – Random number
 generator or seed for reproducibility. Defaults to <cite>None</cite>.</p></li>
-<li><p><strong>collect_vars</strong> (<em>Sequence</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>] </em><em>| </em><em>None</em><em>, </em><em>optional</em>) – Names of the variables whose
+<li><p><strong>collect_vars</strong> (<em>Sequence</em><em>[</em><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>] </em><em>| </em><em>None</em><em>, </em><em>optional</em>) – Names of the variables whose
 values you want returned. If <cite>None</cite>, collect every variable in
 <cite>problem.expr</cite>. An empty list collects none; otherwise, collect only
 the named variables.</p></li>
-<li><p><strong>exclude_objectives_pattern</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em><em>, </em><em>optional</em>) – A regular-expression
+<li><p><strong>exclude_objectives_pattern</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em><em>, </em><em>optional</em>) – A regular-expression
 pattern. Objectives whose names match this pattern will be excluded
 from the relative-error tolerance check. If <cite>None</cite>, no objectives are
 excluded. Defaults to <cite>“regularization”</cite>.</p></li>
-<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) – Verbosity level:
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) – Verbosity level:
 - <cite>0</cite>: silent
 - <cite>1</cite>: summary
 - <cite>2</cite>: full detail
@@ -582,10 +587,10 @@ incumbent_x = x_stack[0]  # first slice is always the baseline</p>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)">dict</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, np.ndarray]</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.14)">dict</a>[<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)">str</a>, np.ndarray]</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#KeyError" title="(in Python v3.14)"><strong>KeyError</strong></a> – If <cite>variable_name</cite> is not in <cite>problem.expr</cite>, or if any name in
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#KeyError" title="(in Python v3.14)"><strong>KeyError</strong></a> – If <cite>variable_name</cite> is not in <cite>problem.expr</cite>, or if any name in
     <cite>collect_vars</cite> is missing from <cite>problem.expr</cite>.</p>
 </dd>
 </dl>
@@ -657,8 +662,8 @@ incumbent_x = x_stack[0]  # first slice is always the baseline</p>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -684,7 +689,7 @@ incumbent_x = x_stack[0]  # first slice is always the baseline</p>
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
 </p></div>
       
     </div>

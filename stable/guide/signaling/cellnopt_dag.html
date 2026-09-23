@@ -27,8 +27,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
@@ -36,10 +36,10 @@
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=53e23fa6" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
     <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
@@ -66,8 +66,8 @@
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'guide/signaling/cellnopt_dag';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1786146192';
+        DOCUMENTATION_OPTIONS.theme_version = '0.21.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1790177872';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'stable';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
@@ -419,6 +419,10 @@
 <li class="toctree-l2"><a class="reference internal" href="../networks/multi-pcst-grb.html">Multi-sample PCST</a></li>
 </ul>
 </details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../causal/index.html">Causal and structural modeling</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../causal/linear-dag-discovery.html">Discovering a linear causal signaling network from perturbation data</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../metabolism/index.html">Metabolism</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../metabolism/flux-balance-analysis.html">Flux balance analysis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../metabolism/multicondition-sfba.html">Multi-condition FBA</a></li>
@@ -604,26 +608,26 @@
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pkn_edges</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;AND1&quot;</span><span class="p">),</span>
-    <span class="p">(</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;AND1&quot;</span><span class="p">),</span>
-    <span class="p">(</span><span class="s2">&quot;AND1&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;X&quot;</span><span class="p">),</span>
-    <span class="p">(</span><span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">),</span>
-    <span class="p">(</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">),</span>
-    <span class="p">(</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;W&quot;</span><span class="p">),</span>
-    <span class="p">(</span><span class="s2">&quot;W&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;AND2&quot;</span><span class="p">),</span>
-    <span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;AND2&quot;</span><span class="p">),</span>
-    <span class="p">(</span><span class="s2">&quot;AND2&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">),</span>
-    <span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">),</span>
-    <span class="p">(</span><span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">),</span>
-    <span class="p">(</span><span class="s2">&quot;W&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">),</span>
-    <span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">),</span>
-    <span class="p">(</span><span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">),</span>
-    <span class="p">(</span><span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;X&quot;</span><span class="p">),</span>
-    <span class="p">(</span><span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;W&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"A"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"AND1"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"B"</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">"AND1"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"AND1"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"X"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"D"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"B"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"X"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"Y"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"X"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"W"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"W"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"AND2"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"C"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"AND2"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"AND2"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"Z"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"C"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"Y"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"D"</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">"Y"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"W"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"Z"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"C"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"Z"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"Y"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"Z"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"Z"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"X"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"Z"</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">"W"</span><span class="p">),</span>
 <span class="p">]</span>
 <span class="n">pkn</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Graph</span><span class="o">.</span><span class="n">from_tuples</span><span class="p">(</span><span class="n">pkn_edges</span><span class="p">)</span>
 
-<span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">pkn_edges</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;source&quot;</span><span class="p">,</span> <span class="s2">&quot;sign&quot;</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="p">])</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">pkn_edges</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"source"</span><span class="p">,</span> <span class="s2">"sign"</span><span class="p">,</span> <span class="s2">"target"</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -766,36 +770,36 @@
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">inputs</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;C1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;D&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
-    <span class="s2">&quot;C2&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;D&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
-    <span class="s2">&quot;C3&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;D&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
-    <span class="s2">&quot;C4&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;D&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
-    <span class="s2">&quot;C5&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;D&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
-    <span class="s2">&quot;C6&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;D&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
+    <span class="s2">"C1"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"A"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"C"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">"D"</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+    <span class="s2">"C2"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"A"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"C"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">"D"</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+    <span class="s2">"C3"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"A"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">"C"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"D"</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+    <span class="s2">"C4"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"A"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"C"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"D"</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
+    <span class="s2">"C5"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"A"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">"C"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">"D"</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
+    <span class="s2">"C6"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"A"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"C"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"D"</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
 <span class="p">}</span>
 <span class="n">measurements</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;C1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;Y&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
-    <span class="s2">&quot;C2&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;Y&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
-    <span class="s2">&quot;C3&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;Y&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
-    <span class="s2">&quot;C4&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;Y&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
-    <span class="s2">&quot;C5&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;Y&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
-    <span class="s2">&quot;C6&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;Y&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
+    <span class="s2">"C1"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"Y"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"Z"</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
+    <span class="s2">"C2"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"Y"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">"Z"</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
+    <span class="s2">"C3"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"Y"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"Z"</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
+    <span class="s2">"C4"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"Y"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"Z"</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+    <span class="s2">"C5"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"Y"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"Z"</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
+    <span class="s2">"C6"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"Y"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"Z"</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
 <span class="p">}</span>
 <span class="n">inhibitors</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;C1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;B&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
-    <span class="s2">&quot;C2&quot;</span><span class="p">:</span> <span class="p">{},</span>
-    <span class="s2">&quot;C3&quot;</span><span class="p">:</span> <span class="p">{},</span>
-    <span class="s2">&quot;C4&quot;</span><span class="p">:</span> <span class="p">{},</span>
-    <span class="s2">&quot;C5&quot;</span><span class="p">:</span> <span class="p">{},</span>
-    <span class="s2">&quot;C6&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;W&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+    <span class="s2">"C1"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"B"</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+    <span class="s2">"C2"</span><span class="p">:</span> <span class="p">{},</span>
+    <span class="s2">"C3"</span><span class="p">:</span> <span class="p">{},</span>
+    <span class="s2">"C4"</span><span class="p">:</span> <span class="p">{},</span>
+    <span class="s2">"C5"</span><span class="p">:</span> <span class="p">{},</span>
+    <span class="s2">"C6"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"W"</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
 <span class="p">}</span>
 <span class="n">behavior</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;C1&quot;</span><span class="p">:</span> <span class="s2">&quot;B inhibition enables AND1&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;C2&quot;</span><span class="p">:</span> <span class="s2">&quot;D activates B and blocks AND1&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;C3&quot;</span><span class="p">:</span> <span class="s2">&quot;C alone&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;C4&quot;</span><span class="p">:</span> <span class="s2">&quot;AND2 enabled&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;C5&quot;</span><span class="p">:</span> <span class="s2">&quot;negative-literal route&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;C6&quot;</span><span class="p">:</span> <span class="s2">&quot;W inhibited; Z lost&quot;</span><span class="p">,</span>
+    <span class="s2">"C1"</span><span class="p">:</span> <span class="s2">"B inhibition enables AND1"</span><span class="p">,</span>
+    <span class="s2">"C2"</span><span class="p">:</span> <span class="s2">"D activates B and blocks AND1"</span><span class="p">,</span>
+    <span class="s2">"C3"</span><span class="p">:</span> <span class="s2">"C alone"</span><span class="p">,</span>
+    <span class="s2">"C4"</span><span class="p">:</span> <span class="s2">"AND2 enabled"</span><span class="p">,</span>
+    <span class="s2">"C5"</span><span class="p">:</span> <span class="s2">"negative-literal route"</span><span class="p">,</span>
+    <span class="s2">"C6"</span><span class="p">:</span> <span class="s2">"W inhibited; Z lost"</span><span class="p">,</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -804,14 +808,14 @@
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">experiment_table</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">inputs</span><span class="p">)</span>
-<span class="n">experiment_table</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;condition&quot;</span>
-<span class="n">experiment_table</span><span class="p">[</span><span class="s2">&quot;interpretation&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">behavior</span><span class="p">)</span>
-<span class="k">for</span> <span class="n">species</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="s2">&quot;D&quot;</span><span class="p">]:</span>
-    <span class="n">experiment_table</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;input </span><span class="si">{</span><span class="n">species</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">inputs</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="n">species</span><span class="p">]</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">inputs</span><span class="p">]</span>
-<span class="k">for</span> <span class="n">species</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="s2">&quot;W&quot;</span><span class="p">]:</span>
-    <span class="n">experiment_table</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;inhibit </span><span class="si">{</span><span class="n">species</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">inhibitors</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">species</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">inputs</span><span class="p">]</span>
-<span class="k">for</span> <span class="n">species</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">]:</span>
-    <span class="n">experiment_table</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;readout </span><span class="si">{</span><span class="n">species</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">measurements</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="n">species</span><span class="p">]</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">inputs</span><span class="p">]</span>
+<span class="n">experiment_table</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">"condition"</span>
+<span class="n">experiment_table</span><span class="p">[</span><span class="s2">"interpretation"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">behavior</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">species</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"A"</span><span class="p">,</span> <span class="s2">"C"</span><span class="p">,</span> <span class="s2">"D"</span><span class="p">]:</span>
+    <span class="n">experiment_table</span><span class="p">[</span><span class="sa">f</span><span class="s2">"input </span><span class="si">{</span><span class="n">species</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">inputs</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="n">species</span><span class="p">]</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">inputs</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">species</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"B"</span><span class="p">,</span> <span class="s2">"W"</span><span class="p">]:</span>
+    <span class="n">experiment_table</span><span class="p">[</span><span class="sa">f</span><span class="s2">"inhibit </span><span class="si">{</span><span class="n">species</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">inhibitors</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">species</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">inputs</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">species</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"Y"</span><span class="p">,</span> <span class="s2">"Z"</span><span class="p">]:</span>
+    <span class="n">experiment_table</span><span class="p">[</span><span class="sa">f</span><span class="s2">"readout </span><span class="si">{</span><span class="n">species</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">measurements</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="n">species</span><span class="p">]</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">inputs</span><span class="p">]</span>
 
 <span class="n">experiment_table</span>
 </pre></div>
@@ -943,13 +947,13 @@
     <span class="n">measurements</span><span class="o">=</span><span class="n">measurements</span><span class="p">,</span>
     <span class="n">inhibitors</span><span class="o">=</span><span class="n">inhibitors</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="n">result</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;SCIPY&quot;</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">"SCIPY"</span><span class="p">)</span>
 <span class="n">result</span><span class="o">.</span><span class="n">status</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&#39;optimal&#39;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>'optimal'
 </pre></div>
 </div>
 </div>
@@ -963,12 +967,12 @@
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">reaction_label</span><span class="p">(</span><span class="n">reaction</span><span class="p">):</span>
     <span class="n">literals</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">node</span><span class="p">)</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">reaction</span><span class="o">.</span><span class="n">positive_literals</span><span class="p">]</span>
-    <span class="n">literals</span> <span class="o">+=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;NOT </span><span class="si">{</span><span class="n">node</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">reaction</span><span class="o">.</span><span class="n">negative_literals</span><span class="p">]</span>
-    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39; AND &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">literals</span><span class="p">)</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">reaction</span><span class="o">.</span><span class="n">product</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">literals</span> <span class="o">+=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">"NOT </span><span class="si">{</span><span class="n">node</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">reaction</span><span class="o">.</span><span class="n">negative_literals</span><span class="p">]</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="s1">' AND '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">literals</span><span class="p">)</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">reaction</span><span class="o">.</span><span class="n">product</span><span class="si">}</span><span class="s2">"</span>
 
 <span class="n">reaction_labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">reaction_label</span><span class="p">(</span><span class="n">reaction</span><span class="p">)</span> <span class="k">for</span> <span class="n">reaction</span> <span class="ow">in</span> <span class="n">method</span><span class="o">.</span><span class="n">reactions</span><span class="p">]</span>
 <span class="n">selected</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rint</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">reaction_selected</span><span class="o">.</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;reaction&quot;</span><span class="p">:</span> <span class="n">reaction_labels</span><span class="p">,</span> <span class="s2">&quot;selected&quot;</span><span class="p">:</span> <span class="n">selected</span><span class="p">})</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">"reaction"</span><span class="p">:</span> <span class="n">reaction_labels</span><span class="p">,</span> <span class="s2">"selected"</span><span class="p">:</span> <span class="n">selected</span><span class="p">})</span>
 </pre></div>
 </div>
 </div>
@@ -1071,7 +1075,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/c3296251e185069c9ad91298b2e21f76142b150f84a0d72d6a83f41071e69503.svg" src="../../_images/c3296251e185069c9ad91298b2e21f76142b150f84a0d72d6a83f41071e69503.svg" />
+<img alt="../../_images/3ad14aa9d65493e8997522af170a5d1511f7b107f11e99a6f2f2189290e60596.svg" src="../../_images/3ad14aa9d65493e8997522af170a5d1511f7b107f11e99a6f2f2189290e60596.svg" />
 </div>
 </div>
 </section>
@@ -1091,6 +1095,148 @@
 </div>
 </section>
 </section>
+<section id="reuse-the-selected-reactions-on-unseen-conditions">
+<h2>Reuse the selected reactions on unseen conditions<a class="headerlink" href="#reuse-the-selected-reactions-on-unseen-conditions" title="Link to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">build_many</span></code>/<code class="docutils literal notranslate"><span class="pre">solve</span></code> example above is the advanced, composable route: add optional CORNETO constraints to the <code class="docutils literal notranslate"><span class="pre">ProblemDef</span></code> before solving. When no custom constraints are needed, <code class="docutils literal notranslate"><span class="pre">fit</span></code> is the convenience wrapper and returns the same method instance. The selected <code class="docutils literal notranslate"><span class="pre">reaction_selected</span></code> values can then be applied to named conditions that were not used during fitting:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">predict</span></code> accepts only inputs and inhibitors. It does not accept measurements, never solves, and deterministically propagates the fixed selected reactions in topological order. Inputs and active inhibitors clamp their targets exactly as in training; every other species is the OR of its active selected producing reactions.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">evaluate</span></code> compares those fixed predictions with measurements afterward. Measurement mappings may use the same condition-key set in a different insertion order. Forced species are excluded from the reported loss.</p></li>
+</ul>
+<p>Prediction and evaluation use named outer condition mappings, as in <code class="docutils literal notranslate"><span class="pre">build_many</span></code>; the single-condition <code class="docutils literal notranslate"><span class="pre">build</span></code> convenience accepts an inner mapping for one condition.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Hold out C2 and C6: together they test an uninhibited negative literal</span>
+<span class="c1"># condition and W-inhibitor clamping, while C1, C3-C5 retain the positive,</span>
+<span class="c1"># negative-literal, OR, and AND mechanisms needed to identify the pathway.</span>
+<span class="n">heldout_conditions</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"C2"</span><span class="p">,</span> <span class="s2">"C6"</span><span class="p">)</span>
+<span class="n">train_inputs</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">values</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="n">inputs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">heldout_conditions</span><span class="p">}</span>
+<span class="n">train_measurements</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">values</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="n">measurements</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">heldout_conditions</span><span class="p">}</span>
+<span class="n">train_inhibitors</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">values</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="n">inhibitors</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">heldout_conditions</span><span class="p">}</span>
+<span class="n">test_inputs</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">inputs</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">heldout_conditions</span><span class="p">}</span>
+<span class="n">test_inhibitors</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">inhibitors</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">heldout_conditions</span><span class="p">}</span>
+<span class="c1"># Deliberately reverse the condition insertion order to show key-based alignment.</span>
+<span class="n">test_measurements</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">measurements</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">heldout_conditions</span><span class="p">)}</span>
+
+<span class="n">heldout_model</span> <span class="o">=</span> <span class="n">CellNOptDAG</span><span class="p">(</span><span class="n">lambda_reg</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+    <span class="n">pkn</span><span class="p">,</span>
+    <span class="n">inputs</span><span class="o">=</span><span class="n">train_inputs</span><span class="p">,</span>
+    <span class="n">measurements</span><span class="o">=</span><span class="n">train_measurements</span><span class="p">,</span>
+    <span class="n">inhibitors</span><span class="o">=</span><span class="n">train_inhibitors</span><span class="p">,</span>
+    <span class="n">solve_options</span><span class="o">=</span><span class="p">{</span><span class="s2">"solver"</span><span class="p">:</span> <span class="s2">"SCIPY"</span><span class="p">},</span>
+<span class="p">)</span>
+<span class="n">heldout_predictions</span> <span class="o">=</span> <span class="n">heldout_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span>
+    <span class="n">inputs</span><span class="o">=</span><span class="n">test_inputs</span><span class="p">,</span>
+    <span class="n">inhibitors</span><span class="o">=</span><span class="n">test_inhibitors</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">heldout_report</span> <span class="o">=</span> <span class="n">heldout_model</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span>
+    <span class="n">inputs</span><span class="o">=</span><span class="n">test_inputs</span><span class="p">,</span>
+    <span class="n">measurements</span><span class="o">=</span><span class="n">test_measurements</span><span class="p">,</span>
+    <span class="n">inhibitors</span><span class="o">=</span><span class="n">test_inhibitors</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">heldout_selected</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">reaction_label</span><span class="p">(</span><span class="n">heldout_model</span><span class="o">.</span><span class="n">reactions</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">heldout_model</span><span class="o">.</span><span class="n">get_selected_reaction_indices</span><span class="p">()</span>
+<span class="p">]</span>
+<span class="n">display</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">heldout_selected</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"selected held-out reactions"</span><span class="p">))</span>
+<span class="n">display</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+    <span class="p">{</span><span class="s2">"loss"</span><span class="p">:</span> <span class="n">heldout_report</span><span class="p">[</span><span class="s2">"loss"</span><span class="p">],</span> <span class="s2">"count"</span><span class="p">:</span> <span class="n">heldout_report</span><span class="p">[</span><span class="s2">"count"</span><span class="p">]},</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"global report"</span><span class="p">,</span>
+<span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">heldout_report</span><span class="p">[</span><span class="s2">"by_condition"</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">"by_condition"</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0              X -&gt; Y
+1              X -&gt; W
+2              C -&gt; Y
+3          NOT D -&gt; Y
+4    A AND NOT B -&gt; X
+5        W AND C -&gt; Z
+Name: selected held-out reactions, dtype: object
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>loss     0.25
+count    4.00
+Name: global report, dtype: float64
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>C2    0.5
+C6    0.0
+Name: by_condition, dtype: float64
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="p">[</span><span class="n">feature</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">heldout_predictions</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="s2">"C6"</span><span class="p">]</span><span class="o">.</span><span class="n">features</span><span class="p">]</span>
+<span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">"id"</span><span class="p">)[[</span><span class="s2">"value"</span><span class="p">,</span> <span class="s2">"predicted"</span><span class="p">,</span> <span class="s2">"forced"</span><span class="p">]]</span><span class="o">.</span><span class="n">loc</span><span class="p">[[</span><span class="s2">"A"</span><span class="p">,</span> <span class="s2">"W"</span><span class="p">,</span> <span class="s2">"Y"</span><span class="p">,</span> <span class="s2">"Z"</span><span class="p">]]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>value</th>
+      <th>predicted</th>
+      <th>forced</th>
+    </tr>
+    <tr>
+      <th>id</th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>A</th>
+      <td>1.0</td>
+      <td>False</td>
+      <td>True</td>
+    </tr>
+    <tr>
+      <th>W</th>
+      <td>0.0</td>
+      <td>False</td>
+      <td>True</td>
+    </tr>
+    <tr>
+      <th>Y</th>
+      <td>1.0</td>
+      <td>True</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>Z</th>
+      <td>0.0</td>
+      <td>True</td>
+      <td>False</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>The returned <code class="docutils literal notranslate"><span class="pre">Data</span></code> preserves condition/species labels and distinguishes externally forced values from model predictions: input and inhibitor targets have <code class="docutils literal notranslate"><span class="pre">forced=True,</span> <span class="pre">predicted=False</span></code>, while propagated species have <code class="docutils literal notranslate"><span class="pre">predicted=True</span></code>. The <code class="docutils literal notranslate"><span class="pre">predictions</span></code> entry in the evaluation report carries the same metadata. This held-out example is separate from the in-sample fit plot below; no held-out measurement is supplied to <code class="docutils literal notranslate"><span class="pre">predict</span></code>.</p>
+</section>
 <section id="does-the-model-reproduce-the-measured-responses">
 <h2>Does the model reproduce the measured responses?<a class="headerlink" href="#does-the-model-reproduce-the-measured-responses" title="Link to this heading">#</a></h2>
 <p>Each row is one intervention condition, and the <code class="docutils literal notranslate"><span class="pre">Y</span></code> and <code class="docutils literal notranslate"><span class="pre">Z</span></code> panels match the readout columns in the experiment table:</p>
@@ -1108,7 +1254,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/b9b59815edbc414146dad28ba5bb94d158ded5fa801dc0a00d66e65fc22eb673.png" src="../../_images/b9b59815edbc414146dad28ba5bb94d158ded5fa801dc0a00d66e65fc22eb673.png" />
+<img alt="../../_images/7f58633bf20e77724b1c19ecea7bc9de003601bfd1a164e9ceba9b1e2cb5e951.png" src="../../_images/7f58633bf20e77724b1c19ecea7bc9de003601bfd1a164e9ceba9b1e2cb5e951.png" />
 </div>
 </div>
 <p>The horizontal position is labelled <strong>Endpoint</strong> because these data contain one post-intervention snapshot, not a time course. The plot does not create an artificial starting value or assume that the first condition is a baseline. If future formulations model several measured time points, observed and predicted values can instead be placed at their actual sampling times.</p>
@@ -1119,7 +1265,7 @@
 <p><code class="docutils literal notranslate"><span class="pre">C1</span></code> and <code class="docutils literal notranslate"><span class="pre">C2</span></code> have the same upstream inputs: <code class="docutils literal notranslate"><span class="pre">A=1</span></code>, <code class="docutils literal notranslate"><span class="pre">C=0</span></code>, and <code class="docutils literal notranslate"><span class="pre">D=1</span></code>. In both conditions, <code class="docutils literal notranslate"><span class="pre">D</span></code> can activate <code class="docutils literal notranslate"><span class="pre">B</span></code>. In <code class="docutils literal notranslate"><span class="pre">C1</span></code>, however, the experimental inhibitor forces <code class="docutils literal notranslate"><span class="pre">B</span></code> off. This allows the rule <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">AND</span> <span class="pre">NOT</span> <span class="pre">B</span> <span class="pre">→</span> <span class="pre">X</span></code> to transmit the signal. In <code class="docutils literal notranslate"><span class="pre">C2</span></code>, <code class="docutils literal notranslate"><span class="pre">B</span></code> remains active, the <code class="docutils literal notranslate"><span class="pre">NOT</span> <span class="pre">B</span></code> requirement fails, and the same pathway branch is inactive and drawn with dashed lines.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_cellnopt_model</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">condition</span><span class="o">=</span><span class="s2">&quot;C1&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_cellnopt_model</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">condition</span><span class="o">=</span><span class="s2">"C1"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1129,7 +1275,7 @@
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_cellnopt_model</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">condition</span><span class="o">=</span><span class="s2">&quot;C2&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_cellnopt_model</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">condition</span><span class="o">=</span><span class="s2">"C2"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1143,7 +1289,7 @@
 <p>In <code class="docutils literal notranslate"><span class="pre">C6</span></code>, the inhibitor specifically forces internal protein <code class="docutils literal notranslate"><span class="pre">W</span></code> off. Signaling to <code class="docutils literal notranslate"><span class="pre">Y</span></code> remains active through <code class="docutils literal notranslate"><span class="pre">X</span></code> and <code class="docutils literal notranslate"><span class="pre">C</span></code>, but the AND rule producing <code class="docutils literal notranslate"><span class="pre">Z</span></code> is no longer satisfied, matching the observed <code class="docutils literal notranslate"><span class="pre">Y=1,</span> <span class="pre">Z=0</span></code>. The intervention therefore blocks one branch rather than being interpreted as a shutdown of the whole pathway.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_cellnopt_model</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">condition</span><span class="o">=</span><span class="s2">&quot;C6&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_cellnopt_model</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">condition</span><span class="o">=</span><span class="s2">"C6"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1158,12 +1304,12 @@
 <p>When an experiment contains many perturbations or readouts, aligned heatmaps are easier to scan than one panel per response. Observed activities, predicted activities, absolute errors, and experimental cues remain aligned by condition. Unmeasured entries stay blank rather than being treated as zeros.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">heatmap_figure</span><span class="p">,</span> <span class="n">heatmap_axes</span> <span class="o">=</span> <span class="n">plot_cellnopt_fit</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">view</span><span class="o">=</span><span class="s2">&quot;heatmap&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">heatmap_figure</span><span class="p">,</span> <span class="n">heatmap_axes</span> <span class="o">=</span> <span class="n">plot_cellnopt_fit</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">view</span><span class="o">=</span><span class="s2">"heatmap"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/6e16ebb34b65ba8e7c51294f1f89ab22f87c70512a4b0ebaa848e41a24ca352c.png" src="../../_images/6e16ebb34b65ba8e7c51294f1f89ab22f87c70512a4b0ebaa848e41a24ca352c.png" />
+<img alt="../../_images/0a4be606c1ca8cddd1a59ff1ee37e107f7feed7e58b16686d7b8ebefbc16d156.png" src="../../_images/0a4be606c1ca8cddd1a59ff1ee37e107f7feed7e58b16686d7b8ebefbc16d156.png" />
 </div>
 </div>
 </section>
@@ -1243,7 +1389,7 @@ Y_r=1 \;\Longrightarrow\; h_u &lt; h_v
     <span class="n">np</span><span class="o">.</span><span class="n">rint</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">vertex_value</span><span class="o">.</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">),</span>
     <span class="n">index</span><span class="o">=</span><span class="n">method</span><span class="o">.</span><span class="n">processed_graph</span><span class="o">.</span><span class="n">V</span><span class="p">,</span>
     <span class="n">columns</span><span class="o">=</span><span class="n">condition_names</span><span class="p">,</span>
-<span class="p">)</span><span class="o">.</span><span class="n">loc</span><span class="p">[[</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;W&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">]]</span>
+<span class="p">)</span><span class="o">.</span><span class="n">loc</span><span class="p">[[</span><span class="s2">"B"</span><span class="p">,</span> <span class="s2">"X"</span><span class="p">,</span> <span class="s2">"W"</span><span class="p">,</span> <span class="s2">"Y"</span><span class="p">,</span> <span class="s2">"Z"</span><span class="p">]]</span>
 
 <span class="n">display</span><span class="p">(</span><span class="n">reaction_activity</span><span class="p">,</span> <span class="n">species_states</span><span class="p">)</span>
 </pre></div>
@@ -1425,7 +1571,7 @@ Y_r=1 \;\Longrightarrow\; h_u &lt; h_v
 <p>This is a debugging view. Flow is shared across all conditions and records neither whether a reaction is active in one condition nor how strongly a biochemical signal passes through it.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_cellnopt_model</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">width_by</span><span class="o">=</span><span class="s2">&quot;flow&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_cellnopt_model</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">width_by</span><span class="o">=</span><span class="s2">"flow"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1573,6 +1719,7 @@ X=(A\land\neg B)\lor C.
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inspect-the-fitted-signaling-model">Inspect the fitted signaling model</a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reuse-the-selected-reactions-on-unseen-conditions">Reuse the selected reactions on unseen conditions</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#does-the-model-reproduce-the-measured-responses">Does the model reproduce the measured responses?</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-pathway-reaction-can-be-present-but-inactive">A pathway reaction can be present but inactive</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#an-inhibitor-changes-its-target-not-the-whole-cell">An inhibitor changes its target, not the whole cell</a></li>
@@ -1605,8 +1752,8 @@ X=(A\land\neg B)\lor C.
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1632,7 +1779,7 @@ X=(A\land\neg B)\lor C.
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
 </p></div>
       
     </div>

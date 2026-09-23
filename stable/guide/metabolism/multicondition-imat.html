@@ -27,8 +27,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
@@ -36,10 +36,10 @@
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=53e23fa6" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
     <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
@@ -66,8 +66,8 @@
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'guide/metabolism/multicondition-imat';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1786146192';
+        DOCUMENTATION_OPTIONS.theme_version = '0.21.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1790177872';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'stable';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
@@ -419,6 +419,10 @@
 <li class="toctree-l2"><a class="reference internal" href="../networks/multi-pcst-grb.html">Multi-sample PCST</a></li>
 </ul>
 </details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../causal/index.html">Causal and structural modeling</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../causal/linear-dag-discovery.html">Discovering a linear causal signaling network from perturbation data</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Metabolism</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="flux-balance-analysis.html">Flux balance analysis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="multicondition-sfba.html">Multi-condition FBA</a></li>
@@ -549,12 +553,12 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiSampleIMAT</span>
 
 <span class="k">with</span> <span class="n">redirect_stdout</span><span class="p">(</span><span class="n">StringIO</span><span class="p">()):</span>
-    <span class="n">model</span> <span class="o">=</span> <span class="n">load_model</span><span class="p">(</span><span class="s2">&quot;textbook&quot;</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">load_model</span><span class="p">(</span><span class="s2">"textbook"</span><span class="p">)</span>
 
 <span class="n">G</span> <span class="o">=</span> <span class="n">cobra_model_to_graph</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
-<span class="n">reaction_ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">get_attr_from_edges</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">))</span>
+<span class="n">reaction_ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">get_attr_from_edges</span><span class="p">(</span><span class="s2">"id"</span><span class="p">))</span>
 <span class="n">reaction_index</span> <span class="o">=</span> <span class="p">{</span><span class="n">reaction_id</span><span class="p">:</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">reaction_id</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">reaction_ids</span><span class="p">)}</span>
-<span class="n">biomass_id</span> <span class="o">=</span> <span class="s2">&quot;Biomass_Ecoli_core&quot;</span>
+<span class="n">biomass_id</span> <span class="o">=</span> <span class="s2">"Biomass_Ecoli_core"</span>
 </pre></div>
 </div>
 </div>
@@ -574,33 +578,33 @@
 <p>To make model–data disagreement visible, the synthetic anaerobic profile deliberately classifies <code class="docutils literal notranslate"><span class="pre">PFL</span></code> as low even though pyruvate-formate lyase provides the route from pyruvate to acetyl-CoA and formate in the selected fermentative state. This controlled conflict lets us distinguish a reaction that is fitted from one that remains active despite low-expression evidence.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">condition_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;glucose aerobic&quot;</span><span class="p">,</span> <span class="s2">&quot;glucose anaerobic&quot;</span><span class="p">]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">condition_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"glucose aerobic"</span><span class="p">,</span> <span class="s2">"glucose anaerobic"</span><span class="p">]</span>
 
 <span class="n">reaction_scores</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;glucose aerobic&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;CYTBD&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
-        <span class="s2">&quot;NADH16&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
-        <span class="s2">&quot;PDH&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
-        <span class="s2">&quot;CS&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
-        <span class="s2">&quot;ATPS4r&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
-        <span class="s2">&quot;PFL&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span>
-        <span class="s2">&quot;LDH_D&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span>
-        <span class="s2">&quot;ACALD&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span>
-        <span class="s2">&quot;ALCD2x&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span>
+    <span class="s2">"glucose aerobic"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"CYTBD"</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="s2">"NADH16"</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="s2">"PDH"</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="s2">"CS"</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="s2">"ATPS4r"</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="s2">"PFL"</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="s2">"LDH_D"</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="s2">"ACALD"</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="s2">"ALCD2x"</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span>
     <span class="p">},</span>
-    <span class="s2">&quot;glucose anaerobic&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;PFL&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span>
-        <span class="s2">&quot;ACALD&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
-        <span class="s2">&quot;ALCD2x&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
-        <span class="s2">&quot;CYTBD&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span>
-        <span class="s2">&quot;NADH16&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span>
-        <span class="s2">&quot;PDH&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span>
-        <span class="s2">&quot;LDH_D&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span>
+    <span class="s2">"glucose anaerobic"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"PFL"</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="s2">"ACALD"</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="s2">"ALCD2x"</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="s2">"CYTBD"</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="s2">"NADH16"</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="s2">"PDH"</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="s2">"LDH_D"</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span>
     <span class="p">},</span>
 <span class="p">}</span>
 
 <span class="n">score_table</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">reaction_scores</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
-<span class="n">score_table</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;reaction&quot;</span>
+<span class="n">score_table</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">"reaction"</span>
 <span class="n">score_table</span>
 </pre></div>
 </div>
@@ -690,28 +694,28 @@
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">biomass_targets</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;glucose aerobic&quot;</span><span class="p">:</span> <span class="mf">0.50</span><span class="p">,</span>
-    <span class="s2">&quot;glucose anaerobic&quot;</span><span class="p">:</span> <span class="mf">0.12</span><span class="p">,</span>
+    <span class="s2">"glucose aerobic"</span><span class="p">:</span> <span class="mf">0.50</span><span class="p">,</span>
+    <span class="s2">"glucose anaerobic"</span><span class="p">:</span> <span class="mf">0.12</span><span class="p">,</span>
 <span class="p">}</span>
 
 <span class="n">reaction_bounds</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;glucose aerobic&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;EX_glc__D_e&quot;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
-        <span class="s2">&quot;EX_o2_e&quot;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">20.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
-        <span class="n">biomass_id</span><span class="p">:</span> <span class="p">(</span><span class="n">biomass_targets</span><span class="p">[</span><span class="s2">&quot;glucose aerobic&quot;</span><span class="p">],</span> <span class="n">biomass_targets</span><span class="p">[</span><span class="s2">&quot;glucose aerobic&quot;</span><span class="p">]),</span>
+    <span class="s2">"glucose aerobic"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"EX_glc__D_e"</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
+        <span class="s2">"EX_o2_e"</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">20.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
+        <span class="n">biomass_id</span><span class="p">:</span> <span class="p">(</span><span class="n">biomass_targets</span><span class="p">[</span><span class="s2">"glucose aerobic"</span><span class="p">],</span> <span class="n">biomass_targets</span><span class="p">[</span><span class="s2">"glucose aerobic"</span><span class="p">]),</span>
     <span class="p">},</span>
-    <span class="s2">&quot;glucose anaerobic&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;EX_glc__D_e&quot;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
-        <span class="s2">&quot;EX_o2_e&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
-        <span class="n">biomass_id</span><span class="p">:</span> <span class="p">(</span><span class="n">biomass_targets</span><span class="p">[</span><span class="s2">&quot;glucose anaerobic&quot;</span><span class="p">],</span> <span class="n">biomass_targets</span><span class="p">[</span><span class="s2">&quot;glucose anaerobic&quot;</span><span class="p">]),</span>
+    <span class="s2">"glucose anaerobic"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"EX_glc__D_e"</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
+        <span class="s2">"EX_o2_e"</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
+        <span class="n">biomass_id</span><span class="p">:</span> <span class="p">(</span><span class="n">biomass_targets</span><span class="p">[</span><span class="s2">"glucose anaerobic"</span><span class="p">],</span> <span class="n">biomass_targets</span><span class="p">[</span><span class="s2">"glucose anaerobic"</span><span class="p">]),</span>
     <span class="p">},</span>
 <span class="p">}</span>
 
 <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
     <span class="p">{</span>
-        <span class="s2">&quot;glucose lower bound&quot;</span><span class="p">:</span> <span class="p">{</span><span class="n">condition</span><span class="p">:</span> <span class="n">bounds</span><span class="p">[</span><span class="s2">&quot;EX_glc__D_e&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">condition</span><span class="p">,</span> <span class="n">bounds</span> <span class="ow">in</span> <span class="n">reaction_bounds</span><span class="o">.</span><span class="n">items</span><span class="p">()},</span>
-        <span class="s2">&quot;oxygen lower bound&quot;</span><span class="p">:</span> <span class="p">{</span><span class="n">condition</span><span class="p">:</span> <span class="n">bounds</span><span class="p">[</span><span class="s2">&quot;EX_o2_e&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">condition</span><span class="p">,</span> <span class="n">bounds</span> <span class="ow">in</span> <span class="n">reaction_bounds</span><span class="o">.</span><span class="n">items</span><span class="p">()},</span>
-        <span class="s2">&quot;fixed biomass&quot;</span><span class="p">:</span> <span class="n">biomass_targets</span><span class="p">,</span>
+        <span class="s2">"glucose lower bound"</span><span class="p">:</span> <span class="p">{</span><span class="n">condition</span><span class="p">:</span> <span class="n">bounds</span><span class="p">[</span><span class="s2">"EX_glc__D_e"</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">condition</span><span class="p">,</span> <span class="n">bounds</span> <span class="ow">in</span> <span class="n">reaction_bounds</span><span class="o">.</span><span class="n">items</span><span class="p">()},</span>
+        <span class="s2">"oxygen lower bound"</span><span class="p">:</span> <span class="p">{</span><span class="n">condition</span><span class="p">:</span> <span class="n">bounds</span><span class="p">[</span><span class="s2">"EX_o2_e"</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">condition</span><span class="p">,</span> <span class="n">bounds</span> <span class="ow">in</span> <span class="n">reaction_bounds</span><span class="o">.</span><span class="n">items</span><span class="p">()},</span>
+        <span class="s2">"fixed biomass"</span><span class="p">:</span> <span class="n">biomass_targets</span><span class="p">,</span>
     <span class="p">}</span>
 <span class="p">)</span>
 </pre></div>
@@ -786,8 +790,8 @@
 
 <span class="n">score_weight_comparison</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
     <span class="p">{</span>
-        <span class="s2">&quot;unscaled absolute score sum&quot;</span><span class="p">:</span> <span class="n">score_table</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span>
-        <span class="s2">&quot;absolute score sum with scale=True&quot;</span><span class="p">:</span> <span class="mf">100.0</span><span class="p">,</span>
+        <span class="s2">"unscaled absolute score sum"</span><span class="p">:</span> <span class="n">score_table</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span>
+        <span class="s2">"absolute score sum with scale=True"</span><span class="p">:</span> <span class="mf">100.0</span><span class="p">,</span>
     <span class="p">}</span>
 <span class="p">)</span>
 <span class="n">score_weight_comparison</span>
@@ -836,11 +840,11 @@
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
     <span class="p">{</span>
-        <span class="s2">&quot;expression-mismatch budget per condition&quot;</span><span class="p">:</span> <span class="mf">100.0</span><span class="p">,</span>
-        <span class="s2">&quot;regularization cost per union reaction&quot;</span><span class="p">:</span> <span class="n">lambda_reg</span><span class="p">,</span>
-        <span class="s2">&quot;maximum union penalty in this model&quot;</span><span class="p">:</span> <span class="n">lambda_reg</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">reaction_ids</span><span class="p">),</span>
+        <span class="s2">"expression-mismatch budget per condition"</span><span class="p">:</span> <span class="mf">100.0</span><span class="p">,</span>
+        <span class="s2">"regularization cost per union reaction"</span><span class="p">:</span> <span class="n">lambda_reg</span><span class="p">,</span>
+        <span class="s2">"maximum union penalty in this model"</span><span class="p">:</span> <span class="n">lambda_reg</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">reaction_ids</span><span class="p">),</span>
     <span class="p">},</span>
-    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;objective scale&quot;</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"objective scale"</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -868,7 +872,7 @@ Name: objective scale, dtype: float64
         <span class="n">reaction_scores</span><span class="o">=</span><span class="n">reaction_scores</span><span class="p">[</span><span class="n">condition</span><span class="p">],</span>
         <span class="n">reaction_bounds</span><span class="o">=</span><span class="n">reaction_bounds</span><span class="p">[</span><span class="n">condition</span><span class="p">],</span>
     <span class="p">)</span>
-    <span class="n">problem</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;highs&quot;</span><span class="p">)</span>
+    <span class="n">problem</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">"highs"</span><span class="p">)</span>
     <span class="n">independent_fluxes</span><span class="p">[</span><span class="n">condition</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 
 <span class="n">independent_fluxes</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">independent_fluxes</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">reaction_ids</span><span class="p">)</span>
@@ -876,8 +880,8 @@ Name: objective scale, dtype: float64
 
 <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
     <span class="p">{</span>
-        <span class="s2">&quot;biomass&quot;</span><span class="p">:</span> <span class="n">independent_fluxes</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">biomass_id</span><span class="p">],</span>
-        <span class="s2">&quot;active reactions&quot;</span><span class="p">:</span> <span class="n">independent_activity</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span>
+        <span class="s2">"biomass"</span><span class="p">:</span> <span class="n">independent_fluxes</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">biomass_id</span><span class="p">],</span>
+        <span class="s2">"active reactions"</span><span class="p">:</span> <span class="n">independent_activity</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span>
     <span class="p">}</span>
 <span class="p">)</span>
 </pre></div>
@@ -936,7 +940,7 @@ Name: objective scale, dtype: float64
     <span class="n">reaction_scores</span><span class="o">=</span><span class="n">reaction_scores</span><span class="p">,</span>
     <span class="n">reaction_bounds</span><span class="o">=</span><span class="n">reaction_bounds</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="n">joint_problem</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;highs&quot;</span><span class="p">)</span>
+<span class="n">joint_problem</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">"highs"</span><span class="p">)</span>
 
 <span class="n">joint_fluxes</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
     <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">joint_problem</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
@@ -970,31 +974,31 @@ Name: objective scale, dtype: float64
     <span class="k">for</span> <span class="n">reaction_id</span> <span class="ow">in</span> <span class="n">scores</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
         <span class="n">fit_details</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
             <span class="p">{</span>
-                <span class="s2">&quot;condition&quot;</span><span class="p">:</span> <span class="n">condition</span><span class="p">,</span>
-                <span class="s2">&quot;reaction&quot;</span><span class="p">:</span> <span class="n">reaction_id</span><span class="p">,</span>
-                <span class="s2">&quot;reaction score&quot;</span><span class="p">:</span> <span class="n">scores</span><span class="p">[</span><span class="n">reaction_id</span><span class="p">],</span>
-                <span class="s2">&quot;expected&quot;</span><span class="p">:</span> <span class="s2">&quot;active&quot;</span> <span class="k">if</span> <span class="n">scores</span><span class="p">[</span><span class="n">reaction_id</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="s2">&quot;inactive&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;joint flux&quot;</span><span class="p">:</span> <span class="n">joint_fluxes</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">reaction_id</span><span class="p">,</span> <span class="n">condition</span><span class="p">],</span>
-                <span class="s2">&quot;joint state&quot;</span><span class="p">:</span> <span class="s2">&quot;active&quot;</span> <span class="k">if</span> <span class="n">joint_scored_activity</span><span class="p">[</span><span class="n">reaction_id</span><span class="p">]</span> <span class="k">else</span> <span class="s2">&quot;inactive&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;fitted independently&quot;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">(</span><span class="n">independent_fitted</span><span class="p">[</span><span class="n">reaction_id</span><span class="p">]),</span>
-                <span class="s2">&quot;fitted jointly&quot;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">(</span><span class="n">joint_fitted</span><span class="p">[</span><span class="n">reaction_id</span><span class="p">]),</span>
+                <span class="s2">"condition"</span><span class="p">:</span> <span class="n">condition</span><span class="p">,</span>
+                <span class="s2">"reaction"</span><span class="p">:</span> <span class="n">reaction_id</span><span class="p">,</span>
+                <span class="s2">"reaction score"</span><span class="p">:</span> <span class="n">scores</span><span class="p">[</span><span class="n">reaction_id</span><span class="p">],</span>
+                <span class="s2">"expected"</span><span class="p">:</span> <span class="s2">"active"</span> <span class="k">if</span> <span class="n">scores</span><span class="p">[</span><span class="n">reaction_id</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="s2">"inactive"</span><span class="p">,</span>
+                <span class="s2">"joint flux"</span><span class="p">:</span> <span class="n">joint_fluxes</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">reaction_id</span><span class="p">,</span> <span class="n">condition</span><span class="p">],</span>
+                <span class="s2">"joint state"</span><span class="p">:</span> <span class="s2">"active"</span> <span class="k">if</span> <span class="n">joint_scored_activity</span><span class="p">[</span><span class="n">reaction_id</span><span class="p">]</span> <span class="k">else</span> <span class="s2">"inactive"</span><span class="p">,</span>
+                <span class="s2">"fitted independently"</span><span class="p">:</span> <span class="nb">bool</span><span class="p">(</span><span class="n">independent_fitted</span><span class="p">[</span><span class="n">reaction_id</span><span class="p">]),</span>
+                <span class="s2">"fitted jointly"</span><span class="p">:</span> <span class="nb">bool</span><span class="p">(</span><span class="n">joint_fitted</span><span class="p">[</span><span class="n">reaction_id</span><span class="p">]),</span>
             <span class="p">}</span>
         <span class="p">)</span>
 
     <span class="n">fit_rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
         <span class="p">{</span>
-            <span class="s2">&quot;condition&quot;</span><span class="p">:</span> <span class="n">condition</span><span class="p">,</span>
-            <span class="s2">&quot;biomass&quot;</span><span class="p">:</span> <span class="n">joint_fluxes</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">biomass_id</span><span class="p">,</span> <span class="n">condition</span><span class="p">],</span>
-            <span class="s2">&quot;active reactions&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">joint_activity</span><span class="p">[</span><span class="n">condition</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()),</span>
-            <span class="s2">&quot;evidence fitted&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">joint_fitted</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;not fitted&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">((</span><span class="o">~</span><span class="n">joint_fitted</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()),</span>
+            <span class="s2">"condition"</span><span class="p">:</span> <span class="n">condition</span><span class="p">,</span>
+            <span class="s2">"biomass"</span><span class="p">:</span> <span class="n">joint_fluxes</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">biomass_id</span><span class="p">,</span> <span class="n">condition</span><span class="p">],</span>
+            <span class="s2">"active reactions"</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">joint_activity</span><span class="p">[</span><span class="n">condition</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()),</span>
+            <span class="s2">"evidence fitted"</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">joint_fitted</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+            <span class="s2">"not fitted"</span><span class="p">:</span> <span class="nb">int</span><span class="p">((</span><span class="o">~</span><span class="n">joint_fitted</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()),</span>
         <span class="p">}</span>
     <span class="p">)</span>
 
     <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">joint_fluxes</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">biomass_id</span><span class="p">,</span> <span class="n">condition</span><span class="p">],</span> <span class="n">biomass_targets</span><span class="p">[</span><span class="n">condition</span><span class="p">])</span>
 
-<span class="n">fit_summary</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">fit_rows</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;condition&quot;</span><span class="p">)</span>
-<span class="n">fit_details</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">fit_details</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">([</span><span class="s2">&quot;reaction&quot;</span><span class="p">,</span> <span class="s2">&quot;condition&quot;</span><span class="p">])</span>
+<span class="n">fit_summary</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">fit_rows</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">"condition"</span><span class="p">)</span>
+<span class="n">fit_details</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">fit_details</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">([</span><span class="s2">"reaction"</span><span class="p">,</span> <span class="s2">"condition"</span><span class="p">])</span>
 <span class="n">fit_summary</span>
 </pre></div>
 </div>
@@ -1054,10 +1058,10 @@ Name: objective scale, dtype: float64
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">all_scored_reactions</span> <span class="o">=</span> <span class="n">score_table</span><span class="o">.</span><span class="n">index</span>
-<span class="n">fit_matrix</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="s2">&quot;not scored&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">all_scored_reactions</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">condition_names</span><span class="p">)</span>
+<span class="n">fit_matrix</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="s2">"not scored"</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">all_scored_reactions</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">condition_names</span><span class="p">)</span>
 
 <span class="k">for</span> <span class="p">(</span><span class="n">reaction_id</span><span class="p">,</span> <span class="n">condition</span><span class="p">),</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">fit_details</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
-    <span class="n">fit_matrix</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">reaction_id</span><span class="p">,</span> <span class="n">condition</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;fitted&quot;</span> <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;fitted jointly&quot;</span><span class="p">]</span> <span class="k">else</span> <span class="s2">&quot;not fitted&quot;</span>
+    <span class="n">fit_matrix</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">reaction_id</span><span class="p">,</span> <span class="n">condition</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"fitted"</span> <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="s2">"fitted jointly"</span><span class="p">]</span> <span class="k">else</span> <span class="s2">"not fitted"</span>
 
 <span class="n">fit_matrix</span>
 </pre></div>
@@ -1145,10 +1149,10 @@ Name: objective scale, dtype: float64
 <p>Expression is evidence about the likelihood of reaction activity, not a measurement of activity or flux. The <a class="reference external" href="https://www.nature.com/articles/nbt.1487">original iMAT paper</a> reports a central role for post-transcriptional regulation and uses disagreements between expression and predicted activity to generate hypotheses about regulation beyond transcript abundance. Possible mechanisms include protein translation or degradation, phosphorylation and other post-translational effects, and metabolite-level control such as substrate availability and allosteric regulation. A disagreement can also arise from expression thresholds, GPR mapping, missing or incorrect model reactions, medium composition, or an imposed phenotype. iMAT alone cannot distinguish these explanations.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mismatches</span> <span class="o">=</span> <span class="n">fit_details</span><span class="p">[</span><span class="o">~</span><span class="n">fit_details</span><span class="p">[</span><span class="s2">&quot;fitted jointly&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mismatches</span> <span class="o">=</span> <span class="n">fit_details</span><span class="p">[</span><span class="o">~</span><span class="n">fit_details</span><span class="p">[</span><span class="s2">"fitted jointly"</span><span class="p">]]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
-<span class="k">assert</span> <span class="nb">list</span><span class="p">(</span><span class="n">mismatches</span><span class="o">.</span><span class="n">index</span><span class="p">)</span> <span class="o">==</span> <span class="p">[(</span><span class="s2">&quot;PFL&quot;</span><span class="p">,</span> <span class="s2">&quot;glucose anaerobic&quot;</span><span class="p">)]</span>
-<span class="k">assert</span> <span class="ow">not</span> <span class="n">mismatches</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;fitted independently&quot;</span><span class="p">]</span>
+<span class="k">assert</span> <span class="nb">list</span><span class="p">(</span><span class="n">mismatches</span><span class="o">.</span><span class="n">index</span><span class="p">)</span> <span class="o">==</span> <span class="p">[(</span><span class="s2">"PFL"</span><span class="p">,</span> <span class="s2">"glucose anaerobic"</span><span class="p">)]</span>
+<span class="k">assert</span> <span class="ow">not</span> <span class="n">mismatches</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">"fitted independently"</span><span class="p">]</span>
 <span class="n">mismatches</span>
 </pre></div>
 </div>
@@ -1226,13 +1230,13 @@ Name: objective scale, dtype: float64
 
 <span class="n">selection_comparison</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
     <span class="p">{</span>
-        <span class="s2">&quot;shared reactions&quot;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">&quot;independent inference, compared afterward&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">independent_shared</span><span class="o">.</span><span class="n">sum</span><span class="p">()),</span>
-            <span class="s2">&quot;one joint inference&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">joint_shared</span><span class="o">.</span><span class="n">sum</span><span class="p">()),</span>
+        <span class="s2">"shared reactions"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">"independent inference, compared afterward"</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">independent_shared</span><span class="o">.</span><span class="n">sum</span><span class="p">()),</span>
+            <span class="s2">"one joint inference"</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">joint_shared</span><span class="o">.</span><span class="n">sum</span><span class="p">()),</span>
         <span class="p">},</span>
-        <span class="s2">&quot;reaction union&quot;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">&quot;independent inference, compared afterward&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">independent_union</span><span class="o">.</span><span class="n">sum</span><span class="p">()),</span>
-            <span class="s2">&quot;one joint inference&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">joint_union</span><span class="o">.</span><span class="n">sum</span><span class="p">()),</span>
+        <span class="s2">"reaction union"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">"independent inference, compared afterward"</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">independent_union</span><span class="o">.</span><span class="n">sum</span><span class="p">()),</span>
+            <span class="s2">"one joint inference"</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">joint_union</span><span class="o">.</span><span class="n">sum</span><span class="p">()),</span>
         <span class="p">},</span>
     <span class="p">}</span>
 <span class="p">)</span>
@@ -1288,25 +1292,25 @@ Name: objective scale, dtype: float64
 <p>As in Multi-condition FBA, categories are derived from the joint activity matrix. With two conditions, every reaction in the union is either shared, aerobic-specific, or anaerobic-specific.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">reaction_groups</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="s2">&quot;inactive&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">reaction_ids</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;usage group&quot;</span><span class="p">)</span>
-<span class="n">reaction_groups</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">joint_shared</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;shared&quot;</span>
-<span class="n">reaction_groups</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">joint_activity</span><span class="p">[</span><span class="s2">&quot;glucose aerobic&quot;</span><span class="p">]</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">joint_activity</span><span class="p">[</span><span class="s2">&quot;glucose anaerobic&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="s2">&quot;glucose aerobic only&quot;</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">reaction_groups</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="s2">"inactive"</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">reaction_ids</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"usage group"</span><span class="p">)</span>
+<span class="n">reaction_groups</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">joint_shared</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"shared"</span>
+<span class="n">reaction_groups</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">joint_activity</span><span class="p">[</span><span class="s2">"glucose aerobic"</span><span class="p">]</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">joint_activity</span><span class="p">[</span><span class="s2">"glucose anaerobic"</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">"glucose aerobic only"</span>
 <span class="p">)</span>
-<span class="n">reaction_groups</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="o">~</span><span class="n">joint_activity</span><span class="p">[</span><span class="s2">&quot;glucose aerobic&quot;</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">joint_activity</span><span class="p">[</span><span class="s2">&quot;glucose anaerobic&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="s2">&quot;glucose anaerobic only&quot;</span>
+<span class="n">reaction_groups</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="o">~</span><span class="n">joint_activity</span><span class="p">[</span><span class="s2">"glucose aerobic"</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">joint_activity</span><span class="p">[</span><span class="s2">"glucose anaerobic"</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">"glucose anaerobic only"</span>
 <span class="p">)</span>
 
 <span class="n">group_table</span> <span class="o">=</span> <span class="p">(</span>
     <span class="n">reaction_groups</span><span class="p">[</span><span class="n">joint_union</span><span class="p">]</span>
     <span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">reaction_groups</span><span class="p">[</span><span class="n">joint_union</span><span class="p">],</span> <span class="n">sort</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="o">.</span><span class="n">agg</span><span class="p">(</span>
-        <span class="n">reactions</span><span class="o">=</span><span class="s2">&quot;size&quot;</span><span class="p">,</span>
-        <span class="n">reaction_ids</span><span class="o">=</span><span class="k">lambda</span> <span class="n">values</span><span class="p">:</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">values</span><span class="o">.</span><span class="n">index</span><span class="p">),</span>
+        <span class="n">reactions</span><span class="o">=</span><span class="s2">"size"</span><span class="p">,</span>
+        <span class="n">reaction_ids</span><span class="o">=</span><span class="k">lambda</span> <span class="n">values</span><span class="p">:</span> <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">values</span><span class="o">.</span><span class="n">index</span><span class="p">),</span>
     <span class="p">)</span>
 <span class="p">)</span>
 
-<span class="k">assert</span> <span class="nb">int</span><span class="p">(</span><span class="n">group_table</span><span class="p">[</span><span class="s2">&quot;reactions&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span> <span class="o">==</span> <span class="nb">int</span><span class="p">(</span><span class="n">joint_union</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+<span class="k">assert</span> <span class="nb">int</span><span class="p">(</span><span class="n">group_table</span><span class="p">[</span><span class="s2">"reactions"</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span> <span class="o">==</span> <span class="nb">int</span><span class="p">(</span><span class="n">joint_union</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
 <span class="n">group_table</span>
 </pre></div>
 </div>
@@ -1412,9 +1416,9 @@ Name: objective scale, dtype: float64
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">group_colors</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;shared&quot;</span><span class="p">:</span> <span class="s2">&quot;#b0b0b0&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;glucose aerobic only&quot;</span><span class="p">:</span> <span class="s2">&quot;#277da1&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;glucose anaerobic only&quot;</span><span class="p">:</span> <span class="s2">&quot;#e63946&quot;</span><span class="p">,</span>
+    <span class="s2">"shared"</span><span class="p">:</span> <span class="s2">"#b0b0b0"</span><span class="p">,</span>
+    <span class="s2">"glucose aerobic only"</span><span class="p">:</span> <span class="s2">"#277da1"</span><span class="p">,</span>
+    <span class="s2">"glucose anaerobic only"</span><span class="p">:</span> <span class="s2">"#e63946"</span><span class="p">,</span>
 <span class="p">}</span>
 
 <span class="n">selected_reactions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="n">joint_union</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">())</span>
@@ -1425,17 +1429,17 @@ Name: objective scale, dtype: float64
     <span class="n">reaction_id</span> <span class="o">=</span> <span class="n">reaction_ids</span><span class="p">[</span><span class="n">original_index</span><span class="p">]</span>
     <span class="n">group</span> <span class="o">=</span> <span class="n">reaction_groups</span><span class="p">[</span><span class="n">reaction_id</span><span class="p">]</span>
     <span class="n">edge_style</span><span class="p">[</span><span class="n">displayed_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="n">group_colors</span><span class="p">[</span><span class="n">group</span><span class="p">],</span>
-        <span class="s2">&quot;penwidth&quot;</span><span class="p">:</span> <span class="s2">&quot;1.5&quot;</span> <span class="k">if</span> <span class="n">group</span> <span class="o">==</span> <span class="s2">&quot;shared&quot;</span> <span class="k">else</span> <span class="s2">&quot;4&quot;</span><span class="p">,</span>
+        <span class="s2">"color"</span><span class="p">:</span> <span class="n">group_colors</span><span class="p">[</span><span class="n">group</span><span class="p">],</span>
+        <span class="s2">"penwidth"</span><span class="p">:</span> <span class="s2">"1.5"</span> <span class="k">if</span> <span class="n">group</span> <span class="o">==</span> <span class="s2">"shared"</span> <span class="k">else</span> <span class="s2">"4"</span><span class="p">,</span>
     <span class="p">}</span>
 
 <span class="n">joint_network</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
-    <span class="n">graph_attr</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;rankdir&quot;</span><span class="p">:</span> <span class="s2">&quot;LR&quot;</span><span class="p">},</span>
+    <span class="n">graph_attr</span><span class="o">=</span><span class="p">{</span><span class="s2">"rankdir"</span><span class="p">:</span> <span class="s2">"LR"</span><span class="p">},</span>
     <span class="n">node_attr</span><span class="o">=</span><span class="p">{</span>
-        <span class="s2">&quot;fixedsize&quot;</span><span class="p">:</span> <span class="s2">&quot;false&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="s2">&quot;box&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;style&quot;</span><span class="p">:</span> <span class="s2">&quot;rounded&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;margin&quot;</span><span class="p">:</span> <span class="s2">&quot;0.05,0.03&quot;</span><span class="p">,</span>
+        <span class="s2">"fixedsize"</span><span class="p">:</span> <span class="s2">"false"</span><span class="p">,</span>
+        <span class="s2">"shape"</span><span class="p">:</span> <span class="s2">"box"</span><span class="p">,</span>
+        <span class="s2">"style"</span><span class="p">:</span> <span class="s2">"rounded"</span><span class="p">,</span>
+        <span class="s2">"margin"</span><span class="p">:</span> <span class="s2">"0.05,0.03"</span><span class="p">,</span>
     <span class="p">},</span>
     <span class="n">custom_edge_attr</span><span class="o">=</span><span class="n">edge_style</span><span class="p">,</span>
 <span class="p">)</span>
@@ -1443,7 +1447,7 @@ Name: objective scale, dtype: float64
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/329d62a87e66c90462ef6cc0453d8eeeb05b1b1b48b93fb4ef8bab8cae4ab4e3.svg" src="../../_images/329d62a87e66c90462ef6cc0453d8eeeb05b1b1b48b93fb4ef8bab8cae4ab4e3.svg" />
+<img alt="../../_images/52f9c57975b2f94fb1099924d46adef8b7458c166ff93154d6539e2975fd89c4.svg" src="../../_images/52f9c57975b2f94fb1099924d46adef8b7458c166ff93154d6539e2975fd89c4.svg" />
 </div>
 </div>
 </section>
@@ -1540,8 +1544,8 @@ Name: objective scale, dtype: float64
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1567,7 +1571,7 @@ Name: objective scale, dtype: float64
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
 </p></div>
       
     </div>

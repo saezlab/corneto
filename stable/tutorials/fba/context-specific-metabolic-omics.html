@@ -27,8 +27,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
@@ -36,10 +36,10 @@
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=53e23fa6" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
     <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
@@ -64,8 +64,8 @@
             </script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/fba/context-specific-metabolic-omics';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1786146192';
+        DOCUMENTATION_OPTIONS.theme_version = '0.21.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1790177872';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'stable';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
@@ -407,6 +407,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../carnival/network-sampler.html">Implementing an alternative network sampler</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../carnival/network-sampler-example.html">Exploring alternative solutions with <span class="math notranslate nohighlight">\(\epsilon\)</span>-perturbation sampling</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ml/kpnn-with-sc.html">Knowledge-primed Neural Networks (KPNNs) for single cell data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../causal/README.html">Running the LinearDAG Sachs tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../causal/linear-dag-discovery-sachs.html">Find an explanatory signaling network in the Sachs data</a></li>
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../contrib/multi_condition_tutorial/multi_condition_carnival.html">Multi-condition signalling network inference</a></li>
@@ -518,8 +520,8 @@
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">import_cobra_model</span>
 
-<span class="n">G</span> <span class="o">=</span> <span class="n">import_cobra_model</span><span class="p">(</span><span class="s2">&quot;data/ecoli_core.zip&quot;</span><span class="p">)</span>
-<span class="n">df_expr</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;data/ecoli_example_data.zip&quot;</span><span class="p">)</span>
+<span class="n">G</span> <span class="o">=</span> <span class="n">import_cobra_model</span><span class="p">(</span><span class="s2">"data/ecoli_core.zip"</span><span class="p">)</span>
+<span class="n">df_expr</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">"data/ecoli_example_data.zip"</span><span class="p">)</span>
 <span class="n">df_expr</span>
 </pre></div>
 </div>
@@ -676,41 +678,41 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[{&#39;__edge_type&#39;: &#39;directed&#39;,
-  &#39;id&#39;: &#39;EX_ac_b&#39;,
-  &#39;__source_attr&#39;: {&#39;ac_b&#39;: {&#39;__value&#39;: np.float64(-1.0)}},
-  &#39;__target_attr&#39;: {},
-  &#39;default_lb&#39;: np.float64(-1000.0),
-  &#39;default_ub&#39;: np.float64(1000.0),
-  &#39;GPR&#39;: &#39;&#39;},
- {&#39;__edge_type&#39;: &#39;directed&#39;,
-  &#39;id&#39;: &#39;EX_akg_b&#39;,
-  &#39;__source_attr&#39;: {&#39;akg_b&#39;: {&#39;__value&#39;: np.float64(-1.0)}},
-  &#39;__target_attr&#39;: {},
-  &#39;default_lb&#39;: np.float64(-1000.0),
-  &#39;default_ub&#39;: np.float64(1000.0),
-  &#39;GPR&#39;: &#39;&#39;},
- {&#39;__edge_type&#39;: &#39;directed&#39;,
-  &#39;id&#39;: &#39;EX_co2_b&#39;,
-  &#39;__source_attr&#39;: {&#39;co2_b&#39;: {&#39;__value&#39;: np.float64(-1.0)}},
-  &#39;__target_attr&#39;: {},
-  &#39;default_lb&#39;: np.float64(-1000.0),
-  &#39;default_ub&#39;: np.float64(1000.0),
-  &#39;GPR&#39;: &#39;&#39;},
- {&#39;__edge_type&#39;: &#39;directed&#39;,
-  &#39;id&#39;: &#39;EX_etoh_b&#39;,
-  &#39;__source_attr&#39;: {&#39;etoh_b&#39;: {&#39;__value&#39;: np.float64(-1.0)}},
-  &#39;__target_attr&#39;: {},
-  &#39;default_lb&#39;: np.float64(-1000.0),
-  &#39;default_ub&#39;: np.float64(1000.0),
-  &#39;GPR&#39;: &#39;&#39;},
- {&#39;__edge_type&#39;: &#39;directed&#39;,
-  &#39;id&#39;: &#39;EX_for_b&#39;,
-  &#39;__source_attr&#39;: {&#39;for_b&#39;: {&#39;__value&#39;: np.float64(-1.0)}},
-  &#39;__target_attr&#39;: {},
-  &#39;default_lb&#39;: np.float64(-1000.0),
-  &#39;default_ub&#39;: np.float64(1000.0),
-  &#39;GPR&#39;: &#39;&#39;}]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[{'__edge_type': 'directed',
+  'id': 'EX_ac_b',
+  '__source_attr': {'ac_b': {'__value': np.float64(-1.0)}},
+  '__target_attr': {},
+  'default_lb': np.float64(-1000.0),
+  'default_ub': np.float64(1000.0),
+  'GPR': ''},
+ {'__edge_type': 'directed',
+  'id': 'EX_akg_b',
+  '__source_attr': {'akg_b': {'__value': np.float64(-1.0)}},
+  '__target_attr': {},
+  'default_lb': np.float64(-1000.0),
+  'default_ub': np.float64(1000.0),
+  'GPR': ''},
+ {'__edge_type': 'directed',
+  'id': 'EX_co2_b',
+  '__source_attr': {'co2_b': {'__value': np.float64(-1.0)}},
+  '__target_attr': {},
+  'default_lb': np.float64(-1000.0),
+  'default_ub': np.float64(1000.0),
+  'GPR': ''},
+ {'__edge_type': 'directed',
+  'id': 'EX_etoh_b',
+  '__source_attr': {'etoh_b': {'__value': np.float64(-1.0)}},
+  '__target_attr': {},
+  'default_lb': np.float64(-1000.0),
+  'default_ub': np.float64(1000.0),
+  'GPR': ''},
+ {'__edge_type': 'directed',
+  'id': 'EX_for_b',
+  '__source_attr': {'for_b': {'__value': np.float64(-1.0)}},
+  '__target_attr': {},
+  'default_lb': np.float64(-1000.0),
+  'default_ub': np.float64(1000.0),
+  'GPR': ''}]
 </pre></div>
 </div>
 </div>
@@ -723,7 +725,7 @@
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods.metabolism</span><span class="w"> </span><span class="kn">import</span> <span class="n">evaluate_gpr_expression</span><span class="p">,</span> <span class="n">get_unique_genes</span>
 
-<span class="n">genes</span> <span class="o">=</span> <span class="n">get_unique_genes</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">startswith</span><span class="o">=</span><span class="s2">&quot;b&quot;</span><span class="p">)</span>
+<span class="n">genes</span> <span class="o">=</span> <span class="n">get_unique_genes</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">startswith</span><span class="o">=</span><span class="s2">"b"</span><span class="p">)</span>
 <span class="nb">len</span><span class="p">(</span><span class="n">genes</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -736,7 +738,7 @@
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_expr</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;gene&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">stack</span><span class="p">()</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;expression&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">bins</span><span class="o">=</span><span class="mi">30</span><span class="p">);</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_expr</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">"gene"</span><span class="p">)</span><span class="o">.</span><span class="n">stack</span><span class="p">()</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"expression"</span><span class="p">)</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">bins</span><span class="o">=</span><span class="mi">30</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -746,9 +748,9 @@
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_expr</span><span class="p">[</span><span class="s2">&quot;high&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">df_expr</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">8</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
-<span class="n">df_expr</span><span class="p">[</span><span class="s2">&quot;low&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">df_expr</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
-<span class="n">df_expr</span><span class="p">[</span><span class="s2">&quot;score&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_expr</span><span class="p">[</span><span class="s2">&quot;high&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">df_expr</span><span class="p">[</span><span class="s2">&quot;low&quot;</span><span class="p">]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_expr</span><span class="p">[</span><span class="s2">"high"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">df_expr</span><span class="p">[</span><span class="s2">"value"</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">8</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<span class="n">df_expr</span><span class="p">[</span><span class="s2">"low"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">df_expr</span><span class="p">[</span><span class="s2">"value"</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<span class="n">df_expr</span><span class="p">[</span><span class="s2">"score"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_expr</span><span class="p">[</span><span class="s2">"high"</span><span class="p">]</span> <span class="o">-</span> <span class="n">df_expr</span><span class="p">[</span><span class="s2">"low"</span><span class="p">]</span>
 <span class="n">df_expr</span>
 </pre></div>
 </div>
@@ -923,15 +925,15 @@
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">values</span> <span class="o">=</span> <span class="n">df_expr</span><span class="p">[[</span><span class="s2">&quot;gene&quot;</span><span class="p">,</span> <span class="s2">&quot;score&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;gene&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()[</span><span class="s2">&quot;score&quot;</span><span class="p">]</span>
-<span class="n">e</span> <span class="o">=</span> <span class="n">evaluate_gpr_expression</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">get_attr_from_edges</span><span class="p">(</span><span class="s2">&quot;GPR&quot;</span><span class="p">),</span> <span class="n">values</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">values</span> <span class="o">=</span> <span class="n">df_expr</span><span class="p">[[</span><span class="s2">"gene"</span><span class="p">,</span> <span class="s2">"score"</span><span class="p">]]</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">"gene"</span><span class="p">)</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()[</span><span class="s2">"score"</span><span class="p">]</span>
+<span class="n">e</span> <span class="o">=</span> <span class="n">evaluate_gpr_expression</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">get_attr_from_edges</span><span class="p">(</span><span class="s2">"GPR"</span><span class="p">),</span> <span class="n">values</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">G</span><span class="o">.</span><span class="n">get_attr_from_edges</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">),</span> <span class="s2">&quot;score&quot;</span><span class="p">:</span> <span class="n">e</span><span class="p">})</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">"id"</span><span class="p">:</span> <span class="n">G</span><span class="o">.</span><span class="n">get_attr_from_edges</span><span class="p">(</span><span class="s2">"id"</span><span class="p">),</span> <span class="s2">"score"</span><span class="p">:</span> <span class="n">e</span><span class="p">})</span>
 </pre></div>
 </div>
 </div>
@@ -1029,9 +1031,9 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">corneto.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">Data</span>
 
 <span class="n">feats</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-<span class="k">for</span> <span class="n">edge</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">get_attr_from_edges</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">),</span> <span class="n">e</span><span class="p">):</span>
-    <span class="n">feats</span><span class="p">[</span><span class="n">edge</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">val</span><span class="p">,</span> <span class="s2">&quot;mapping&quot;</span><span class="p">:</span> <span class="s2">&quot;edge&quot;</span><span class="p">}</span>
-<span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;sample1&quot;</span><span class="p">:</span> <span class="n">feats</span><span class="p">}</span>
+<span class="k">for</span> <span class="n">edge</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">get_attr_from_edges</span><span class="p">(</span><span class="s2">"id"</span><span class="p">),</span> <span class="n">e</span><span class="p">):</span>
+    <span class="n">feats</span><span class="p">[</span><span class="n">edge</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"value"</span><span class="p">:</span> <span class="n">val</span><span class="p">,</span> <span class="s2">"mapping"</span><span class="p">:</span> <span class="s2">"edge"</span><span class="p">}</span>
+<span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"sample1"</span><span class="p">:</span> <span class="n">feats</span><span class="p">}</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">Data</span><span class="o">.</span><span class="n">from_cdict</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 <span class="n">data</span>
 </pre></div>
@@ -1066,18 +1068,18 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_flow&#39;: _flow: Variable((91,), _flow),
- &#39;edge_has_flux&#39;: edge_has_flux: Variable((91,), edge_has_flux, boolean=True),
- &#39;_flow_ipos_s0&#39;: _flow_ipos_s0: Variable((42,), _flow_ipos_s0, boolean=True),
- &#39;_flow_ineg_s0&#39;: _flow_ineg_s0: Variable((42,), _flow_ineg_s0, boolean=True),
- &#39;flow&#39;: _flow: Variable((91,), _flow)}
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{'_flow': _flow: Variable((91,), _flow),
+ 'edge_has_flux': edge_has_flux: Variable((91,), edge_has_flux, boolean=True),
+ '_flow_ipos_s0': _flow_ipos_s0: Variable((42,), _flow_ipos_s0, boolean=True),
+ '_flow_ineg_s0': _flow_ineg_s0: Variable((42,), _flow_ineg_s0, boolean=True),
+ 'flow': _flow: Variable((91,), _flow)}
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;scipy&quot;</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">0</span><span class="p">);</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">"scipy"</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">0</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -1104,7 +1106,7 @@
 <span class="c1"># Note that there are 91 values, corresponding to the 91 reactions</span>
 <span class="c1"># in the PKN</span>
 
-<span class="n">df_sol</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">G</span><span class="o">.</span><span class="n">get_attr_from_edges</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">),</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;flux&quot;</span><span class="p">])</span>
+<span class="n">df_sol</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">G</span><span class="o">.</span><span class="n">get_attr_from_edges</span><span class="p">(</span><span class="s2">"id"</span><span class="p">),</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"flux"</span><span class="p">])</span>
 <span class="n">df_sol</span>
 </pre></div>
 </div>
@@ -1188,7 +1190,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[&lt;Axes: title={&#39;center&#39;: &#39;flux&#39;}&gt;]], dtype=object)
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[&lt;Axes: title={'center': 'flux'}&gt;]], dtype=object)
 </pre></div>
 </div>
 <img alt="../../_images/e80f4fbbe2bdb339b293b23984a14e3c887d0145ebccdfe35cf52ec84ba1dbb3.png" src="../../_images/e80f4fbbe2bdb339b293b23984a14e3c887d0145ebccdfe35cf52ec84ba1dbb3.png" />
@@ -1235,7 +1237,7 @@
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">G_ctx</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">layout</span><span class="o">=</span><span class="s2">&quot;neato&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">G_ctx</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">layout</span><span class="o">=</span><span class="s2">"neato"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1343,8 +1345,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1370,7 +1372,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
 </p></div>
       
     </div>

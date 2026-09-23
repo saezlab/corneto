@@ -27,8 +27,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
@@ -36,10 +36,10 @@
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=53e23fa6" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
     <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
@@ -66,8 +66,8 @@
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'guide/metabolism/imat';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1786146192';
+        DOCUMENTATION_OPTIONS.theme_version = '0.21.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1790177872';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'stable';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
@@ -419,6 +419,10 @@
 <li class="toctree-l2"><a class="reference internal" href="../networks/multi-pcst-grb.html">Multi-sample PCST</a></li>
 </ul>
 </details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../causal/index.html">Causal and structural modeling</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../causal/linear-dag-discovery.html">Discovering a linear causal signaling network from perturbation data</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Metabolism</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="flux-balance-analysis.html">Flux balance analysis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="multicondition-sfba.html">Multi-condition FBA</a></li>
@@ -571,23 +575,23 @@ Sv=0, \qquad \ell \leq v \leq u.
 <span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods.metabolism</span><span class="w"> </span><span class="kn">import</span> <span class="n">evaluate_gpr_expression</span>
 
 <span class="k">with</span> <span class="n">redirect_stdout</span><span class="p">(</span><span class="n">StringIO</span><span class="p">()):</span>
-    <span class="n">model</span> <span class="o">=</span> <span class="n">load_model</span><span class="p">(</span><span class="s2">&quot;textbook&quot;</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">load_model</span><span class="p">(</span><span class="s2">"textbook"</span><span class="p">)</span>
 
-<span class="n">model</span><span class="o">.</span><span class="n">solver</span> <span class="o">=</span> <span class="s2">&quot;glpk&quot;</span>
+<span class="n">model</span><span class="o">.</span><span class="n">solver</span> <span class="o">=</span> <span class="s2">"glpk"</span>
 <span class="n">G</span> <span class="o">=</span> <span class="n">cobra_model_to_graph</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 
-<span class="n">reaction_ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">get_attr_from_edges</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">))</span>
+<span class="n">reaction_ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">get_attr_from_edges</span><span class="p">(</span><span class="s2">"id"</span><span class="p">))</span>
 <span class="n">reaction_index</span> <span class="o">=</span> <span class="p">{</span><span class="n">reaction_id</span><span class="p">:</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">reaction_id</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">reaction_ids</span><span class="p">)}</span>
-<span class="n">biomass_id</span> <span class="o">=</span> <span class="s2">&quot;Biomass_Ecoli_core&quot;</span>
+<span class="n">biomass_id</span> <span class="o">=</span> <span class="s2">"Biomass_Ecoli_core"</span>
 
 <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
     <span class="p">{</span>
-        <span class="s2">&quot;metabolites&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">metabolites</span><span class="p">),</span>
-        <span class="s2">&quot;reactions&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">reactions</span><span class="p">),</span>
-        <span class="s2">&quot;genes&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">genes</span><span class="p">),</span>
-        <span class="s2">&quot;reactions with GPR rules&quot;</span><span class="p">:</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="n">reaction</span><span class="o">.</span><span class="n">gene_reaction_rule</span><span class="p">)</span> <span class="k">for</span> <span class="n">reaction</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">reactions</span><span class="p">),</span>
+        <span class="s2">"metabolites"</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">metabolites</span><span class="p">),</span>
+        <span class="s2">"reactions"</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">reactions</span><span class="p">),</span>
+        <span class="s2">"genes"</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">genes</span><span class="p">),</span>
+        <span class="s2">"reactions with GPR rules"</span><span class="p">:</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="n">reaction</span><span class="o">.</span><span class="n">gene_reaction_rule</span><span class="p">)</span> <span class="k">for</span> <span class="n">reaction</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">reactions</span><span class="p">),</span>
     <span class="p">},</span>
-    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;E. coli core model&quot;</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"E. coli core model"</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -627,8 +631,8 @@ Name: E. coli core model, dtype: int64
 
 <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
     <span class="p">{</span>
-        <span class="s2">&quot;maximum anaerobic biomass&quot;</span><span class="p">:</span> <span class="n">maximum_growth</span><span class="p">,</span>
-        <span class="s2">&quot;minimum biomass required for inference&quot;</span><span class="p">:</span> <span class="n">minimum_growth</span><span class="p">,</span>
+        <span class="s2">"maximum anaerobic biomass"</span><span class="p">:</span> <span class="n">maximum_growth</span><span class="p">,</span>
+        <span class="s2">"minimum biomass required for inference"</span><span class="p">:</span> <span class="n">minimum_growth</span><span class="p">,</span>
     <span class="p">}</span>
 <span class="p">)</span>
 </pre></div>
@@ -653,43 +657,43 @@ dtype: float64
 
 <span class="n">gene_expression</span> <span class="o">=</span> <span class="p">{</span>
     <span class="c1"># High expression: acetaldehyde and alcohol dehydrogenases</span>
-    <span class="s2">&quot;b0351&quot;</span><span class="p">:</span> <span class="mf">12.1</span><span class="p">,</span>
-    <span class="s2">&quot;b1241&quot;</span><span class="p">:</span> <span class="mf">11.6</span><span class="p">,</span>
-    <span class="s2">&quot;b0356&quot;</span><span class="p">:</span> <span class="mf">10.9</span><span class="p">,</span>
-    <span class="s2">&quot;b1478&quot;</span><span class="p">:</span> <span class="mf">11.4</span><span class="p">,</span>
+    <span class="s2">"b0351"</span><span class="p">:</span> <span class="mf">12.1</span><span class="p">,</span>
+    <span class="s2">"b1241"</span><span class="p">:</span> <span class="mf">11.6</span><span class="p">,</span>
+    <span class="s2">"b0356"</span><span class="p">:</span> <span class="mf">10.9</span><span class="p">,</span>
+    <span class="s2">"b1478"</span><span class="p">:</span> <span class="mf">11.4</span><span class="p">,</span>
     <span class="c1"># Low expression: lactate dehydrogenase</span>
-    <span class="s2">&quot;b1380&quot;</span><span class="p">:</span> <span class="mf">4.2</span><span class="p">,</span>
-    <span class="s2">&quot;b2133&quot;</span><span class="p">:</span> <span class="mf">5.1</span><span class="p">,</span>
+    <span class="s2">"b1380"</span><span class="p">:</span> <span class="mf">4.2</span><span class="p">,</span>
+    <span class="s2">"b2133"</span><span class="p">:</span> <span class="mf">5.1</span><span class="p">,</span>
     <span class="c1"># Low expression: phosphotransacetylase and acetate kinase</span>
-    <span class="s2">&quot;b2297&quot;</span><span class="p">:</span> <span class="mf">4.8</span><span class="p">,</span>
-    <span class="s2">&quot;b2458&quot;</span><span class="p">:</span> <span class="mf">5.3</span><span class="p">,</span>
-    <span class="s2">&quot;b1849&quot;</span><span class="p">:</span> <span class="mf">3.9</span><span class="p">,</span>
-    <span class="s2">&quot;b2296&quot;</span><span class="p">:</span> <span class="mf">4.6</span><span class="p">,</span>
-    <span class="s2">&quot;b3115&quot;</span><span class="p">:</span> <span class="mf">5.0</span><span class="p">,</span>
+    <span class="s2">"b2297"</span><span class="p">:</span> <span class="mf">4.8</span><span class="p">,</span>
+    <span class="s2">"b2458"</span><span class="p">:</span> <span class="mf">5.3</span><span class="p">,</span>
+    <span class="s2">"b1849"</span><span class="p">:</span> <span class="mf">3.9</span><span class="p">,</span>
+    <span class="s2">"b2296"</span><span class="p">:</span> <span class="mf">4.6</span><span class="p">,</span>
+    <span class="s2">"b3115"</span><span class="p">:</span> <span class="mf">5.0</span><span class="p">,</span>
 <span class="p">}</span>
 
 <span class="n">expression_modules</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
     <span class="p">[</span>
         <span class="p">{</span>
-            <span class="s2">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;ethanol formation&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;reactions&quot;</span><span class="p">:</span> <span class="s2">&quot;ACALD, ALCD2x&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;genes&quot;</span><span class="p">:</span> <span class="s2">&quot;b0351, b1241, b0356, b1478&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;expression range&quot;</span><span class="p">:</span> <span class="s2">&quot;10.9-12.1&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;high&quot;</span><span class="p">,</span>
+            <span class="s2">"module"</span><span class="p">:</span> <span class="s2">"ethanol formation"</span><span class="p">,</span>
+            <span class="s2">"reactions"</span><span class="p">:</span> <span class="s2">"ACALD, ALCD2x"</span><span class="p">,</span>
+            <span class="s2">"genes"</span><span class="p">:</span> <span class="s2">"b0351, b1241, b0356, b1478"</span><span class="p">,</span>
+            <span class="s2">"expression range"</span><span class="p">:</span> <span class="s2">"10.9-12.1"</span><span class="p">,</span>
+            <span class="s2">"class"</span><span class="p">:</span> <span class="s2">"high"</span><span class="p">,</span>
         <span class="p">},</span>
         <span class="p">{</span>
-            <span class="s2">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;lactate formation&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;reactions&quot;</span><span class="p">:</span> <span class="s2">&quot;LDH_D&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;genes&quot;</span><span class="p">:</span> <span class="s2">&quot;b1380, b2133&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;expression range&quot;</span><span class="p">:</span> <span class="s2">&quot;4.2-5.1&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;low&quot;</span><span class="p">,</span>
+            <span class="s2">"module"</span><span class="p">:</span> <span class="s2">"lactate formation"</span><span class="p">,</span>
+            <span class="s2">"reactions"</span><span class="p">:</span> <span class="s2">"LDH_D"</span><span class="p">,</span>
+            <span class="s2">"genes"</span><span class="p">:</span> <span class="s2">"b1380, b2133"</span><span class="p">,</span>
+            <span class="s2">"expression range"</span><span class="p">:</span> <span class="s2">"4.2-5.1"</span><span class="p">,</span>
+            <span class="s2">"class"</span><span class="p">:</span> <span class="s2">"low"</span><span class="p">,</span>
         <span class="p">},</span>
         <span class="p">{</span>
-            <span class="s2">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;acetate formation&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;reactions&quot;</span><span class="p">:</span> <span class="s2">&quot;PTAr, ACKr&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;genes&quot;</span><span class="p">:</span> <span class="s2">&quot;b2297, b2458, b1849, b2296, b3115&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;expression range&quot;</span><span class="p">:</span> <span class="s2">&quot;3.9-5.3&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;low&quot;</span><span class="p">,</span>
+            <span class="s2">"module"</span><span class="p">:</span> <span class="s2">"acetate formation"</span><span class="p">,</span>
+            <span class="s2">"reactions"</span><span class="p">:</span> <span class="s2">"PTAr, ACKr"</span><span class="p">,</span>
+            <span class="s2">"genes"</span><span class="p">:</span> <span class="s2">"b2297, b2458, b1849, b2296, b3115"</span><span class="p">,</span>
+            <span class="s2">"expression range"</span><span class="p">:</span> <span class="s2">"3.9-5.3"</span><span class="p">,</span>
+            <span class="s2">"class"</span><span class="p">:</span> <span class="s2">"low"</span><span class="p">,</span>
         <span class="p">},</span>
     <span class="p">]</span>
 <span class="p">)</span>
@@ -755,11 +759,11 @@ dtype: float64
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">scored_reactions</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ACALD&quot;</span><span class="p">,</span> <span class="s2">&quot;ALCD2x&quot;</span><span class="p">,</span> <span class="s2">&quot;LDH_D&quot;</span><span class="p">,</span> <span class="s2">&quot;PTAr&quot;</span><span class="p">,</span> <span class="s2">&quot;ACKr&quot;</span><span class="p">]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">scored_reactions</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"ACALD"</span><span class="p">,</span> <span class="s2">"ALCD2x"</span><span class="p">,</span> <span class="s2">"LDH_D"</span><span class="p">,</span> <span class="s2">"PTAr"</span><span class="p">,</span> <span class="s2">"ACKr"</span><span class="p">]</span>
 <span class="n">gpr_table</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
     <span class="p">{</span>
-        <span class="s2">&quot;reaction&quot;</span><span class="p">:</span> <span class="n">scored_reactions</span><span class="p">,</span>
-        <span class="s2">&quot;GPR rule&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">"reaction"</span><span class="p">:</span> <span class="n">scored_reactions</span><span class="p">,</span>
+        <span class="s2">"GPR rule"</span><span class="p">:</span> <span class="p">[</span>
             <span class="n">model</span><span class="o">.</span><span class="n">reactions</span><span class="o">.</span><span class="n">get_by_id</span><span class="p">(</span><span class="n">reaction_id</span><span class="p">)</span><span class="o">.</span><span class="n">gene_reaction_rule</span>
             <span class="k">for</span> <span class="n">reaction_id</span> <span class="ow">in</span> <span class="n">scored_reactions</span>
         <span class="p">],</span>
@@ -837,8 +841,8 @@ dtype: float64
 <span class="n">pfba_solution</span> <span class="o">=</span> <span class="n">pfba</span><span class="p">(</span><span class="n">reference_model</span><span class="p">)</span>
 
 <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">pfba_solution</span><span class="o">.</span><span class="n">fluxes</span><span class="p">[</span><span class="n">biomass_id</span><span class="p">],</span> <span class="n">minimum_growth</span><span class="p">)</span>
-<span class="n">pfba_solution</span><span class="o">.</span><span class="n">fluxes</span><span class="p">[[</span><span class="n">biomass_id</span><span class="p">,</span> <span class="s2">&quot;EX_glc__D_e&quot;</span><span class="p">,</span> <span class="s2">&quot;EX_lac__D_e&quot;</span><span class="p">,</span> <span class="s2">&quot;EX_etoh_e&quot;</span><span class="p">,</span> <span class="s2">&quot;EX_ac_e&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span>
-    <span class="s2">&quot;pFBA flux&quot;</span>
+<span class="n">pfba_solution</span><span class="o">.</span><span class="n">fluxes</span><span class="p">[[</span><span class="n">biomass_id</span><span class="p">,</span> <span class="s2">"EX_glc__D_e"</span><span class="p">,</span> <span class="s2">"EX_lac__D_e"</span><span class="p">,</span> <span class="s2">"EX_etoh_e"</span><span class="p">,</span> <span class="s2">"EX_ac_e"</span><span class="p">]]</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span>
+    <span class="s2">"pFBA flux"</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -909,17 +913,17 @@ dtype: float64
     <span class="n">G</span><span class="p">,</span>
     <span class="n">gene_expression</span><span class="o">=</span><span class="n">gene_expression</span><span class="p">,</span>
     <span class="n">reaction_bounds</span><span class="o">=</span><span class="p">{</span>
-        <span class="s2">&quot;EX_glc__D_e&quot;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
-        <span class="s2">&quot;EX_o2_e&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
+        <span class="s2">"EX_glc__D_e"</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
+        <span class="s2">"EX_o2_e"</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
         <span class="n">biomass_id</span><span class="p">:</span> <span class="p">(</span><span class="n">minimum_growth</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
     <span class="p">},</span>
 <span class="p">)</span>
-<span class="n">imat_problem</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;highs&quot;</span><span class="p">)</span>
+<span class="n">imat_problem</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">"highs"</span><span class="p">)</span>
 
 <span class="n">imat_fluxes</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
     <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">imat_problem</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
     <span class="n">index</span><span class="o">=</span><span class="n">reaction_ids</span><span class="p">,</span>
-    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;iMAT flux&quot;</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"iMAT flux"</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -933,25 +937,25 @@ dtype: float64
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">reaction_evidence</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
     <span class="p">{</span>
-        <span class="s2">&quot;ACALD&quot;</span><span class="p">:</span> <span class="s2">&quot;high&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;ALCD2x&quot;</span><span class="p">:</span> <span class="s2">&quot;high&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;LDH_D&quot;</span><span class="p">:</span> <span class="s2">&quot;low&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;PTAr&quot;</span><span class="p">:</span> <span class="s2">&quot;low&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;ACKr&quot;</span><span class="p">:</span> <span class="s2">&quot;low&quot;</span><span class="p">,</span>
+        <span class="s2">"ACALD"</span><span class="p">:</span> <span class="s2">"high"</span><span class="p">,</span>
+        <span class="s2">"ALCD2x"</span><span class="p">:</span> <span class="s2">"high"</span><span class="p">,</span>
+        <span class="s2">"LDH_D"</span><span class="p">:</span> <span class="s2">"low"</span><span class="p">,</span>
+        <span class="s2">"PTAr"</span><span class="p">:</span> <span class="s2">"low"</span><span class="p">,</span>
+        <span class="s2">"ACKr"</span><span class="p">:</span> <span class="s2">"low"</span><span class="p">,</span>
     <span class="p">},</span>
-    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;expression evidence&quot;</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"expression evidence"</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">expression_fit</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
     <span class="p">{</span>
-        <span class="s2">&quot;expression evidence&quot;</span><span class="p">:</span> <span class="n">reaction_evidence</span><span class="p">,</span>
-        <span class="s2">&quot;flux&quot;</span><span class="p">:</span> <span class="n">imat_fluxes</span><span class="p">[</span><span class="n">reaction_evidence</span><span class="o">.</span><span class="n">index</span><span class="p">],</span>
-        <span class="s2">&quot;active&quot;</span><span class="p">:</span> <span class="n">imat_fluxes</span><span class="p">[</span><span class="n">reaction_evidence</span><span class="o">.</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="n">eps</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">eps</span><span class="p">),</span>
+        <span class="s2">"expression evidence"</span><span class="p">:</span> <span class="n">reaction_evidence</span><span class="p">,</span>
+        <span class="s2">"flux"</span><span class="p">:</span> <span class="n">imat_fluxes</span><span class="p">[</span><span class="n">reaction_evidence</span><span class="o">.</span><span class="n">index</span><span class="p">],</span>
+        <span class="s2">"active"</span><span class="p">:</span> <span class="n">imat_fluxes</span><span class="p">[</span><span class="n">reaction_evidence</span><span class="o">.</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="n">eps</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">eps</span><span class="p">),</span>
     <span class="p">}</span>
 <span class="p">)</span>
 
-<span class="k">assert</span> <span class="n">expression_fit</span><span class="o">.</span><span class="n">loc</span><span class="p">[[</span><span class="s2">&quot;ACALD&quot;</span><span class="p">,</span> <span class="s2">&quot;ALCD2x&quot;</span><span class="p">],</span> <span class="s2">&quot;active&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
-<span class="k">assert</span> <span class="ow">not</span> <span class="n">expression_fit</span><span class="o">.</span><span class="n">loc</span><span class="p">[[</span><span class="s2">&quot;LDH_D&quot;</span><span class="p">,</span> <span class="s2">&quot;PTAr&quot;</span><span class="p">,</span> <span class="s2">&quot;ACKr&quot;</span><span class="p">],</span> <span class="s2">&quot;active&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">any</span><span class="p">()</span>
+<span class="k">assert</span> <span class="n">expression_fit</span><span class="o">.</span><span class="n">loc</span><span class="p">[[</span><span class="s2">"ACALD"</span><span class="p">,</span> <span class="s2">"ALCD2x"</span><span class="p">],</span> <span class="s2">"active"</span><span class="p">]</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+<span class="k">assert</span> <span class="ow">not</span> <span class="n">expression_fit</span><span class="o">.</span><span class="n">loc</span><span class="p">[[</span><span class="s2">"LDH_D"</span><span class="p">,</span> <span class="s2">"PTAr"</span><span class="p">,</span> <span class="s2">"ACKr"</span><span class="p">],</span> <span class="s2">"active"</span><span class="p">]</span><span class="o">.</span><span class="n">any</span><span class="p">()</span>
 <span class="k">assert</span> <span class="n">imat_fluxes</span><span class="p">[</span><span class="n">biomass_id</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">minimum_growth</span> <span class="o">-</span> <span class="mf">1e-7</span>
 
 <span class="n">expression_fit</span>
@@ -1025,27 +1029,27 @@ dtype: float64
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fermentation_products</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;lactate&quot;</span><span class="p">:</span> <span class="s2">&quot;EX_lac__D_e&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;ethanol&quot;</span><span class="p">:</span> <span class="s2">&quot;EX_etoh_e&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;acetate&quot;</span><span class="p">:</span> <span class="s2">&quot;EX_ac_e&quot;</span><span class="p">,</span>
+    <span class="s2">"lactate"</span><span class="p">:</span> <span class="s2">"EX_lac__D_e"</span><span class="p">,</span>
+    <span class="s2">"ethanol"</span><span class="p">:</span> <span class="s2">"EX_etoh_e"</span><span class="p">,</span>
+    <span class="s2">"acetate"</span><span class="p">:</span> <span class="s2">"EX_ac_e"</span><span class="p">,</span>
 <span class="p">}</span>
 
 <span class="n">product_fluxes</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
     <span class="p">{</span>
-        <span class="s2">&quot;pFBA (no expression)&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"pFBA (no expression)"</span><span class="p">:</span> <span class="p">{</span>
             <span class="n">product</span><span class="p">:</span> <span class="n">pfba_solution</span><span class="o">.</span><span class="n">fluxes</span><span class="p">[</span><span class="n">reaction_id</span><span class="p">]</span>
             <span class="k">for</span> <span class="n">product</span><span class="p">,</span> <span class="n">reaction_id</span> <span class="ow">in</span> <span class="n">fermentation_products</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
         <span class="p">},</span>
-        <span class="s2">&quot;iMAT (expression integrated)&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"iMAT (expression integrated)"</span><span class="p">:</span> <span class="p">{</span>
             <span class="n">product</span><span class="p">:</span> <span class="n">imat_fluxes</span><span class="p">[</span><span class="n">reaction_id</span><span class="p">]</span>
             <span class="k">for</span> <span class="n">product</span><span class="p">,</span> <span class="n">reaction_id</span> <span class="ow">in</span> <span class="n">fermentation_products</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
         <span class="p">},</span>
     <span class="p">}</span>
 <span class="p">)</span>
 
-<span class="k">assert</span> <span class="n">product_fluxes</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;ethanol&quot;</span><span class="p">,</span> <span class="s2">&quot;iMAT (expression integrated)&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">eps</span>
-<span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">product_fluxes</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;lactate&quot;</span><span class="p">,</span> <span class="s2">&quot;iMAT (expression integrated)&quot;</span><span class="p">],</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-7</span><span class="p">)</span>
-<span class="k">assert</span> <span class="n">product_fluxes</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;lactate&quot;</span><span class="p">,</span> <span class="s2">&quot;pFBA (no expression)&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">eps</span>
+<span class="k">assert</span> <span class="n">product_fluxes</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">"ethanol"</span><span class="p">,</span> <span class="s2">"iMAT (expression integrated)"</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">eps</span>
+<span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">product_fluxes</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">"lactate"</span><span class="p">,</span> <span class="s2">"iMAT (expression integrated)"</span><span class="p">],</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-7</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">product_fluxes</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">"lactate"</span><span class="p">,</span> <span class="s2">"pFBA (no expression)"</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">eps</span>
 
 <span class="n">product_fluxes</span>
 </pre></div>
@@ -1098,20 +1102,20 @@ dtype: float64
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ax</span> <span class="o">=</span> <span class="n">product_fluxes</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span>
     <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">),</span>
-    <span class="n">color</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;#9aa0a6&quot;</span><span class="p">,</span> <span class="s2">&quot;#2a9d8f&quot;</span><span class="p">],</span>
+    <span class="n">color</span><span class="o">=</span><span class="p">[</span><span class="s2">"#9aa0a6"</span><span class="p">,</span> <span class="s2">"#2a9d8f"</span><span class="p">],</span>
     <span class="n">width</span><span class="o">=</span><span class="mf">0.75</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;exchange flux&quot;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Fermentation products at the same biomass requirement&quot;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">spines</span><span class="p">[[</span><span class="s2">&quot;top&quot;</span><span class="p">,</span> <span class="s2">&quot;right&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">"exchange flux"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">""</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Fermentation products at the same biomass requirement"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">"x"</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">spines</span><span class="p">[[</span><span class="s2">"top"</span><span class="p">,</span> <span class="s2">"right"</span><span class="p">]]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/9dcd22dc051d991af6c1f6bbd8fa8564c06eda81a7824621d1e4b16453ef2cb6.png" src="../../_images/9dcd22dc051d991af6c1f6bbd8fa8564c06eda81a7824621d1e4b16453ef2cb6.png" />
+<img alt="../../_images/94147d4e68d991f78835971230f62ea1cb75a9caa679866d313c9c192c5574c6.png" src="../../_images/94147d4e68d991f78835971230f62ea1cb75a9caa679866d313c9c192c5574c6.png" />
 </div>
 </div>
 </section>
@@ -1156,24 +1160,24 @@ dtype: float64
     <span class="n">reaction_id</span> <span class="o">=</span> <span class="n">reaction_ids</span><span class="p">[</span><span class="n">original_index</span><span class="p">]</span>
     <span class="n">evidence</span> <span class="o">=</span> <span class="n">reaction_evidence</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">reaction_id</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">evidence</span> <span class="o">==</span> <span class="s2">&quot;high&quot;</span><span class="p">:</span>
-        <span class="n">edge_style</span><span class="p">[</span><span class="n">displayed_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;#2a9d8f&quot;</span><span class="p">,</span> <span class="s2">&quot;penwidth&quot;</span><span class="p">:</span> <span class="s2">&quot;4&quot;</span><span class="p">}</span>
-    <span class="k">elif</span> <span class="n">evidence</span> <span class="o">==</span> <span class="s2">&quot;low&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">evidence</span> <span class="o">==</span> <span class="s2">"high"</span><span class="p">:</span>
+        <span class="n">edge_style</span><span class="p">[</span><span class="n">displayed_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"color"</span><span class="p">:</span> <span class="s2">"#2a9d8f"</span><span class="p">,</span> <span class="s2">"penwidth"</span><span class="p">:</span> <span class="s2">"4"</span><span class="p">}</span>
+    <span class="k">elif</span> <span class="n">evidence</span> <span class="o">==</span> <span class="s2">"low"</span><span class="p">:</span>
         <span class="n">edge_style</span><span class="p">[</span><span class="n">displayed_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;#e76f51&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;penwidth&quot;</span><span class="p">:</span> <span class="s2">&quot;3&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;style&quot;</span><span class="p">:</span> <span class="s2">&quot;dashed&quot;</span><span class="p">,</span>
+            <span class="s2">"color"</span><span class="p">:</span> <span class="s2">"#e76f51"</span><span class="p">,</span>
+            <span class="s2">"penwidth"</span><span class="p">:</span> <span class="s2">"3"</span><span class="p">,</span>
+            <span class="s2">"style"</span><span class="p">:</span> <span class="s2">"dashed"</span><span class="p">,</span>
         <span class="p">}</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">edge_style</span><span class="p">[</span><span class="n">displayed_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;#b0b0b0&quot;</span><span class="p">,</span> <span class="s2">&quot;penwidth&quot;</span><span class="p">:</span> <span class="s2">&quot;1.5&quot;</span><span class="p">}</span>
+        <span class="n">edge_style</span><span class="p">[</span><span class="n">displayed_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"color"</span><span class="p">:</span> <span class="s2">"#b0b0b0"</span><span class="p">,</span> <span class="s2">"penwidth"</span><span class="p">:</span> <span class="s2">"1.5"</span><span class="p">}</span>
 
 <span class="n">context_network</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
-    <span class="n">graph_attr</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;rankdir&quot;</span><span class="p">:</span> <span class="s2">&quot;LR&quot;</span><span class="p">},</span>
+    <span class="n">graph_attr</span><span class="o">=</span><span class="p">{</span><span class="s2">"rankdir"</span><span class="p">:</span> <span class="s2">"LR"</span><span class="p">},</span>
     <span class="n">node_attr</span><span class="o">=</span><span class="p">{</span>
-        <span class="s2">&quot;fixedsize&quot;</span><span class="p">:</span> <span class="s2">&quot;false&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="s2">&quot;box&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;style&quot;</span><span class="p">:</span> <span class="s2">&quot;rounded&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;margin&quot;</span><span class="p">:</span> <span class="s2">&quot;0.05,0.03&quot;</span><span class="p">,</span>
+        <span class="s2">"fixedsize"</span><span class="p">:</span> <span class="s2">"false"</span><span class="p">,</span>
+        <span class="s2">"shape"</span><span class="p">:</span> <span class="s2">"box"</span><span class="p">,</span>
+        <span class="s2">"style"</span><span class="p">:</span> <span class="s2">"rounded"</span><span class="p">,</span>
+        <span class="s2">"margin"</span><span class="p">:</span> <span class="s2">"0.05,0.03"</span><span class="p">,</span>
     <span class="p">},</span>
     <span class="n">custom_edge_attr</span><span class="o">=</span><span class="n">edge_style</span><span class="p">,</span>
 <span class="p">)</span>
@@ -1181,7 +1185,7 @@ dtype: float64
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/7b05cc8b97aac20079fa6488c568679389eddfcfb32d5983872acafad8bd307d.svg" src="../../_images/7b05cc8b97aac20079fa6488c568679389eddfcfb32d5983872acafad8bd307d.svg" />
+<img alt="../../_images/ac24aca982ab2d8868525464be9c739a6132b2c8a1335313336e6a35d45bc07f.svg" src="../../_images/ac24aca982ab2d8868525464be9c739a6132b2c8a1335313336e6a35d45bc07f.svg" />
 </div>
 </div>
 </section>
@@ -1224,10 +1228,10 @@ dtype: float64
 
 <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
     <span class="p">{</span>
-        <span class="s2">&quot;expression&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">gene_expression</span><span class="p">),</span>
-        <span class="s2">&quot;gene score&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">gene_scores</span><span class="p">),</span>
+        <span class="s2">"expression"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">gene_expression</span><span class="p">),</span>
+        <span class="s2">"gene score"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">gene_scores</span><span class="p">),</span>
     <span class="p">}</span>
-<span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">&quot;expression&quot;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">"expression"</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1317,7 +1321,7 @@ dtype: float64
 <p>Next, CORNETO’s <code class="docutils literal notranslate"><span class="pre">evaluate_gpr_expression</span></code> applies every model GPR rule to the gene scores in one call. Reactions with a final score of zero are omitted, so they remain governed by stoichiometry, bounds, and regularization rather than expression-fit terms. For several samples, the related <code class="docutils literal notranslate"><span class="pre">evaluate_gpr_rules</span></code> function evaluates the same rule list against multiple gene-score mappings.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gpr_rules</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">get_attr_from_edges</span><span class="p">(</span><span class="s2">&quot;GPR&quot;</span><span class="p">))</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gpr_rules</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">get_attr_from_edges</span><span class="p">(</span><span class="s2">"GPR"</span><span class="p">))</span>
 <span class="n">reaction_score_values</span> <span class="o">=</span> <span class="n">evaluate_gpr_expression</span><span class="p">(</span><span class="n">gpr_rules</span><span class="p">,</span> <span class="n">gene_scores</span><span class="p">)</span>
 
 <span class="n">reaction_scores</span> <span class="o">=</span> <span class="p">{</span>
@@ -1328,11 +1332,11 @@ dtype: float64
 
 <span class="n">reaction_score_table</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
     <span class="p">{</span>
-        <span class="s2">&quot;GPR rule&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"GPR rule"</span><span class="p">:</span> <span class="p">{</span>
             <span class="n">reaction_id</span><span class="p">:</span> <span class="n">gpr_rules</span><span class="p">[</span><span class="n">reaction_index</span><span class="p">[</span><span class="n">reaction_id</span><span class="p">]]</span>
             <span class="k">for</span> <span class="n">reaction_id</span> <span class="ow">in</span> <span class="n">reaction_scores</span>
         <span class="p">},</span>
-        <span class="s2">&quot;reaction score&quot;</span><span class="p">:</span> <span class="n">reaction_scores</span><span class="p">,</span>
+        <span class="s2">"reaction score"</span><span class="p">:</span> <span class="n">reaction_scores</span><span class="p">,</span>
     <span class="p">}</span>
 <span class="p">)</span>
 
@@ -1403,12 +1407,12 @@ dtype: float64
     <span class="n">G</span><span class="p">,</span>
     <span class="n">reaction_scores</span><span class="o">=</span><span class="n">reaction_scores</span><span class="p">,</span>
     <span class="n">reaction_bounds</span><span class="o">=</span><span class="p">{</span>
-        <span class="s2">&quot;EX_glc__D_e&quot;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
-        <span class="s2">&quot;EX_o2_e&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
+        <span class="s2">"EX_glc__D_e"</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
+        <span class="s2">"EX_o2_e"</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
         <span class="n">biomass_id</span><span class="p">:</span> <span class="p">(</span><span class="n">minimum_growth</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
     <span class="p">},</span>
 <span class="p">)</span>
-<span class="n">reaction_score_problem</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;highs&quot;</span><span class="p">)</span>
+<span class="n">reaction_score_problem</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">"highs"</span><span class="p">)</span>
 
 <span class="n">reaction_score_fluxes</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
     <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">reaction_score_problem</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
@@ -1417,19 +1421,19 @@ dtype: float64
 
 <span class="n">interface_comparison</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
     <span class="p">{</span>
-        <span class="s2">&quot;reaction score&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">reaction_scores</span><span class="p">),</span>
-        <span class="s2">&quot;active from gene_expression&quot;</span><span class="p">:</span> <span class="p">(</span>
+        <span class="s2">"reaction score"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">reaction_scores</span><span class="p">),</span>
+        <span class="s2">"active from gene_expression"</span><span class="p">:</span> <span class="p">(</span>
             <span class="n">imat_fluxes</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">reaction_scores</span><span class="p">)]</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="n">eps</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">eps</span><span class="p">)</span>
         <span class="p">),</span>
-        <span class="s2">&quot;active from reaction_scores&quot;</span><span class="p">:</span> <span class="p">(</span>
+        <span class="s2">"active from reaction_scores"</span><span class="p">:</span> <span class="p">(</span>
             <span class="n">reaction_score_fluxes</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">reaction_scores</span><span class="p">)]</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="n">eps</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">eps</span><span class="p">)</span>
         <span class="p">),</span>
     <span class="p">}</span>
 <span class="p">)</span>
 
 <span class="k">assert</span> <span class="p">(</span>
-    <span class="n">interface_comparison</span><span class="p">[</span><span class="s2">&quot;active from gene_expression&quot;</span><span class="p">]</span>
-    <span class="o">==</span> <span class="n">interface_comparison</span><span class="p">[</span><span class="s2">&quot;active from reaction_scores&quot;</span><span class="p">]</span>
+    <span class="n">interface_comparison</span><span class="p">[</span><span class="s2">"active from gene_expression"</span><span class="p">]</span>
+    <span class="o">==</span> <span class="n">interface_comparison</span><span class="p">[</span><span class="s2">"active from reaction_scores"</span><span class="p">]</span>
 <span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
 
 <span class="n">interface_comparison</span>
@@ -1590,8 +1594,8 @@ dtype: float64
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1617,7 +1621,7 @@ dtype: float64
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
 </p></div>
       
     </div>

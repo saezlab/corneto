@@ -27,8 +27,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
@@ -36,10 +36,10 @@
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=53e23fa6" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
     <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
@@ -66,8 +66,8 @@
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'guide/metabolism/flux-balance-analysis';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1786146192';
+        DOCUMENTATION_OPTIONS.theme_version = '0.21.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1790177872';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'stable';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
@@ -419,6 +419,10 @@
 <li class="toctree-l2"><a class="reference internal" href="../networks/multi-pcst-grb.html">Multi-sample PCST</a></li>
 </ul>
 </details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../causal/index.html">Causal and structural modeling</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../causal/linear-dag-discovery.html">Discovering a linear causal signaling network from perturbation data</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Metabolism</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Flux balance analysis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="multicondition-sfba.html">Multi-condition FBA</a></li>
@@ -568,17 +572,17 @@ S v = 0, \qquad v_{\mathrm{lower}} \leq v \leq v_{\mathrm{upper}},
 <span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiSampleFBA</span>
 
 <span class="k">with</span> <span class="n">redirect_stdout</span><span class="p">(</span><span class="n">StringIO</span><span class="p">()):</span>
-    <span class="n">model</span> <span class="o">=</span> <span class="n">load_model</span><span class="p">(</span><span class="s2">&quot;textbook&quot;</span><span class="p">)</span>
-<span class="n">biomass_id</span> <span class="o">=</span> <span class="s2">&quot;Biomass_Ecoli_core&quot;</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">load_model</span><span class="p">(</span><span class="s2">"textbook"</span><span class="p">)</span>
+<span class="n">biomass_id</span> <span class="o">=</span> <span class="s2">"Biomass_Ecoli_core"</span>
 <span class="n">cobra_solution</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">optimize</span><span class="p">()</span>
 
 <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
     <span class="p">{</span>
-        <span class="s2">&quot;metabolites&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">metabolites</span><span class="p">),</span>
-        <span class="s2">&quot;reactions&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">reactions</span><span class="p">),</span>
-        <span class="s2">&quot;biomass flux&quot;</span><span class="p">:</span> <span class="n">cobra_solution</span><span class="o">.</span><span class="n">fluxes</span><span class="p">[</span><span class="n">biomass_id</span><span class="p">],</span>
+        <span class="s2">"metabolites"</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">metabolites</span><span class="p">),</span>
+        <span class="s2">"reactions"</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">reactions</span><span class="p">),</span>
+        <span class="s2">"biomass flux"</span><span class="p">:</span> <span class="n">cobra_solution</span><span class="o">.</span><span class="n">fluxes</span><span class="p">[</span><span class="n">biomass_id</span><span class="p">],</span>
     <span class="p">},</span>
-    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;COBRApy model&quot;</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"COBRApy model"</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -600,7 +604,7 @@ Name: COBRApy model, dtype: float64
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">G</span> <span class="o">=</span> <span class="n">cobra_model_to_graph</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
-<span class="n">reaction_ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">get_attr_from_edges</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">))</span>
+<span class="n">reaction_ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">get_attr_from_edges</span><span class="p">(</span><span class="s2">"id"</span><span class="p">))</span>
 <span class="n">reaction_index</span> <span class="o">=</span> <span class="p">{</span><span class="n">reaction_id</span><span class="p">:</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">reaction_id</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">reaction_ids</span><span class="p">)}</span>
 <span class="n">biomass_idx</span> <span class="o">=</span> <span class="n">reaction_index</span><span class="p">[</span><span class="n">biomass_id</span><span class="p">]</span>
 
@@ -608,18 +612,18 @@ Name: COBRApy model, dtype: float64
     <span class="n">G</span><span class="p">,</span>
     <span class="n">objectives</span><span class="o">=</span><span class="p">{</span><span class="n">biomass_id</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">},</span>
 <span class="p">)</span>
-<span class="n">problem</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;scipy&quot;</span><span class="p">)</span>
+<span class="n">problem</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">"scipy"</span><span class="p">)</span>
 
 <span class="n">corneto_biomass</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="p">[</span><span class="n">biomass_idx</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 <span class="n">comparison</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
     <span class="p">{</span>
-        <span class="s2">&quot;COBRApy&quot;</span><span class="p">:</span> <span class="n">cobra_solution</span><span class="o">.</span><span class="n">fluxes</span><span class="p">[</span><span class="n">biomass_id</span><span class="p">],</span>
-        <span class="s2">&quot;CORNETO&quot;</span><span class="p">:</span> <span class="n">corneto_biomass</span><span class="p">,</span>
+        <span class="s2">"COBRApy"</span><span class="p">:</span> <span class="n">cobra_solution</span><span class="o">.</span><span class="n">fluxes</span><span class="p">[</span><span class="n">biomass_id</span><span class="p">],</span>
+        <span class="s2">"CORNETO"</span><span class="p">:</span> <span class="n">corneto_biomass</span><span class="p">,</span>
     <span class="p">},</span>
-    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;optimal biomass flux&quot;</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"optimal biomass flux"</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">comparison</span><span class="p">[</span><span class="s2">&quot;COBRApy&quot;</span><span class="p">],</span> <span class="n">comparison</span><span class="p">[</span><span class="s2">&quot;CORNETO&quot;</span><span class="p">],</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-7</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">comparison</span><span class="p">[</span><span class="s2">"COBRApy"</span><span class="p">],</span> <span class="n">comparison</span><span class="p">[</span><span class="s2">"CORNETO"</span><span class="p">],</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-7</span><span class="p">)</span>
 <span class="n">comparison</span>
 </pre></div>
 </div>
@@ -638,9 +642,9 @@ Name: optimal biomass flux, dtype: float64
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fluxes</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
     <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
     <span class="n">index</span><span class="o">=</span><span class="n">reaction_ids</span><span class="p">,</span>
-    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;flux&quot;</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"flux"</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="n">fluxes</span><span class="o">.</span><span class="n">loc</span><span class="p">[[</span><span class="n">biomass_id</span><span class="p">,</span> <span class="s2">&quot;EX_glc__D_e&quot;</span><span class="p">,</span> <span class="s2">&quot;EX_o2_e&quot;</span><span class="p">,</span> <span class="s2">&quot;ATPM&quot;</span><span class="p">]]</span>
+<span class="n">fluxes</span><span class="o">.</span><span class="n">loc</span><span class="p">[[</span><span class="n">biomass_id</span><span class="p">,</span> <span class="s2">"EX_glc__D_e"</span><span class="p">,</span> <span class="s2">"EX_o2_e"</span><span class="p">,</span> <span class="s2">"ATPM"</span><span class="p">]]</span>
 </pre></div>
 </div>
 </div>
@@ -661,24 +665,24 @@ Name: flux, dtype: float64
 <p>A built CORNETO problem is still editable. For example, the following constraint limits oxygen uptake to 10 mmol gDW<span class="math notranslate nohighlight">\(^{-1}\)</span> h<span class="math notranslate nohighlight">\(^{-1}\)</span>. In this model, exchange uptake is a negative flux, so a less-negative lower limit permits less uptake.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">oxygen_idx</span> <span class="o">=</span> <span class="n">reaction_index</span><span class="p">[</span><span class="s2">&quot;EX_o2_e&quot;</span><span class="p">]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">oxygen_idx</span> <span class="o">=</span> <span class="n">reaction_index</span><span class="p">[</span><span class="s2">"EX_o2_e"</span><span class="p">]</span>
 
 <span class="n">oxygen_limited</span> <span class="o">=</span> <span class="n">MultiSampleFBA</span><span class="p">()</span><span class="o">.</span><span class="n">build</span><span class="p">(</span>
     <span class="n">G</span><span class="p">,</span>
     <span class="n">objectives</span><span class="o">=</span><span class="p">{</span><span class="n">biomass_id</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">},</span>
 <span class="p">)</span>
 <span class="n">oxygen_limited</span> <span class="o">+=</span> <span class="n">oxygen_limited</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="p">[</span><span class="n">oxygen_idx</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="o">-</span><span class="mi">10</span>
-<span class="n">oxygen_limited</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;scipy&quot;</span><span class="p">)</span>
+<span class="n">oxygen_limited</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">"scipy"</span><span class="p">)</span>
 
 <span class="n">oxygen_limited_biomass</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">oxygen_limited</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="p">[</span><span class="n">biomass_idx</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 <span class="k">assert</span> <span class="n">oxygen_limited_biomass</span> <span class="o">&lt;</span> <span class="n">corneto_biomass</span>
 
 <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
     <span class="p">{</span>
-        <span class="s2">&quot;default medium&quot;</span><span class="p">:</span> <span class="n">corneto_biomass</span><span class="p">,</span>
-        <span class="s2">&quot;oxygen-limited&quot;</span><span class="p">:</span> <span class="n">oxygen_limited_biomass</span><span class="p">,</span>
+        <span class="s2">"default medium"</span><span class="p">:</span> <span class="n">corneto_biomass</span><span class="p">,</span>
+        <span class="s2">"oxygen-limited"</span><span class="p">:</span> <span class="n">oxygen_limited_biomass</span><span class="p">,</span>
     <span class="p">},</span>
-    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;optimal biomass flux&quot;</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"optimal biomass flux"</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -698,17 +702,17 @@ Name: optimal biomass flux, dtype: float64
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">condition_objectives</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;glucose_rich&quot;</span><span class="p">:</span> <span class="p">{</span><span class="n">biomass_id</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">},</span>
-    <span class="s2">&quot;glucose_limited&quot;</span><span class="p">:</span> <span class="p">{</span><span class="n">biomass_id</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">},</span>
+    <span class="s2">"glucose_rich"</span><span class="p">:</span> <span class="p">{</span><span class="n">biomass_id</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">},</span>
+    <span class="s2">"glucose_limited"</span><span class="p">:</span> <span class="p">{</span><span class="n">biomass_id</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">},</span>
 <span class="p">}</span>
 <span class="n">condition_bounds</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;glucose_rich&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;EX_glc__D_e&quot;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
-        <span class="s2">&quot;EX_o2_e&quot;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">20.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
+    <span class="s2">"glucose_rich"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"EX_glc__D_e"</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
+        <span class="s2">"EX_o2_e"</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">20.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
     <span class="p">},</span>
-    <span class="s2">&quot;glucose_limited&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;EX_glc__D_e&quot;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
-        <span class="s2">&quot;EX_o2_e&quot;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">20.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
+    <span class="s2">"glucose_limited"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"EX_glc__D_e"</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
+        <span class="s2">"EX_o2_e"</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">20.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
     <span class="p">},</span>
 <span class="p">}</span>
 
@@ -717,10 +721,10 @@ Name: optimal biomass flux, dtype: float64
     <span class="n">objectives</span><span class="o">=</span><span class="n">condition_objectives</span><span class="p">,</span>
     <span class="n">reaction_bounds</span><span class="o">=</span><span class="n">condition_bounds</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="n">media_problem</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;scipy&quot;</span><span class="p">)</span>
+<span class="n">media_problem</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">"scipy"</span><span class="p">)</span>
 
 <span class="n">condition_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">condition_objectives</span><span class="p">)</span>
-<span class="n">reported_reactions</span> <span class="o">=</span> <span class="p">[</span><span class="n">biomass_id</span><span class="p">,</span> <span class="s2">&quot;EX_glc__D_e&quot;</span><span class="p">,</span> <span class="s2">&quot;EX_o2_e&quot;</span><span class="p">]</span>
+<span class="n">reported_reactions</span> <span class="o">=</span> <span class="p">[</span><span class="n">biomass_id</span><span class="p">,</span> <span class="s2">"EX_glc__D_e"</span><span class="p">,</span> <span class="s2">"EX_o2_e"</span><span class="p">]</span>
 <span class="n">media_fluxes</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
     <span class="p">{</span>
         <span class="n">condition</span><span class="p">:</span> <span class="p">{</span>
@@ -732,7 +736,7 @@ Name: optimal biomass flux, dtype: float64
 <span class="p">)</span>
 
 <span class="k">assert</span> <span class="n">media_problem</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">num_edges</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">condition_names</span><span class="p">))</span>
-<span class="k">assert</span> <span class="n">media_fluxes</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">biomass_id</span><span class="p">,</span> <span class="s2">&quot;glucose_limited&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">media_fluxes</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">biomass_id</span><span class="p">,</span> <span class="s2">&quot;glucose_rich&quot;</span><span class="p">]</span>
+<span class="k">assert</span> <span class="n">media_fluxes</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">biomass_id</span><span class="p">,</span> <span class="s2">"glucose_limited"</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">media_fluxes</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">biomass_id</span><span class="p">,</span> <span class="s2">"glucose_rich"</span><span class="p">]</span>
 <span class="n">media_fluxes</span>
 </pre></div>
 </div>
@@ -793,7 +797,7 @@ Name: optimal biomass flux, dtype: float64
     <span class="n">objectives</span><span class="o">=</span><span class="p">{</span><span class="n">biomass_id</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">},</span>
     <span class="n">reaction_bounds</span><span class="o">=</span><span class="p">{</span><span class="n">biomass_id</span><span class="p">:</span> <span class="p">(</span><span class="n">biomass_floor</span><span class="p">,</span> <span class="kc">None</span><span class="p">)},</span>
 <span class="p">)</span>
-<span class="n">sparse_problem</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;highs&quot;</span><span class="p">)</span>
+<span class="n">sparse_problem</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">"highs"</span><span class="p">)</span>
 
 <span class="n">sparse_biomass</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">sparse_problem</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="p">[</span><span class="n">biomass_idx</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 <span class="n">standard_active</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">flow</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">1e-6</span><span class="p">))</span>
@@ -804,10 +808,10 @@ Name: optimal biomass flux, dtype: float64
 
 <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
     <span class="p">{</span>
-        <span class="s2">&quot;biomass floor&quot;</span><span class="p">:</span> <span class="n">biomass_floor</span><span class="p">,</span>
-        <span class="s2">&quot;sparse biomass&quot;</span><span class="p">:</span> <span class="n">sparse_biomass</span><span class="p">,</span>
-        <span class="s2">&quot;active reactions in standard solution&quot;</span><span class="p">:</span> <span class="n">standard_active</span><span class="p">,</span>
-        <span class="s2">&quot;active reactions in sparse solution&quot;</span><span class="p">:</span> <span class="n">sparse_active</span><span class="p">,</span>
+        <span class="s2">"biomass floor"</span><span class="p">:</span> <span class="n">biomass_floor</span><span class="p">,</span>
+        <span class="s2">"sparse biomass"</span><span class="p">:</span> <span class="n">sparse_biomass</span><span class="p">,</span>
+        <span class="s2">"active reactions in standard solution"</span><span class="p">:</span> <span class="n">standard_active</span><span class="p">,</span>
+        <span class="s2">"active reactions in sparse solution"</span><span class="p">:</span> <span class="n">sparse_active</span><span class="p">,</span>
     <span class="p">}</span>
 <span class="p">)</span>
 </pre></div>
@@ -900,8 +904,8 @@ dtype: float64
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -927,7 +931,7 @@ dtype: float64
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
 </p></div>
       
     </div>

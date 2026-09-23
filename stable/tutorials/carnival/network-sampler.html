@@ -27,8 +27,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
@@ -36,10 +36,10 @@
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=53e23fa6" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
     <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
@@ -64,8 +64,8 @@
             </script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/carnival/network-sampler';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1786146192';
+        DOCUMENTATION_OPTIONS.theme_version = '0.21.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1790177872';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'stable';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
@@ -407,6 +407,8 @@
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Implementing an alternative network sampler</a></li>
 <li class="toctree-l1"><a class="reference internal" href="network-sampler-example.html">Exploring alternative solutions with <span class="math notranslate nohighlight">\(\epsilon\)</span>-perturbation sampling</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ml/kpnn-with-sc.html">Knowledge-primed Neural Networks (KPNNs) for single cell data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../causal/README.html">Running the LinearDAG Sachs tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../causal/linear-dag-discovery-sachs.html">Find an explanatory signaling network in the Sachs data</a></li>
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../contrib/multi_condition_tutorial/multi_condition_carnival.html">Multi-condition signalling network inference</a></li>
@@ -506,7 +508,7 @@ of the network.</p>
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">corneto.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">GraphData</span>
 
 <span class="c1"># Load dataset from tutorial</span>
-<span class="n">dataset</span> <span class="o">=</span> <span class="n">GraphData</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;data/carnival_transcriptomics_dataset.zip&quot;</span><span class="p">)</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">GraphData</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">"data/carnival_transcriptomics_dataset.zip"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -539,19 +541,19 @@ of the network.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_flow&#39;: _flow: Variable((3251,), _flow),
- &#39;edge_inhibits&#39;: edge_inhibits: Variable((3251, 1), edge_inhibits, boolean=True),
- &#39;edge_activates&#39;: edge_activates: Variable((3251, 1), edge_activates, boolean=True),
- &#39;const0x103326ca2e6db1fe&#39;: const0x103326ca2e6db1fe: Constant(CONSTANT, NONNEGATIVE, (937, 3251)),
- &#39;_dag_layer&#39;: _dag_layer: Variable((937, 1), _dag_layer),
- &#39;const0x18ac965210dd36c7&#39;: const0x18ac965210dd36c7: Constant(CONSTANT, NONNEGATIVE, (937, 3251)),
- &#39;flow&#39;: _flow: Variable((3251,), _flow),
- &#39;vertex_value&#39;: Expression(AFFINE, UNKNOWN, (937, 1)),
- &#39;vertex_activated&#39;: Expression(AFFINE, NONNEGATIVE, (937, 1)),
- &#39;vertex_inhibited&#39;: Expression(AFFINE, NONNEGATIVE, (937, 1)),
- &#39;edge_value&#39;: Expression(AFFINE, UNKNOWN, (3251, 1)),
- &#39;edge_has_signal&#39;: Expression(AFFINE, NONNEGATIVE, (3251, 1)),
- &#39;vertex_max_depth&#39;: _dag_layer: Variable((937, 1), _dag_layer)}
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{'_flow': _flow: Variable((3251,), _flow),
+ 'edge_inhibits': edge_inhibits: Variable((3251, 1), edge_inhibits, boolean=True),
+ 'edge_activates': edge_activates: Variable((3251, 1), edge_activates, boolean=True),
+ 'const0x103326ca2e6db1fe': const0x103326ca2e6db1fe: Constant(CONSTANT, NONNEGATIVE, (937, 3251)),
+ '_dag_layer': _dag_layer: Variable((937, 1), _dag_layer),
+ 'const0x18ac965210dd36c7': const0x18ac965210dd36c7: Constant(CONSTANT, NONNEGATIVE, (937, 3251)),
+ 'flow': _flow: Variable((3251,), _flow),
+ 'vertex_value': Expression(AFFINE, UNKNOWN, (937, 1)),
+ 'vertex_activated': Expression(AFFINE, NONNEGATIVE, (937, 1)),
+ 'vertex_inhibited': Expression(AFFINE, NONNEGATIVE, (937, 1)),
+ 'edge_value': Expression(AFFINE, UNKNOWN, (3251, 1)),
+ 'edge_has_signal': Expression(AFFINE, NONNEGATIVE, (3251, 1)),
+ 'vertex_max_depth': _dag_layer: Variable((937, 1), _dag_layer)}
 </pre></div>
 </div>
 </div>
@@ -581,7 +583,7 @@ model components.</p>
     <span class="n">max_samples</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
     <span class="n">time_limit</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Sample alternative solutions by perturbing the objective function.</span>
+<span class="w">    </span><span class="sd">"""Sample alternative solutions by perturbing the objective function.</span>
 
 <span class="sd">    Parameters:</span>
 <span class="sd">    -----------</span>
@@ -603,9 +605,9 @@ model components.</p>
 <span class="sd">    Returns:</span>
 <span class="sd">    --------</span>
 <span class="sd">    dict : A dictionary containing the results</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># Save the original problem state</span>
-    <span class="n">original_problem</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;gurobi&quot;</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">original_problem</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">"gurobi"</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
     <span class="c1"># Store original objective values</span>
     <span class="n">orig_objectives</span> <span class="o">=</span> <span class="p">[]</span>
@@ -618,10 +620,10 @@ model components.</p>
     <span class="n">num_elements</span> <span class="o">=</span> <span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">n_elements</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">num_elements</span> <span class="o">*</span> <span class="n">percentage</span><span class="p">)</span>
     <span class="n">vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">num_elements</span><span class="p">)</span>
-    <span class="n">pert</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;perturbation&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">vec</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">vec</span><span class="p">)</span>
+    <span class="n">pert</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="s2">"perturbation"</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">vec</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">vec</span><span class="p">)</span>
 
     <span class="c1"># Add perturbation objective</span>
-    <span class="n">problem</span><span class="o">.</span><span class="n">add_objective</span><span class="p">(</span><span class="n">target_variable</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">pert</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;perturbation&quot;</span><span class="p">)</span>
+    <span class="n">problem</span><span class="o">.</span><span class="n">add_objective</span><span class="p">(</span><span class="n">target_variable</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">pert</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"perturbation"</span><span class="p">)</span>
 
     <span class="c1"># Sample solutions</span>
     <span class="n">selected_edges</span> <span class="o">=</span> <span class="p">[]</span>
@@ -638,23 +640,23 @@ model components.</p>
         <span class="c1"># Update parameter and solve</span>
         <span class="n">pert</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">vec</span>
         <span class="n">solved_problem</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span>
-            <span class="n">solver</span><span class="o">=</span><span class="s2">&quot;gurobi&quot;</span><span class="p">,</span>
+            <span class="n">solver</span><span class="o">=</span><span class="s2">"gurobi"</span><span class="p">,</span>
             <span class="n">warm_start</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="n">ignore_dpp</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="n">TimeLimit</span><span class="o">=</span><span class="n">time_limit</span><span class="p">,</span>
             <span class="n">verbosity</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Sample </span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">max_samples</span><span class="si">}</span><span class="s2">: Objective value = </span><span class="si">{</span><span class="n">solved_problem</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Sample </span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">max_samples</span><span class="si">}</span><span class="s2">: Objective value = </span><span class="si">{</span><span class="n">solved_problem</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
         <span class="c1"># Check if solution is within tolerance</span>
         <span class="n">accept</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">for</span> <span class="n">o_orig</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">orig_objectives</span><span class="p">,</span> <span class="n">problem</span><span class="o">.</span><span class="n">objectives</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">o</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;perturbation&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">o</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">"perturbation"</span><span class="p">:</span>
                 <span class="k">continue</span>
             <span class="n">relative_error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">value</span> <span class="o">-</span> <span class="n">o_orig</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">o_orig</span> <span class="o">+</span> <span class="mf">1e-10</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">o</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">o</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">, rel error: </span><span class="si">{</span><span class="n">relative_error</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  </span><span class="si">{</span><span class="n">o</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">o</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">, rel error: </span><span class="si">{</span><span class="n">relative_error</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">relative_error</span> <span class="o">&gt;</span> <span class="n">rel_opt_tol</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  &gt; Rejected! (</span><span class="si">{</span><span class="n">relative_error</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> &gt;= </span><span class="si">{</span><span class="n">rel_opt_tol</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  &gt; Rejected! (</span><span class="si">{</span><span class="n">relative_error</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> &gt;= </span><span class="si">{</span><span class="n">rel_opt_tol</span><span class="si">}</span><span class="s2">)"</span><span class="p">)</span>
                 <span class="n">accept</span> <span class="o">=</span> <span class="kc">False</span>
                 <span class="k">break</span>
 
@@ -664,9 +666,9 @@ model components.</p>
             <span class="n">vertex_values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">vertex_value</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="p">{</span>
-        <span class="s2">&quot;selected_edges&quot;</span><span class="p">:</span> <span class="n">selected_edges</span><span class="p">,</span>
-        <span class="s2">&quot;edge_values&quot;</span><span class="p">:</span> <span class="n">edge_values</span><span class="p">,</span>
-        <span class="s2">&quot;vertex_values&quot;</span><span class="p">:</span> <span class="n">vertex_values</span><span class="p">,</span>
+        <span class="s2">"selected_edges"</span><span class="p">:</span> <span class="n">selected_edges</span><span class="p">,</span>
+        <span class="s2">"edge_values"</span><span class="p">:</span> <span class="n">edge_values</span><span class="p">,</span>
+        <span class="s2">"vertex_values"</span><span class="p">:</span> <span class="n">vertex_values</span><span class="p">,</span>
     <span class="p">}</span>
 </pre></div>
 </div>
@@ -694,8 +696,8 @@ alternative network topologies where different edges might be selected.</p>
 <span class="p">)</span>
 
 <span class="c1"># Analyze edge-based results</span>
-<span class="n">df_sols</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">edge_results</span><span class="p">[</span><span class="s2">&quot;selected_edges&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="n">m</span><span class="o">.</span><span class="n">processed_graph</span><span class="o">.</span><span class="n">E</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Generated </span><span class="si">{</span><span class="n">df_sols</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> alternative solutions&quot;</span><span class="p">)</span>
+<span class="n">df_sols</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">edge_results</span><span class="p">[</span><span class="s2">"selected_edges"</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="n">m</span><span class="o">.</span><span class="n">processed_graph</span><span class="o">.</span><span class="n">E</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Generated </span><span class="si">{</span><span class="n">df_sols</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> alternative solutions"</span><span class="p">)</span>
 <span class="n">df_sols</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -1064,9 +1066,9 @@ Generated 29 alternative solutions
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Analyze variability in edge selection</span>
 <span class="n">df_var</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">df_sols</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">df_sols</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">df_var</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;mean&quot;</span><span class="p">,</span> <span class="s2">&quot;std&quot;</span><span class="p">]</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Edges with highest variability across solutions:&quot;</span><span class="p">)</span>
-<span class="n">df_var</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s2">&quot;std&quot;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s2">&quot;mean&quot;</span><span class="p">)</span>
+<span class="n">df_var</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"mean"</span><span class="p">,</span> <span class="s2">"std"</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Edges with highest variability across solutions:"</span><span class="p">)</span>
+<span class="n">df_var</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s2">"std"</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s2">"mean"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1403,7 +1405,7 @@ Generated 29 alternative solutions
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Analyze edge values across solutions</span>
-<span class="n">df_edge_val</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">edge_results</span><span class="p">[</span><span class="s2">&quot;edge_values&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="n">m</span><span class="o">.</span><span class="n">processed_graph</span><span class="o">.</span><span class="n">E</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<span class="n">df_edge_val</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">edge_results</span><span class="p">[</span><span class="s2">"edge_values"</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="n">m</span><span class="o">.</span><span class="n">processed_graph</span><span class="o">.</span><span class="n">E</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
 <span class="n">df_edge_val</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -1604,10 +1606,10 @@ alternative active node sets that are consistent with the data.</p>
 <span class="p">)</span>
 
 <span class="c1"># Analyze vertex-based results</span>
-<span class="n">df_vertex_val</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">vertex_results</span><span class="p">[</span><span class="s2">&quot;vertex_values&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="n">m</span><span class="o">.</span><span class="n">processed_graph</span><span class="o">.</span><span class="n">V</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
+<span class="n">df_vertex_val</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">vertex_results</span><span class="p">[</span><span class="s2">"vertex_values"</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="n">m</span><span class="o">.</span><span class="n">processed_graph</span><span class="o">.</span><span class="n">V</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
     <span class="nb">int</span>
 <span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Generated </span><span class="si">{</span><span class="n">df_vertex_val</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> alternative solutions&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Generated </span><span class="si">{</span><span class="n">df_vertex_val</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> alternative solutions"</span><span class="p">)</span>
 <span class="n">df_vertex_val</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -2145,9 +2147,9 @@ Generated 30 alternative solutions
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
-<span class="n">df_sig_prot_pred</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">()</span><span class="o">.</span><span class="n">tail</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Variability in Signaling Protein Activity&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Protein&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Standard Deviation&quot;</span><span class="p">)</span>
+<span class="n">df_sig_prot_pred</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">()</span><span class="o">.</span><span class="n">tail</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">"Variability in Signaling Protein Activity"</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">"Protein"</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">"Standard Deviation"</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
@@ -2243,8 +2245,8 @@ further experimental validation efforts by highlighting the most uncertain parts
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -2270,7 +2272,7 @@ further experimental validation efforts by highlighting the most uncertain parts
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
 </p></div>
       
     </div>

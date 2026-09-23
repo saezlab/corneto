@@ -1,0 +1,1663 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Find an explanatory signaling network in the Sachs data &#8212; CORNETO  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=53e23fa6" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('consent', 'default', {
+                    'ad_storage': 'denied',
+                    'ad_user_data': 'denied',
+                    'ad_personalization': 'denied',
+                    'analytics_storage': 'denied'
+                });
+            </script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-Z263GN2PKK"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', 'G-Z263GN2PKK');
+            </script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/causal/linear-dag-discovery-sachs';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.21.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1790177872';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'stable';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://saezlab.github.io/corneto/tutorials/causal/linear-dag-discovery-sachs.html" />
+    <link rel="icon" href="../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Multi-condition signalling network inference" href="../contrib/multi_condition_tutorial/multi_condition_carnival.html" />
+    <link rel="prev" title="Running the LinearDAG Sachs tutorial" href="README.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="light">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="../../_static/logo.png" class="logo__image only-light" alt="CORNETO  documentation - Home"/>
+    <img src="../../_static/logo.png" class="logo__image only-dark pst-js-only" alt="CORNETO  documentation - Home"/>
+  
+  
+</a></div>
+    
+      <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install.html">
+    Install
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../guide/index.html">
+    Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api/index.html">
+    Reference
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../releases/index.html">
+    Release Notes
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-external" href="https://github.com/saezlab/corneto">
+    GitHub
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install.html">
+    Install
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../guide/index.html">
+    Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api/index.html">
+    Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../releases/index.html">
+    Release Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/saezlab/corneto">
+    GitHub
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../fba/context-specific-metabolic-omics.html">Context-specific metabolic networks from omics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../annnet-signaling/annnet-cellnopt-dag.html">Fitting a multi-condition signaling network stored in AnnNet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../carnival/single-sample-carnival-transcriptomics.html">Single sample intracellular signalling network inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../carnival/multi-receptor-integration.html">Multi-receptor integration with CARNIVAL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../carnival/network-sampler.html">Implementing an alternative network sampler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../carnival/network-sampler-example.html">Exploring alternative solutions with <span class="math notranslate nohighlight">\(\epsilon\)</span>-perturbation sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ml/kpnn-with-sc.html">Knowledge-primed Neural Networks (KPNNs) for single cell data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="README.html">Running the LinearDAG Sachs tutorial</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Find an explanatory signaling network in the Sachs data</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../contrib/multi_condition_tutorial/multi_condition_carnival.html">Multi-condition signalling network inference</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Tutorials</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Find an explanatory signaling network in the Sachs data</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="find-an-explanatory-signaling-network-in-the-sachs-data">
+<h1>Find an explanatory signaling network in the Sachs data<a class="headerlink" href="#find-an-explanatory-signaling-network-in-the-sachs-data" title="Link to this heading">#</a></h1>
+<p>How might the measured signals in a cell be related, and how do they respond
+when a signaling molecule is perturbed? In this tutorial, we use
+<code class="docutils literal notranslate"><span class="pre">LinearDAGDiscovery</span></code> to fit a small network to single-cell measurements from
+the Sachs study. Sachs and colleagues used Bayesian networks; here we use a
+linear model. An arrow from one signal to another means that the first
+signal helps explain the second in the fitted linear model.</p>
+<p>The study used human primary CD4+ T cells. Across experimental conditions,
+researchers stimulated the cells through CD3 and CD28, sometimes added
+ICAM-2, or applied compounds that perturb signaling. After 15 minutes,
+they measured 11 protein and phospholipid signals in individual cells by
+flow cytometry, a technique that records several signals per cell.</p>
+<p>The original study called CD3/CD28 and ICAM-2 <strong>general perturbations</strong>.
+In this tutorial, their two conditions are <strong>observational with respect
+to the 11 measured signals</strong>: the cells were stimulated, but no measured
+signal was directly targeted. The <strong>intervention conditions</strong> use more
+specific treatments with an annotated target. Together, these conditions
+show how the signals vary and respond to targeted treatments.</p>
+<p>We will load the cell measurements, mark the intervention targets, fit a
+network, and read its selected arrows. We will then try a second way to model
+the interventions. The
+<a class="reference internal" href="../../guide/causal/linear-dag-discovery.html"><span class="std std-doc">LinearDAGDiscovery guide</span></a>
+explains the method and additional modeling options.</p>
+<p>Data: <a class="reference external" href="https://zenodo.org/records/7681811">Sachs Zenodo record</a>.
+Original study: <a class="reference external" href="https://doi.org/10.1126/science.1105809">Sachs and colleagues (2005)</a>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">display</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">corneto</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cn</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">corneto.backend</span><span class="w"> </span><span class="kn">import</span> <span class="n">CvxpyBackend</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">corneto.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">Data</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">corneto.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">fetch_dataset</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearDAGDiscovery</span>
+
+<span class="n">DATASET_DIR</span> <span class="o">=</span> <span class="n">fetch_dataset</span><span class="p">(</span><span class="s2">"sachs"</span><span class="p">)</span>
+<span class="n">DATASET_PATH</span> <span class="o">=</span> <span class="n">DATASET_DIR</span> <span class="o">/</span> <span class="s2">"measurements.tsv"</span>
+<span class="n">CONDITION_MANIFEST_PATH</span> <span class="o">=</span> <span class="n">DATASET_DIR</span> <span class="o">/</span> <span class="s2">"condition_manifest.csv"</span>
+<span class="n">NODE_COLUMNS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">"raf"</span><span class="p">,</span> <span class="s2">"mek"</span><span class="p">,</span> <span class="s2">"plc"</span><span class="p">,</span> <span class="s2">"pip2"</span><span class="p">,</span> <span class="s2">"pip3"</span><span class="p">,</span> <span class="s2">"erk"</span><span class="p">,</span>
+    <span class="s2">"akt"</span><span class="p">,</span> <span class="s2">"pka"</span><span class="p">,</span> <span class="s2">"pkc"</span><span class="p">,</span> <span class="s2">"p38"</span><span class="p">,</span> <span class="s2">"jnk"</span><span class="p">,</span>
+<span class="p">]</span>
+<span class="c1"># Use 100 cells per condition for a quicker run; use None for all cells.</span>
+<span class="n">SAMPLES_PER_CONDITION</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">MIN_ABS_COEFFICIENT</span> <span class="o">=</span> <span class="mf">0.25</span>
+<span class="n">SEED</span> <span class="o">=</span> <span class="mi">7</span>
+<span class="n">SOLVE_SECONDS</span> <span class="o">=</span> <span class="mi">300</span>
+<span class="n">LAMBDA_UNEXPLAINED</span> <span class="o">=</span> <span class="mf">1.0</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="load-and-inspect-the-measurements">
+<h2>1. Load and inspect the measurements<a class="headerlink" href="#load-and-inspect-the-measurements" title="Link to this heading">#</a></h2>
+<p>Each row in the Sachs data represents one cell. The columns below record the
+signals measured in that cell. Most protein measurements indicate
+phosphorylation, a chemical change commonly used to track signaling
+activity. PIP2 and PIP3 are signaling lipids. The values have already
+been transformed with the natural logarithm.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Column</p></th>
+<th class="head"><p>Biological measurement</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">raf</span></code></p></td>
+<td><p>phosphorylated Raf</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">mek</span></code></p></td>
+<td><p>phosphorylated MEK1/2</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">plc</span></code></p></td>
+<td><p>phosphorylated PLCγ</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pip2</span></code></p></td>
+<td><p>PIP2 abundance</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pip3</span></code></p></td>
+<td><p>PIP3 abundance</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">erk</span></code></p></td>
+<td><p>phosphorylated ERK1/2</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">akt</span></code></p></td>
+<td><p>phosphorylated Akt</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pka</span></code></p></td>
+<td><p>PKA-substrate phosphorylation signal</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pkc</span></code></p></td>
+<td><p>phosphorylated PKC</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">p38</span></code></p></td>
+<td><p>phosphorylated p38</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">jnk</span></code></p></td>
+<td><p>phosphorylated JNK</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The measurement file contains these 11 signals for each cell. A separate
+condition manifest names the treatment and, when applicable, the measured
+signal treated as its direct target. The next cell joins the two files and
+shows the first few rows of the resulting data frame.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">load_sachs_dataframe</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">manifest_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="n">measurements</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">"</span><span class="se">\t</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">manifest</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">manifest_path</span><span class="p">)</span>
+    <span class="n">blocks</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">cursor</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">manifest</span><span class="o">.</span><span class="n">itertuples</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">row</span><span class="o">.</span><span class="n">start_row</span> <span class="o">!=</span> <span class="n">cursor</span> <span class="ow">or</span> <span class="n">row</span><span class="o">.</span><span class="n">stop_row</span> <span class="o">&lt;=</span> <span class="n">cursor</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Sachs condition rows must be contiguous."</span><span class="p">)</span>
+        <span class="n">block</span> <span class="o">=</span> <span class="n">measurements</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">row</span><span class="o">.</span><span class="n">start_row</span><span class="p">:</span><span class="n">row</span><span class="o">.</span><span class="n">stop_row</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">block</span><span class="p">[</span><span class="s2">"intervention_label"</span><span class="p">]</span><span class="o">.</span><span class="n">eq</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">archive_label</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unexpected archive label for </span><span class="si">{</span><span class="n">row</span><span class="o">.</span><span class="n">condition</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+        <span class="n">block</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">"condition"</span><span class="p">,</span> <span class="n">row</span><span class="o">.</span><span class="n">condition</span><span class="p">)</span>
+        <span class="n">block</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span>
+            <span class="mi">2</span><span class="p">,</span>
+            <span class="s2">"intervention_target"</span><span class="p">,</span>
+            <span class="n">row</span><span class="o">.</span><span class="n">intervention_target</span> <span class="k">if</span> <span class="n">pd</span><span class="o">.</span><span class="n">notna</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">intervention_target</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">blocks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">block</span><span class="p">)</span>
+        <span class="n">cursor</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">stop_row</span>
+    <span class="k">if</span> <span class="n">cursor</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">measurements</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"The condition manifest does not cover every cell."</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">blocks</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+
+<span class="n">raw</span> <span class="o">=</span> <span class="n">load_sachs_dataframe</span><span class="p">(</span><span class="n">DATASET_PATH</span><span class="p">,</span> <span class="n">CONDITION_MANIFEST_PATH</span><span class="p">)</span>
+<span class="n">raw</span><span class="p">[[</span><span class="s2">"condition"</span><span class="p">,</span> <span class="s2">"intervention_label"</span><span class="p">,</span> <span class="s2">"intervention_target"</span><span class="p">,</span> <span class="s2">"raf"</span><span class="p">,</span> <span class="s2">"mek"</span><span class="p">,</span> <span class="s2">"akt"</span><span class="p">]]</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>condition</th>
+      <th>intervention_label</th>
+      <th>intervention_target</th>
+      <th>raf</th>
+      <th>mek</th>
+      <th>akt</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>cd3cd28</td>
+      <td>observational</td>
+      <td>None</td>
+      <td>3.27</td>
+      <td>2.58</td>
+      <td>2.83</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>cd3cd28</td>
+      <td>observational</td>
+      <td>None</td>
+      <td>3.58</td>
+      <td>2.80</td>
+      <td>3.48</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>cd3cd28</td>
+      <td>observational</td>
+      <td>None</td>
+      <td>4.08</td>
+      <td>3.79</td>
+      <td>3.48</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>cd3cd28</td>
+      <td>observational</td>
+      <td>None</td>
+      <td>4.29</td>
+      <td>4.42</td>
+      <td>2.47</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>cd3cd28</td>
+      <td>observational</td>
+      <td>None</td>
+      <td>3.52</td>
+      <td>2.99</td>
+      <td>3.83</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>cd3cd28</td>
+      <td>observational</td>
+      <td>None</td>
+      <td>2.93</td>
+      <td>1.32</td>
+      <td>3.25</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>cd3cd28</td>
+      <td>observational</td>
+      <td>None</td>
+      <td>3.80</td>
+      <td>3.60</td>
+      <td>2.88</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>cd3cd28</td>
+      <td>observational</td>
+      <td>None</td>
+      <td>3.86</td>
+      <td>2.71</td>
+      <td>3.81</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>The first rows come from the CD3/CD28 condition, which has no annotated
+direct target among the measured signals. <code class="docutils literal notranslate"><span class="pre">condition</span></code> names the treatment,
+and <code class="docutils literal notranslate"><span class="pre">intervention_target</span></code> gives its measured target when there is one.
+The archive’s <code class="docutils literal notranslate"><span class="pre">intervention_label</span></code> sometimes names a different signal, so
+the model uses the target supplied by the condition manifest.</p>
+</section>
+<section id="choose-cells-for-the-analysis">
+<h2>2. Choose cells for the analysis<a class="headerlink" href="#choose-cells-for-the-analysis" title="Link to this heading">#</a></h2>
+<p>The full file has 7,466 cells across nine conditions. We leave out the
+LY294002 condition because it targets PI3K, which is absent from the
+11 measured signals. This leaves 6,618 cells in eight conditions.</p>
+<p>To keep the fitting time manageable, we select 100 cells from each
+remaining condition. The next table shows the direct target, number
+of available cells, and number selected for each condition.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">analysis_raw</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">raw</span><span class="p">[</span><span class="s2">"condition"</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">"cd3cd28_ly"</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">stratified_subsample</span><span class="p">(</span>
+    <span class="n">frame</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+    <span class="n">samples_per_condition</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Keep all rows or take a reproducible sample from each condition."""</span>
+    <span class="k">if</span> <span class="n">samples_per_condition</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">frame</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">samples_per_condition</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"samples_per_condition must be positive or None"</span><span class="p">)</span>
+    <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+    <span class="n">selected</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">condition</span><span class="p">,</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">frame</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">"condition"</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">group</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">samples_per_condition</span><span class="p">:</span>
+            <span class="n">indices</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">group</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span> <span class="n">size</span><span class="o">=</span><span class="n">samples_per_condition</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">group</span> <span class="o">=</span> <span class="n">group</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">indices</span><span class="p">)]</span>
+        <span class="n">selected</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">group</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">selected</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+
+<span class="n">sampled</span> <span class="o">=</span> <span class="n">stratified_subsample</span><span class="p">(</span><span class="n">analysis_raw</span><span class="p">,</span> <span class="n">samples_per_condition</span><span class="o">=</span><span class="n">SAMPLES_PER_CONDITION</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">SEED</span><span class="p">)</span>
+<span class="n">condition_summary</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">"condition"</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">agg</span><span class="p">(</span>
+    <span class="n">target</span><span class="o">=</span><span class="p">(</span><span class="s2">"intervention_target"</span><span class="p">,</span> <span class="s2">"first"</span><span class="p">),</span>
+    <span class="n">available_cells</span><span class="o">=</span><span class="p">(</span><span class="s2">"condition"</span><span class="p">,</span> <span class="s2">"size"</span><span class="p">),</span>
+<span class="p">)</span>
+<span class="n">condition_summary</span><span class="p">[</span><span class="s2">"selected_cells"</span><span class="p">]</span> <span class="o">=</span> <span class="n">sampled</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">"condition"</span><span class="p">)</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
+<span class="n">condition_summary</span><span class="p">[</span><span class="s2">"selected_cells"</span><span class="p">]</span> <span class="o">=</span> <span class="n">condition_summary</span><span class="p">[</span><span class="s2">"selected_cells"</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<span class="n">condition_summary</span><span class="p">[</span><span class="s2">"target"</span><span class="p">]</span> <span class="o">=</span> <span class="n">condition_summary</span><span class="p">[</span><span class="s2">"target"</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="s2">"—"</span><span class="p">)</span>
+<span class="n">condition_summary</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>target</th>
+      <th>available_cells</th>
+      <th>selected_cells</th>
+    </tr>
+    <tr>
+      <th>condition</th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>cd3cd28</th>
+      <td>—</td>
+      <td>853</td>
+      <td>100</td>
+    </tr>
+    <tr>
+      <th>cd3cd28_icam2</th>
+      <td>—</td>
+      <td>902</td>
+      <td>100</td>
+    </tr>
+    <tr>
+      <th>cd3cd28_aktinhib</th>
+      <td>akt</td>
+      <td>911</td>
+      <td>100</td>
+    </tr>
+    <tr>
+      <th>cd3cd28_g0076</th>
+      <td>pkc</td>
+      <td>723</td>
+      <td>100</td>
+    </tr>
+    <tr>
+      <th>cd3cd28_psitect</th>
+      <td>pip2</td>
+      <td>810</td>
+      <td>100</td>
+    </tr>
+    <tr>
+      <th>cd3cd28_u0126</th>
+      <td>mek</td>
+      <td>799</td>
+      <td>100</td>
+    </tr>
+    <tr>
+      <th>cd3cd28_ly</th>
+      <td>—</td>
+      <td>848</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>pma</th>
+      <td>pkc</td>
+      <td>913</td>
+      <td>100</td>
+    </tr>
+    <tr>
+      <th>b2camp</th>
+      <td>pka</td>
+      <td>707</td>
+      <td>100</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>A dash in the target column means the condition has no annotated direct
+target among the measured signals. The two general-stimulation conditions
+contribute 200 cells; the six targeted-treatment conditions contribute
+600. Each selected cell remains a separate observation. Set
+<code class="docutils literal notranslate"><span class="pre">SAMPLES_PER_CONDITION=None</span></code> to use all 6,618 retained cells.</p>
+</section>
+<section id="describe-possible-connections-and-interventions">
+<h2>3. Describe possible connections and interventions<a class="headerlink" href="#describe-possible-connections-and-interventions" title="Link to this heading">#</a></h2>
+<p>The Sachs pathway diagram also shows CD3, CD28, ZAP70, PI3K, and other
+components absent from these measurements. Here we model the 11 measured
+signals: <code class="docutils literal notranslate"><span class="pre">LinearDAGDiscovery</span></code> requires observations for every graph vertex.
+An inferred arrow can therefore summarize a path through unmeasured
+components.</p>
+<p>Before fitting, we give CORNETO a set of possible arrows between the
+measured signals. For this example, we allow an arrow between every
+pair of different signals, in either direction: 110 candidates. The
+optimizer will select a smaller set without loops that lead back to
+a starting signal. An interaction value of <code class="docutils literal notranslate"><span class="pre">0</span></code> leaves each arrow’s
+sign open to be learned from the measurements.</p>
+<p>We then turn each cell into a CORNETO sample. Its 11 measured values
+map to the 11 graph vertices. For a treated cell, we mark the directly
+targeted signal with <code class="docutils literal notranslate"><span class="pre">intervention=&quot;hard&quot;</span></code>. The fit uses its measured
+value when explaining other signals and skips the target’s own equation.
+Cells receiving the same treatment share an <code class="docutils literal notranslate"><span class="pre">intervention_group</span></code>, while
+each cell keeps its own measurements. See the guide’s
+<a class="reference internal" href="../../guide/causal/linear-dag-discovery.html#linear-dag-intervention-metadata"><span class="std std-ref">intervention metadata table</span></a>
+for the accepted fields and the alternative shift intervention.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">prior_edges</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="n">NODE_COLUMNS</span>
+    <span class="k">for</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">NODE_COLUMNS</span>
+    <span class="k">if</span> <span class="n">source</span> <span class="o">!=</span> <span class="n">target</span>
+<span class="p">]</span>
+<span class="n">prior</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Graph</span><span class="o">.</span><span class="n">from_tuples</span><span class="p">(</span><span class="n">prior_edges</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">to_corneto_data</span><span class="p">(</span><span class="n">frame</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">intervention_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"hard"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Data</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">intervention_mode</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">"hard"</span><span class="p">,</span> <span class="s2">"shift"</span><span class="p">}:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"intervention_mode must be 'hard' or 'shift'"</span><span class="p">)</span>
+    <span class="n">samples</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">sample_index</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">frame</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+        <span class="n">condition</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">"condition"</span><span class="p">])</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">"intervention_target"</span><span class="p">]</span>
+        <span class="n">sample_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"sachs_</span><span class="si">{</span><span class="n">sample_index</span><span class="si">:</span><span class="s2">04d</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">condition</span><span class="si">}</span><span class="s2">"</span>
+        <span class="n">samples</span><span class="p">[</span><span class="n">sample_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">NODE_COLUMNS</span><span class="p">:</span>
+            <span class="n">feature</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"mapping"</span><span class="p">:</span> <span class="s2">"vertex"</span><span class="p">,</span> <span class="s2">"value"</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="n">node</span><span class="p">])}</span>
+            <span class="k">if</span> <span class="n">pd</span><span class="o">.</span><span class="n">notna</span><span class="p">(</span><span class="n">target</span><span class="p">)</span> <span class="ow">and</span> <span class="n">node</span> <span class="o">==</span> <span class="n">target</span><span class="p">:</span>
+                <span class="n">feature</span><span class="p">[</span><span class="s2">"intervention"</span><span class="p">]</span> <span class="o">=</span> <span class="n">intervention_mode</span>
+                <span class="n">feature</span><span class="p">[</span><span class="s2">"intervention_group"</span><span class="p">]</span> <span class="o">=</span> <span class="n">condition</span>
+            <span class="n">samples</span><span class="p">[</span><span class="n">sample_name</span><span class="p">][</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="n">feature</span>
+    <span class="k">return</span> <span class="n">Data</span><span class="o">.</span><span class="n">from_cdict</span><span class="p">(</span><span class="n">samples</span><span class="p">)</span>
+
+
+<span class="n">data</span> <span class="o">=</span> <span class="n">to_corneto_data</span><span class="p">(</span><span class="n">sampled</span><span class="p">)</span>
+<span class="n">targeted_cells</span> <span class="o">=</span> <span class="n">sampled</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">sampled</span><span class="p">[</span><span class="s2">"intervention_target"</span><span class="p">]</span><span class="o">.</span><span class="n">notna</span><span class="p">()]</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">"measured signals"</span><span class="p">:</span> <span class="n">prior</span><span class="o">.</span><span class="n">num_vertices</span><span class="p">,</span>
+        <span class="s2">"candidate arrows"</span><span class="p">:</span> <span class="n">prior</span><span class="o">.</span><span class="n">num_edges</span><span class="p">,</span>
+        <span class="s2">"cells used"</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">samples</span><span class="p">),</span>
+        <span class="s2">"targeted conditions"</span><span class="p">:</span> <span class="n">targeted_cells</span><span class="p">[</span><span class="s2">"condition"</span><span class="p">]</span><span class="o">.</span><span class="n">nunique</span><span class="p">(),</span>
+    <span class="p">},</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"value"</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>measured signals        11
+candidate arrows       110
+cells used             800
+targeted conditions      6
+Name: value, dtype: int64
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="fit-the-network">
+<h2>4. Fit the network<a class="headerlink" href="#fit-the-network" title="Link to this heading">#</a></h2>
+<p>The model predicts each signal from a weighted sum of signals with
+arrows pointing to it. We favor fewer arrows, allow at most three
+arrows into each signal, and require selected arrows to have a
+normalized coefficient of at least <code class="docutils literal notranslate"><span class="pre">0.25</span></code>. We also favor connections
+from treated targets to measured responses. The guide explains these
+<a class="reference internal" href="../../guide/causal/linear-dag-discovery.html#linear-dag-model-choices"><span class="std std-ref">model choices</span></a> in detail.</p>
+<p>This example uses GUROBI with a 300-second time limit. The result
+shows how many arrows were selected and the solver status. A status of
+<code class="docutils literal notranslate"><span class="pre">user_limit</span></code> means the time limit was reached; the selected network
+may improve with more solve time.</p>
+<p>The <a class="reference internal" href="../../guide/causal/linear-dag-discovery.html#linear-dag-prediction"><span class="std std-ref">guide’s prediction workflow</span></a> shows how
+to assess a fitted model on held-out cells or conditions.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">selected_edge_count</span><span class="p">(</span><span class="n">problem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">edge_selected</span><span class="o">.</span><span class="n">value</span>
+    <span class="k">if</span> <span class="n">values</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="nb">int</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">require_usable_solution</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">solved</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">solved</span><span class="o">.</span><span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">solved</span><span class="o">.</span><span class="n">value</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"The solver returned no usable solution (</span><span class="si">{</span><span class="n">solved</span><span class="o">.</span><span class="n">status</span><span class="si">}</span><span class="s2">)."</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">problem</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">edge_selected</span><span class="o">.</span><span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"The solver returned no edge-selection values (</span><span class="si">{</span><span class="n">solved</span><span class="o">.</span><span class="n">status</span><span class="si">}</span><span class="s2">)."</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">fit_summary</span><span class="p">(</span><span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">problem</span><span class="p">,</span> <span class="n">solved</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">"intervention model"</span><span class="p">:</span> <span class="n">label</span><span class="p">,</span>
+        <span class="s2">"solver status"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">solved</span><span class="o">.</span><span class="n">status</span><span class="p">),</span>
+        <span class="s2">"selected arrows"</span><span class="p">:</span> <span class="n">selected_edge_count</span><span class="p">(</span><span class="n">problem</span><span class="p">),</span>
+        <span class="s2">"solve time (s)"</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">solved</span><span class="o">.</span><span class="n">solver_stats</span><span class="p">,</span> <span class="s2">"solve_time"</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+    <span class="p">}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">fit_model</span><span class="p">(</span><span class="n">fit_data</span><span class="p">:</span> <span class="n">Data</span><span class="p">,</span> <span class="o">**</span><span class="n">method_options</span><span class="p">):</span>
+    <span class="n">method</span> <span class="o">=</span> <span class="n">LinearDAGDiscovery</span><span class="p">(</span>
+        <span class="n">lambda_edges</span><span class="o">=</span><span class="mf">0.03</span><span class="p">,</span>
+        <span class="n">max_parents</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="n">min_abs_coefficient</span><span class="o">=</span><span class="n">MIN_ABS_COEFFICIENT</span><span class="p">,</span>
+        <span class="n">lambda_unexplained</span><span class="o">=</span><span class="n">LAMBDA_UNEXPLAINED</span><span class="p">,</span>
+        <span class="n">backend</span><span class="o">=</span><span class="n">CvxpyBackend</span><span class="p">(),</span>
+        <span class="o">**</span><span class="n">method_options</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">problem</span> <span class="o">=</span> <span class="n">method</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">prior</span><span class="p">,</span> <span class="n">fit_data</span><span class="p">)</span>
+    <span class="n">solved</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span>
+        <span class="n">solver</span><span class="o">=</span><span class="s2">"GUROBI"</span><span class="p">,</span>
+        <span class="n">max_seconds</span><span class="o">=</span><span class="n">SOLVE_SECONDS</span><span class="p">,</span>
+        <span class="n">verbosity</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">IntegralityFocus</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">require_usable_solution</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">solved</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">method</span><span class="p">,</span> <span class="n">problem</span><span class="p">,</span> <span class="n">solved</span>
+
+
+<span class="n">exact_method</span><span class="p">,</span> <span class="n">exact_problem</span><span class="p">,</span> <span class="n">exact_solved</span> <span class="o">=</span> <span class="n">fit_model</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="n">hard_fit_summary</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span><span class="n">fit_summary</span><span class="p">(</span><span class="s2">"hard"</span><span class="p">,</span> <span class="n">exact_problem</span><span class="p">,</span> <span class="n">exact_solved</span><span class="p">)])</span>
+<span class="n">hard_fit_summary</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>intervention model</th>
+      <th>solver status</th>
+      <th>selected arrows</th>
+      <th>solve time (s)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>hard</td>
+      <td>user_limit</td>
+      <td>22</td>
+      <td>300.045893</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="examine-the-selected-arrows">
+<h2>5. Examine the selected arrows<a class="headerlink" href="#examine-the-selected-arrows" title="Link to this heading">#</a></h2>
+<p>Each row of the table below is an arrow in the fitted network.
+<code class="docutils literal notranslate"><span class="pre">coefficient</span></code> tells us how much the model’s predicted target signal
+changes when its source signal increases by one unit, with the other
+selected inputs held fixed. <code class="docutils literal notranslate"><span class="pre">normalized_coefficient</span></code> rescales that
+slope so the <code class="docutils literal notranslate"><span class="pre">0.25</span></code> threshold can be applied across signal pairs.
+The <code class="docutils literal notranslate"><span class="pre">sign</span></code> column summarizes whether the fitted relationship is
+positive or negative. The guide explains the remaining
+<a class="reference internal" href="../../guide/causal/linear-dag-discovery.html#linear-dag-edge-metadata"><span class="std std-ref">edge fields</span></a>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">solution_edge_table</span><span class="p">(</span><span class="n">method</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="n">graph</span> <span class="o">=</span> <span class="n">method</span><span class="o">.</span><span class="n">get_solution_graph</span><span class="p">()</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">edge_index</span><span class="p">,</span> <span class="p">(</span><span class="n">source_set</span><span class="p">,</span> <span class="n">target_set</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">E</span><span class="p">):</span>
+        <span class="n">attributes</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">get_attr_edge</span><span class="p">(</span><span class="n">edge_index</span><span class="p">)</span>
+        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">"source"</span><span class="p">:</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">source_set</span><span class="p">)),</span>
+                <span class="s2">"target"</span><span class="p">:</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">target_set</span><span class="p">)),</span>
+                <span class="s2">"coefficient"</span><span class="p">:</span> <span class="n">attributes</span><span class="p">[</span><span class="s2">"coefficient"</span><span class="p">],</span>
+                <span class="s2">"normalized_coefficient"</span><span class="p">:</span> <span class="n">attributes</span><span class="p">[</span><span class="s2">"normalized_coefficient"</span><span class="p">],</span>
+                <span class="s2">"sign"</span><span class="p">:</span> <span class="s2">"positive"</span> <span class="k">if</span> <span class="n">attributes</span><span class="p">[</span><span class="s2">"coefficient"</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="s2">"negative"</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+    <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"source"</span><span class="p">,</span> <span class="s2">"target"</span><span class="p">,</span> <span class="s2">"coefficient"</span><span class="p">,</span> <span class="s2">"normalized_coefficient"</span><span class="p">,</span> <span class="s2">"sign"</span><span class="p">]</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">result</span>
+    <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">"normalized_coefficient"</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+
+<span class="n">exact_edges</span> <span class="o">=</span> <span class="n">solution_edge_table</span><span class="p">(</span><span class="n">exact_method</span><span class="p">)</span>
+<span class="n">exact_edges</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>source</th>
+      <th>target</th>
+      <th>coefficient</th>
+      <th>normalized_coefficient</th>
+      <th>sign</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>1</th>
+      <td>mek</td>
+      <td>raf</td>
+      <td>0.593970</td>
+      <td>0.923388</td>
+      <td>positive</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>akt</td>
+      <td>erk</td>
+      <td>0.878460</td>
+      <td>0.820500</td>
+      <td>positive</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>pkc</td>
+      <td>mek</td>
+      <td>0.807502</td>
+      <td>0.638058</td>
+      <td>positive</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>pkc</td>
+      <td>jnk</td>
+      <td>0.690871</td>
+      <td>0.608625</td>
+      <td>positive</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>pkc</td>
+      <td>p38</td>
+      <td>0.591843</td>
+      <td>0.570519</td>
+      <td>positive</td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>p38</td>
+      <td>pka</td>
+      <td>-0.611769</td>
+      <td>-0.567900</td>
+      <td>negative</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>mek</td>
+      <td>erk</td>
+      <td>-0.332300</td>
+      <td>-0.546553</td>
+      <td>negative</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>mek</td>
+      <td>jnk</td>
+      <td>0.428736</td>
+      <td>0.477999</td>
+      <td>positive</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>mek</td>
+      <td>pka</td>
+      <td>-0.417555</td>
+      <td>-0.472875</td>
+      <td>negative</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>mek</td>
+      <td>akt</td>
+      <td>0.243035</td>
+      <td>0.427971</td>
+      <td>positive</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>pip2</td>
+      <td>plc</td>
+      <td>0.308420</td>
+      <td>0.406950</td>
+      <td>positive</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>pka</td>
+      <td>pip2</td>
+      <td>-0.441460</td>
+      <td>-0.403002</td>
+      <td>negative</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>pip3</td>
+      <td>pip2</td>
+      <td>0.688153</td>
+      <td>0.374042</td>
+      <td>positive</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>pka</td>
+      <td>plc</td>
+      <td>-0.299091</td>
+      <td>-0.360261</td>
+      <td>negative</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>mek</td>
+      <td>p38</td>
+      <td>0.257965</td>
+      <td>0.314708</td>
+      <td>positive</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>pkc</td>
+      <td>akt</td>
+      <td>0.194190</td>
+      <td>0.270202</td>
+      <td>positive</td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>jnk</td>
+      <td>pip3</td>
+      <td>-0.146542</td>
+      <td>-0.250000</td>
+      <td>negative</td>
+    </tr>
+    <tr>
+      <th>0</th>
+      <td>raf</td>
+      <td>jnk</td>
+      <td>-0.348597</td>
+      <td>-0.250000</td>
+      <td>negative</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>pkc</td>
+      <td>erk</td>
+      <td>0.192363</td>
+      <td>0.250000</td>
+      <td>positive</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>akt</td>
+      <td>plc</td>
+      <td>0.322730</td>
+      <td>0.250000</td>
+      <td>positive</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>erk</td>
+      <td>pip2</td>
+      <td>0.397735</td>
+      <td>0.250000</td>
+      <td>positive</td>
+    </tr>
+    <tr>
+      <th>21</th>
+      <td>jnk</td>
+      <td>p38</td>
+      <td>0.228470</td>
+      <td>0.250000</td>
+      <td>positive</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>The network plot makes the table easier to scan: blue arrows have positive
+fitted coefficients, orange arrows have negative ones, and labels show their
+coefficient values. Pick an arrow in the plot and find the same source and
+target in the table. A positive coefficient means the model predicts a higher
+target signal when its source is one unit higher on the log scale, with the
+other selected inputs held fixed; a negative coefficient means it predicts
+a lower target signal. These are slopes in the fitted equations. Biological
+interpretation requires the assumptions discussed in the guide.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">solution_graph</span> <span class="o">=</span> <span class="n">exact_method</span><span class="o">.</span><span class="n">get_solution_graph</span><span class="p">()</span>
+<span class="n">edge_styles</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">edge_index</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">exact_edges</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+    <span class="n">edge_styles</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">edge_index</span><span class="p">)]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">"color"</span><span class="p">:</span> <span class="s2">"#0072B2"</span> <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="s2">"coefficient"</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="k">else</span> <span class="s2">"#D55E00"</span><span class="p">,</span>
+        <span class="s2">"fontcolor"</span><span class="p">:</span> <span class="s2">"#333333"</span><span class="p">,</span>
+        <span class="s2">"label"</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s1">'coefficient'</span><span class="p">]</span><span class="si">:</span><span class="s2">+.2f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+        <span class="s2">"penwidth"</span><span class="p">:</span> <span class="s2">"2.5"</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="k">assert</span> <span class="nb">set</span><span class="p">(</span><span class="n">edge_styles</span><span class="p">)</span> <span class="o">==</span> <span class="nb">set</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">solution_graph</span><span class="o">.</span><span class="n">num_edges</span><span class="p">))</span>
+<span class="n">display</span><span class="p">(</span>
+    <span class="n">solution_graph</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+        <span class="n">renderer</span><span class="o">=</span><span class="s2">"graphviz"</span><span class="p">,</span>
+        <span class="n">custom_edge_attr</span><span class="o">=</span><span class="n">edge_styles</span><span class="p">,</span>
+        <span class="n">graph_attr</span><span class="o">=</span><span class="p">{</span><span class="s2">"rankdir"</span><span class="p">:</span> <span class="s2">"LR"</span><span class="p">,</span> <span class="s2">"label"</span><span class="p">:</span> <span class="s2">"Selected edges (fitted coefficients)"</span><span class="p">,</span> <span class="s2">"labelloc"</span><span class="p">:</span> <span class="s2">"t"</span><span class="p">},</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/495e1e643eb88bde09f7d86616493aab893a705276c267489afe0dd5b454a9f6.svg" src="../../_images/495e1e643eb88bde09f7d86616493aab893a705276c267489afe0dd5b454a9f6.svg" />
+</div>
+</div>
+</section>
+<section id="try-another-intervention-model">
+<h2>6. Try another intervention model<a class="headerlink" href="#try-another-intervention-model" title="Link to this heading">#</a></h2>
+<p>So far, we modeled each treated target as externally fixed. Here we
+keep its usual equation and let the treatment add an offset. The next
+cell marks those targets with <code class="docutils literal notranslate"><span class="pre">intervention=&quot;shift&quot;</span></code> and estimates
+one offset for each target and treatment condition.</p>
+<p>The first output compares the solver status and number of selected
+arrows in the two fits. The second lists the estimated offsets. A
+positive offset raises the target’s predicted value; a negative
+offset lowers it. These values are on the log-measurement scale and
+describe the fitted condition effect, not the drug dose.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">shift_data</span> <span class="o">=</span> <span class="n">to_corneto_data</span><span class="p">(</span><span class="n">sampled</span><span class="p">,</span> <span class="n">intervention_mode</span><span class="o">=</span><span class="s2">"shift"</span><span class="p">)</span>
+<span class="n">shift_method</span><span class="p">,</span> <span class="n">shift_problem</span><span class="p">,</span> <span class="n">shift_solved</span> <span class="o">=</span> <span class="n">fit_model</span><span class="p">(</span>
+    <span class="n">shift_data</span><span class="p">,</span>
+    <span class="n">intervention_shift_bound</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span>
+    <span class="n">lambda_intervention_shifts</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">shift_fit_summary</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span><span class="n">fit_summary</span><span class="p">(</span><span class="s2">"additive shift"</span><span class="p">,</span> <span class="n">shift_problem</span><span class="p">,</span> <span class="n">shift_solved</span><span class="p">)])</span>
+
+<span class="c1"># The fitted offset for each treated cell is stored by vertex and sample.</span>
+<span class="n">shift_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">shift_problem</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">intervention_shift</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+<span class="n">shift_rows</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">condition</span><span class="p">,</span> <span class="n">cells</span> <span class="ow">in</span> <span class="n">targeted_cells</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">"condition"</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="n">target</span> <span class="o">=</span> <span class="n">cells</span><span class="p">[</span><span class="s2">"intervention_target"</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">target_index</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">prior</span><span class="o">.</span><span class="n">V</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+    <span class="n">offsets</span> <span class="o">=</span> <span class="n">shift_values</span><span class="p">[</span><span class="n">target_index</span><span class="p">,</span> <span class="n">cells</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">offsets</span><span class="p">,</span> <span class="n">offsets</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Inconsistent fitted shifts for </span><span class="si">{</span><span class="n">condition</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+    <span class="n">shift_rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="p">{</span>
+            <span class="s2">"condition"</span><span class="p">:</span> <span class="n">condition</span><span class="p">,</span>
+            <span class="s2">"target"</span><span class="p">:</span> <span class="n">target</span><span class="p">,</span>
+            <span class="s2">"estimated log-scale shift"</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">offsets</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+        <span class="p">}</span>
+    <span class="p">)</span>
+
+<span class="n">display</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">hard_fit_summary</span><span class="p">,</span> <span class="n">shift_fit_summary</span><span class="p">],</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">shift_rows</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>intervention model</th>
+      <th>solver status</th>
+      <th>selected arrows</th>
+      <th>solve time (s)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>hard</td>
+      <td>user_limit</td>
+      <td>22</td>
+      <td>300.045893</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>additive shift</td>
+      <td>user_limit</td>
+      <td>25</td>
+      <td>300.066989</td>
+    </tr>
+  </tbody>
+</table>
+</div></div><div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>condition</th>
+      <th>target</th>
+      <th>estimated log-scale shift</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>b2camp</td>
+      <td>pka</td>
+      <td>-2.963049</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>cd3cd28_aktinhib</td>
+      <td>akt</td>
+      <td>-0.396231</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>cd3cd28_g0076</td>
+      <td>pkc</td>
+      <td>2.058811</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>cd3cd28_psitect</td>
+      <td>pip2</td>
+      <td>-3.389326</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>cd3cd28_u0126</td>
+      <td>mek</td>
+      <td>3.518794</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>pma</td>
+      <td>pkc</td>
+      <td>0.383895</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>The plot below shows the network selected by the shift fit. Solid blue and
+orange arrows connect measured signals; their labels are fitted
+coefficients. Dashed purple arrows show the treatments. Each is labeled
+with the treatment name and its learned shift, and points to the measured
+target. Two treatments point to PKC because each has its own estimated
+effect on that signal. The purple <strong>Treatments</strong> box only groups these
+experimental conditions in the picture; it is not a measured signal or
+a variable in the fitted network.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">shift_edges</span> <span class="o">=</span> <span class="n">solution_edge_table</span><span class="p">(</span><span class="n">shift_method</span><span class="p">)</span>
+<span class="n">shift_plot</span> <span class="o">=</span> <span class="n">shift_method</span><span class="o">.</span><span class="n">get_solution_graph</span><span class="p">()</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">shift_edge_styles</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">edge_index</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">shift_edges</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+    <span class="n">shift_edge_styles</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">edge_index</span><span class="p">)]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">"color"</span><span class="p">:</span> <span class="s2">"#0072B2"</span> <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="s2">"coefficient"</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="k">else</span> <span class="s2">"#D55E00"</span><span class="p">,</span>
+        <span class="s2">"fontcolor"</span><span class="p">:</span> <span class="s2">"#333333"</span><span class="p">,</span>
+        <span class="s2">"label"</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s1">'coefficient'</span><span class="p">]</span><span class="si">:</span><span class="s2">+.2f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+        <span class="s2">"penwidth"</span><span class="p">:</span> <span class="s2">"2.5"</span><span class="p">,</span>
+    <span class="p">}</span>
+
+<span class="n">treatment_labels</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">"b2camp"</span><span class="p">:</span> <span class="s2">"β2cAMP"</span><span class="p">,</span>
+    <span class="s2">"cd3cd28_aktinhib"</span><span class="p">:</span> <span class="s2">"AKT inhibitor"</span><span class="p">,</span>
+    <span class="s2">"cd3cd28_g0076"</span><span class="p">:</span> <span class="s2">"Gö6976"</span><span class="p">,</span>
+    <span class="s2">"cd3cd28_psitect"</span><span class="p">:</span> <span class="s2">"Psitect"</span><span class="p">,</span>
+    <span class="s2">"cd3cd28_u0126"</span><span class="p">:</span> <span class="s2">"U0126"</span><span class="p">,</span>
+    <span class="s2">"pma"</span><span class="p">:</span> <span class="s2">"PMA"</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="n">treatment_vertex</span> <span class="o">=</span> <span class="s2">"treatment_conditions"</span>
+<span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">shift_rows</span><span class="p">:</span>
+    <span class="n">edge_index</span> <span class="o">=</span> <span class="n">shift_plot</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">treatment_vertex</span><span class="p">,</span> <span class="n">row</span><span class="p">[</span><span class="s2">"target"</span><span class="p">])</span>
+    <span class="n">shift_edge_styles</span><span class="p">[</span><span class="n">edge_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">"color"</span><span class="p">:</span> <span class="s2">"#7B3294"</span><span class="p">,</span>
+        <span class="s2">"fontcolor"</span><span class="p">:</span> <span class="s2">"#7B3294"</span><span class="p">,</span>
+        <span class="s2">"style"</span><span class="p">:</span> <span class="s2">"dashed"</span><span class="p">,</span>
+        <span class="s2">"label"</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">treatment_labels</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s1">'condition'</span><span class="p">]]</span><span class="si">}</span><span class="se">\n</span><span class="s2">shift </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s1">'estimated log-scale shift'</span><span class="p">]</span><span class="si">:</span><span class="s2">+.2f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+        <span class="s2">"penwidth"</span><span class="p">:</span> <span class="s2">"2"</span><span class="p">,</span>
+    <span class="p">}</span>
+
+<span class="n">display</span><span class="p">(</span>
+    <span class="n">shift_plot</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+        <span class="n">renderer</span><span class="o">=</span><span class="s2">"graphviz"</span><span class="p">,</span>
+        <span class="n">custom_edge_attr</span><span class="o">=</span><span class="n">shift_edge_styles</span><span class="p">,</span>
+        <span class="n">custom_vertex_attr</span><span class="o">=</span><span class="p">{</span>
+            <span class="n">treatment_vertex</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">"label"</span><span class="p">:</span> <span class="s2">"Treatments"</span><span class="p">,</span>
+                <span class="s2">"shape"</span><span class="p">:</span> <span class="s2">"box"</span><span class="p">,</span>
+                <span class="s2">"style"</span><span class="p">:</span> <span class="s2">"rounded,filled"</span><span class="p">,</span>
+                <span class="s2">"fillcolor"</span><span class="p">:</span> <span class="s2">"#F3E8F8"</span><span class="p">,</span>
+                <span class="s2">"color"</span><span class="p">:</span> <span class="s2">"#7B3294"</span><span class="p">,</span>
+                <span class="s2">"fixedsize"</span><span class="p">:</span> <span class="s2">"false"</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="n">graph_attr</span><span class="o">=</span><span class="p">{</span><span class="s2">"rankdir"</span><span class="p">:</span> <span class="s2">"LR"</span><span class="p">,</span> <span class="s2">"label"</span><span class="p">:</span> <span class="s2">"Shift fit: selected network and learned treatment effects"</span><span class="p">,</span> <span class="s2">"labelloc"</span><span class="p">:</span> <span class="s2">"t"</span><span class="p">},</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/e815f5819a903f103dfd7a382ccd21cb52b39d5e0da26f861a6da97878a8b0cc.svg" src="../../_images/e815f5819a903f103dfd7a382ccd21cb52b39d5e0da26f861a6da97878a8b0cc.svg" />
+</div>
+</div>
+</section>
+<section id="final-comments">
+<h2>7. Final comments<a class="headerlink" href="#final-comments" title="Link to this heading">#</a></h2>
+<p>We turned single-cell measurements and treatment annotations into two
+fitted networks. Their selected arrows and coefficients describe
+relationships that help explain the measured signals under each model.
+The dashed treatment arrows in the shift plot show estimated offsets,
+not additional signaling pathways. These results provide hypotheses
+about signaling rather than a verified biological pathway.</p>
+<p>For a biological analysis, compare predictions on held-out data and repeat
+the fit with different cell samples, candidate interactions, model settings,
+and solve times. Then examine which arrows remain stable.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="README.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Running the LinearDAG Sachs tutorial</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../contrib/multi_condition_tutorial/multi_condition_carnival.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Multi-condition signalling network inference</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#load-and-inspect-the-measurements">1. Load and inspect the measurements</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#choose-cells-for-the-analysis">2. Choose cells for the analysis</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#describe-possible-connections-and-interventions">3. Describe possible connections and interventions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fit-the-network">4. Fit the network</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#examine-the-selected-arrows">5. Examine the selected arrows</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#try-another-intervention-model">6. Try another intervention model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#final-comments">7. Final comments</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2023-2026, Saez-Rodriguez lab. (EMBL-EBI, Heidelberg University).
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

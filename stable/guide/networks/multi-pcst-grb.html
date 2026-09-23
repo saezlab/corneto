@@ -27,8 +27,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
@@ -36,10 +36,10 @@
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=53e23fa6" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
     <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
@@ -66,8 +66,8 @@
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'guide/networks/multi-pcst-grb';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1786146192';
+        DOCUMENTATION_OPTIONS.theme_version = '0.21.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1790177872';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'stable';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
@@ -77,7 +77,7 @@
     <link rel="icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Metabolism" href="../metabolism/index.html" />
+    <link rel="next" title="Causal and structural modeling" href="../causal/index.html" />
     <link rel="prev" title="Prize-Collecting Steiner Trees (PCST)" href="pcst.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -419,6 +419,10 @@
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Multi-sample PCST</a></li>
 </ul>
 </details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../causal/index.html">Causal and structural modeling</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../causal/linear-dag-discovery.html">Discovering a linear causal signaling network from perturbation data</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../metabolism/index.html">Metabolism</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../metabolism/flux-balance-analysis.html">Flux balance analysis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../metabolism/multicondition-sfba.html">Multi-condition FBA</a></li>
@@ -522,7 +526,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">generate_random_graph</span><span class="p">(</span><span class="n">num_nodes</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">probability</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">num_terminals</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generates a random unweighted graph using the Erdős-Rényi model and assigns terminal nodes.</span>
+<span class="w">    </span><span class="sd">"""Generates a random unweighted graph using the Erdős-Rényi model and assigns terminal nodes.</span>
 <span class="sd">    Prizes are not assigned during generation.</span>
 
 <span class="sd">    Args:</span>
@@ -531,21 +535,21 @@
 <span class="sd">        num_terminals (int): Number of nodes to mark as terminals.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        G (networkx.Graph): Graph with a &#39;terminal&#39; attribute on nodes.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">        G (networkx.Graph): Graph with a 'terminal' attribute on nodes.</span>
+<span class="sd">    """</span>
     <span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">erdos_renyi_graph</span><span class="p">(</span><span class="n">num_nodes</span><span class="p">,</span> <span class="n">probability</span><span class="p">)</span>
 
     <span class="c1"># Randomly select terminal nodes</span>
     <span class="n">terminals</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">()),</span> <span class="nb">min</span><span class="p">(</span><span class="n">num_terminals</span><span class="p">,</span> <span class="n">G</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">()))</span>
     <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">():</span>
-        <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">node</span><span class="p">][</span><span class="s2">&quot;terminal&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">terminals</span>
+        <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">node</span><span class="p">][</span><span class="s2">"terminal"</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">terminals</span>
 
     <span class="k">return</span> <span class="n">G</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">assign_random_costs_and_prizes</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">num_prized</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">prize_range</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">50</span><span class="p">)):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates a new copy of the given graph, assigns random edge costs and prizes.</span>
-<span class="sd">    The original graph remains unchanged. Edge costs are stored in the &#39;value&#39; attribute.</span>
+<span class="w">    </span><span class="sd">"""Creates a new copy of the given graph, assigns random edge costs and prizes.</span>
+<span class="sd">    The original graph remains unchanged. Edge costs are stored in the 'value' attribute.</span>
 <span class="sd">    Only a specified number of non-terminal nodes receive a random prize; all other nodes are assigned a prize of 0.</span>
 
 <span class="sd">    Args:</span>
@@ -554,44 +558,44 @@
 <span class="sd">        prize_range (tuple): Tuple (min, max) for random prize values.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        G_new (networkx.Graph): A new graph with updated &#39;value&#39; attributes on edges and &#39;prize&#39; attributes on nodes.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">        G_new (networkx.Graph): A new graph with updated 'value' attributes on edges and 'prize' attributes on nodes.</span>
+<span class="sd">    """</span>
     <span class="c1"># Create a copy of the graph so the original is not modified.</span>
     <span class="n">G_new</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
     <span class="c1"># Assign random edge costs</span>
     <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">G_new</span><span class="o">.</span><span class="n">edges</span><span class="p">():</span>
-        <span class="n">G_new</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">v</span><span class="p">][</span><span class="s2">&quot;value&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+        <span class="n">G_new</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">v</span><span class="p">][</span><span class="s2">"value"</span><span class="p">]</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
 
     <span class="c1"># Identify non-terminal nodes</span>
-    <span class="n">non_terminal_nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">node</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">G_new</span><span class="o">.</span><span class="n">nodes</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">G_new</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">node</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;terminal&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)]</span>
+    <span class="n">non_terminal_nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">node</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">G_new</span><span class="o">.</span><span class="n">nodes</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">G_new</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">node</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"terminal"</span><span class="p">,</span> <span class="kc">False</span><span class="p">)]</span>
     <span class="c1"># Randomly select nodes to assign prizes (do not exceed available nodes)</span>
     <span class="n">prized_nodes</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">non_terminal_nodes</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">num_prized</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">non_terminal_nodes</span><span class="p">)))</span>
 
     <span class="c1"># Assign prizes: nodes selected get a random prize, all others get 0</span>
     <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">G_new</span><span class="o">.</span><span class="n">nodes</span><span class="p">():</span>
         <span class="k">if</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">prized_nodes</span><span class="p">:</span>
-            <span class="n">G_new</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">node</span><span class="p">][</span><span class="s2">&quot;prize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">*</span><span class="n">prize_range</span><span class="p">)</span>
+            <span class="n">G_new</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">node</span><span class="p">][</span><span class="s2">"prize"</span><span class="p">]</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">*</span><span class="n">prize_range</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">G_new</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">node</span><span class="p">][</span><span class="s2">&quot;prize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">G_new</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">node</span><span class="p">][</span><span class="s2">"prize"</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
 
     <span class="k">return</span> <span class="n">G_new</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">solve_pcst_with_pcst_fast</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">root</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">num_clusters</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">pruning</span><span class="o">=</span><span class="s2">&quot;strong&quot;</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Solves the PCST problem on a NetworkX graph using the pcst_fast package.</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">solve_pcst_with_pcst_fast</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">root</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">num_clusters</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">pruning</span><span class="o">=</span><span class="s2">"strong"</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Solves the PCST problem on a NetworkX graph using the pcst_fast package.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        G (networkx.Graph): Graph with &#39;value&#39; on edges and &#39;prize&#39; on nodes.</span>
+<span class="sd">        G (networkx.Graph): Graph with 'value' on edges and 'prize' on nodes.</span>
 <span class="sd">        root (int): Index of the root node (or -1 for unrooted).</span>
 <span class="sd">        num_clusters (int): Desired number of clusters in the solution.</span>
-<span class="sd">        pruning (str): Pruning method (&#39;none&#39;, &#39;simple&#39;, &#39;gw&#39;, &#39;strong&#39;).</span>
+<span class="sd">        pruning (str): Pruning method ('none', 'simple', 'gw', 'strong').</span>
 <span class="sd">        verbosity (int): Verbosity level.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        selected_nodes (list): Node IDs included in the PCST solution.</span>
 <span class="sd">        selected_edges (list): Edge tuples included in the solution.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">node_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">())</span>
     <span class="n">node_index_map</span> <span class="o">=</span> <span class="p">{</span><span class="n">node</span><span class="p">:</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">node</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">node_list</span><span class="p">)}</span>
     <span class="n">index_node_map</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span><span class="p">:</span> <span class="n">node</span> <span class="k">for</span> <span class="n">node</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">node_index_map</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
@@ -600,9 +604,9 @@
     <span class="n">edge_costs</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="n">edge_list</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">node_index_map</span><span class="p">[</span><span class="n">u</span><span class="p">],</span> <span class="n">node_index_map</span><span class="p">[</span><span class="n">v</span><span class="p">]])</span>
-        <span class="n">edge_costs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">])</span>
+        <span class="n">edge_costs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">"value"</span><span class="p">])</span>
 
-    <span class="n">prizes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">node</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prize&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">node_list</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="n">prizes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">node</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"prize"</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">node_list</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
 
     <span class="n">edges_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">edge_list</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
     <span class="n">costs_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">edge_costs</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
@@ -618,7 +622,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">compute_pcst_cost</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">selected_edges</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculates the cost components and total PCST objective value based solely on the selected edges.</span>
+<span class="w">    </span><span class="sd">"""Calculates the cost components and total PCST objective value based solely on the selected edges.</span>
 
 <span class="sd">    The function:</span>
 <span class="sd">      - Derives the set of selected nodes from the provided edges.</span>
@@ -626,16 +630,16 @@
 <span class="sd">      - Checks that the selected edges form a single connected subgraph.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        dict with keys &#39;edge_cost&#39;, &#39;prize_collected&#39;, and &#39;objective&#39;</span>
+<span class="sd">        dict with keys 'edge_cost', 'prize_collected', and 'objective'</span>
 
 <span class="sd">    Raises:</span>
 <span class="sd">        ValueError: If any provided edge is not in G or if the selected edges do not form a connected subgraph.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># Derive selected nodes from edges and verify edge validity</span>
     <span class="n">selected_nodes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">selected_edges</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">G</span><span class="o">.</span><span class="n">has_edge</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Edge (</span><span class="si">{</span><span class="n">u</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2">) is not present in the graph.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Edge (</span><span class="si">{</span><span class="n">u</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2">) is not present in the graph."</span><span class="p">)</span>
         <span class="n">selected_nodes</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">])</span>
 
     <span class="c1"># For non-empty selections, check connectivity using only the selected edges.</span>
@@ -644,18 +648,18 @@
         <span class="n">H</span><span class="o">.</span><span class="n">add_nodes_from</span><span class="p">(</span><span class="n">selected_nodes</span><span class="p">)</span>
         <span class="n">H</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(</span><span class="n">selected_edges</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">nx</span><span class="o">.</span><span class="n">is_connected</span><span class="p">(</span><span class="n">H</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Selected edges do not form a connected subgraph.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Selected edges do not form a connected subgraph."</span><span class="p">)</span>
 
     <span class="c1"># Calculate the total edge cost.</span>
-    <span class="n">edge_cost</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">G</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">v</span><span class="p">][</span><span class="s2">&quot;value&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">selected_edges</span><span class="p">)</span>
+    <span class="n">edge_cost</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">G</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">v</span><span class="p">][</span><span class="s2">"value"</span><span class="p">]</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">selected_edges</span><span class="p">)</span>
     <span class="c1"># Sum the prizes for all nodes in the connected subgraph.</span>
-    <span class="n">prize_collected</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prize&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">selected_nodes</span><span class="p">)</span>
+    <span class="n">prize_collected</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"prize"</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">selected_nodes</span><span class="p">)</span>
     <span class="n">objective</span> <span class="o">=</span> <span class="n">edge_cost</span> <span class="o">-</span> <span class="n">prize_collected</span>
 
     <span class="k">return</span> <span class="p">{</span>
-        <span class="s2">&quot;edge_cost&quot;</span><span class="p">:</span> <span class="n">edge_cost</span><span class="p">,</span>
-        <span class="s2">&quot;prize_collected&quot;</span><span class="p">:</span> <span class="n">prize_collected</span><span class="p">,</span>
-        <span class="s2">&quot;objective&quot;</span><span class="p">:</span> <span class="n">objective</span><span class="p">,</span>
+        <span class="s2">"edge_cost"</span><span class="p">:</span> <span class="n">edge_cost</span><span class="p">,</span>
+        <span class="s2">"prize_collected"</span><span class="p">:</span> <span class="n">prize_collected</span><span class="p">,</span>
+        <span class="s2">"objective"</span><span class="p">:</span> <span class="n">objective</span><span class="p">,</span>
     <span class="p">}</span>
 
 
@@ -665,11 +669,11 @@
     <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
 
     <span class="c1"># Base layer: faint background graph</span>
-    <span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_edges</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">edge_color</span><span class="o">=</span><span class="s2">&quot;lightgray&quot;</span><span class="p">)</span>
-    <span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_nodes</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">node_size</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">node_color</span><span class="o">=</span><span class="s2">&quot;lightgray&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+    <span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_edges</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">edge_color</span><span class="o">=</span><span class="s2">"lightgray"</span><span class="p">)</span>
+    <span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_nodes</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">node_size</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">node_color</span><span class="o">=</span><span class="s2">"lightgray"</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
 
     <span class="c1"># Selected edges (solution)</span>
-    <span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_edges</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">edgelist</span><span class="o">=</span><span class="n">selected_edges</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span> <span class="n">edge_color</span><span class="o">=</span><span class="s2">&quot;#007acc&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.9</span><span class="p">)</span>
+    <span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_edges</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">edgelist</span><span class="o">=</span><span class="n">selected_edges</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span> <span class="n">edge_color</span><span class="o">=</span><span class="s2">"#007acc"</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.9</span><span class="p">)</span>
 
     <span class="c1"># Selected nodes (solution)</span>
     <span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_nodes</span><span class="p">(</span>
@@ -677,17 +681,17 @@
         <span class="n">pos</span><span class="p">,</span>
         <span class="n">nodelist</span><span class="o">=</span><span class="n">selected_nodes</span><span class="p">,</span>
         <span class="n">node_size</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span>
-        <span class="n">node_color</span><span class="o">=</span><span class="s2">&quot;#d62728&quot;</span><span class="p">,</span>
-        <span class="n">edgecolors</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">,</span>
+        <span class="n">node_color</span><span class="o">=</span><span class="s2">"#d62728"</span><span class="p">,</span>
+        <span class="n">edgecolors</span><span class="o">=</span><span class="s2">"white"</span><span class="p">,</span>
         <span class="n">linewidths</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="c1"># Optional: add labels or prizes</span>
-    <span class="n">node_labels</span> <span class="o">=</span> <span class="p">{</span><span class="n">n</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;prize&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">))</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">selected_nodes</span><span class="p">}</span>
-    <span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_labels</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">node_labels</span><span class="p">,</span> <span class="n">font_size</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">font_color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
+    <span class="n">node_labels</span> <span class="o">=</span> <span class="p">{</span><span class="n">n</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'prize'</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">))</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">selected_nodes</span><span class="p">}</span>
+    <span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_labels</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">node_labels</span><span class="p">,</span> <span class="n">font_size</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">font_color</span><span class="o">=</span><span class="s2">"black"</span><span class="p">)</span>
 
-    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;pcst_fast approx. solution&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s2">&quot;bold&quot;</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;off&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">"pcst_fast approx. solution"</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s2">"bold"</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">"off"</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
@@ -710,12 +714,12 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>({&#39;edge_cost&#39;: 25.822958394858087,
-  &#39;prize_collected&#39;: 235.26839405807772,
-  &#39;objective&#39;: -209.44543566321963},
- {&#39;edge_cost&#39;: 34.323495165255245,
-  &#39;prize_collected&#39;: 310.25687273661805,
-  &#39;objective&#39;: -275.9333775713628})
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>({'edge_cost': 25.822958394858087,
+  'prize_collected': 235.26839405807772,
+  'objective': -209.44543566321963},
+ {'edge_cost': 34.323495165255245,
+  'prize_collected': 310.25687273661805,
+  'objective': -275.9333775713628})
 </pre></div>
 </div>
 </div>
@@ -801,16 +805,16 @@ Gurobi is correctly installed and working.
     <span class="n">features</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">attr</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">get_attr_edges</span><span class="p">()):</span>
-        <span class="n">features</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="s2">&quot;edge&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">attr</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
+        <span class="n">features</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="s2">"edge"</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">attr</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
 
     <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">V</span><span class="p">:</span>
         <span class="n">attr</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">get_attr_vertex</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">attr</span><span class="p">[</span><span class="s2">&quot;terminal&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">attr</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prize&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
-            <span class="c1"># features.append(dict(id=v, mapping=&quot;vertex&quot;, role=&quot;terminal&quot;))</span>
+        <span class="k">if</span> <span class="n">attr</span><span class="p">[</span><span class="s2">"terminal"</span><span class="p">]</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">attr</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"prize"</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="c1"># features.append(dict(id=v, mapping="vertex", role="terminal"))</span>
             <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">attr</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prize&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
-            <span class="n">features</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">v</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="s2">&quot;vertex&quot;</span><span class="p">,</span> <span class="n">role</span><span class="o">=</span><span class="s2">&quot;prize&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">attr</span><span class="p">[</span><span class="s2">&quot;prize&quot;</span><span class="p">]))</span>
-    <span class="n">D</span> <span class="o">=</span> <span class="n">Data</span><span class="o">.</span><span class="n">from_dict</span><span class="p">({</span><span class="s2">&quot;s1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;features&quot;</span><span class="p">:</span> <span class="n">features</span><span class="p">}})</span>
+        <span class="k">elif</span> <span class="n">attr</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"prize"</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="n">features</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">v</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="s2">"vertex"</span><span class="p">,</span> <span class="n">role</span><span class="o">=</span><span class="s2">"prize"</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">attr</span><span class="p">[</span><span class="s2">"prize"</span><span class="p">]))</span>
+    <span class="n">D</span> <span class="o">=</span> <span class="n">Data</span><span class="o">.</span><span class="n">from_dict</span><span class="p">({</span><span class="s2">"s1"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"features"</span><span class="p">:</span> <span class="n">features</span><span class="p">}})</span>
     <span class="k">return</span> <span class="n">D</span>
 
 
@@ -848,7 +852,7 @@ Gurobi is correctly installed and working.
 
 <span class="n">m</span> <span class="o">=</span> <span class="n">PCST</span><span class="p">(</span><span class="n">lambda_reg</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">strict_acyclic</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">P</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">Gc0</span><span class="p">,</span> <span class="n">D</span><span class="p">)</span>
-<span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;gurobi&quot;</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">TimeLimit</span><span class="o">=</span><span class="mi">300</span><span class="p">);</span>
+<span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">"gurobi"</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">TimeLimit</span><span class="o">=</span><span class="mi">300</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -895,9 +899,9 @@ Academic license - for non-commercial use only - expires 2025-12-02
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;edge_cost&#39;: 25.822958394858087,
- &#39;prize_collected&#39;: 235.26839405807772,
- &#39;objective&#39;: -209.44543566321963}
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{'edge_cost': 25.822958394858087,
+ 'prize_collected': 235.26839405807772,
+ 'objective': -209.44543566321963}
 </pre></div>
 </div>
 </div>
@@ -907,7 +911,7 @@ Academic license - for non-commercial use only - expires 2025-12-02
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Gc1</span> <span class="o">=</span> <span class="n">networkx_to_corneto_graph</span><span class="p">(</span><span class="n">G_1</span><span class="p">)</span>
 <span class="n">m</span> <span class="o">=</span> <span class="n">PCST</span><span class="p">(</span><span class="n">lambda_reg</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">strict_acyclic</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">P</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">Gc1</span><span class="p">,</span> <span class="n">get_data</span><span class="p">(</span><span class="n">Gc1</span><span class="p">))</span>
-<span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;gurobi&quot;</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">TimeLimit</span><span class="o">=</span><span class="mi">300</span><span class="p">);</span>
+<span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">"gurobi"</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">TimeLimit</span><span class="o">=</span><span class="mi">300</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -920,9 +924,9 @@ Academic license - for non-commercial use only - expires 2025-12-02
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;edge_cost&#39;: 36.85287997763584,
- &#39;prize_collected&#39;: 315.445743958666,
- &#39;objective&#39;: -278.5928639810302}
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{'edge_cost': 36.85287997763584,
+ 'prize_collected': 315.445743958666,
+ 'objective': -278.5928639810302}
 </pre></div>
 </div>
 </div>
@@ -935,9 +939,9 @@ Academic license - for non-commercial use only - expires 2025-12-02
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;edge_cost&#39;: 34.323495165255245,
- &#39;prize_collected&#39;: 310.25687273661805,
- &#39;objective&#39;: -275.9333775713628}
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{'edge_cost': 34.323495165255245,
+ 'prize_collected': 310.25687273661805,
+ 'objective': -275.9333775713628}
 </pre></div>
 </div>
 </div>
@@ -950,7 +954,7 @@ Academic license - for non-commercial use only - expires 2025-12-02
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Lets combine both problems into one multi PCST</span>
 <span class="n">dataset</span> <span class="o">=</span> <span class="n">get_data</span><span class="p">(</span><span class="n">Gc0</span><span class="p">)</span>
-<span class="n">dataset</span><span class="o">.</span><span class="n">add_sample</span><span class="p">(</span><span class="s2">&quot;s2&quot;</span><span class="p">,</span> <span class="n">get_data</span><span class="p">(</span><span class="n">Gc1</span><span class="p">)</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="s2">&quot;s1&quot;</span><span class="p">])</span>
+<span class="n">dataset</span><span class="o">.</span><span class="n">add_sample</span><span class="p">(</span><span class="s2">"s2"</span><span class="p">,</span> <span class="n">get_data</span><span class="p">(</span><span class="n">Gc1</span><span class="p">)</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="s2">"s1"</span><span class="p">])</span>
 <span class="n">dataset</span>
 </pre></div>
 </div>
@@ -964,9 +968,9 @@ Academic license - for non-commercial use only - expires 2025-12-02
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Gc_original</span> <span class="o">=</span> <span class="n">networkx_to_corneto_graph</span><span class="p">(</span><span class="n">G_original</span><span class="p">)</span>
-<span class="n">m</span> <span class="o">=</span> <span class="n">PCST</span><span class="p">(</span><span class="n">lambda_reg</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">strict_acyclic</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">root_selection_strategy</span><span class="o">=</span><span class="s2">&quot;best&quot;</span><span class="p">)</span>
+<span class="n">m</span> <span class="o">=</span> <span class="n">PCST</span><span class="p">(</span><span class="n">lambda_reg</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">strict_acyclic</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">root_selection_strategy</span><span class="o">=</span><span class="s2">"best"</span><span class="p">)</span>
 <span class="n">P</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">Gc_original</span><span class="p">,</span> <span class="n">dataset</span><span class="p">)</span>
-<span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;gurobi&quot;</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">TimeLimit</span><span class="o">=</span><span class="mi">30</span><span class="p">);</span>
+<span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">"gurobi"</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">TimeLimit</span><span class="o">=</span><span class="mi">30</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -980,9 +984,9 @@ Academic license - for non-commercial use only - expires 2025-12-02
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;edge_cost&#39;: 25.822958394858087,
- &#39;prize_collected&#39;: 235.26839405807772,
- &#39;objective&#39;: -209.44543566321963}
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{'edge_cost': 25.822958394858087,
+ 'prize_collected': 235.26839405807772,
+ 'objective': -209.44543566321963}
 </pre></div>
 </div>
 </div>
@@ -995,16 +999,16 @@ Academic license - for non-commercial use only - expires 2025-12-02
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;edge_cost&#39;: 36.85287997763584,
- &#39;prize_collected&#39;: 315.445743958666,
- &#39;objective&#39;: -278.5928639810302}
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{'edge_cost': 36.85287997763584,
+ 'prize_collected': 315.445743958666,
+ 'objective': -278.5928639810302}
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">m</span><span class="o">.</span><span class="n">processed_graph</span><span class="o">.</span><span class="n">edge_subgraph</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">with_flow</span><span class="o">.</span><span class="n">value</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">))</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">layout</span><span class="o">=</span><span class="s2">&quot;neato&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">m</span><span class="o">.</span><span class="n">processed_graph</span><span class="o">.</span><span class="n">edge_subgraph</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">with_flow</span><span class="o">.</span><span class="n">value</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">))</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">layout</span><span class="o">=</span><span class="s2">"neato"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1014,7 +1018,7 @@ Academic license - for non-commercial use only - expires 2025-12-02
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">m</span><span class="o">.</span><span class="n">processed_graph</span><span class="o">.</span><span class="n">edge_subgraph</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">with_flow</span><span class="o">.</span><span class="n">value</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">))</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">layout</span><span class="o">=</span><span class="s2">&quot;neato&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">m</span><span class="o">.</span><span class="n">processed_graph</span><span class="o">.</span><span class="n">edge_subgraph</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">with_flow</span><span class="o">.</span><span class="n">value</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">))</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">layout</span><span class="o">=</span><span class="s2">"neato"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1062,9 +1066,9 @@ Academic license - for non-commercial use only - expires 2025-12-02
     <span class="mf">25.0</span><span class="p">,</span>
     <span class="mf">30.0</span><span class="p">,</span>
 <span class="p">]:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Lambda = </span><span class="si">{</span><span class="n">l</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Lambda = </span><span class="si">{</span><span class="n">l</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
     <span class="n">m</span><span class="o">.</span><span class="n">lambda_reg_param</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">l</span>
-    <span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;gurobi&quot;</span><span class="p">,</span> <span class="n">warm_start</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">TimeLimit</span><span class="o">=</span><span class="mi">120</span><span class="p">)</span>
+    <span class="n">P</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">"gurobi"</span><span class="p">,</span> <span class="n">warm_start</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">TimeLimit</span><span class="o">=</span><span class="mi">120</span><span class="p">)</span>
     <span class="n">sol0</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">processed_graph</span><span class="o">.</span><span class="n">edge_subgraph</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">with_flow</span><span class="o">.</span><span class="n">value</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">))</span>
     <span class="n">sol1</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">processed_graph</span><span class="o">.</span><span class="n">edge_subgraph</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">with_flow</span><span class="o">.</span><span class="n">value</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">))</span>
     <span class="c1"># Network union size</span>
@@ -1078,8 +1082,8 @@ Academic license - for non-commercial use only - expires 2025-12-02
     <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
         <span class="p">(</span>
             <span class="n">l</span><span class="p">,</span>
-            <span class="n">score1</span><span class="p">[</span><span class="s2">&quot;objective&quot;</span><span class="p">],</span>
-            <span class="n">score2</span><span class="p">[</span><span class="s2">&quot;objective&quot;</span><span class="p">],</span>
+            <span class="n">score1</span><span class="p">[</span><span class="s2">"objective"</span><span class="p">],</span>
+            <span class="n">score2</span><span class="p">[</span><span class="s2">"objective"</span><span class="p">],</span>
             <span class="n">jaccard</span><span class="p">,</span>
             <span class="n">hamming</span><span class="p">,</span>
             <span class="n">union_size</span><span class="p">,</span>
@@ -1087,87 +1091,87 @@ Academic license - for non-commercial use only - expires 2025-12-02
             <span class="n">size_1</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; &gt; Obj. sample 1:&quot;</span><span class="p">,</span> <span class="n">score1</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; &gt; Obj. sample 2:&quot;</span><span class="p">,</span> <span class="n">score2</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; &gt; Jaccard dist.:&quot;</span><span class="p">,</span> <span class="n">jaccard</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; &gt; Hamming dist.:&quot;</span><span class="p">,</span> <span class="n">hamming</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">" &gt; Obj. sample 1:"</span><span class="p">,</span> <span class="n">score1</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">" &gt; Obj. sample 2:"</span><span class="p">,</span> <span class="n">score2</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">" &gt; Jaccard dist.:"</span><span class="p">,</span> <span class="n">jaccard</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">" &gt; Hamming dist.:"</span><span class="p">,</span> <span class="n">hamming</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Lambda = 0.0
- &gt; Obj. sample 1: {&#39;edge_cost&#39;: 25.822958394858087, &#39;prize_collected&#39;: 235.26839405807772, &#39;objective&#39;: -209.44543566321963}
- &gt; Obj. sample 2: {&#39;edge_cost&#39;: 36.85287997763584, &#39;prize_collected&#39;: 315.445743958666, &#39;objective&#39;: -278.5928639810302}
+ &gt; Obj. sample 1: {'edge_cost': 25.822958394858087, 'prize_collected': 235.26839405807772, 'objective': -209.44543566321963}
+ &gt; Obj. sample 2: {'edge_cost': 36.85287997763584, 'prize_collected': 315.445743958666, 'objective': -278.5928639810302}
  &gt; Jaccard dist.: 0.02127659574468085
  &gt; Hamming dist.: 0.9346590909090909
 Lambda = 0.5
- &gt; Obj. sample 1: {&#39;edge_cost&#39;: 25.822958394858087, &#39;prize_collected&#39;: 235.26839405807772, &#39;objective&#39;: -209.44543566321963}
- &gt; Obj. sample 2: {&#39;edge_cost&#39;: 32.57672368032401, &#39;prize_collected&#39;: 310.25687273661805, &#39;objective&#39;: -277.68014905629406}
+ &gt; Obj. sample 1: {'edge_cost': 25.822958394858087, 'prize_collected': 235.26839405807772, 'objective': -209.44543566321963}
+ &gt; Obj. sample 2: {'edge_cost': 32.57672368032401, 'prize_collected': 310.25687273661805, 'objective': -277.68014905629406}
  &gt; Jaccard dist.: 0.022727272727272728
  &gt; Hamming dist.: 0.9389204545454546
 Lambda = 1.0
- &gt; Obj. sample 1: {&#39;edge_cost&#39;: 25.822958394858087, &#39;prize_collected&#39;: 235.26839405807772, &#39;objective&#39;: -209.44543566321963}
- &gt; Obj. sample 2: {&#39;edge_cost&#39;: 33.23852158520403, &#39;prize_collected&#39;: 310.25687273661805, &#39;objective&#39;: -277.01835115141404}
+ &gt; Obj. sample 1: {'edge_cost': 25.822958394858087, 'prize_collected': 235.26839405807772, 'objective': -209.44543566321963}
+ &gt; Obj. sample 2: {'edge_cost': 33.23852158520403, 'prize_collected': 310.25687273661805, 'objective': -277.01835115141404}
  &gt; Jaccard dist.: 0.023255813953488372
  &gt; Hamming dist.: 0.9403409090909091
 Lambda = 1.5
- &gt; Obj. sample 1: {&#39;edge_cost&#39;: 25.822958394858087, &#39;prize_collected&#39;: 235.26839405807772, &#39;objective&#39;: -209.44543566321963}
- &gt; Obj. sample 2: {&#39;edge_cost&#39;: 32.675953291132046, &#39;prize_collected&#39;: 306.3730702170471, &#39;objective&#39;: -273.69711692591505}
+ &gt; Obj. sample 1: {'edge_cost': 25.822958394858087, 'prize_collected': 235.26839405807772, 'objective': -209.44543566321963}
+ &gt; Obj. sample 2: {'edge_cost': 32.675953291132046, 'prize_collected': 306.3730702170471, 'objective': -273.69711692591505}
  &gt; Jaccard dist.: 0.025
  &gt; Hamming dist.: 0.9446022727272727
 Lambda = 2.0
- &gt; Obj. sample 1: {&#39;edge_cost&#39;: 27.354768134907065, &#39;prize_collected&#39;: 235.26839405807772, &#39;objective&#39;: -207.91362592317066}
- &gt; Obj. sample 2: {&#39;edge_cost&#39;: 32.675953291132046, &#39;prize_collected&#39;: 306.3730702170471, &#39;objective&#39;: -273.69711692591505}
+ &gt; Obj. sample 1: {'edge_cost': 27.354768134907065, 'prize_collected': 235.26839405807772, 'objective': -207.91362592317066}
+ &gt; Obj. sample 2: {'edge_cost': 32.675953291132046, 'prize_collected': 306.3730702170471, 'objective': -273.69711692591505}
  &gt; Jaccard dist.: 0.02564102564102564
  &gt; Hamming dist.: 0.9460227272727273
 Lambda = 2.5
- &gt; Obj. sample 1: {&#39;edge_cost&#39;: 27.354768134907065, &#39;prize_collected&#39;: 235.26839405807772, &#39;objective&#39;: -207.91362592317066}
- &gt; Obj. sample 2: {&#39;edge_cost&#39;: 32.675953291132046, &#39;prize_collected&#39;: 306.3730702170471, &#39;objective&#39;: -273.69711692591505}
+ &gt; Obj. sample 1: {'edge_cost': 27.354768134907065, 'prize_collected': 235.26839405807772, 'objective': -207.91362592317066}
+ &gt; Obj. sample 2: {'edge_cost': 32.675953291132046, 'prize_collected': 306.3730702170471, 'objective': -273.69711692591505}
  &gt; Jaccard dist.: 0.02564102564102564
  &gt; Hamming dist.: 0.9460227272727273
 Lambda = 3.0
- &gt; Obj. sample 1: {&#39;edge_cost&#39;: 25.06505287957105, &#39;prize_collected&#39;: 226.7623826795313, &#39;objective&#39;: -201.69732979996024}
- &gt; Obj. sample 2: {&#39;edge_cost&#39;: 37.23012326447901, &#39;prize_collected&#39;: 306.3730702170471, &#39;objective&#39;: -269.1429469525681}
+ &gt; Obj. sample 1: {'edge_cost': 25.06505287957105, 'prize_collected': 226.7623826795313, 'objective': -201.69732979996024}
+ &gt; Obj. sample 2: {'edge_cost': 37.23012326447901, 'prize_collected': 306.3730702170471, 'objective': -269.1429469525681}
  &gt; Jaccard dist.: 0.11428571428571428
  &gt; Hamming dist.: 0.9559659090909091
 Lambda = 3.5
- &gt; Obj. sample 1: {&#39;edge_cost&#39;: 25.06505287957105, &#39;prize_collected&#39;: 226.7623826795313, &#39;objective&#39;: -201.69732979996024}
- &gt; Obj. sample 2: {&#39;edge_cost&#39;: 37.23012326447901, &#39;prize_collected&#39;: 306.3730702170471, &#39;objective&#39;: -269.1429469525681}
+ &gt; Obj. sample 1: {'edge_cost': 25.06505287957105, 'prize_collected': 226.7623826795313, 'objective': -201.69732979996024}
+ &gt; Obj. sample 2: {'edge_cost': 37.23012326447901, 'prize_collected': 306.3730702170471, 'objective': -269.1429469525681}
  &gt; Jaccard dist.: 0.11428571428571428
  &gt; Hamming dist.: 0.9559659090909091
 Lambda = 4.0
- &gt; Obj. sample 1: {&#39;edge_cost&#39;: 25.06505287957105, &#39;prize_collected&#39;: 226.7623826795313, &#39;objective&#39;: -201.69732979996024}
- &gt; Obj. sample 2: {&#39;edge_cost&#39;: 37.23012326447901, &#39;prize_collected&#39;: 306.3730702170471, &#39;objective&#39;: -269.1429469525681}
+ &gt; Obj. sample 1: {'edge_cost': 25.06505287957105, 'prize_collected': 226.7623826795313, 'objective': -201.69732979996024}
+ &gt; Obj. sample 2: {'edge_cost': 37.23012326447901, 'prize_collected': 306.3730702170471, 'objective': -269.1429469525681}
  &gt; Jaccard dist.: 0.11428571428571428
  &gt; Hamming dist.: 0.9559659090909091
 Lambda = 5.0
- &gt; Obj. sample 1: {&#39;edge_cost&#39;: 25.06505287957105, &#39;prize_collected&#39;: 226.7623826795313, &#39;objective&#39;: -201.69732979996024}
- &gt; Obj. sample 2: {&#39;edge_cost&#39;: 41.6153825760545, &#39;prize_collected&#39;: 306.3730702170471, &#39;objective&#39;: -264.7576876409926}
+ &gt; Obj. sample 1: {'edge_cost': 25.06505287957105, 'prize_collected': 226.7623826795313, 'objective': -201.69732979996024}
+ &gt; Obj. sample 2: {'edge_cost': 41.6153825760545, 'prize_collected': 306.3730702170471, 'objective': -264.7576876409926}
  &gt; Jaccard dist.: 0.11764705882352941
  &gt; Hamming dist.: 0.9573863636363636
 Lambda = 10.0
- &gt; Obj. sample 1: {&#39;edge_cost&#39;: 29.873970790503922, &#39;prize_collected&#39;: 209.45160128136507, &#39;objective&#39;: -179.57763049086114}
- &gt; Obj. sample 2: {&#39;edge_cost&#39;: 11.773022910393657, &#39;prize_collected&#39;: 205.71245009237012, &#39;objective&#39;: -193.93942718197647}
+ &gt; Obj. sample 1: {'edge_cost': 29.873970790503922, 'prize_collected': 209.45160128136507, 'objective': -179.57763049086114}
+ &gt; Obj. sample 2: {'edge_cost': 11.773022910393657, 'prize_collected': 205.71245009237012, 'objective': -193.93942718197647}
  &gt; Jaccard dist.: 0.2
  &gt; Hamming dist.: 0.9772727272727273
 Lambda = 15.0
- &gt; Obj. sample 1: {&#39;edge_cost&#39;: 5.876474987352459, &#39;prize_collected&#39;: 123.35287700024452, &#39;objective&#39;: -117.47640201289207}
- &gt; Obj. sample 2: {&#39;edge_cost&#39;: 12.990982215735158, &#39;prize_collected&#39;: 182.45966655838677, &#39;objective&#39;: -169.4686843426516}
+ &gt; Obj. sample 1: {'edge_cost': 5.876474987352459, 'prize_collected': 123.35287700024452, 'objective': -117.47640201289207}
+ &gt; Obj. sample 2: {'edge_cost': 12.990982215735158, 'prize_collected': 182.45966655838677, 'objective': -169.4686843426516}
  &gt; Jaccard dist.: 0.0
  &gt; Hamming dist.: 0.9815340909090909
 Lambda = 20.0
- &gt; Obj. sample 1: {&#39;edge_cost&#39;: 1.5234903706826128, &#39;prize_collected&#39;: 88.96918230765598, &#39;objective&#39;: -87.44569193697338}
- &gt; Obj. sample 2: {&#39;edge_cost&#39;: 5.680730602469671, &#39;prize_collected&#39;: 141.21595993438885, &#39;objective&#39;: -135.53522933191917}
+ &gt; Obj. sample 1: {'edge_cost': 1.5234903706826128, 'prize_collected': 88.96918230765598, 'objective': -87.44569193697338}
+ &gt; Obj. sample 2: {'edge_cost': 5.680730602469671, 'prize_collected': 141.21595993438885, 'objective': -135.53522933191917}
  &gt; Jaccard dist.: 0.0
  &gt; Hamming dist.: 0.9886363636363636
 Lambda = 25.0
- &gt; Obj. sample 1: {&#39;edge_cost&#39;: 1.5234903706826128, &#39;prize_collected&#39;: 88.96918230765598, &#39;objective&#39;: -87.44569193697338}
- &gt; Obj. sample 2: {&#39;edge_cost&#39;: 2.4332735323262424, &#39;prize_collected&#39;: 96.91390245614741, &#39;objective&#39;: -94.48062892382117}
+ &gt; Obj. sample 1: {'edge_cost': 1.5234903706826128, 'prize_collected': 88.96918230765598, 'objective': -87.44569193697338}
+ &gt; Obj. sample 2: {'edge_cost': 2.4332735323262424, 'prize_collected': 96.91390245614741, 'objective': -94.48062892382117}
  &gt; Jaccard dist.: 0.0
  &gt; Hamming dist.: 0.9914772727272727
 Lambda = 30.0
- &gt; Obj. sample 1: {&#39;edge_cost&#39;: 1.5234903706826128, &#39;prize_collected&#39;: 88.96918230765598, &#39;objective&#39;: -87.44569193697338}
- &gt; Obj. sample 2: {&#39;edge_cost&#39;: 2.4332735323262424, &#39;prize_collected&#39;: 96.91390245614741, &#39;objective&#39;: -94.48062892382117}
+ &gt; Obj. sample 1: {'edge_cost': 1.5234903706826128, 'prize_collected': 88.96918230765598, 'objective': -87.44569193697338}
+ &gt; Obj. sample 2: {'edge_cost': 2.4332735323262424, 'prize_collected': 96.91390245614741, 'objective': -94.48062892382117}
  &gt; Jaccard dist.: 0.0
  &gt; Hamming dist.: 0.9914772727272727
 </pre></div>
@@ -1183,21 +1187,21 @@ Lambda = 30.0
 <span class="n">df_r</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
     <span class="n">results</span><span class="p">,</span>
     <span class="n">columns</span><span class="o">=</span><span class="p">[</span>
-        <span class="s2">&quot;lambda&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;obj1&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;obj2&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;jaccard&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;hamming&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;union_size&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;size_s0&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;size_s1&quot;</span><span class="p">,</span>
+        <span class="s2">"lambda"</span><span class="p">,</span>
+        <span class="s2">"obj1"</span><span class="p">,</span>
+        <span class="s2">"obj2"</span><span class="p">,</span>
+        <span class="s2">"jaccard"</span><span class="p">,</span>
+        <span class="s2">"hamming"</span><span class="p">,</span>
+        <span class="s2">"union_size"</span><span class="p">,</span>
+        <span class="s2">"size_s0"</span><span class="p">,</span>
+        <span class="s2">"size_s1"</span><span class="p">,</span>
     <span class="p">],</span>
 <span class="p">)</span>
-<span class="n">df_r</span><span class="p">[</span><span class="s2">&quot;total_obj&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_r</span><span class="p">[</span><span class="s2">&quot;obj1&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">df_r</span><span class="p">[</span><span class="s2">&quot;obj2&quot;</span><span class="p">]</span>
-<span class="n">df_r</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s2">&quot;lambda&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;hamming&quot;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-<span class="n">df_r</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s2">&quot;lambda&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;jaccard&quot;</span><span class="p">,</span> <span class="n">secondary_y</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-<span class="n">df_r</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s2">&quot;lambda&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;union_size&quot;</span><span class="p">,</span> <span class="s2">&quot;size_s0&quot;</span><span class="p">,</span> <span class="s2">&quot;size_s1&quot;</span><span class="p">],</span> <span class="n">ax</span><span class="o">=</span><span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-<span class="n">df_r</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s2">&quot;lambda&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;obj1&quot;</span><span class="p">,</span> <span class="s2">&quot;obj2&quot;</span><span class="p">],</span> <span class="n">ax</span><span class="o">=</span><span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">df_r</span><span class="p">[</span><span class="s2">"total_obj"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_r</span><span class="p">[</span><span class="s2">"obj1"</span><span class="p">]</span> <span class="o">+</span> <span class="n">df_r</span><span class="p">[</span><span class="s2">"obj2"</span><span class="p">]</span>
+<span class="n">df_r</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s2">"lambda"</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">"hamming"</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">df_r</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s2">"lambda"</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">"jaccard"</span><span class="p">,</span> <span class="n">secondary_y</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">df_r</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s2">"lambda"</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="p">[</span><span class="s2">"union_size"</span><span class="p">,</span> <span class="s2">"size_s0"</span><span class="p">,</span> <span class="s2">"size_s1"</span><span class="p">],</span> <span class="n">ax</span><span class="o">=</span><span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">df_r</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s2">"lambda"</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="p">[</span><span class="s2">"obj1"</span><span class="p">,</span> <span class="s2">"obj2"</span><span class="p">],</span> <span class="n">ax</span><span class="o">=</span><span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -1210,12 +1214,12 @@ Lambda = 30.0
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compare total objective for the two samples vs jaccard distance</span>
 <span class="c1"># NOTE: Lower values are better, since the problem is framed as a minimization</span>
-<span class="n">df_r</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s2">&quot;total_obj&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;jaccard&quot;</span><span class="p">)</span>
+<span class="n">df_r</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s2">"total_obj"</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">"jaccard"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Axes: xlabel=&#39;total_obj&#39;&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Axes: xlabel='total_obj'&gt;
 </pre></div>
 </div>
 <img alt="../../_images/ce016ab36343b0f3985330728280583f44cd206c9e6ae643afdc380350808871.png" src="../../_images/ce016ab36343b0f3985330728280583f44cd206c9e6ae643afdc380350808871.png" />
@@ -1244,11 +1248,11 @@ Lambda = 30.0
       </div>
     </a>
     <a class="right-next"
-       href="../metabolism/index.html"
+       href="../causal/index.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Metabolism</p>
+        <p class="prev-next-title">Causal and structural modeling</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -1290,8 +1294,8 @@ Lambda = 30.0
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1317,7 +1321,7 @@ Lambda = 30.0
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
 </p></div>
       
     </div>

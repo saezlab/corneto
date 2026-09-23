@@ -27,8 +27,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
@@ -36,10 +36,10 @@
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=53e23fa6" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
     <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
@@ -66,8 +66,8 @@
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'guide/signaling/phonemes';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1786146192';
+        DOCUMENTATION_OPTIONS.theme_version = '0.21.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1790177872';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'stable';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
@@ -419,6 +419,10 @@
 <li class="toctree-l2"><a class="reference internal" href="../networks/multi-pcst-grb.html">Multi-sample PCST</a></li>
 </ul>
 </details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../causal/index.html">Causal and structural modeling</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../causal/linear-dag-discovery.html">Discovering a linear causal signaling network from perturbation data</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../metabolism/index.html">Metabolism</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../metabolism/flux-balance-analysis.html">Flux balance analysis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../metabolism/multicondition-sfba.html">Multi-condition FBA</a></li>
@@ -588,23 +592,23 @@ r_v = \log_2\left(\frac{p_v}{p_{\mathrm{threshold}}}\right).
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">scores</span> <span class="o">=</span> <span class="n">compute_phonemes_scores</span><span class="p">(</span>
     <span class="p">{</span>
-        <span class="s2">&quot;ERK1_S123&quot;</span><span class="p">:</span> <span class="mf">0.001</span><span class="p">,</span>
-        <span class="s2">&quot;AKT1_S473&quot;</span><span class="p">:</span> <span class="mf">0.20</span><span class="p">,</span>
+        <span class="s2">"ERK1_S123"</span><span class="p">:</span> <span class="mf">0.001</span><span class="p">,</span>
+        <span class="s2">"AKT1_S473"</span><span class="p">:</span> <span class="mf">0.20</span><span class="p">,</span>
     <span class="p">},</span>
     <span class="n">fold_changes</span><span class="o">=</span><span class="p">{</span>
-        <span class="s2">&quot;ERK1_S123&quot;</span><span class="p">:</span> <span class="mf">2.1</span><span class="p">,</span>
-        <span class="s2">&quot;AKT1_S473&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span>
+        <span class="s2">"ERK1_S123"</span><span class="p">:</span> <span class="mf">2.1</span><span class="p">,</span>
+        <span class="s2">"AKT1_S473"</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span>
     <span class="p">},</span>
     <span class="n">pvalue_threshold</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span>
     <span class="n">fold_change_threshold</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
-    <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span>
+    <span class="n">direction</span><span class="o">=</span><span class="s2">"both"</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">scores</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;ERK1_S123&#39;: -1.0, &#39;AKT1_S473&#39;: 1.0}
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{'ERK1_S123': -1.0, 'AKT1_S473': 1.0}
 </pre></div>
 </div>
 </div>
@@ -616,31 +620,31 @@ r_v = \log_2\left(\frac{p_v}{p_{\mathrm{threshold}}}\right).
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pkn_edges</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="p">(</span><span class="s2">&quot;EGFR&quot;</span><span class="p">,</span> <span class="s2">&quot;MAP2K1&quot;</span><span class="p">),</span>
-    <span class="p">(</span><span class="s2">&quot;MAP2K1&quot;</span><span class="p">,</span> <span class="s2">&quot;ERK1_S123&quot;</span><span class="p">),</span>
-    <span class="p">(</span><span class="s2">&quot;EGFR&quot;</span><span class="p">,</span> <span class="s2">&quot;SHC1&quot;</span><span class="p">),</span>
-    <span class="p">(</span><span class="s2">&quot;SHC1&quot;</span><span class="p">,</span> <span class="s2">&quot;GRB2&quot;</span><span class="p">),</span>
-    <span class="p">(</span><span class="s2">&quot;GRB2&quot;</span><span class="p">,</span> <span class="s2">&quot;ERK1_S123&quot;</span><span class="p">),</span>
-    <span class="p">(</span><span class="s2">&quot;EGFR&quot;</span><span class="p">,</span> <span class="s2">&quot;PIK3CA&quot;</span><span class="p">),</span>
-    <span class="p">(</span><span class="s2">&quot;PIK3CA&quot;</span><span class="p">,</span> <span class="s2">&quot;AKT1_S473&quot;</span><span class="p">),</span>
-    <span class="p">(</span><span class="s2">&quot;noise_1&quot;</span><span class="p">,</span> <span class="s2">&quot;noise_2&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"EGFR"</span><span class="p">,</span> <span class="s2">"MAP2K1"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"MAP2K1"</span><span class="p">,</span> <span class="s2">"ERK1_S123"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"EGFR"</span><span class="p">,</span> <span class="s2">"SHC1"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"SHC1"</span><span class="p">,</span> <span class="s2">"GRB2"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"GRB2"</span><span class="p">,</span> <span class="s2">"ERK1_S123"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"EGFR"</span><span class="p">,</span> <span class="s2">"PIK3CA"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"PIK3CA"</span><span class="p">,</span> <span class="s2">"AKT1_S473"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"noise_1"</span><span class="p">,</span> <span class="s2">"noise_2"</span><span class="p">),</span>
 <span class="p">]</span>
 
 <span class="n">pkn</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
 <span class="n">pkn</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">pkn_edges</span><span class="p">)</span>
 
 <span class="n">pkn</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
-    <span class="n">graph_attr</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;rankdir&quot;</span><span class="p">:</span> <span class="s2">&quot;LR&quot;</span><span class="p">},</span>
+    <span class="n">graph_attr</span><span class="o">=</span><span class="p">{</span><span class="s2">"rankdir"</span><span class="p">:</span> <span class="s2">"LR"</span><span class="p">},</span>
     <span class="n">node_attr</span><span class="o">=</span><span class="p">{</span>
-        <span class="s2">&quot;fixedsize&quot;</span><span class="p">:</span> <span class="s2">&quot;false&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="s2">&quot;box&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;style&quot;</span><span class="p">:</span> <span class="s2">&quot;rounded&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;margin&quot;</span><span class="p">:</span> <span class="s2">&quot;0.08,0.04&quot;</span><span class="p">,</span>
+        <span class="s2">"fixedsize"</span><span class="p">:</span> <span class="s2">"false"</span><span class="p">,</span>
+        <span class="s2">"shape"</span><span class="p">:</span> <span class="s2">"box"</span><span class="p">,</span>
+        <span class="s2">"style"</span><span class="p">:</span> <span class="s2">"rounded"</span><span class="p">,</span>
+        <span class="s2">"margin"</span><span class="p">:</span> <span class="s2">"0.08,0.04"</span><span class="p">,</span>
     <span class="p">},</span>
     <span class="n">custom_vertex_attr</span><span class="o">=</span><span class="p">{</span>
-        <span class="s2">&quot;EGFR&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;fillcolor&quot;</span><span class="p">:</span> <span class="s2">&quot;#f3c969&quot;</span><span class="p">,</span> <span class="s2">&quot;style&quot;</span><span class="p">:</span> <span class="s2">&quot;rounded,filled&quot;</span><span class="p">},</span>
-        <span class="s2">&quot;ERK1_S123&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;fillcolor&quot;</span><span class="p">:</span> <span class="s2">&quot;#90be6d&quot;</span><span class="p">,</span> <span class="s2">&quot;style&quot;</span><span class="p">:</span> <span class="s2">&quot;rounded,filled&quot;</span><span class="p">},</span>
-        <span class="s2">&quot;AKT1_S473&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;fillcolor&quot;</span><span class="p">:</span> <span class="s2">&quot;#f28482&quot;</span><span class="p">,</span> <span class="s2">&quot;style&quot;</span><span class="p">:</span> <span class="s2">&quot;rounded,filled&quot;</span><span class="p">},</span>
+        <span class="s2">"EGFR"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"fillcolor"</span><span class="p">:</span> <span class="s2">"#f3c969"</span><span class="p">,</span> <span class="s2">"style"</span><span class="p">:</span> <span class="s2">"rounded,filled"</span><span class="p">},</span>
+        <span class="s2">"ERK1_S123"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"fillcolor"</span><span class="p">:</span> <span class="s2">"#90be6d"</span><span class="p">,</span> <span class="s2">"style"</span><span class="p">:</span> <span class="s2">"rounded,filled"</span><span class="p">},</span>
+        <span class="s2">"AKT1_S473"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"fillcolor"</span><span class="p">:</span> <span class="s2">"#f28482"</span><span class="p">,</span> <span class="s2">"style"</span><span class="p">:</span> <span class="s2">"rounded,filled"</span><span class="p">},</span>
     <span class="p">}</span>
 <span class="p">)</span>
 </pre></div>
@@ -666,16 +670,16 @@ r_v = \log_2\left(\frac{p_v}{p_{\mathrm{threshold}}}\right).
 <span class="n">method</span> <span class="o">=</span> <span class="n">PHONEMeS</span><span class="p">()</span>
 <span class="n">problem</span> <span class="o">=</span> <span class="n">method</span><span class="o">.</span><span class="n">build</span><span class="p">(</span>
     <span class="n">pkn</span><span class="p">,</span>
-    <span class="n">perturbations</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;EGFR&quot;</span><span class="p">],</span>
+    <span class="n">perturbations</span><span class="o">=</span><span class="p">[</span><span class="s2">"EGFR"</span><span class="p">],</span>
     <span class="n">phosphosite_scores</span><span class="o">=</span><span class="n">scores</span><span class="p">,</span>
     <span class="n">edge_costs</span><span class="o">=</span><span class="n">edge_costs</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="n">problem</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;scipy&quot;</span><span class="p">)</span>
+<span class="n">problem</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">"scipy"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Problem(Minimize(Expression(AFFINE, UNKNOWN, ())), [Inequality(Constant(CONSTANT, NONNEGATIVE, (10, 1))), Inequality(Variable((10, 1), _flow)), Inequality(Constant(CONSTANT, ZERO, (7, 1))), Inequality(Variable((7, 1), _dag_layer)), Equality(Expression(AFFINE, UNKNOWN, (7, 1)), Constant(CONSTANT, ZERO, ())), Inequality(Expression(AFFINE, NONNEGATIVE, (10, 1))), Equality(Expression(AFFINE, ZERO, (10, 1)), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, NONNEGATIVE, (10, 1)), Constant(CONSTANT, ZERO, ())), Inequality(Expression(AFFINE, NONNEGATIVE, (10, 1))), Inequality(Variable((10, 1), _flow)), Inequality(Expression(AFFINE, UNKNOWN, (7, 1))), Inequality(Expression(AFFINE, UNKNOWN, (7, 1))), Inequality(Expression(AFFINE, UNKNOWN, (7, 1))), Inequality(Expression(AFFINE, UNKNOWN, (7, 1))), Inequality(Expression(AFFINE, NONNEGATIVE, (7, 1))), Inequality(Expression(AFFINE, NONNEGATIVE, (7, 1))), Inequality(Constant(CONSTANT, NONNEGATIVE, (7, 1))), Inequality(Expression(AFFINE, NONNEGATIVE, (7, 1))), Inequality(Expression(AFFINE, NONNEGATIVE, (7, 1)))])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Problem(Minimize(Expression(AFFINE, UNKNOWN, ())), [Inequality(Constant(CONSTANT, NONNEGATIVE, (10, 1))), Inequality(Variable((10, 1), _flow)), Inequality(Constant(CONSTANT, ZERO, (7, 1))), Inequality(Variable((7, 1), _dag_layer)), Equality(Expression(AFFINE, UNKNOWN, (7, 1)), Constant(CONSTANT, ZERO, ())), Inequality(Expression(AFFINE, NONNEGATIVE, (7, 1))), Inequality(Expression(AFFINE, UNKNOWN, (7, 1))), Equality(Expression(AFFINE, NONNEGATIVE, (7,)), Expression(AFFINE, NONNEGATIVE, (7,))), Inequality(Expression(AFFINE, UNKNOWN, (7, 1))), Inequality(Expression(AFFINE, UNKNOWN, (7, 1))), Inequality(Expression(AFFINE, NONNEGATIVE, (7, 1))), Inequality(Expression(AFFINE, NONNEGATIVE, (7, 1))), Inequality(Constant(CONSTANT, NONNEGATIVE, (7, 1))), Inequality(Expression(AFFINE, NONNEGATIVE, (7, 1))), Inequality(Expression(AFFINE, NONNEGATIVE, (7, 1)))])
 </pre></div>
 </div>
 </div>
@@ -700,14 +704,14 @@ r_v = \log_2\left(\frac{p_v}{p_{\mathrm{threshold}}}\right).
     <span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">source</span><span class="p">)),</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">target</span><span class="p">)))</span>
     <span class="k">for</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">inferred_network</span><span class="o">.</span><span class="n">E</span>
 <span class="p">]</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Selected vertices:&quot;</span><span class="p">,</span> <span class="n">selected_vertex_names</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Selected interactions:&quot;</span><span class="p">,</span> <span class="n">selected_interactions</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Selected vertices:"</span><span class="p">,</span> <span class="n">selected_vertex_names</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Selected interactions:"</span><span class="p">,</span> <span class="n">selected_interactions</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Selected vertices: [&#39;EGFR&#39;, &#39;ERK1_S123&#39;, &#39;SHC1&#39;, &#39;GRB2&#39;]
-Selected interactions: [(&#39;EGFR&#39;, &#39;SHC1&#39;), (&#39;SHC1&#39;, &#39;GRB2&#39;), (&#39;GRB2&#39;, &#39;ERK1_S123&#39;)]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Selected vertices: ['EGFR', 'ERK1_S123', 'SHC1', 'GRB2']
+Selected interactions: [('EGFR', 'SHC1'), ('SHC1', 'GRB2'), ('GRB2', 'ERK1_S123')]
 </pre></div>
 </div>
 </div>
@@ -716,20 +720,20 @@ Selected interactions: [(&#39;EGFR&#39;, &#39;SHC1&#39;), (&#39;SHC1&#39;, &#39;
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">inferred_network</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
-    <span class="n">graph_attr</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;rankdir&quot;</span><span class="p">:</span> <span class="s2">&quot;LR&quot;</span><span class="p">},</span>
+    <span class="n">graph_attr</span><span class="o">=</span><span class="p">{</span><span class="s2">"rankdir"</span><span class="p">:</span> <span class="s2">"LR"</span><span class="p">},</span>
     <span class="n">node_attr</span><span class="o">=</span><span class="p">{</span>
-        <span class="s2">&quot;fixedsize&quot;</span><span class="p">:</span> <span class="s2">&quot;false&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="s2">&quot;box&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;style&quot;</span><span class="p">:</span> <span class="s2">&quot;rounded&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;margin&quot;</span><span class="p">:</span> <span class="s2">&quot;0.08,0.04&quot;</span><span class="p">,</span>
+        <span class="s2">"fixedsize"</span><span class="p">:</span> <span class="s2">"false"</span><span class="p">,</span>
+        <span class="s2">"shape"</span><span class="p">:</span> <span class="s2">"box"</span><span class="p">,</span>
+        <span class="s2">"style"</span><span class="p">:</span> <span class="s2">"rounded"</span><span class="p">,</span>
+        <span class="s2">"margin"</span><span class="p">:</span> <span class="s2">"0.08,0.04"</span><span class="p">,</span>
     <span class="p">},</span>
     <span class="n">custom_edge_attr</span><span class="o">=</span><span class="p">{</span>
-        <span class="n">edge</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;#277da1&quot;</span><span class="p">,</span> <span class="s2">&quot;penwidth&quot;</span><span class="p">:</span> <span class="s2">&quot;3&quot;</span><span class="p">}</span>
+        <span class="n">edge</span><span class="p">:</span> <span class="p">{</span><span class="s2">"color"</span><span class="p">:</span> <span class="s2">"#277da1"</span><span class="p">,</span> <span class="s2">"penwidth"</span><span class="p">:</span> <span class="s2">"3"</span><span class="p">}</span>
         <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">inferred_network</span><span class="o">.</span><span class="n">num_edges</span><span class="p">)</span>
     <span class="p">},</span>
     <span class="n">custom_vertex_attr</span><span class="o">=</span><span class="p">{</span>
-        <span class="s2">&quot;EGFR&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;fillcolor&quot;</span><span class="p">:</span> <span class="s2">&quot;#f3c969&quot;</span><span class="p">,</span> <span class="s2">&quot;style&quot;</span><span class="p">:</span> <span class="s2">&quot;rounded,filled&quot;</span><span class="p">},</span>
-        <span class="s2">&quot;ERK1_S123&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;fillcolor&quot;</span><span class="p">:</span> <span class="s2">&quot;#90be6d&quot;</span><span class="p">,</span> <span class="s2">&quot;style&quot;</span><span class="p">:</span> <span class="s2">&quot;rounded,filled&quot;</span><span class="p">},</span>
+        <span class="s2">"EGFR"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"fillcolor"</span><span class="p">:</span> <span class="s2">"#f3c969"</span><span class="p">,</span> <span class="s2">"style"</span><span class="p">:</span> <span class="s2">"rounded,filled"</span><span class="p">},</span>
+        <span class="s2">"ERK1_S123"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"fillcolor"</span><span class="p">:</span> <span class="s2">"#90be6d"</span><span class="p">,</span> <span class="s2">"style"</span><span class="p">:</span> <span class="s2">"rounded,filled"</span><span class="p">},</span>
     <span class="p">},</span>
 <span class="p">)</span>
 </pre></div>
@@ -753,14 +757,14 @@ Selected interactions: [(&#39;EGFR&#39;, &#39;SHC1&#39;), (&#39;SHC1&#39;, &#39;
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pvalues</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
     <span class="p">{</span>
-        <span class="s2">&quot;control&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;ERK1_S123&quot;</span><span class="p">:</span> <span class="mf">0.001</span><span class="p">,</span> <span class="s2">&quot;AKT1_S473&quot;</span><span class="p">:</span> <span class="mf">0.20</span><span class="p">},</span>
-        <span class="s2">&quot;treated&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;ERK1_S123&quot;</span><span class="p">:</span> <span class="mf">0.20</span><span class="p">,</span> <span class="s2">&quot;AKT1_S473&quot;</span><span class="p">:</span> <span class="mf">0.002</span><span class="p">},</span>
+        <span class="s2">"control"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"ERK1_S123"</span><span class="p">:</span> <span class="mf">0.001</span><span class="p">,</span> <span class="s2">"AKT1_S473"</span><span class="p">:</span> <span class="mf">0.20</span><span class="p">},</span>
+        <span class="s2">"treated"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"ERK1_S123"</span><span class="p">:</span> <span class="mf">0.20</span><span class="p">,</span> <span class="s2">"AKT1_S473"</span><span class="p">:</span> <span class="mf">0.002</span><span class="p">},</span>
     <span class="p">}</span>
 <span class="p">)</span>
 <span class="n">fold_changes</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
     <span class="p">{</span>
-        <span class="s2">&quot;control&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;ERK1_S123&quot;</span><span class="p">:</span> <span class="mf">2.1</span><span class="p">,</span> <span class="s2">&quot;AKT1_S473&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">},</span>
-        <span class="s2">&quot;treated&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;ERK1_S123&quot;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span> <span class="s2">&quot;AKT1_S473&quot;</span><span class="p">:</span> <span class="mf">1.8</span><span class="p">},</span>
+        <span class="s2">"control"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"ERK1_S123"</span><span class="p">:</span> <span class="mf">2.1</span><span class="p">,</span> <span class="s2">"AKT1_S473"</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">},</span>
+        <span class="s2">"treated"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"ERK1_S123"</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span> <span class="s2">"AKT1_S473"</span><span class="p">:</span> <span class="mf">1.8</span><span class="p">},</span>
     <span class="p">}</span>
 <span class="p">)</span>
 
@@ -769,7 +773,7 @@ Selected interactions: [(&#39;EGFR&#39;, &#39;SHC1&#39;), (&#39;SHC1&#39;, &#39;
     <span class="n">fold_changes</span><span class="o">=</span><span class="n">fold_changes</span><span class="p">,</span>
     <span class="n">pvalue_threshold</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span>
     <span class="n">fold_change_threshold</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
-    <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span>
+    <span class="n">direction</span><span class="o">=</span><span class="s2">"both"</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">score_table</span>
 </pre></div>
@@ -820,13 +824,13 @@ Selected interactions: [(&#39;EGFR&#39;, &#39;SHC1&#39;), (&#39;SHC1&#39;, &#39;
 <span class="n">many_problem</span> <span class="o">=</span> <span class="n">many_method</span><span class="o">.</span><span class="n">build_many</span><span class="p">(</span>
     <span class="n">pkn</span><span class="p">,</span>
     <span class="n">perturbations</span><span class="o">=</span><span class="p">{</span>
-        <span class="s2">&quot;control&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;EGFR&quot;</span><span class="p">],</span>
-        <span class="s2">&quot;treated&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;EGFR&quot;</span><span class="p">],</span>
+        <span class="s2">"control"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"EGFR"</span><span class="p">],</span>
+        <span class="s2">"treated"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"EGFR"</span><span class="p">],</span>
     <span class="p">},</span>
     <span class="n">phosphosite_scores</span><span class="o">=</span><span class="n">score_table</span><span class="p">,</span>
     <span class="n">edge_costs</span><span class="o">=</span><span class="n">edge_costs</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="n">many_problem</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;scipy&quot;</span><span class="p">)</span>
+<span class="n">many_problem</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">"scipy"</span><span class="p">)</span>
 
 <span class="n">control</span> <span class="o">=</span> <span class="n">many_problem</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">edge_selected</span><span class="o">.</span><span class="n">value</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.5</span>
 <span class="n">treated</span> <span class="o">=</span> <span class="n">many_problem</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">edge_selected</span><span class="o">.</span><span class="n">value</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.5</span>
@@ -837,26 +841,26 @@ Selected interactions: [(&#39;EGFR&#39;, &#39;SHC1&#39;), (&#39;SHC1&#39;, &#39;
 <span class="n">edge_style</span> <span class="o">=</span> <span class="p">{}</span>
 <span class="k">for</span> <span class="n">displayed_index</span><span class="p">,</span> <span class="n">original_index</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">combined_indices</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">control</span><span class="p">[</span><span class="n">original_index</span><span class="p">]</span> <span class="ow">and</span> <span class="n">treated</span><span class="p">[</span><span class="n">original_index</span><span class="p">]:</span>
-        <span class="n">color</span> <span class="o">=</span> <span class="s2">&quot;#7b2cbf&quot;</span>
+        <span class="n">color</span> <span class="o">=</span> <span class="s2">"#7b2cbf"</span>
     <span class="k">elif</span> <span class="n">control</span><span class="p">[</span><span class="n">original_index</span><span class="p">]:</span>
-        <span class="n">color</span> <span class="o">=</span> <span class="s2">&quot;#277da1&quot;</span>
+        <span class="n">color</span> <span class="o">=</span> <span class="s2">"#277da1"</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">color</span> <span class="o">=</span> <span class="s2">&quot;#f8961e&quot;</span>
-    <span class="n">edge_style</span><span class="p">[</span><span class="n">displayed_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="n">color</span><span class="p">,</span> <span class="s2">&quot;penwidth&quot;</span><span class="p">:</span> <span class="s2">&quot;3&quot;</span><span class="p">}</span>
+        <span class="n">color</span> <span class="o">=</span> <span class="s2">"#f8961e"</span>
+    <span class="n">edge_style</span><span class="p">[</span><span class="n">displayed_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"color"</span><span class="p">:</span> <span class="n">color</span><span class="p">,</span> <span class="s2">"penwidth"</span><span class="p">:</span> <span class="s2">"3"</span><span class="p">}</span>
 
 <span class="n">combined_network</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
-    <span class="n">graph_attr</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;rankdir&quot;</span><span class="p">:</span> <span class="s2">&quot;LR&quot;</span><span class="p">},</span>
+    <span class="n">graph_attr</span><span class="o">=</span><span class="p">{</span><span class="s2">"rankdir"</span><span class="p">:</span> <span class="s2">"LR"</span><span class="p">},</span>
     <span class="n">node_attr</span><span class="o">=</span><span class="p">{</span>
-        <span class="s2">&quot;fixedsize&quot;</span><span class="p">:</span> <span class="s2">&quot;false&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="s2">&quot;box&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;style&quot;</span><span class="p">:</span> <span class="s2">&quot;rounded&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;margin&quot;</span><span class="p">:</span> <span class="s2">&quot;0.08,0.04&quot;</span><span class="p">,</span>
+        <span class="s2">"fixedsize"</span><span class="p">:</span> <span class="s2">"false"</span><span class="p">,</span>
+        <span class="s2">"shape"</span><span class="p">:</span> <span class="s2">"box"</span><span class="p">,</span>
+        <span class="s2">"style"</span><span class="p">:</span> <span class="s2">"rounded"</span><span class="p">,</span>
+        <span class="s2">"margin"</span><span class="p">:</span> <span class="s2">"0.08,0.04"</span><span class="p">,</span>
     <span class="p">},</span>
     <span class="n">custom_edge_attr</span><span class="o">=</span><span class="n">edge_style</span><span class="p">,</span>
     <span class="n">custom_vertex_attr</span><span class="o">=</span><span class="p">{</span>
-        <span class="s2">&quot;EGFR&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;fillcolor&quot;</span><span class="p">:</span> <span class="s2">&quot;#f3c969&quot;</span><span class="p">,</span> <span class="s2">&quot;style&quot;</span><span class="p">:</span> <span class="s2">&quot;rounded,filled&quot;</span><span class="p">},</span>
-        <span class="s2">&quot;ERK1_S123&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;fillcolor&quot;</span><span class="p">:</span> <span class="s2">&quot;#90be6d&quot;</span><span class="p">,</span> <span class="s2">&quot;style&quot;</span><span class="p">:</span> <span class="s2">&quot;rounded,filled&quot;</span><span class="p">},</span>
-        <span class="s2">&quot;AKT1_S473&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;fillcolor&quot;</span><span class="p">:</span> <span class="s2">&quot;#90be6d&quot;</span><span class="p">,</span> <span class="s2">&quot;style&quot;</span><span class="p">:</span> <span class="s2">&quot;rounded,filled&quot;</span><span class="p">},</span>
+        <span class="s2">"EGFR"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"fillcolor"</span><span class="p">:</span> <span class="s2">"#f3c969"</span><span class="p">,</span> <span class="s2">"style"</span><span class="p">:</span> <span class="s2">"rounded,filled"</span><span class="p">},</span>
+        <span class="s2">"ERK1_S123"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"fillcolor"</span><span class="p">:</span> <span class="s2">"#90be6d"</span><span class="p">,</span> <span class="s2">"style"</span><span class="p">:</span> <span class="s2">"rounded,filled"</span><span class="p">},</span>
+        <span class="s2">"AKT1_S473"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"fillcolor"</span><span class="p">:</span> <span class="s2">"#90be6d"</span><span class="p">,</span> <span class="s2">"style"</span><span class="p">:</span> <span class="s2">"rounded,filled"</span><span class="p">},</span>
     <span class="p">},</span>
 <span class="p">)</span>
 </pre></div>
@@ -919,16 +923,16 @@ Selected interactions: [(&#39;EGFR&#39;, &#39;SHC1&#39;), (&#39;SHC1&#39;, &#39;
 
 <span class="n">data</span> <span class="o">=</span> <span class="n">Data</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span>
     <span class="p">{</span>
-        <span class="s2">&quot;treated&quot;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">&quot;features&quot;</span><span class="p">:</span> <span class="p">[</span>
-                <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;EGFR&quot;</span><span class="p">,</span> <span class="s2">&quot;mapping&quot;</span><span class="p">:</span> <span class="s2">&quot;vertex&quot;</span><span class="p">,</span> <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;perturbation&quot;</span><span class="p">},</span>
+        <span class="s2">"treated"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">"features"</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span><span class="s2">"id"</span><span class="p">:</span> <span class="s2">"EGFR"</span><span class="p">,</span> <span class="s2">"mapping"</span><span class="p">:</span> <span class="s2">"vertex"</span><span class="p">,</span> <span class="s2">"role"</span><span class="p">:</span> <span class="s2">"perturbation"</span><span class="p">},</span>
                 <span class="p">{</span>
-                    <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;ERK1_S123&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;mapping&quot;</span><span class="p">:</span> <span class="s2">&quot;vertex&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;phosphosite&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">2.4</span><span class="p">,</span>
+                    <span class="s2">"id"</span><span class="p">:</span> <span class="s2">"ERK1_S123"</span><span class="p">,</span>
+                    <span class="s2">"mapping"</span><span class="p">:</span> <span class="s2">"vertex"</span><span class="p">,</span>
+                    <span class="s2">"role"</span><span class="p">:</span> <span class="s2">"phosphosite"</span><span class="p">,</span>
+                    <span class="s2">"value"</span><span class="p">:</span> <span class="o">-</span><span class="mf">2.4</span><span class="p">,</span>
                 <span class="p">},</span>
-                <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;mapping&quot;</span><span class="p">:</span> <span class="s2">&quot;edge&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mf">0.01</span><span class="p">},</span>
+                <span class="p">{</span><span class="s2">"id"</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">"mapping"</span><span class="p">:</span> <span class="s2">"edge"</span><span class="p">,</span> <span class="s2">"value"</span><span class="p">:</span> <span class="mf">0.01</span><span class="p">},</span>
             <span class="p">]</span>
         <span class="p">}</span>
     <span class="p">}</span>
@@ -1023,8 +1027,8 @@ Selected interactions: [(&#39;EGFR&#39;, &#39;SHC1&#39;), (&#39;SHC1&#39;, &#39;
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1050,7 +1054,7 @@ Selected interactions: [(&#39;EGFR&#39;, &#39;SHC1&#39;), (&#39;SHC1&#39;, &#39;
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
 </p></div>
       
     </div>

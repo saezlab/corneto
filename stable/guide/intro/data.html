@@ -27,8 +27,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
@@ -36,10 +36,10 @@
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=53e23fa6" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
     <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
@@ -64,8 +64,8 @@
             </script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'guide/intro/data';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1786146192';
+        DOCUMENTATION_OPTIONS.theme_version = '0.21.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1790177872';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'stable';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
@@ -417,6 +417,10 @@
 <li class="toctree-l2"><a class="reference internal" href="../networks/multi-pcst-grb.html">Multi-sample PCST</a></li>
 </ul>
 </details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../causal/index.html">Causal and structural modeling</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../causal/linear-dag-discovery.html">Discovering a linear causal signaling network from perturbation data</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../metabolism/index.html">Metabolism</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../metabolism/flux-balance-analysis.html">Flux balance analysis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../metabolism/multicondition-sfba.html">Multi-condition FBA</a></li>
@@ -533,18 +537,18 @@
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">observations</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;untreated&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;EGFR&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mf">0.18</span><span class="p">,</span> <span class="s2">&quot;mapping&quot;</span><span class="p">:</span> <span class="s2">&quot;vertex&quot;</span><span class="p">},</span>
-        <span class="s2">&quot;MAPK1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mf">0.22</span><span class="p">,</span> <span class="s2">&quot;mapping&quot;</span><span class="p">:</span> <span class="s2">&quot;vertex&quot;</span><span class="p">},</span>
-        <span class="s2">&quot;cell_viability&quot;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mf">0.96</span><span class="p">,</span> <span class="s2">&quot;mapping&quot;</span><span class="p">:</span> <span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="s2">&quot;assay&quot;</span><span class="p">:</span> <span class="s2">&quot;phenotype&quot;</span>
+    <span class="s2">"untreated"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"EGFR"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"value"</span><span class="p">:</span> <span class="mf">0.18</span><span class="p">,</span> <span class="s2">"mapping"</span><span class="p">:</span> <span class="s2">"vertex"</span><span class="p">},</span>
+        <span class="s2">"MAPK1"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"value"</span><span class="p">:</span> <span class="mf">0.22</span><span class="p">,</span> <span class="s2">"mapping"</span><span class="p">:</span> <span class="s2">"vertex"</span><span class="p">},</span>
+        <span class="s2">"cell_viability"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">"value"</span><span class="p">:</span> <span class="mf">0.96</span><span class="p">,</span> <span class="s2">"mapping"</span><span class="p">:</span> <span class="s2">"none"</span><span class="p">,</span> <span class="s2">"assay"</span><span class="p">:</span> <span class="s2">"phenotype"</span>
         <span class="p">},</span>
     <span class="p">},</span>
-    <span class="s2">&quot;EGF&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;EGFR&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mf">0.91</span><span class="p">,</span> <span class="s2">&quot;mapping&quot;</span><span class="p">:</span> <span class="s2">&quot;vertex&quot;</span><span class="p">},</span>
-        <span class="s2">&quot;MAPK1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mf">0.84</span><span class="p">,</span> <span class="s2">&quot;mapping&quot;</span><span class="p">:</span> <span class="s2">&quot;vertex&quot;</span><span class="p">},</span>
-        <span class="s2">&quot;cell_viability&quot;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mf">0.94</span><span class="p">,</span> <span class="s2">&quot;mapping&quot;</span><span class="p">:</span> <span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="s2">&quot;assay&quot;</span><span class="p">:</span> <span class="s2">&quot;phenotype&quot;</span>
+    <span class="s2">"EGF"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"EGFR"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"value"</span><span class="p">:</span> <span class="mf">0.91</span><span class="p">,</span> <span class="s2">"mapping"</span><span class="p">:</span> <span class="s2">"vertex"</span><span class="p">},</span>
+        <span class="s2">"MAPK1"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"value"</span><span class="p">:</span> <span class="mf">0.84</span><span class="p">,</span> <span class="s2">"mapping"</span><span class="p">:</span> <span class="s2">"vertex"</span><span class="p">},</span>
+        <span class="s2">"cell_viability"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">"value"</span><span class="p">:</span> <span class="mf">0.94</span><span class="p">,</span> <span class="s2">"mapping"</span><span class="p">:</span> <span class="s2">"none"</span><span class="p">,</span> <span class="s2">"assay"</span><span class="p">:</span> <span class="s2">"phenotype"</span>
         <span class="p">},</span>
     <span class="p">},</span>
 <span class="p">}</span>
@@ -568,14 +572,14 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;untreated&#39;, &#39;EGF&#39;]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>['untreated', 'EGF']
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="s2">&quot;EGF&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">features</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="s2">"EGF"</span><span class="p">]</span><span class="o">.</span><span class="n">features</span>
 </pre></div>
 </div>
 </div>
@@ -595,7 +599,7 @@
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">network_measurements</span> <span class="o">=</span> <span class="p">(</span>
     <span class="n">data</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">filter_features</span><span class="p">(</span>
-        <span class="k">lambda</span> <span class="n">feature</span><span class="p">:</span> <span class="n">feature</span><span class="o">.</span><span class="n">mapping</span> <span class="o">==</span> <span class="s2">&quot;vertex&quot;</span>
+        <span class="k">lambda</span> <span class="n">feature</span><span class="p">:</span> <span class="n">feature</span><span class="o">.</span><span class="n">mapping</span> <span class="o">==</span> <span class="s2">"vertex"</span>
     <span class="p">)</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
 <span class="p">)</span>
 <span class="n">network_measurements</span>
@@ -615,16 +619,16 @@
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">extended_data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-<span class="n">extended_data</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="s2">&quot;EGF&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+<span class="n">extended_data</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="s2">"EGF"</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
     <span class="n">cn</span><span class="o">.</span><span class="n">Feature</span><span class="p">(</span>
-        <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;AKT1&quot;</span><span class="p">,</span>
+        <span class="nb">id</span><span class="o">=</span><span class="s2">"AKT1"</span><span class="p">,</span>
         <span class="n">value</span><span class="o">=</span><span class="mf">0.73</span><span class="p">,</span>
-        <span class="n">mapping</span><span class="o">=</span><span class="s2">&quot;vertex&quot;</span><span class="p">,</span>
-        <span class="n">assay</span><span class="o">=</span><span class="s2">&quot;phosphoproteomics&quot;</span><span class="p">,</span>
+        <span class="n">mapping</span><span class="o">=</span><span class="s2">"vertex"</span><span class="p">,</span>
+        <span class="n">assay</span><span class="o">=</span><span class="s2">"phosphoproteomics"</span><span class="p">,</span>
     <span class="p">)</span>
 <span class="p">)</span>
 
-<span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="s2">&quot;EGF&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">features</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">extended_data</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="s2">&quot;EGF&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">features</span><span class="p">)</span>
+<span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="s2">"EGF"</span><span class="p">]</span><span class="o">.</span><span class="n">features</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">extended_data</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="s2">"EGF"</span><span class="p">]</span><span class="o">.</span><span class="n">features</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -644,7 +648,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">tempfile</span><span class="w"> </span><span class="kn">import</span> <span class="n">TemporaryDirectory</span>
 
 <span class="k">with</span> <span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">directory</span><span class="p">:</span>
-    <span class="n">data_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;experiment.json.xz&quot;</span>
+    <span class="n">data_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"experiment.json.xz"</span>
     <span class="n">data</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">data_path</span><span class="p">)</span>
     <span class="n">restored_data</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Data</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">data_path</span><span class="p">)</span>
 
@@ -743,8 +747,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -770,7 +774,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
 </p></div>
       
     </div>

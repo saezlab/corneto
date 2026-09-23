@@ -27,8 +27,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
@@ -36,10 +36,10 @@
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=53e23fa6" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
     <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
@@ -66,8 +66,8 @@
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/carnival/network-sampler-example';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1786146192';
+        DOCUMENTATION_OPTIONS.theme_version = '0.21.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1790177872';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'stable';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
@@ -409,6 +409,8 @@
 <li class="toctree-l1"><a class="reference internal" href="network-sampler.html">Implementing an alternative network sampler</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Exploring alternative solutions with <span class="math notranslate nohighlight">\(\epsilon\)</span>-perturbation sampling</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ml/kpnn-with-sc.html">Knowledge-primed Neural Networks (KPNNs) for single cell data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../causal/README.html">Running the LinearDAG Sachs tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../causal/linear-dag-discovery-sachs.html">Find an explanatory signaling network in the Sachs data</a></li>
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../contrib/multi_condition_tutorial/multi_condition_carnival.html">Multi-condition signalling network inference</a></li>
@@ -509,7 +511,7 @@
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load dataset from tutorial</span>
-<span class="n">dataset</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">GraphData</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;data/carnival_transcriptomics_dataset.zip&quot;</span><span class="p">)</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">GraphData</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">"data/carnival_transcriptomics_dataset.zip"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -542,19 +544,19 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_flow&#39;: _flow: Variable((3251,), _flow),
- &#39;edge_inhibits&#39;: edge_inhibits: Variable((3251, 1), edge_inhibits, boolean=True),
- &#39;edge_activates&#39;: edge_activates: Variable((3251, 1), edge_activates, boolean=True),
- &#39;const0x105e54e0ec2cff1b&#39;: const0x105e54e0ec2cff1b: Constant(CONSTANT, NONNEGATIVE, (937, 3251)),
- &#39;_dag_layer&#39;: _dag_layer: Variable((937, 1), _dag_layer),
- &#39;const0x10ba9336e862a926&#39;: const0x10ba9336e862a926: Constant(CONSTANT, NONNEGATIVE, (937, 3251)),
- &#39;flow&#39;: _flow: Variable((3251,), _flow),
- &#39;vertex_value&#39;: Expression(AFFINE, UNKNOWN, (937, 1)),
- &#39;vertex_activated&#39;: Expression(AFFINE, NONNEGATIVE, (937, 1)),
- &#39;vertex_inhibited&#39;: Expression(AFFINE, NONNEGATIVE, (937, 1)),
- &#39;edge_value&#39;: Expression(AFFINE, UNKNOWN, (3251, 1)),
- &#39;edge_has_signal&#39;: Expression(AFFINE, NONNEGATIVE, (3251, 1)),
- &#39;vertex_max_depth&#39;: _dag_layer: Variable((937, 1), _dag_layer)}
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{'_flow': _flow: Variable((3251,), _flow),
+ 'edge_inhibits': edge_inhibits: Variable((3251, 1), edge_inhibits, boolean=True),
+ 'edge_activates': edge_activates: Variable((3251, 1), edge_activates, boolean=True),
+ 'const0x105e54e0ec2cff1b': const0x105e54e0ec2cff1b: Constant(CONSTANT, NONNEGATIVE, (937, 3251)),
+ '_dag_layer': _dag_layer: Variable((937, 1), _dag_layer),
+ 'const0x10ba9336e862a926': const0x10ba9336e862a926: Constant(CONSTANT, NONNEGATIVE, (937, 3251)),
+ 'flow': _flow: Variable((3251,), _flow),
+ 'vertex_value': Expression(AFFINE, UNKNOWN, (937, 1)),
+ 'vertex_activated': Expression(AFFINE, NONNEGATIVE, (937, 1)),
+ 'vertex_inhibited': Expression(AFFINE, NONNEGATIVE, (937, 1)),
+ 'edge_value': Expression(AFFINE, UNKNOWN, (3251, 1)),
+ 'edge_has_signal': Expression(AFFINE, NONNEGATIVE, (3251, 1)),
+ 'vertex_max_depth': _dag_layer: Variable((937, 1), _dag_layer)}
 </pre></div>
 </div>
 </div>
@@ -589,12 +591,12 @@ alternative network topologies where different edges might be selected.</p>
 <span class="c1"># NOTE: The sampler modifies the original P problem</span>
 <span class="n">results</span> <span class="o">=</span> <span class="n">sample_alternative_solutions</span><span class="p">(</span>
     <span class="n">P</span><span class="p">,</span>
-    <span class="s2">&quot;edge_has_signal&quot;</span><span class="p">,</span>
+    <span class="s2">"edge_has_signal"</span><span class="p">,</span>
     <span class="n">percentage</span><span class="o">=</span><span class="mf">0.10</span><span class="p">,</span>
     <span class="n">scale</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span>
     <span class="n">rel_opt_tol</span><span class="o">=</span><span class="mf">0.10</span><span class="p">,</span>
     <span class="n">max_samples</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
-    <span class="n">solver_kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;gurobi&quot;</span><span class="p">,</span> <span class="n">max_seconds</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">IntegralityFocus</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+    <span class="n">solver_kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">"gurobi"</span><span class="p">,</span> <span class="n">max_seconds</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">IntegralityFocus</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -610,9 +612,9 @@ Academic license - for non-commercial use only - expires 2027-02-05
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="s2">&quot;edge_value&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="s2">"edge_value"</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
 <span class="n">df_sols</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">edges</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">m</span><span class="o">.</span><span class="n">processed_graph</span><span class="o">.</span><span class="n">E</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Generated </span><span class="si">{</span><span class="n">df_sols</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> alternative solutions&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Generated </span><span class="si">{</span><span class="n">df_sols</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> alternative solutions"</span><span class="p">)</span>
 <span class="n">df_sols</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -798,9 +800,9 @@ Academic license - for non-commercial use only - expires 2027-02-05
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Analyze variability in edge selection</span>
 <span class="n">df_var</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">df_sols</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">df_sols</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">df_var</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;mean&quot;</span><span class="p">,</span> <span class="s2">&quot;std&quot;</span><span class="p">]</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Edges with highest variability across solutions:&quot;</span><span class="p">)</span>
-<span class="n">df_var</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s2">&quot;std&quot;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s2">&quot;mean&quot;</span><span class="p">)</span>
+<span class="n">df_var</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"mean"</span><span class="p">,</span> <span class="s2">"std"</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Edges with highest variability across solutions:"</span><span class="p">)</span>
+<span class="n">df_var</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s2">"std"</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s2">"mean"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1149,12 +1151,12 @@ Academic license - for non-commercial use only - expires 2027-02-05
 <span class="c1"># Sample solutions by perturbing vertex_value</span>
 <span class="n">results</span> <span class="o">=</span> <span class="n">sample_alternative_solutions</span><span class="p">(</span>
     <span class="n">P</span><span class="p">,</span>
-    <span class="s2">&quot;vertex_value&quot;</span><span class="p">,</span>
+    <span class="s2">"vertex_value"</span><span class="p">,</span>
     <span class="n">percentage</span><span class="o">=</span><span class="mf">0.10</span><span class="p">,</span>
     <span class="n">scale</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span>
     <span class="n">rel_opt_tol</span><span class="o">=</span><span class="mf">0.10</span><span class="p">,</span>
     <span class="n">max_samples</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
-    <span class="n">solver_kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;gurobi&quot;</span><span class="p">,</span> <span class="n">max_seconds</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">IntegralityFocus</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+    <span class="n">solver_kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">"gurobi"</span><span class="p">,</span> <span class="n">max_seconds</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">IntegralityFocus</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -1167,7 +1169,7 @@ Academic license - for non-commercial use only - expires 2027-02-05
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">vertex_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="s2">&quot;vertex_value&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">vertex_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="s2">"vertex_value"</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
 <span class="n">vertex_values</span><span class="o">.</span><span class="n">shape</span>
 </pre></div>
 </div>
@@ -1182,7 +1184,7 @@ Academic license - for non-commercial use only - expires 2027-02-05
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Analyze vertex-based results</span>
 <span class="n">df_vertex_val</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">vertex_values</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">m</span><span class="o">.</span><span class="n">processed_graph</span><span class="o">.</span><span class="n">V</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Generated </span><span class="si">{</span><span class="n">df_vertex_val</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> alternative solutions&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Generated </span><span class="si">{</span><span class="n">df_vertex_val</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> alternative solutions"</span><span class="p">)</span>
 <span class="n">df_vertex_val</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -1540,9 +1542,9 @@ Academic license - for non-commercial use only - expires 2027-02-05
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
-<span class="n">df_sig_prot_pred</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">()</span><span class="o">.</span><span class="n">tail</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Variability in Signaling Protein Activity&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Protein&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Standard Deviation&quot;</span><span class="p">)</span>
+<span class="n">df_sig_prot_pred</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">()</span><span class="o">.</span><span class="n">tail</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">"Variability in Signaling Protein Activity"</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">"Protein"</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">"Standard Deviation"</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
@@ -1620,8 +1622,8 @@ Academic license - for non-commercial use only - expires 2027-02-05
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1647,7 +1649,7 @@ Academic license - for non-commercial use only - expires 2027-02-05
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
 </p></div>
       
     </div>
