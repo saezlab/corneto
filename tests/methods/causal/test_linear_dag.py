@@ -741,7 +741,7 @@ def test_cvxpy_formulation_uses_only_required_integer_variables():
 
 
 def test_linear_dag_guide_notebook_executes_every_cell():
-    notebook_path = Path(__file__).parents[3] / "docs/guide/signaling/linear-dag-discovery.ipynb"
+    notebook_path = Path(__file__).parents[3] / "docs/guide/causal/linear-dag-discovery.ipynb"
     notebook = nbformat.read(notebook_path, as_version=4)
 
     executed = NotebookClient(
