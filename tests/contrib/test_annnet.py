@@ -20,13 +20,13 @@ def test_directed_hypergraph_roundtrip():
 
     converted = to_annnet(graph)
 
-    assert converted.vertices() == ["A", "B", "C"]
+    assert converted.nodes() == ["A", "B", "C"]
     assert converted.get_edge("corneto_edge_0") == (
         frozenset({"A", "B"}),
         frozenset({"C"}),
     )
     assert converted.get_edges_by_direction(True) == ["corneto_edge_0"]
-    assert converted.attrs.get_vertex_attrs("A")["kind"] == "gene"
+    assert converted.attrs.get_node_attrs("A")["kind"] == "gene"
     assert converted.attrs.get_edge_attrs("corneto_edge_0")["relation"] == "reaction"
     assert converted.uns["name"] == "example"
 
@@ -77,23 +77,23 @@ def test_undirected_hyperedge_is_canonicalized_to_member_set():
     assert restored.get_attr_edge(0).get_attr(Attr.EDGE_TYPE) == EdgeType.UNDIRECTED.value
 
 
-def test_non_string_vertex_ids_are_converted_to_strings():
+def test_non_string_node_ids_are_converted_to_strings():
     """CORNETO vertex identifiers are stringified for AnnNet."""
     graph = Graph()
     graph.add_edge(1, 2)
 
     converted = to_annnet(graph)
 
-    assert converted.vertices() == ["1", "2"]
+    assert converted.nodes() == ["1", "2"]
 
 
-def test_string_conversion_rejects_vertex_id_collisions():
+def test_string_conversion_rejects_node_id_collisions():
     """Stringification cannot silently merge distinct CORNETO vertices."""
     graph = Graph()
     graph.add_vertex(1)
     graph.add_vertex("1")
 
-    with pytest.raises(ValueError, match="map to AnnNet vertex"):
+    with pytest.raises(ValueError, match="map to AnnNet node"):
         to_annnet(graph)
 
 

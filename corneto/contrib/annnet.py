@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from annnet import AnnNet
 
 
-_ANNNET_VERTEX_RESERVED = {"layer", "slice", "vertex_id"}
+_ANNNET_NODE_RESERVED = {"layer", "slice", "node_id"}
 _ANNNET_EDGE_RESERVED = {
     "as_entity",
     "default_edge_directed",
@@ -102,22 +102,22 @@ def to_annnet(graph: BaseGraph, *, copy_attributes: bool = True) -> "AnnNet":
     annnet = import_optional_module("annnet")
     result = annnet.AnnNet(directed=None)
 
-    vertex_ids = {}
+    node_ids = {}
     used_ids = set()
     for vertex in graph.V:
-        vertex_id = str(vertex)
-        if vertex_id in used_ids:
-            raise ValueError(f"Multiple CORNETO vertices map to AnnNet vertex {vertex_id!r}.")
-        used_ids.add(vertex_id)
-        vertex_ids[vertex] = vertex_id
+        node_id = str(vertex)
+        if node_id in used_ids:
+            raise ValueError(f"Multiple CORNETO vertices map to AnnNet node {node_id!r}.")
+        used_ids.add(node_id)
+        node_ids[vertex] = node_id
         attributes = {}
         if copy_attributes:
             attributes = _copy_supported_attributes(
                 graph.get_attr_vertex(vertex),
-                _ANNNET_VERTEX_RESERVED,
-                "vertex",
+                _ANNNET_NODE_RESERVED,
+                "node",
             )
-        result.add_vertices(vertex_id, **attributes)
+        result.add_nodes(node_id, **attributes)
 
     if copy_attributes:
         result.uns.update(deepcopy(dict(graph.get_graph_attributes())))
@@ -143,8 +143,8 @@ def to_annnet(graph: BaseGraph, *, copy_attributes: bool = True) -> "AnnNet":
                 "edge",
             )
 
-        annnet_source = [vertex_ids[v] for v in source]
-        annnet_target = [vertex_ids[v] for v in target]
+        annnet_source = [node_ids[v] for v in source]
+        annnet_target = [node_ids[v] for v in target]
         uniform_weight = _uniform_magnitude(source, target, edge_attributes)
 
         if not directed:
@@ -174,8 +174,8 @@ def to_annnet(graph: BaseGraph, *, copy_attributes: bool = True) -> "AnnNet":
             source_arg = annnet_source[0] if len(annnet_source) == 1 else annnet_source
             target_arg = annnet_target[0] if len(annnet_target) == 1 else annnet_target
         else:
-            source_arg = {vertex_ids[v]: -_endpoint_magnitude(edge_attributes, Attr.SOURCE_ATTR, v) for v in source}
-            target_arg = {vertex_ids[v]: _endpoint_magnitude(edge_attributes, Attr.TARGET_ATTR, v) for v in target}
+            source_arg = {node_ids[v]: -_endpoint_magnitude(edge_attributes, Attr.SOURCE_ATTR, v) for v in source}
+            target_arg = {node_ids[v]: _endpoint_magnitude(edge_attributes, Attr.TARGET_ATTR, v) for v in target}
 
         result.add_edges(
             source_arg,
@@ -219,18 +219,18 @@ def from_annnet(graph: "AnnNet", *, copy_attributes: bool = True) -> Graph:
     result = Graph()
     result.get_graph_attributes().update(graph_attributes)
 
-    vertices = list(graph.vertices())
-    for vertex in vertices:
+    nodes = list(graph.nodes())
+    for vertex in nodes:
         attributes = {}
         if copy_attributes:
-            attributes = dict(graph.attrs.get_vertex_attrs(vertex))
-            attributes.pop("vertex_id", None)
+            attributes = dict(graph.attrs.get_node_attrs(vertex))
+            attributes.pop("node_id", None)
         result.add_vertex(vertex, **deepcopy(attributes))
 
     edge_ids = list(graph.edges())
     directed_edge_ids = set(graph.get_edges_by_direction(True))
-    matrix = graph.X()
-    row_by_vertex = {graph.get_vertex(i): i for i in range(graph.nv)}
+    matrix = graph.S
+    row_by_vertex = {graph.N[i]: i for i in range(graph.nv)}
 
     for edge_index, edge_id in enumerate(edge_ids):
         edge = graph.get_edge(edge_id)
