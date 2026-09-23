@@ -34,7 +34,7 @@ restored = from_annnet(annotated)
 ```
 
 Directed binary edges and hyperedges, parallel edges, endpoint coefficients,
-and ordinary graph, vertex, and edge attributes are preserved. CORNETO edge
+and ordinary graph, node, and edge attributes are preserved. CORNETO edge
 indices become AnnNet IDs such as `corneto_edge_0`. When converting in the
 other direction, the original AnnNet ID is stored as the CORNETO edge
 attribute `_annnet_edge_id`.
@@ -46,8 +46,8 @@ hypergraphs normally used by CORNETO:
 
 - AnnNet layers, slice membership, edge-entities, and flexible direction
   policies are not reproduced in CORNETO.
-- Vertex identifiers are converted to strings for AnnNet. A collision after
-  conversion raises an error.
+- A CORNETO vertex identifier becomes an AnnNet node id, as a string. A
+  collision after conversion raises an error.
 - CORNETO edges with an empty source or target set are not supported.
 - An undirected hyperedge is converted as one member set. Its original
   CORNETO source/target partition cannot be recovered; converting it back uses
