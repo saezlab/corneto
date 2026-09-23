@@ -1045,3 +1045,219 @@ def test_nonzero_indicator_matrix_bounds_block_and_sign_per_entry(backend):
     # Free entries should have exactly one active sign indicator.
     assert np.isclose(tot_val[0, 1], 1.0, atol=1e-9)
     assert np.isclose(tot_val[2, 0], 1.0, atol=1e-9)
+
+
+def test_exact_support_reuses_nonnegative_selector(backend):
+    """ExactSupport should couple a supplied selector without another binary."""
+    value = backend.Variable("supported_value", (2,), lb=0, ub=5)
+    selected = backend.Variable("supplied_selector", (2,), vartype=VarType.BINARY)
+    problem = backend.Problem()
+    problem += backend.ExactSupport(
+        value,
+        selected=selected,
+        epsilon=1,
+        nonnegative=True,
+        name="exact_support",
+    )
+    problem += selected == np.array([0, 1])
+    problem.add_objective(value.sum())
+    problem.solve()
+
+    assert np.allclose(np.asarray(selected.value).reshape(-1), [0, 1], atol=1e-8)
+    assert np.allclose(np.asarray(value.value).reshape(-1), [0, 1], atol=1e-8)
+    binary_symbols = [symbol for symbol in problem.symbols.values() if symbol._vartype == VarType.BINARY]
+    assert [symbol.name for symbol in binary_symbols] == ["supplied_selector"]
+
+
+def test_exact_support_broadcasts_per_entry_epsilon(backend):
+    """ExactSupport should apply explicitly broadcastable gaps elementwise."""
+    epsilon = np.array([[0.25, 0.5]])
+    value = backend.Variable("array_supported_value", (2, 2), lb=0, ub=5)
+    problem = backend.Problem()
+    problem += backend.ExactSupport(
+        value,
+        epsilon=epsilon,
+        nonnegative=True,
+        name="array_support",
+    )
+    problem += problem.expr.array_support == np.ones((2, 2))
+    problem += value == np.broadcast_to(epsilon, value.shape)
+    problem.solve()
+
+    assert np.allclose(np.asarray(value.value), np.broadcast_to(epsilon, value.shape), atol=1e-8)
+
+
+def test_exact_support_rejects_nonbroadcastable_epsilon_shape(backend):
+    """ExactSupport should not reinterpret same-sized epsilon arrays by reshaping."""
+    value = backend.Variable("shape_checked_value", (3, 2), lb=-5, ub=5)
+
+    with pytest.raises(ValueError, match="broadcast"):
+        backend.ExactSupport(value, epsilon=np.ones((2, 3)))
+
+
+@pytest.mark.parametrize("lower, upper", [(-np.inf, 5), (-5, np.inf)])
+def test_exact_support_requires_finite_bounds(backend, lower, upper):
+    """ExactSupport should reject infinite bounds even when they were supplied."""
+    value = backend.Variable("finite_bound_value", (2,), lb=lower, ub=upper)
+
+    with pytest.raises(ValueError, match="finite"):
+        backend.ExactSupport(value, epsilon=1)
+
+
+@pytest.mark.parametrize("nonnegative", [False, True])
+def test_exact_support_requires_binary_supplied_selector(backend, nonnegative):
+    """A supplied selector must not relax ExactSupport into a continuous formulation."""
+    value = backend.Variable("selector_value", (2,), lb=0 if nonnegative else -5, ub=5)
+    selector = backend.Variable("continuous_selector", (2,), lb=0, ub=1)
+
+    with pytest.raises(TypeError, match="binary"):
+        backend.ExactSupport(value, selected=selector, epsilon=1, nonnegative=nonnegative)
+
+
+def test_exact_support_rejects_fractional_selector_expression(backend):
+    """A fractional selector expression must be linked to a binary selector."""
+    value = backend.Variable("fractional_selector_value", (1,), lb=0, ub=5)
+    binary = backend.Variable("selector_binary", (1,), vartype=VarType.BINARY)
+
+    problem = backend.Problem()
+    problem += backend.ExactSupport(value, selected=0.5 * binary, epsilon=1, nonnegative=True)
+    problem += binary == 1
+    if isinstance(backend, PicosBackend):
+        result = problem.solve(solver="glpk", primals=None)
+    else:
+        result = problem.solve()
+
+    assert str(result.status).lower() in {"infeasible", "infeasible_or_unbounded"}
+
+
+def test_exact_support_signed_value(backend):
+    """Signed exact support should expose mutually exclusive directions."""
+    value = backend.Variable("signed_value", (2,), lb=-4, ub=4)
+    problem = backend.Problem()
+    problem += backend.ExactSupport(
+        value,
+        epsilon=0.5,
+        name="signed_support",
+    )
+    problem += problem.expr.signed_support == np.array([1, 1])
+    problem += value[0] >= 0
+    problem += value[1] <= 0
+    problem.add_objective(value[0] - value[1])
+    problem.solve()
+
+    assert np.allclose(np.asarray(value.value).reshape(-1), [0.5, -0.5], atol=1e-7)
+    assert np.allclose(np.asarray(problem.expr.signed_support.value).reshape(-1), [1, 1], atol=1e-8)
+
+
+def test_selected_flow_uses_negative_direction_when_required(backend):
+    """Signed SelectedFlow should expose the actual traversal direction."""
+    graph = Graph()
+    graph.add_edge((), "B")
+    graph.add_edge("A", "B")
+    graph.add_edge("A", ())
+
+    problem = backend.SelectedFlow(
+        graph,
+        lb=np.array([0, -5, 0]),
+        ub=np.array([5, 5, 5]),
+        edge_indices=[1],
+        epsilon=1,
+    )
+    problem += problem.expr.selected_any == 1
+    problem.solve()
+
+    assert -5 - 1e-7 <= problem.expr.flow.value[1, 0] <= -1 + 1e-7
+    assert np.isclose(np.asarray(problem.expr.selected_by_flow.value).reshape(-1)[0], 1, atol=1e-8)
+    assert np.isclose(np.asarray(problem.expr.selected_by_flow_positive.value).reshape(-1)[0], 0, atol=1e-8)
+    assert np.isclose(np.asarray(problem.expr.selected_by_flow_negative.value).reshape(-1)[0], 1, atol=1e-8)
+
+
+def test_selected_flow_mixed_bounds_uses_minimal_binary_types():
+    """Only edge rows that permit negative flow should get direction binaries."""
+    graph = Graph.from_tuples([("A", 1, "B"), ("B", 1, "A")])
+    problem = CvxpyBackend().SelectedFlow(
+        graph,
+        lb=np.array([[0, 0], [-5, -5]]),
+        ub=np.full((2, 2), 5),
+        n_flows=2,
+        edge_indices=[0, 1],
+        epsilon=1,
+    )
+    cvxpy_problem = problem.solve(solver="SCIPY")
+
+    boolean_count = sum(variable.size for variable in cvxpy_problem.variables() if variable.attributes["boolean"])
+    # Nonnegative edge: 1*2 support binaries. Signed edge: 2*2 direction
+    # binaries. Shared structural union: 2 binaries.
+    assert boolean_count == 2 + 4 + 2
+    assert problem.expr.selected_by_flow.shape == (2, 2)
+    assert problem.expr.selected_by_flow_positive.shape == (2, 2)
+    assert problem.expr.selected_by_flow_negative.shape == (2, 2)
+
+
+def test_selected_flow_signed_shared_dag_rejects_opposite_directions():
+    """Different flows cannot traverse one edge oppositely in a shared DAG."""
+    flow_graph = Graph()
+    flow_graph.add_edge((), "A")
+    flow_graph.add_edge((), "B")
+    flow_graph.add_edge("A", "B")
+    flow_graph.add_edge("A", ())
+    flow_graph.add_edge("B", ())
+    acyclic_graph = Graph.from_tuples([("A", 1, "B")])
+
+    problem = CvxpyBackend().SelectedFlow(
+        flow_graph,
+        lb=np.array(
+            [
+                [0, 0],
+                [0, 0],
+                [-5, -5],
+                [0, 0],
+                [0, 0],
+            ]
+        ),
+        ub=np.array(
+            [
+                [5, 0],
+                [0, 5],
+                [5, 5],
+                [0, 5],
+                [5, 0],
+            ]
+        ),
+        n_flows=2,
+        edge_indices=[2],
+        epsilon=1,
+        acyclic_graph=acyclic_graph,
+    )
+    problem += problem.expr.flow[2, 0] >= 1
+    problem += problem.expr.flow[2, 1] <= -1
+    cvxpy_problem = problem.solve(solver="SCIPY")
+
+    assert cvxpy_problem.status == cp.INFEASIBLE
+    boolean_count = sum(variable.size for variable in cvxpy_problem.variables() if variable.attributes["boolean"])
+    # Two directions per flow plus two direction-union binaries. There is no
+    # redundant structural-union binary.
+    assert boolean_count == 2 * 2 + 2
+
+
+def test_acyclic_signed_max_parents_counts_reversed_edges():
+    """A negative edge contributes a parent at its structural source."""
+    graph = Graph.from_tuples([("A", 1, "C"), ("C", 1, "B")])
+    backend = CvxpyBackend()
+    problem = backend.Problem()
+    positive = backend.Variable("positive", (2,), vartype=VarType.BINARY)
+    negative = backend.Variable("negative", (2,), vartype=VarType.BINARY)
+    problem.register("positive", positive)
+    problem.register("negative", negative)
+    problem += positive == np.array([1, 0])
+    problem += negative == np.array([0, 1])
+    backend.Acyclic(
+        graph,
+        problem,
+        indicator_positive_var_name="positive",
+        indicator_negative_var_name="negative",
+        max_parents={"C": 1},
+    )
+
+    cvxpy_problem = problem.solve(solver="SCIPY")
+    assert cvxpy_problem.status == cp.INFEASIBLE

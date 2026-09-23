@@ -31,6 +31,7 @@ as raw specifications may not always provide sufficient context.
 
   corneto.backend
   corneto.data
+  corneto.datasets
   corneto.io
   corneto.graph
   corneto.methods

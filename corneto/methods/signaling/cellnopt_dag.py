@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+from collections.abc import Mapping
 from dataclasses import dataclass
 from numbers import Real
 from typing import Any, Optional
@@ -22,6 +23,13 @@ from corneto.methods._input_utils import (
     validate_condition_keys,
 )
 from corneto.methods._network_utils import augment_with_boundaries
+from corneto.methods._predictive import (
+    require_expression_value,
+    validate_solve_result,
+)
+from corneto.methods._predictive import (
+    solve_options as normalize_solve_options,
+)
 
 __all__ = ["BooleanReaction", "CellNOptDAG"]
 
@@ -437,6 +445,9 @@ class CellNOptDAG(FlowMethod):
         self._forced_values = np.empty((0, 0), dtype=float)
         self._measurement_mask = np.empty((0, 0), dtype=bool)
         self._measurements = np.empty((0, 0), dtype=float)
+        self._network_graph: Optional[Graph] = None
+        self._species: tuple[Any, ...] = ()
+        self.solve_result = None
 
     def build(
         self,
@@ -463,6 +474,7 @@ class CellNOptDAG(FlowMethod):
         inhibitors=None,
     ) -> ProblemDef:
         """Build a problem for multiple named experimental conditions."""
+        self.solve_result = None
         data = _cellnopt_data(
             pkn,
             inputs=inputs,
@@ -471,8 +483,39 @@ class CellNOptDAG(FlowMethod):
         )
         return self.build_from_data(pkn, data)
 
+    def fit(
+        self,
+        pkn: BaseGraph,
+        *,
+        inputs,
+        measurements,
+        inhibitors=None,
+        solve_options: Optional[Mapping[str, Any]] = None,
+        **solver_options: Any,
+    ) -> "CellNOptDAG":
+        """Build and solve a shared Boolean model, returning ``self``.
+
+        Scientific arguments intentionally mirror :meth:`build_many`; backend
+        options belong in ``solve_options`` (or can be supplied as solver
+        keyword arguments).  The solved :attr:`problem` remains available for
+        adding constraints and inspecting expressions.  Time-limited
+        incumbents are accepted when they include finite reaction selections.
+        """
+        options = normalize_solve_options(solve_options, solver_options)
+        problem = self.build_many(
+            pkn,
+            inputs=inputs,
+            measurements=measurements,
+            inhibitors=inhibitors,
+        )
+        result = problem.solve(**options)
+        validate_solve_result(result, problem.expr, ("reaction_selected",), self.name())
+        self.solve_result = result
+        return self
+
     def preprocess(self, graph: BaseGraph, data: Data):
         """Compile reactions, validate condition data, and add flow boundaries."""
+        self.solve_result = None
         network = _compile_reactions(graph)
         if not data.samples:
             raise ValueError("CellNOptDAG requires at least one condition.")
@@ -569,6 +612,8 @@ class CellNOptDAG(FlowMethod):
             raise ValueError(f"max_flow ({flow_max:g}) must be greater than or equal to epsilon ({self.epsilon:g}).")
 
         self.reactions = network.reactions
+        self._network_graph = network.graph.copy()
+        self._species = tuple(network.graph.V)
         self._condition_names = condition_names
         self._biological_num_edges = num_dependencies
         self._flow_max = float(flow_max)
@@ -623,12 +668,17 @@ class CellNOptDAG(FlowMethod):
         dependency_selected_all = self.backend.Constant(self._dependency_to_reaction) @ reaction_selected
         dependency_selected = dependency_selected_all[: self._biological_num_edges]
         flow = problem.expr.flow
-        biological_flow = flow[: self._biological_num_edges]
         # The shared flow and shared reaction selection have exactly the same
         # support on biological dependencies. Boundary flow remains free to
         # choose which controlled species and measurements connect that support.
-        problem += biological_flow >= self.epsilon * dependency_selected
-        problem += biological_flow <= self._flow_max * dependency_selected
+        problem += self.backend.ExactSupport(
+            flow,
+            indexes=np.arange(self._biological_num_edges, dtype=int),
+            selected=dependency_selected,
+            epsilon=self.epsilon,
+            nonnegative=True,
+            name="dependency_selected",
+        )
 
         problem.register("_dependency_selected_all", dependency_selected_all)
         self.backend.Acyclic(
@@ -675,10 +725,200 @@ class CellNOptDAG(FlowMethod):
             name="measurement_error",
         )
 
-        problem.register("dependency_selected", dependency_selected)
         problem.register("literal_satisfaction", literal_satisfaction)
         problem.register("dag_layer", problem.expr._dag_layer)
         return problem
+
+    # ------------------------------------------------------------------
+    # Fixed reaction-selection prediction and evaluation
+    # ------------------------------------------------------------------
+    def _prediction_conditions(self, inputs, inhibitors=None):
+        if self._network_graph is None or not self._species:
+            raise ValueError("CellNOptDAG has not been built; call build/build_many or fit first.")
+        require_mapping(inputs, argument="inputs")
+        condition_names = validate_condition_keys(inputs=inputs, inhibitors=inhibitors)
+        if not condition_names:
+            raise ValueError("CellNOptDAG prediction requires at least one named condition.")
+        if inhibitors is None:
+            inhibitors = {condition: {} for condition in condition_names}
+        species = set(self._species)
+        forced = np.zeros((len(self._species), len(condition_names)), dtype=bool)
+        forced_values = np.zeros_like(forced, dtype=float)
+        for condition_index, condition in enumerate(condition_names):
+            condition_inputs = require_mapping(inputs[condition], argument="inputs", condition=condition)
+            condition_inhibitors = require_mapping(inhibitors[condition], argument="inhibitors", condition=condition)
+            input_values = {}
+            for vertex, value in condition_inputs.items():
+                if vertex not in species:
+                    raise ValueError(f"Unknown species {vertex!r} in inputs for condition {condition!r}.")
+                input_values[vertex] = _bounded_number(
+                    value,
+                    argument="inputs",
+                    identifier=vertex,
+                    condition=condition,
+                    binary=True,
+                )
+            active_inhibitors = set()
+            for vertex, value in condition_inhibitors.items():
+                if vertex not in species:
+                    raise ValueError(f"Unknown species {vertex!r} in inhibitors for condition {condition!r}.")
+                active = _bounded_number(
+                    value,
+                    argument="inhibitors",
+                    identifier=vertex,
+                    condition=condition,
+                    binary=True,
+                )
+                if active:
+                    active_inhibitors.add(vertex)
+            overlap = active_inhibitors & set(input_values)
+            if overlap:
+                vertex = next(vertex for vertex in self._species if vertex in overlap)
+                raise ValueError(
+                    f"Vertex {vertex!r} cannot be both an input and an active inhibitor in condition {condition!r}."
+                )
+            for vertex in active_inhibitors:
+                input_values[vertex] = 0.0
+            for vertex, value in input_values.items():
+                index = self._species.index(vertex)
+                forced[index, condition_index] = True
+                forced_values[index, condition_index] = value
+        return tuple(condition_names), forced, forced_values
+
+    def _selected_reaction_values(self) -> np.ndarray:
+        return require_expression_value(self.problem, "reaction_selected", self.name()).reshape(-1) > 0.5
+
+    def get_selected_reaction_indices(self, threshold: float = 0.5) -> np.ndarray:
+        """Return indices of reactions in the fixed solved model."""
+        values = require_expression_value(self.problem, "reaction_selected", self.name()).reshape(-1)
+        return np.flatnonzero(values > threshold)
+
+    def _reaction_order(self, selected: np.ndarray) -> tuple[list[Any], dict[Any, list[int]]]:
+        """Return a stable topological species order for selected reactions."""
+        incoming_count = {vertex: 0 for vertex in self._species}
+        outgoing = {vertex: [] for vertex in self._species}
+        producers = {vertex: [] for vertex in self._species}
+        for reaction_index, reaction in enumerate(self.reactions):
+            if not selected[reaction_index]:
+                continue
+            producers[reaction.product].append(reaction_index)
+            for literal in reaction.literals:
+                incoming_count[reaction.product] += 1
+                outgoing[literal].append(reaction.product)
+        queue = [vertex for vertex in self._species if incoming_count[vertex] == 0]
+        order = []
+        while queue:
+            vertex = queue.pop(0)
+            order.append(vertex)
+            for target in outgoing[vertex]:
+                incoming_count[target] -= 1
+                if incoming_count[target] == 0:
+                    queue.append(target)
+        if len(order) != len(self._species):
+            raise ValueError("The fitted CellNOptDAG reaction support is cyclic and cannot be predicted.")
+        return order, producers
+
+    def _predict_arrays(self, inputs, inhibitors=None):
+        condition_names, forced, forced_values = self._prediction_conditions(inputs, inhibitors)
+        selected = self._selected_reaction_values()
+        if selected.size != len(self.reactions):
+            raise ValueError("CellNOptDAG has no usable fitted reaction selection.")
+        order, producers = self._reaction_order(selected)
+        species_index = {vertex: index for index, vertex in enumerate(self._species)}
+        values = np.zeros((len(self._species), len(condition_names)), dtype=float)
+        active = np.zeros((len(self.reactions), len(condition_names)), dtype=bool)
+        for condition_index in range(len(condition_names)):
+            for vertex in order:
+                vertex_index = species_index[vertex]
+                for reaction_index in producers[vertex]:
+                    reaction = self.reactions[reaction_index]
+                    active[reaction_index, condition_index] = bool(
+                        all(
+                            values[species_index[literal], condition_index] >= 0.5
+                            for literal in reaction.positive_literals
+                        )
+                        and all(
+                            values[species_index[literal], condition_index] < 0.5
+                            for literal in reaction.negative_literals
+                        )
+                    )
+                if forced[vertex_index, condition_index]:
+                    values[vertex_index, condition_index] = forced_values[vertex_index, condition_index]
+                else:
+                    values[vertex_index, condition_index] = float(
+                        any(active[reaction_index, condition_index] for reaction_index in producers[vertex])
+                    )
+        return values, forced, tuple(condition_names)
+
+    def _prediction_data(self, values: np.ndarray, condition_names: tuple[str, ...], forced: np.ndarray) -> Data:
+        samples = {}
+        for condition_index, condition in enumerate(condition_names):
+            features = {}
+            for vertex_index, vertex in enumerate(self._species):
+                features[vertex] = {
+                    "mapping": "vertex",
+                    "value": float(values[vertex_index, condition_index]),
+                    "predicted": not bool(forced[vertex_index, condition_index]),
+                    "forced": bool(forced[vertex_index, condition_index]),
+                }
+            samples[condition] = features
+        return Data.from_cdict(samples)
+
+    def predict(self, *, inputs, inhibitors=None) -> Data:
+        """Predict conditions from the fixed selected reactions.
+
+        Inputs and active inhibitors are clamped exactly as during training;
+        every other species is the OR of its active selected reactions, whose
+        literals are evaluated in a topological order.  Held-out measurements
+        are not accepted or consulted, and prediction never invokes a solver.
+        """
+        values, forced, condition_names = self._predict_arrays(inputs, inhibitors)
+        return self._prediction_data(values, condition_names, forced)
+
+    def evaluate(self, *, inputs, measurements, inhibitors=None) -> dict[str, Any]:
+        """Compare fixed-model predictions with supplied Boolean measurements."""
+        predictions, forced, condition_names = self._predict_arrays(inputs, inhibitors)
+        measurement_names = validate_condition_keys(measurements=measurements)
+        if set(measurement_names) != set(condition_names):
+            raise ValueError(
+                "Condition names in measurements must match inputs/inhibitors: "
+                f"expected {list(condition_names)!r}, got {list(measurement_names)!r}."
+            )
+        species_index = {vertex: index for index, vertex in enumerate(self._species)}
+        measurement_values = np.full((len(self._species), len(condition_names)), np.nan, dtype=float)
+        measurement_mask = np.zeros_like(measurement_values, dtype=bool)
+        for condition_index, condition in enumerate(condition_names):
+            values = require_mapping(measurements[condition], argument="measurements", condition=condition)
+            for vertex, value in values.items():
+                if vertex not in species_index:
+                    raise ValueError(f"Unknown species {vertex!r} in measurements for condition {condition!r}.")
+                measurement_values[species_index[vertex], condition_index] = _bounded_number(
+                    value,
+                    argument="measurements",
+                    identifier=vertex,
+                    condition=condition,
+                    binary=False,
+                )
+                measurement_mask[species_index[vertex], condition_index] = True
+        valid = measurement_mask & ~forced
+        errors = np.abs(predictions - measurement_values)
+        count = int(np.count_nonzero(valid))
+        loss = float(np.mean(errors[valid])) if count else float("nan")
+        by_species = {
+            vertex: (float(np.mean(errors[index, valid[index]])) if np.any(valid[index]) else float("nan"))
+            for index, vertex in enumerate(self._species)
+        }
+        by_condition = {
+            condition: (float(np.mean(errors[valid[:, index], index])) if np.any(valid[:, index]) else float("nan"))
+            for index, condition in enumerate(condition_names)
+        }
+        return {
+            "loss": loss,
+            "count": count,
+            "by_species": by_species,
+            "by_condition": by_condition,
+            "predictions": self._prediction_data(predictions, condition_names, forced),
+        }
 
     @staticmethod
     def name() -> str:

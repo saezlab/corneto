@@ -18,7 +18,6 @@ from corneto.methods._input_utils import (
     validate_numeric,
 )
 from corneto.methods._network_utils import prune_to_paths
-from corneto.methods._optimization_utils import add_condition_union
 from corneto.methods._phonemes_preprocessing import (
     normalize_phonemes_score_mapping,
 )
@@ -457,31 +456,34 @@ class BidirectionalPHONEMeS(PHONEMeS):
         """Create the global vectorized bidirectional problem."""
         num_conditions = len(self._condition_names)
         num_edges = self._biological_num_edges
-        flow_problem = self.backend.Flow(
+        flow_problem = self.backend.SelectedFlow(
             graph,
             lb=self._flow_lb,
             ub=self._flow_ub,
             n_flows=2 * num_conditions,
-            shared_bounds=False,
-            force_matrix=True,
+            flow_blocks=(
+                (range(num_edges), slice(0, num_conditions)),
+                (
+                    range(self._reverse_edge_offset, self._reverse_edge_offset + num_edges),
+                    slice(num_conditions, 2 * num_conditions),
+                ),
+            ),
+            selector_groups=np.tile(np.arange(num_conditions), 2),
+            epsilon=self.epsilon,
+            selected_by_flow_name="edge_selected_directional",
+            selected_by_group_name="edge_selected",
+            selected_any_name="edge_selected_any",
         )
         flow = flow_problem.expr._flow
-        flow_problem += self.backend.NonZeroIndicator(
-            flow,
-            tolerance=self.epsilon,
-        )
-        positive = flow_problem.expr._flow_ipos
+        directional_selection = flow_problem.expr.edge_selected_directional
 
         flow_downstream = flow[:num_edges, :num_conditions]
         flow_upstream = flow[
             self._reverse_edge_offset : self._reverse_edge_offset + num_edges,
             num_conditions:,
         ]
-        edge_downstream = positive[:num_edges, :num_conditions]
-        edge_upstream = positive[
-            self._reverse_edge_offset : self._reverse_edge_offset + num_edges,
-            num_conditions:,
-        ]
+        edge_downstream = directional_selection[:, :num_conditions]
+        edge_upstream = directional_selection[:, num_conditions:]
         flow_problem.register("flow_downstream", flow_downstream)
         flow_problem.register("flow_upstream", flow_upstream)
         flow_problem.register("edge_selected_downstream", edge_downstream)
@@ -515,14 +517,24 @@ class BidirectionalPHONEMeS(PHONEMeS):
         anchor_vertices = tuple(self._anchor_inflow_edges)
         anchor_rows = [self._anchor_inflow_edges[vertex] for vertex in anchor_vertices]
         anchor_indexes = [vertex_index[vertex] for vertex in anchor_vertices]
-        downstream_inflow = flow[anchor_rows, :num_conditions]
-        upstream_inflow = flow[anchor_rows, num_conditions:]
         downstream_active = anchor_downstream[anchor_indexes, :]
         upstream_active = anchor_upstream[anchor_indexes, :]
-        flow_problem += downstream_inflow >= self.epsilon * downstream_active
-        flow_problem += downstream_inflow <= self._flow_max * downstream_active
-        flow_problem += upstream_inflow >= self.epsilon * upstream_active
-        flow_problem += upstream_inflow <= self._flow_max * upstream_active
+        flow_problem += self.backend.ExactSupport(
+            flow,
+            indexes=(anchor_rows, slice(0, num_conditions)),
+            selected=downstream_active,
+            epsilon=self.epsilon,
+            nonnegative=True,
+            name="anchor_flow_downstream",
+        )
+        flow_problem += self.backend.ExactSupport(
+            flow,
+            indexes=(anchor_rows, slice(num_conditions, 2 * num_conditions)),
+            selected=upstream_active,
+            epsilon=self.epsilon,
+            nonnegative=True,
+            name="anchor_flow_upstream",
+        )
 
         internal_downstream = ~(self._anchor_mask | self._measured_downstream_mask)
         downstream_vertices = add_vertex_selection(
@@ -549,13 +561,6 @@ class BidirectionalPHONEMeS(PHONEMeS):
             name="vertex_selected_upstream",
             reverse=True,
         )
-        edge_selected = _pairwise_or(
-            self.backend,
-            flow_problem,
-            edge_downstream,
-            edge_upstream,
-            name="edge_selected",
-        )
         vertex_selected = _pairwise_or(
             self.backend,
             flow_problem,
@@ -563,12 +568,7 @@ class BidirectionalPHONEMeS(PHONEMeS):
             upstream_vertices.selected,
             name="vertex_selected",
         )
-        edge_selected_any = add_condition_union(
-            self.backend,
-            flow_problem,
-            edge_selected,
-            name="edge_selected_any",
-        )
+        edge_selected_any = flow_problem.expr.edge_selected_any
 
         assert self._biological_graph is not None
         self.backend.Acyclic(
