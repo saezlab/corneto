@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from collections import deque
 from collections.abc import Callable, Iterable, Mapping
 from dataclasses import dataclass, field
 from numbers import Real
@@ -12,6 +11,7 @@ from typing import TYPE_CHECKING, Any
 import numpy as np
 
 from corneto.graph import Attr, BaseGraph, EdgeType
+from corneto.graph._topology import topological_sort
 
 from ._mechanisms import _Constant, _Shifted
 from ._noise import Zero, _finite_real, _rng, _sample_count
@@ -83,27 +83,15 @@ def _vector(value: Any, n: int, description: str) -> np.ndarray:
 def _topological_order(nodes: Mapping[Any, Node], variables: tuple[Any, ...]) -> tuple[Any, ...]:
     """Return a stable topological order and validate all parent references."""
     children = {variable: [] for variable in variables}
-    indegree = {variable: 0 for variable in variables}
     for variable, node in nodes.items():
         for parent in node.parents:
             if parent not in nodes:
                 raise ValueError(f"Node {variable!r} has missing parent {parent!r}.")
             children[parent].append(variable)
-            indegree[variable] += 1
-
-    ready = deque(variable for variable in variables if indegree[variable] == 0)
-    order = []
-    while ready:
-        variable = ready.popleft()
-        order.append(variable)
-        for child in children[variable]:
-            indegree[child] -= 1
-            if indegree[child] == 0:
-                ready.append(child)
-    if len(order) != len(variables):
-        cyclic = tuple(variable for variable in variables if indegree[variable] > 0)
-        raise ValueError(f"SCM nodes must form a directed acyclic graph; cycle involves {cyclic!r}.")
-    return tuple(order)
+    try:
+        return tuple(topological_sort(variables, children))
+    except ValueError as error:
+        raise ValueError(f"SCM nodes must form a directed acyclic graph; {error}") from error
 
 
 def _graph_structure(

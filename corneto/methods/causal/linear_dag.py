@@ -19,6 +19,7 @@ from corneto.backend._base import (
 )
 from corneto.data import Data
 from corneto.graph import Attr, BaseGraph, EdgeType
+from corneto.graph._topology import topological_sort
 from corneto.methods._base import FlowMethod
 from corneto.methods._network_utils import BoundaryFlowLayout, augment_with_boundaries
 from corneto.methods._predictive import (
@@ -1291,24 +1292,15 @@ class LinearDAGDiscovery(FlowMethod):
             raise ValueError("LinearDAGDiscovery has not been built.")
         incoming = [[] for _ in range(self._original_graph.num_vertices)]
         outgoing = [[] for _ in range(self._original_graph.num_vertices)]
-        indegree = np.zeros((self._original_graph.num_vertices,), dtype=int)
         for edge_index in np.flatnonzero(selected):
             source = int(self._edge_sources[edge_index])
             target = int(self._edge_targets[edge_index])
             incoming[target].append(int(edge_index))
             outgoing[source].append(target)
-            indegree[target] += 1
-        queue = [index for index, degree in enumerate(indegree) if degree == 0]
-        order = []
-        while queue:
-            vertex = queue.pop(0)
-            order.append(vertex)
-            for target in outgoing[vertex]:
-                indegree[target] -= 1
-                if indegree[target] == 0:
-                    queue.append(target)
-        if len(order) != self._original_graph.num_vertices:
-            raise ValueError("The fitted LinearDAGDiscovery support is cyclic and cannot be predicted.")
+        try:
+            order = topological_sort(range(self._original_graph.num_vertices), dict(enumerate(outgoing)))
+        except ValueError as error:
+            raise ValueError("The fitted LinearDAGDiscovery support is cyclic and cannot be predicted.") from error
         return order, incoming
 
     def _forward_prediction_arrays(
