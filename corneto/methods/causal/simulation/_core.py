@@ -14,7 +14,7 @@ import numpy as np
 from corneto.graph import Attr, BaseGraph, EdgeType
 
 from ._mechanisms import _Constant, _Shifted
-from ._noise import Zero, _rng, _sample_count
+from ._noise import Zero, _finite_real, _rng, _sample_count
 
 if TYPE_CHECKING:
     from corneto.data import Data
@@ -28,7 +28,9 @@ class Node:
     receives arrays with shapes ``(n, len(parents))`` and ``(n,)`` and must
     return one numeric value per sample. A noise callable receives a NumPy
     generator and the sample count and must return an array with shape
-    ``(n,)``.
+    ``(n,)``. The simulator snapshots callback outputs and supplied noise;
+    mechanisms receive writable arrays they own. Keep mechanisms free of
+    external mutable state when repeated evaluation must replay identically.
     """
 
     parents: tuple[Any, ...]
@@ -63,15 +65,6 @@ class _Intervention:
     value: float | None = None
 
 
-def _real(value: Any, name: str) -> float:
-    if isinstance(value, bool) or not isinstance(value, Real):
-        raise TypeError(f"{name} must be a finite real number.")
-    result = float(value)
-    if not np.isfinite(result):
-        raise ValueError(f"{name} must be finite.")
-    return result
-
-
 def _vector(value: Any, n: int, description: str) -> np.ndarray:
     try:
         array = np.asarray(value)
@@ -81,7 +74,7 @@ def _vector(value: Any, n: int, description: str) -> np.ndarray:
         raise ValueError(f"{description} must have shape ({n},), got {array.shape}.")
     if not np.issubdtype(array.dtype, np.number) or np.issubdtype(array.dtype, np.complexfloating):
         raise TypeError(f"{description} must contain real numeric values.")
-    array = np.asarray(array, dtype=float)
+    array = np.array(array, dtype=float, copy=True)
     if not np.all(np.isfinite(array)):
         raise ValueError(f"{description} must contain only finite values.")
     return array
@@ -165,8 +158,11 @@ class SCM:
     The variable order follows the input mapping. Evaluation uses a stable
     topological order, while each node receives parents in its declared order.
     ``draw_noise`` returns one vector per variable in a read-only mapping;
-    passing those same vectors to another SCM with the same variables enables
-    paired simulations across interventions.
+    returned vectors are copies even when a noise callback reuses a buffer.
+    ``evaluate`` snapshots supplied noise before passing it to mechanisms, so
+    in-place operations cannot corrupt the caller's replay data. Passing the
+    same vectors to another SCM with the same variables enables paired
+    simulations across interventions.
     """
 
     __slots__ = ("_interventions", "_nodes", "_topological_order", "_variables")
@@ -330,7 +326,7 @@ class SCM:
         nodes = dict(self._nodes)
         interventions = dict(self._interventions)
         for variable, value in values.items():
-            value = _real(value, f"Hard intervention on {variable!r}")
+            value = _finite_real(value, f"Hard intervention on {variable!r}")
             nodes[variable] = Node((), _Constant(value), Zero())
             interventions[variable] = _Intervention("hard", value)
         return SCM(nodes, _interventions=interventions)
@@ -347,16 +343,25 @@ class SCM:
         nodes = dict(self._nodes)
         interventions = dict(self._interventions)
         for variable, value in values.items():
-            value = _real(value, f"Shift on {variable!r}")
+            value = _finite_real(value, f"Shift on {variable!r}")
             node = nodes[variable]
             previous = interventions.get(variable)
+            if previous is not None and previous.kind == "hard":
+                if previous.value is None:
+                    raise ValueError(f"Hard intervention metadata for {variable!r} has no clamp value.")
+                total_value = _finite_real(previous.value + value, f"Accumulated intervention on {variable!r}")
+                nodes[variable] = Node((), _Constant(total_value), Zero())
+                interventions[variable] = _Intervention("hard", total_value)
+                continue
             if previous is None:
                 mechanism = node.mechanism
                 total_shift = value
                 intervention = _Intervention("shift", value)
             elif previous.kind == "shift":
+                if previous.value is None:
+                    raise ValueError(f"Shift metadata for {variable!r} has no shift value.")
                 mechanism = node.mechanism.mechanism
-                total_shift = previous.value + value
+                total_shift = _finite_real(previous.value + value, f"Accumulated shift on {variable!r}")
                 intervention = _Intervention("shift", total_shift)
             else:
                 mechanism = node.mechanism

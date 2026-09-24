@@ -10,9 +10,9 @@ import numpy as np
 
 from corneto.graph import BaseGraph
 
-from ._core import SCM, _graph_structure, _real
+from ._core import SCM, Node, _graph_structure
 from ._mechanisms import Linear
-from ._noise import Normal, _rng
+from ._noise import Normal, _finite_real, _rng
 
 
 def linear_scm(
@@ -53,20 +53,23 @@ def linear_scm(
         missing = tuple(edge for edge in edges if edge not in weights)
         if unknown or missing:
             raise ValueError(f"Weight keys must match graph edges; missing={missing!r}, unknown={unknown!r}.")
-        edge_weights = {edge: _real(weights[edge], f"Weight for edge {edge!r}") for edge in edges}
+        edge_weights = {edge: _finite_real(weights[edge], f"Weight for edge {edge!r}") for edge in edges}
     elif weight_attribute is not None:
         edge_weights = {}
         for edge_index, edge in enumerate(edges):
             attributes = graph.get_attr_edge(edge_index)
             if weight_attribute not in attributes:
                 raise ValueError(f"Graph edge {edge!r} has no {weight_attribute!r} attribute.")
-            edge_weights[edge] = _real(attributes[weight_attribute], f"Weight for edge {edge!r}")
+            edge_weights[edge] = _finite_real(attributes[weight_attribute], f"Weight for edge {edge!r}")
     else:
         try:
             lower, upper = random_weight_range
         except (TypeError, ValueError) as error:
             raise ValueError("random_weight_range must contain two finite positive bounds.") from error
-        lower, upper = _real(lower, "random_weight_range lower bound"), _real(upper, "random_weight_range upper bound")
+        lower, upper = (
+            _finite_real(lower, "random_weight_range lower bound"),
+            _finite_real(upper, "random_weight_range upper bound"),
+        )
         if lower <= 0 or upper < lower:
             raise ValueError("random_weight_range must satisfy 0 < lower <= upper.")
         magnitudes = generator.uniform(lower, upper, len(edges))
@@ -78,13 +81,15 @@ def linear_scm(
     if biases is None:
         bias_values = {variable: 0.0 for variable in variables}
     elif isinstance(biases, Real) and not isinstance(biases, bool):
-        bias = _real(biases, "biases")
+        bias = _finite_real(biases, "biases")
         bias_values = {variable: bias for variable in variables}
     elif isinstance(biases, Mapping):
         unknown = tuple(variable for variable in biases if variable not in parents)
         if unknown:
             raise ValueError(f"Bias mapping contains unknown graph vertices: {unknown!r}.")
-        bias_values = {variable: _real(biases.get(variable, 0.0), f"Bias for {variable!r}") for variable in variables}
+        bias_values = {
+            variable: _finite_real(biases.get(variable, 0.0), f"Bias for {variable!r}") for variable in variables
+        }
     else:
         raise TypeError("biases must be a finite real number, a vertex-to-real mapping, or None.")
 
@@ -100,11 +105,15 @@ def linear_scm(
     else:
         raise TypeError("noise must be a callable, a vertex-to-callable mapping, or None.")
 
-    mechanisms = {
-        variable: Linear(tuple(edge_weights[(parent, variable)] for parent in parents[variable]), bias_values[variable])
+    nodes = {
+        variable: Node(
+            parents[variable],
+            Linear(tuple(edge_weights[(parent, variable)] for parent in parents[variable]), bias_values[variable]),
+            noise_values[variable],
+        )
         for variable in variables
     }
-    return SCM.from_graph(graph, mechanisms, noise_values)
+    return SCM(nodes)
 
 
 __all__ = ["linear_scm"]

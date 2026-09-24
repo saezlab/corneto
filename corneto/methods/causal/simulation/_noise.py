@@ -27,17 +27,22 @@ def _rng(rng: int | np.random.Generator | None) -> np.random.Generator:
     return np.random.default_rng(rng)
 
 
+def _finite_real(value: Any, name: str) -> float:
+    """Validate a finite real-valued simulator parameter."""
+    if isinstance(value, bool) or not isinstance(value, Real):
+        raise TypeError(f"{name} must be a finite real number.")
+    result = float(value)
+    if not np.isfinite(result):
+        raise ValueError(f"{name} must be finite.")
+    return result
+
+
 def _location_scale(loc: Any, scale: Any, name: str) -> tuple[float, float]:
     """Validate location and a nonnegative distribution scale."""
-    if isinstance(loc, bool) or not isinstance(loc, Real):
-        raise TypeError(f"{name} location must be a finite real number.")
-    if isinstance(scale, bool) or not isinstance(scale, Real):
-        raise TypeError(f"{name} scale must be a finite nonnegative real number.")
-    loc, scale = float(loc), float(scale)
-    if not np.isfinite(loc):
-        raise ValueError(f"{name} location must be finite.")
-    if not np.isfinite(scale) or scale < 0:
-        raise ValueError(f"{name} scale must be finite and nonnegative.")
+    loc = _finite_real(loc, f"{name} location")
+    scale = _finite_real(scale, f"{name} scale")
+    if scale < 0:
+        raise ValueError(f"{name} scale must be nonnegative.")
     return loc, scale
 
 

@@ -3,20 +3,11 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from numbers import Real
 from typing import Any, Callable
 
 import numpy as np
 
-
-def _finite_real(value: Any, name: str) -> float:
-    """Validate a finite real-valued mechanism parameter."""
-    if isinstance(value, bool) or not isinstance(value, Real):
-        raise TypeError(f"{name} must be a finite real number.")
-    result = float(value)
-    if not np.isfinite(result):
-        raise ValueError(f"{name} must be finite.")
-    return result
+from ._noise import _finite_real
 
 
 @dataclass(frozen=True)

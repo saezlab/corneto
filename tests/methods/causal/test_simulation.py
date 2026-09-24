@@ -1,5 +1,7 @@
 """Tests for generic structural causal model simulation."""
 
+from copy import deepcopy
+
 import numpy as np
 import pytest
 
@@ -61,6 +63,60 @@ def test_paired_interventions_reuse_exogenous_noise():
     np.testing.assert_allclose(intervened[:, 1] - observed[:, 1], 6.0 - 2.0 * observed[:, 0])
 
 
+def test_evaluate_snapshots_input_noise_and_reused_mechanism_buffers():
+    scratch = np.empty(3)
+
+    def mutate_noise(parents, noise):
+        noise += 1.0
+        return noise
+
+    def reuse_output(parents, noise):
+        np.copyto(scratch, noise)
+        return scratch
+
+    scm = SCM(
+        {
+            "mutated": Node((), mutate_noise, Zero()),
+            "first": Node((), reuse_output, Zero()),
+            "second": Node((), reuse_output, Zero()),
+        }
+    )
+    supplied = {
+        "mutated": np.array([1.0, 2.0, 3.0]),
+        "first": np.array([4.0, 5.0, 6.0]),
+        "second": np.array([7.0, 8.0, 9.0]),
+    }
+    original = {variable: values.copy() for variable, values in supplied.items()}
+    first = scm.evaluate(supplied)
+    second = scm.evaluate(supplied)
+
+    np.testing.assert_array_equal(first, [[2, 4, 7], [3, 5, 8], [4, 6, 9]])
+    np.testing.assert_array_equal(second, first)
+    for variable in scm.variables:
+        np.testing.assert_array_equal(supplied[variable], original[variable])
+
+
+def test_draw_noise_copies_sampler_buffers_between_nodes():
+    scratch = np.empty(4)
+
+    def reusable_sampler(rng, n):
+        scratch[:] = rng.normal(size=n)
+        return scratch
+
+    scm = SCM(
+        {
+            "A": Node((), lambda parents, noise: noise, reusable_sampler),
+            "B": Node((), lambda parents, noise: noise, reusable_sampler),
+        }
+    )
+    draws = scm.draw_noise(4, rng=9)
+    expected_rng = np.random.default_rng(9)
+
+    np.testing.assert_array_equal(draws["A"], expected_rng.normal(size=4))
+    np.testing.assert_array_equal(draws["B"], expected_rng.normal(size=4))
+    assert not np.shares_memory(draws["A"], draws["B"])
+
+
 def test_validation_reports_missing_parents_cycles_and_bad_shapes():
     with pytest.raises(ValueError, match="missing parent"):
         SCM({"A": Node(("missing",), Linear((1.0,)))})
@@ -71,6 +127,32 @@ def test_validation_reports_missing_parents_cycles_and_bad_shapes():
     malformed = SCM({"A": Node((), lambda parents, noise: np.zeros((len(noise), 1)), Zero())})
     with pytest.raises(ValueError, match=r"shape \(3,\)"):
         malformed.sample(3, rng=0)
+
+
+def test_invalid_sample_counts_noise_inputs_and_nonfinite_outputs():
+    scm = SCM({"A": Node((), lambda parents, noise: noise, Zero())})
+    with pytest.raises(ValueError, match="nonnegative integer"):
+        scm.sample(-1)
+    with pytest.raises(TypeError, match="nonnegative integer"):
+        scm.sample(2.5)
+    with pytest.raises(TypeError, match="nonnegative integer"):
+        scm.sample(True)
+    with pytest.raises(ValueError, match="one-dimensional"):
+        scm.evaluate({"A": np.zeros((2, 1))})
+    with pytest.raises(ValueError, match="Noise keys must match"):
+        scm.evaluate({"extra": np.zeros(2)})
+    with pytest.raises(ValueError, match="same sample count"):
+        SCM({"A": Node((), lambda parents, noise: noise), "B": Node((), lambda parents, noise: noise)}).evaluate(
+            {"A": np.zeros(2), "B": np.zeros(3)}
+        )
+    with pytest.raises(ValueError, match="finite values"):
+        scm.evaluate({"A": np.array([np.nan])})
+    with pytest.raises(ValueError, match=r"shape \(2,\)"):
+        SCM({"A": Node((), lambda parents, noise: noise, lambda rng, n: np.zeros((n, 1)))}).draw_noise(2)
+    with pytest.raises(ValueError, match="finite values"):
+        SCM({"A": Node((), lambda parents, noise: noise, lambda rng, n: np.full(n, np.inf))}).draw_noise(2)
+    with pytest.raises(ValueError, match="finite values"):
+        SCM({"A": Node((), lambda parents, noise: np.full(len(noise), np.nan), Zero())}).sample(2)
 
 
 def test_graph_adapter_keeps_isolates_and_orders_parents_by_vertex_order():
@@ -132,10 +214,55 @@ def test_linear_factory_uses_weights_or_explicit_weight_attribute():
     assert abs(weight) >= 0.5
 
 
+def test_linear_factory_respects_graph_parent_order_for_explicit_weights():
+    graph = Graph()
+    graph.add_vertices(["A", "B", "C"])
+    graph.add_edge("B", "C")
+    graph.add_edge("A", "C")
+    scm = linear_scm(graph, weights={("A", "C"): 2.0, ("B", "C"): 3.0}, noise=Zero())
+
+    assert scm.parents("C") == ("A", "B")
+    np.testing.assert_array_equal(scm.do({"A": 1.0, "B": 4.0}).sample(1), [[1.0, 4.0, 14.0]])
+
+
 def test_linear_factory_rejects_missing_explicit_weights():
     graph = Graph.from_tuples([("A", 1, "B")])
     with pytest.raises(ValueError, match="Weight keys must match"):
         linear_scm(graph, weights={})
+
+
+def test_hashable_nonstring_labels_work_in_models_and_data():
+    tuple_label, integer_label = ("protein", "A"), 17
+    scm = SCM(
+        {
+            tuple_label: Node((), lambda parents, noise: noise, Zero()),
+            integer_label: Node((tuple_label,), Linear((2.0,)), Zero()),
+        }
+    ).do({tuple_label: 3.0})
+    data = scm.sample_data(1, rng=0, sample_ids=("sample",))
+
+    np.testing.assert_array_equal(scm.sample(1, rng=0), [[3.0, 6.0]])
+    assert data.samples["sample"].features[0].id == tuple_label
+    assert data.samples["sample"].features[1].id == integer_label
+
+
+def test_factory_generator_reproducibility_and_separate_sample_state():
+    graph = Graph.from_tuples([("A", 1, "B")])
+    first = linear_scm(graph, rng=15, noise=Normal())
+    second = linear_scm(graph, rng=15, noise=Normal())
+    assert first.nodes["B"].mechanism.weights == second.nodes["B"].mechanism.weights
+
+    generation_rng = np.random.default_rng(18)
+    initial_state = deepcopy(generation_rng.bit_generator.state)
+    generated = linear_scm(graph, rng=generation_rng, noise=Normal())
+    generated_state = deepcopy(generation_rng.bit_generator.state)
+    assert generated_state != initial_state
+
+    sample_rng = np.random.default_rng(23)
+    initial_sample_state = deepcopy(sample_rng.bit_generator.state)
+    generated.sample(5, rng=sample_rng)
+    assert sample_rng.bit_generator.state != initial_sample_state
+    assert generation_rng.bit_generator.state == generated_state
 
 
 def test_replacements_are_immutable_and_general_replacement_cannot_be_misannotated():
@@ -145,6 +272,9 @@ def test_replacements_are_immutable_and_general_replacement_cannot_be_misannotat
     np.testing.assert_array_equal(replaced.sample(2), [[1.0], [1.0]])
     with pytest.raises(ValueError, match="arbitrary node replacements"):
         replaced.to_data(replaced.sample(2))
+    changed = replaced.shift({"A": 1.0})
+    with pytest.raises(ValueError, match="arbitrary node replacements"):
+        changed.to_data(changed.sample(2))
     with pytest.raises(AttributeError, match="immutable"):
         scm._nodes = {}
 
@@ -156,6 +286,31 @@ def test_sequential_shifts_accumulate_the_effect_and_metadata():
     feature = data.samples[0].features[0]
     assert feature.data["intervention"] == "shift"
     assert feature.data["shift"] == 3.0
+
+
+def test_hard_intervention_shift_composition_preserves_exported_semantics():
+    base = SCM({"A": Node((), lambda parents, noise: noise + 1.0, Normal())})
+    hard_then_shift = base.do({"A": 2.0}).shift({"A": 3.0})
+    shifted_then_hard = base.shift({"A": 20.0}).do({"A": 7.0})
+
+    hard_data = hard_then_shift.sample_data(2, rng=4, intervention_group="clamp")
+    hard_feature = hard_data.samples[0].features[0]
+    assert hard_feature.value == 5.0
+    assert hard_feature.data["intervention"] == "hard"
+    assert "shift" not in hard_feature.data
+    np.testing.assert_array_equal(hard_then_shift.sample(2), [[5.0], [5.0]])
+    np.testing.assert_array_equal(shifted_then_hard.sample(2), [[7.0], [7.0]])
+    shifted_hard = shifted_then_hard.sample_data(1).samples[0].features[0].data
+    assert shifted_hard["intervention"] == "hard"
+    assert "shift" not in shifted_hard
+
+
+def test_intervention_composition_rejects_overflow():
+    scm = SCM({"A": Node((), lambda parents, noise: noise, Zero())})
+    with pytest.raises(ValueError, match="Accumulated shift"):
+        scm.shift({"A": 1e308}).shift({"A": 1e308})
+    with pytest.raises(ValueError, match="Accumulated intervention"):
+        scm.do({"A": 1e308}).shift({"A": 1e308})
 
 
 def test_data_conversion_retains_hard_and_known_shift_metadata():
