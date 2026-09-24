@@ -1,7 +1,11 @@
 [workspace]
 name = "corneto"
 channels = ["conda-forge"]
-platforms = ["osx-arm64", "osx-64", "linux-64"]
+platforms = [
+    { name = "osx-arm64-macos-15", platform = "osx-arm64", macos = "15.0" },
+    { name = "osx-64-macos-15", platform = "osx-64", macos = "15.0" },
+    "linux-64",
+]
 
 [dependencies]
 python = "3.11.*"
