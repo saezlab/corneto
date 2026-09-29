@@ -265,18 +265,109 @@ def test_factory_generator_reproducibility_and_separate_sample_state():
     assert generation_rng.bit_generator.state == generated_state
 
 
-def test_replacements_are_immutable_and_general_replacement_cannot_be_misannotated():
-    scm = SCM({"A": Node((), lambda parents, noise: noise, Zero())})
-    replaced = scm.replace({"A": Node((), lambda parents, noise: np.ones(len(noise)), Zero())})
-    np.testing.assert_array_equal(scm.sample(2), [[0.0], [0.0]])
-    np.testing.assert_array_equal(replaced.sample(2), [[1.0], [1.0]])
-    with pytest.raises(ValueError, match="arbitrary node replacements"):
-        replaced.to_data(replaced.sample(2))
-    changed = replaced.shift({"A": 1.0})
-    with pytest.raises(ValueError, match="arbitrary node replacements"):
-        changed.to_data(changed.sample(2))
+def test_node_replace_preserves_fields_and_runs_node_validation():
+    original = Node(("A",), Linear((2.0,)), Normal(std=0.5))
+    noise_changed = original.replace(noise=Zero())
+    assert noise_changed.parents == ("A",)
+    assert noise_changed.mechanism is original.mechanism
+    assert isinstance(noise_changed.noise, Zero)
+    assert original.noise.std == 0.5
+
+    fully_changed = original.replace(parents=(), mechanism=lambda parents, noise: noise + 3.0, noise=Zero())
+    assert fully_changed.parents == ()
+    assert fully_changed.mechanism is not original.mechanism
+    assert isinstance(fully_changed.noise, Zero)
+
+    with pytest.raises(AttributeError):
+        noise_changed.parents = ()
+    with pytest.raises(TypeError, match="unexpected keyword"):
+        original.replace(unknown_field=True)
+    with pytest.raises(ValueError, match="duplicates"):
+        original.replace(parents=("A", "A"))
+    with pytest.raises(TypeError, match="mechanism must be callable"):
+        original.replace(mechanism=None)
+
+
+def test_replace_edits_baseline_and_exports_data_without_intervention_metadata():
+    scm = SCM(
+        {
+            "A": Node((), lambda parents, noise: np.ones(len(noise)), Zero()),
+            "B": Node(("A",), Linear((2.0,)), Zero()),
+        }
+    )
+    changed = scm.replace({"B": scm.nodes["B"].replace(mechanism=Linear((3.0,)))})
+    np.testing.assert_array_equal(scm.sample(2), [[1.0, 2.0], [1.0, 2.0]])
+    np.testing.assert_array_equal(changed.sample(2), [[1.0, 3.0], [1.0, 3.0]])
+    data = changed.sample_data(1, rng=0)
+
+    assert all("intervention" not in feature.data for feature in data.samples[0].features)
     with pytest.raises(AttributeError, match="immutable"):
         scm._nodes = {}
+
+
+def test_intervene_marks_arbitrary_equations_and_do_supersedes_marker():
+    scm = SCM({"A": Node((), lambda parents, noise: noise, Zero())})
+    arbitrary_node = Node((), lambda parents, noise: np.full(len(noise), 4.0), Zero())
+    intervened = scm.intervene({"A": arbitrary_node})
+
+    np.testing.assert_array_equal(scm.sample(2), [[0.0], [0.0]])
+    np.testing.assert_array_equal(intervened.sample(2), [[4.0], [4.0]])
+    with pytest.raises(ValueError, match="arbitrary node interventions"):
+        intervened.to_data(intervened.sample(2))
+    with pytest.raises(ValueError, match="arbitrary node interventions"):
+        intervened.shift({"A": 1.0}).to_data(intervened.shift({"A": 1.0}).sample(2))
+
+    hard = intervened.do({"A": 7.0})
+    feature = hard.sample_data(1, rng=0).samples[0].features[0]
+    assert feature.value == 7.0
+    assert feature.data["intervention"] == "hard"
+
+
+def test_replace_clears_only_edited_intervention_metadata():
+    scm = SCM(
+        {
+            "A": Node((), lambda parents, noise: noise, Zero()),
+            "B": Node((), lambda parents, noise: noise, Zero()),
+            "C": Node((), lambda parents, noise: noise, Zero()),
+        }
+    )
+    arbitrary_c = Node((), lambda parents, noise: np.full(len(noise), 5.0), Zero())
+    mixed = scm.do({"A": 1.0}).shift({"B": 2.0}).intervene({"C": arbitrary_c})
+    changed_b = mixed.replace({"B": scm.nodes["B"].replace(mechanism=lambda parents, noise: noise + 10.0)})
+
+    assert changed_b._interventions["A"].kind == "hard"
+    assert "B" not in changed_b._interventions
+    assert changed_b._interventions["C"].kind == "replace"
+    with pytest.raises(ValueError, match="arbitrary node interventions"):
+        changed_b.sample_data(1, rng=0)
+
+    changed_c = changed_b.replace({"C": scm.nodes["C"].replace(mechanism=lambda parents, noise: noise + 20.0)})
+    assert changed_c._interventions == {"A": mixed._interventions["A"]}
+    data = changed_c.sample_data(1, rng=0)
+    features = {feature.id: feature for feature in data.samples[0].features}
+    assert features["A"].data["intervention"] == "hard"
+    assert "intervention" not in features["B"].data
+    assert "intervention" not in features["C"].data
+    assert "B" not in changed_c._interventions
+    assert mixed._interventions["B"].kind == "shift"
+    assert mixed._interventions["C"].kind == "replace"
+
+
+def test_replace_and_intervene_both_validate_acyclic_topology():
+    scm = SCM(
+        {
+            "A": Node((), lambda parents, noise: noise, Zero()),
+            "B": Node(("A",), Linear((1.0,)), Zero()),
+        }
+    )
+    cyclic_a = Node(("B",), Linear((1.0,)), Zero())
+
+    with pytest.raises(ValueError, match="cycle"):
+        scm.replace({"A": cyclic_a})
+    with pytest.raises(ValueError, match="cycle"):
+        scm.intervene({"A": cyclic_a})
+
+    np.testing.assert_array_equal(scm.sample(1), [[0.0, 0.0]])
 
 
 def test_sequential_shifts_accumulate_the_effect_and_metadata():

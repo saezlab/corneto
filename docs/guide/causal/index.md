@@ -8,7 +8,6 @@ systems.
 ```{toctree}
 :maxdepth: 3
 
-scm-simulation.md
 scm-simulation.ipynb
 simulated-linear-dag.ipynb
 linear-dag-discovery.ipynb

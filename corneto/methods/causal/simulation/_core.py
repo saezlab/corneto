@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Iterable, Mapping
 from dataclasses import dataclass, field
+from dataclasses import replace as dataclass_replace
 from numbers import Real
 from types import MappingProxyType
 from typing import TYPE_CHECKING, Any
@@ -57,6 +58,10 @@ class Node:
         if not callable(self.noise):
             raise TypeError("noise must be callable.")
         object.__setattr__(self, "parents", parents)
+
+    def replace(self, **changes: Any) -> Node:
+        """Return a new node definition with selected fields changed."""
+        return dataclass_replace(self, **changes)
 
 
 @dataclass(frozen=True)
@@ -186,7 +191,7 @@ class SCM:
         object.__setattr__(self, "_interventions", MappingProxyType(interventions))
 
     def __setattr__(self, name: str, value: Any) -> None:
-        raise AttributeError("SCM instances are immutable; use do, shift, or replace to create a new model.")
+        raise AttributeError("SCM instances are immutable; use do, shift, replace, or intervene to create a new model.")
 
     @property
     def nodes(self) -> Mapping[Any, Node]:
@@ -359,23 +364,46 @@ class SCM:
             interventions[variable] = intervention
         return SCM(nodes, _interventions=interventions)
 
-    def replace(self, nodes: Mapping[Any, Node]) -> SCM:
-        """Return a model with named node definitions replaced immutably."""
+    def _with_node_definitions(self, nodes: Mapping[Any, Node], *, intervention: bool) -> SCM:
+        """Apply node-definition changes, optionally recording interventions."""
         if not isinstance(nodes, Mapping):
             raise TypeError("nodes must be a mapping from variables to Node definitions.")
         unknown = tuple(variable for variable in nodes if variable not in self._nodes)
         if unknown:
-            raise ValueError(f"Cannot replace unknown SCM variables: {unknown!r}.")
+            operation = "intervene on" if intervention else "replace"
+            raise ValueError(f"Cannot {operation} unknown SCM variables: {unknown!r}.")
         if not nodes:
             return self
-        replacements = dict(self._nodes)
+        updated_nodes = dict(self._nodes)
         interventions = dict(self._interventions)
         for variable, node in nodes.items():
             if not isinstance(node, Node):
-                raise TypeError(f"Replacement for {variable!r} must be a Node instance.")
-            replacements[variable] = node
-            interventions[variable] = _Intervention("replace")
-        return SCM(replacements, _interventions=interventions)
+                action = "Intervention" if intervention else "Replacement"
+                raise TypeError(f"{action} for {variable!r} must be a Node instance.")
+            updated_nodes[variable] = node
+            if intervention:
+                interventions[variable] = _Intervention("replace")
+            else:
+                interventions.pop(variable, None)
+        return SCM(updated_nodes, _interventions=interventions)
+
+    def replace(self, nodes: Mapping[Any, Node]) -> SCM:
+        """Return a modified SCM with named node definitions changed.
+
+        Replacing a node edits the model itself rather than adding an
+        intervention. Any intervention metadata on that node is cleared;
+        metadata for unchanged nodes is preserved.
+        """
+        return self._with_node_definitions(nodes, intervention=False)
+
+    def intervene(self, nodes: Mapping[Any, Node]) -> SCM:
+        """Return an experimental SCM with arbitrary node interventions.
+
+        The changed equations are marked as arbitrary interventions. CORNETO
+        ``Data`` conversion rejects these interventions because
+        ``LinearDAGDiscovery`` only supports hard clamps and known shifts.
+        """
+        return self._with_node_definitions(nodes, intervention=True)
 
     def to_data(
         self,
@@ -387,14 +415,16 @@ class SCM:
         """Convert an ``(n, d)`` simulation matrix to CORNETO ``Data``.
 
         Hard interventions and known additive shifts are annotated using the
-        feature metadata consumed by ``LinearDAGDiscovery``. General node
-        replacements have no supported discovery annotation and are rejected.
+        feature metadata consumed by ``LinearDAGDiscovery``. Arbitrary node
+        interventions created by :meth:`intervene` have no supported discovery
+        annotation and are rejected. Baseline edits made by :meth:`replace`
+        are ordinary model definitions and carry no intervention metadata.
         """
-        replacements = tuple(variable for variable, item in self._interventions.items() if item.kind == "replace")
-        if replacements:
+        unsupported = tuple(variable for variable, item in self._interventions.items() if item.kind == "replace")
+        if unsupported:
             raise ValueError(
-                "Cannot convert arbitrary node replacements to LinearDAGDiscovery data; "
-                f"replace metadata is unsupported for {replacements!r}."
+                "Cannot convert arbitrary node interventions to LinearDAGDiscovery data; "
+                f"intervention metadata is unsupported for {unsupported!r}."
             )
         matrix = np.asarray(values)
         if matrix.ndim != 2 or matrix.shape[1] != len(self._variables):

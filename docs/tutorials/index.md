@@ -16,7 +16,6 @@ carnival/multi-receptor-integration.ipynb
 carnival/network-sampler.ipynb
 carnival/network-sampler-example.ipynb
 ml/kpnn-with-sc.ipynb
-causal/README
 causal/linear-dag-discovery-sachs.ipynb
 ```
 
