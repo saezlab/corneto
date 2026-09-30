@@ -329,6 +329,26 @@ def test_notebook_execution_errors_propagate(tmp_path: Path) -> None:
         )
 
 
+def test_notebook_execution_failure_relays_worker_stderr(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    source = tmp_path / "fails-with-diagnostic.ipynb"
+    write_notebook(source, source="raise RuntimeError('diagnostic from notebook cell')")
+
+    with pytest.raises(subprocess.CalledProcessError) as exc_info:
+        execute_notebook(
+            source,
+            tmp_path / "failed-output.ipynb",
+            python=Path(sys.executable),
+            cwd=tmp_path,
+            kernel_root=tmp_path / "jupyter",
+            kernel_name="corneto-failure-diagnostic-test",
+            timeout=60,
+        )
+
+    terminal_error = capsys.readouterr().err
+    assert "diagnostic from notebook cell" in terminal_error
+    assert "diagnostic from notebook cell" in exc_info.value.stderr
+
+
 def test_cache_restores_notebook_output_and_generated_artifacts(tmp_path: Path) -> None:
     stage = tmp_path / "stage"
     notebook = stage / "tutorial" / "example.ipynb"

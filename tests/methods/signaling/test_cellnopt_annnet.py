@@ -10,6 +10,16 @@ from corneto.methods.signaling.annnet import (
 annnet = pytest.importorskip("annnet")
 
 
+def _vertex_layer_attrs(graph, vertex, layer):
+    get_attrs = getattr(graph.layers, "get_vertex_layer_attrs", None) or graph.layers.node_attrs
+    return get_attrs(vertex, layer)
+
+
+def _layer_attrs(graph, layer):
+    get_attrs = getattr(graph.layers, "get_layer_attrs", None) or graph.layers.attrs
+    return get_attrs(layer)
+
+
 def test_cellnopt_reads_conditions_and_adds_results_to_annnet(backend):
     graph = annnet.AnnNet(directed=True)
     graph.history.enable(True)
@@ -39,10 +49,10 @@ def test_cellnopt_reads_conditions_and_adds_results_to_annnet(backend):
 
     assert solution.status == "optimal"
     assert layers == {"off": ("off",), "on": ("on",), "blocked": ("blocked",)}
-    assert graph.layers.node_attrs("L", ("on",))["input"] == 1
-    assert graph.layers.node_attrs("A", ("blocked",))["inhibited"] == 1
-    assert graph.layers.node_attrs("Y", ("on",))["predicted"] == 1
-    assert graph.layers.attrs(("blocked",))["endpoint_absolute_error"] == 0
+    assert _vertex_layer_attrs(graph, "L", ("on",))["input"] == 1
+    assert _vertex_layer_attrs(graph, "A", ("blocked",))["inhibited"] == 1
+    assert _vertex_layer_attrs(graph, "Y", ("on",))["predicted"] == 1
+    assert _layer_attrs(graph, ("blocked",))["endpoint_absolute_error"] == 0
     assert graph.slices.exists("cellnopt_selected")
     assert summary["selected_reactions"] == 2
     assert summary["condition_errors"] == {"off": 0.0, "on": 0.0, "blocked": 0.0}

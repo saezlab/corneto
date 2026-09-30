@@ -234,15 +234,20 @@ def execute_notebook(
     if child_environment.get("JUPYTER_PATH"):
         kernel_paths.append(child_environment["JUPYTER_PATH"])
     child_environment["JUPYTER_PATH"] = os.pathsep.join(kernel_paths)
-    runner(
-        command,
-        cwd=str(cwd),
-        env=child_environment,
-        check=True,
-        timeout=timeout,
-        stderr=subprocess.PIPE,
-        text=True,
-    )
+    try:
+        runner(
+            command,
+            cwd=str(cwd),
+            env=child_environment,
+            check=True,
+            timeout=timeout,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+    except subprocess.CalledProcessError as exc:
+        if exc.stderr:
+            print(exc.stderr, file=sys.stderr, end="" if exc.stderr.endswith("\n") else "\n")
+        raise
 
 
 def execute_worker(

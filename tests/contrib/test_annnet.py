@@ -8,6 +8,16 @@ from corneto.graph import Attr, EdgeType, Graph
 annnet = pytest.importorskip("annnet")
 
 
+def _vertices(graph):
+    list_vertices = getattr(graph, "vertices", None) or graph.nodes
+    return list_vertices()
+
+
+def _vertex_attrs(graph, vertex):
+    get_attrs = getattr(graph.attrs, "get_vertex_attrs", None) or graph.attrs.get_node_attrs
+    return get_attrs(vertex)
+
+
 def test_directed_hypergraph_roundtrip():
     """Directed hyperedges and annotations survive a round-trip."""
     graph = Graph(name="example")
@@ -20,13 +30,13 @@ def test_directed_hypergraph_roundtrip():
 
     converted = to_annnet(graph)
 
-    assert converted.nodes() == ["A", "B", "C"]
+    assert _vertices(converted) == ["A", "B", "C"]
     assert converted.get_edge("corneto_edge_0") == (
         frozenset({"A", "B"}),
         frozenset({"C"}),
     )
     assert converted.get_edges_by_direction(True) == ["corneto_edge_0"]
-    assert converted.attrs.get_node_attrs("A")["kind"] == "gene"
+    assert _vertex_attrs(converted, "A")["kind"] == "gene"
     assert converted.attrs.get_edge_attrs("corneto_edge_0")["relation"] == "reaction"
     assert converted.uns["name"] == "example"
 
@@ -84,7 +94,7 @@ def test_non_string_node_ids_are_converted_to_strings():
 
     converted = to_annnet(graph)
 
-    assert converted.nodes() == ["1", "2"]
+    assert _vertices(converted) == ["1", "2"]
 
 
 def test_string_conversion_rejects_node_id_collisions():

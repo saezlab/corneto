@@ -53,6 +53,31 @@ _CORNETO_EDGE_RESERVED = {
 _ANNNET_EDGE_ID = "_annnet_edge_id"
 
 
+def _vertex_ids(graph):
+    list_vertices = getattr(graph, "vertices", None) or graph.nodes
+    return list_vertices()
+
+
+def _add_vertex(graph, vertex, **attributes):
+    add_vertex = getattr(graph, "add_vertices", None) or graph.add_nodes
+    return add_vertex(vertex, **attributes)
+
+
+def _vertex_attributes(graph, vertex):
+    get_attributes = getattr(graph.attrs, "get_vertex_attrs", None) or graph.attrs.get_node_attrs
+    return get_attributes(vertex)
+
+
+def _incidence_matrix(graph):
+    incidence = getattr(graph, "X", None)
+    return incidence() if callable(incidence) else graph.S
+
+
+def _vertex_at(graph, index):
+    get_vertex = getattr(graph, "get_vertex", None)
+    return get_vertex(index) if callable(get_vertex) else graph.N[index]
+
+
 def _copy_supported_attributes(attributes, reserved, element):
     copied = {k: deepcopy(v) for k, v in attributes.items() if k not in reserved}
     omitted = sorted(set(attributes).intersection(reserved))
@@ -117,7 +142,7 @@ def to_annnet(graph: BaseGraph, *, copy_attributes: bool = True) -> "AnnNet":
                 _ANNNET_NODE_RESERVED,
                 "node",
             )
-        result.add_nodes(node_id, **attributes)
+        _add_vertex(result, node_id, **attributes)
 
     if copy_attributes:
         result.uns.update(deepcopy(dict(graph.get_graph_attributes())))
@@ -219,18 +244,19 @@ def from_annnet(graph: "AnnNet", *, copy_attributes: bool = True) -> Graph:
     result = Graph()
     result.get_graph_attributes().update(graph_attributes)
 
-    nodes = list(graph.nodes())
+    nodes = list(_vertex_ids(graph))
     for vertex in nodes:
         attributes = {}
         if copy_attributes:
-            attributes = dict(graph.attrs.get_node_attrs(vertex))
+            attributes = dict(_vertex_attributes(graph, vertex))
+            attributes.pop("vertex_id", None)
             attributes.pop("node_id", None)
         result.add_vertex(vertex, **deepcopy(attributes))
 
     edge_ids = list(graph.edges())
     directed_edge_ids = set(graph.get_edges_by_direction(True))
-    matrix = graph.S
-    row_by_vertex = {graph.N[i]: i for i in range(graph.nv)}
+    matrix = _incidence_matrix(graph)
+    row_by_vertex = {_vertex_at(graph, i): i for i in range(graph.nv)}
 
     for edge_index, edge_id in enumerate(edge_ids):
         edge = graph.get_edge(edge_id)
