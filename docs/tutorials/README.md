@@ -62,6 +62,68 @@ scanpy = ">=1.9"
 
 > ℹ️ **Important**: Always specify a specific corneto version (e.g., `==1.0.0rc1`) to ensure reproducibility and independence from the main repository.
 
+## Executing notebooks for the documentation
+
+Use `pixi run docs` to build the site. It reuses notebook executions when the
+notebook source, documentation inputs, CORNETO source, or environment changes.
+Use `pixi run docs-force` to execute every routine notebook again. Both
+commands execute guides in the main CORNETO Pixi environment and each tutorial
+in the environment declared by its own `pixi.toml`. Execution happens in a
+build copy under `docs/_build/`; source notebooks are not rewritten. Notebooks
+marked optional keep their committed outputs in the site and are omitted from
+routine execution. Use `pixi run docs --all` or `pixi run docs-force --all` to
+include them. `--all` includes optional notebooks but still applies their
+declared dependency checks and publication exclusions.
+
+Declare execution requirements and optional runtime metadata in each
+notebook's `metadata.corneto`. A notebook that needs a working Gurobi
+installation should contain:
+
+```json
+{
+  "corneto": {
+    "requires": ["gurobi"]
+  }
+}
+```
+
+Mark a notebook as optional when its full execution exceeds the routine
+10-minute wall-clock budget. Give a short reason, for example:
+
+```json
+{
+  "corneto": {
+    "optional": true,
+    "optional_reason": "Runs repeated mixed-integer sampling solves.",
+    "execution_timeout": 3600
+  }
+}
+```
+
+The published Gurobi-dependent notebooks are `guide/networks/multi-pcst-grb.ipynb`,
+`tutorials/carnival/network-sampler.ipynb`,
+`tutorials/carnival/network-sampler-example.ipynb`, and
+`tutorials/causal/linear-dag-discovery-sachs.ipynb`. The contributed
+`tutorials/contrib/multi_condition_tutorial/multi_condition_carnival.ipynb`
+also declares Gurobi, but the contribution directory is excluded from the
+published site.
+
+The build calls CORNETO's `check_gurobi` once in each environment that has a
+Gurobi-dependent notebook. The check tests that the installed license can
+solve CORNETO's capability model. If it fails, only notebooks declaring that
+requirement are skipped; Sphinx renders their saved outputs and the build
+report records the reason at `docs/_build/notebook-report.json`. Other notebook
+execution errors fail the build. Each routine notebook has a 600-second total
+wall-clock limit; a larger timeout is allowed only for notebooks marked
+optional, and applies when they are selected with `--all`.
+
+Both Carnival network-sampler tutorials are optional because they run repeated
+mixed-integer sampling solves. The Scanpy/KPNN tutorial is also optional: its
+saved Papermill run took about 23 minutes and includes processing a large
+single-cell dataset and repeated model fits. The linear DAG guide's complete
+graph example has one HiGHS solve capped at 300 seconds, so it remains in the
+routine build budget.
+
 ---
 
 ## 🚀 How to Submit a Tutorial
