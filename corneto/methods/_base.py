@@ -187,8 +187,8 @@ class Method(ABC):
             if self._reg_varname is not None:
                 reg_var = self.problem.expr[self._reg_varname]
                 newvar_name = self._reg_varname + self._reg_varname_suffix
-                # A 1D vector can be summed directly without a linear OR.
-                if len(reg_var.shape) == 1 or reg_var.shape[1] == 1 or reg_var.shape[0] == 1:
+                # A single condition (vector or one-column matrix) can be summed directly.
+                if len(reg_var.shape) == 1 or reg_var.shape[1] == 1:
                     self.problem.add_objective(
                         reg_var.sum(),
                         weight=self.lambda_reg_param,

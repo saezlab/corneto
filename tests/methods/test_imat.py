@@ -5,7 +5,8 @@ import os
 import numpy as np
 import pytest
 
-from corneto.backend import PicosBackend
+from corneto import Graph
+from corneto.backend import CvxpyBackend, PicosBackend
 from corneto.data import Data
 from corneto.io import import_miom_model
 from corneto.methods.fba import MultiSampleFBA
@@ -13,6 +14,28 @@ from corneto.methods.imat import MultiSampleIMAT
 
 # Use HiGHS solver for fast execution
 SOLVER = "highs"
+
+
+@pytest.mark.parametrize("n_reactions,n_conditions", [(1, 2), (1, 3), (1, 1), (3, 1), (3, 2)])
+def test_imat_union_regularizes_each_reaction_once(n_reactions, n_conditions):
+    graph = Graph()
+    for reaction in range(n_reactions):
+        # Self-loops allow fixed nonzero flux while satisfying mass balance.
+        graph.add_edge(f"A{reaction}", f"A{reaction}", id=f"R{reaction}", default_lb=1, default_ub=1)
+
+    problem = MultiSampleIMAT(lambda_reg=1, beta_reg=0, backend=CvxpyBackend()).build_many(
+        graph,
+        reaction_scores={
+            f"s{condition}": {f"R{reaction}": 1 for reaction in range(n_reactions)} for condition in range(n_conditions)
+        },
+    )
+    result = problem.solve(solver="SCIPY")
+
+    assert result.status == "optimal"
+    expected_shape = (n_reactions,) if n_conditions == 1 else (n_reactions, n_conditions)
+    np.testing.assert_allclose(problem.expr.edge_has_flux.value, np.ones(expected_shape))
+    # Every positive score is satisfied, leaving only the reaction union cost.
+    assert result.value == pytest.approx(n_reactions)
 
 
 @pytest.fixture
