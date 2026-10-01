@@ -7,6 +7,7 @@ including vertex and edge operations, graph traversal algorithms, and attribute 
 from copy import deepcopy
 
 import numpy as np
+import pytest
 
 from corneto.graph import (
     EdgeType,
@@ -350,6 +351,41 @@ def test_graph_toposort():
     assert order.index("c") < order.index("d")
     assert order.index("d") < order.index("e")
     assert order.index("b") < order.index("d")
+
+
+def test_graph_toposort_supports_tuple_vertex_ids_and_isolates():
+    tuple_vertex = ("protein", "A")
+    isolated_vertex = ("control", 1)
+    graph = Graph()
+    graph.add_edge([tuple_vertex], ["B"])
+    graph.add_vertex(isolated_vertex)
+
+    order = graph.toposort()
+
+    assert set(order) == {tuple_vertex, "B", isolated_vertex}
+    assert order.index(tuple_vertex) < order.index("B")
+
+
+def test_graph_toposort_keeps_hyperedge_and_undirected_semantics():
+    graph = Graph()
+    graph.add_edge(["A", "B"], ["C", "D"])
+    order = graph.toposort()
+    for source in ("A", "B"):
+        for target in ("C", "D"):
+            assert order.index(source) < order.index(target)
+
+    undirected = Graph()
+    undirected.add_edge("A", "B", type=EdgeType.UNDIRECTED)
+    with pytest.raises(ValueError, match="cycle"):
+        undirected.toposort()
+
+
+def test_graph_toposort_deduplicates_parallel_edges():
+    graph = Graph()
+    graph.add_edge("A", "B")
+    graph.add_edge("A", "B")
+
+    assert graph.toposort() == ["A", "B"]
 
 
 def test_incidence_single_edge_single_source_vertex():

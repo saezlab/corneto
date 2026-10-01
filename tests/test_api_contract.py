@@ -94,25 +94,48 @@ def test_ml_api_replaces_private_module():
         "kfold_nonzero_splits",
         "plot_model",
         "signed_dense",
-        "toposort",
     ]
+    assert not hasattr(ml, "toposort")
     assert importlib.util.find_spec("corneto._ml") is None
 
 
 def test_io_surface_uses_graph_methods_for_serialization():
     """Duplicate module-level graph serialization helpers are removed."""
     assert io.__all__ == [
+        "MetabolicModel",
         "cobra_model_to_graph",
         "import_cobra_model",
         "import_miom_model",
+        "import_sbml_model",
         "load_graph_from_sif",
         "load_graph_from_sif_tuples",
         "parse_cobra_model",
+        "read_sbml",
+        "sbml_model_to_graph",
     ]
+    from corneto.io._metabolism import import_sbml_model as canonical_import_sbml_model
+    from corneto.io._metabolism import sbml_model_to_graph as canonical_sbml_model_to_graph
+    from corneto.io._sbml import MetabolicModel as canonical_metabolic_model
+    from corneto.io._sbml import read_sbml as canonical_read_sbml
+
+    assert io.MetabolicModel is canonical_metabolic_model
+    assert io.read_sbml is canonical_read_sbml
+    assert io.sbml_model_to_graph is canonical_sbml_model_to_graph
+    assert io.import_sbml_model is canonical_import_sbml_model
     assert not hasattr(io, "load_corneto_graph")
     assert not hasattr(io, "save_corneto_graph")
     assert callable(cn.Graph.load)
     assert callable(cn.Graph.save)
+
+
+def test_signaling_imports_alias_canonical_sif_implementation():
+    """Existing SIF imports remain identical through the compatibility module."""
+    from corneto.io import _sif, _signaling
+
+    for name in ("_read_sif", "_read_sif_iter", "load_graph_from_sif", "load_graph_from_sif_tuples"):
+        assert getattr(_signaling, name) is getattr(_sif, name)
+    assert io.load_graph_from_sif is _sif.load_graph_from_sif
+    assert io.load_graph_from_sif_tuples is _sif.load_graph_from_sif_tuples
 
 
 def test_sampler_remains_a_supported_module():

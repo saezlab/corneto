@@ -8,7 +8,9 @@ It is organized into several functional areas.
 
 """
 
-from typing import Dict, List, Set, Tuple, Union
+import os
+import zipfile
+from typing import BinaryIO, Dict, List, Set, Tuple, Union
 
 import numpy as np
 
@@ -16,16 +18,73 @@ from corneto import suppress_output
 from corneto._types import CobraModel
 from corneto.graph import Graph
 
-from ._base import graph_from_vertex_incidence
-from ._util import _download, _is_url
+from ._base import _as_local_path, _open_binary
+from ._sbml import MetabolicModel, read_sbml
 
 
-def import_cobra_model(path: str, quiet: bool = True) -> Graph:
+def graph_from_vertex_incidence(
+    A: np.ndarray,
+    vertex_ids: Union[List[str], np.ndarray],
+    edge_ids: Union[List[str], np.ndarray],
+):
+    """Create graph from vertex incidence matrix and labels.
+
+    Args:
+        A: Vertex incidence matrix. Rows are vertices, columns are edges.
+            Non-zero entries indicate edge-vertex connections.
+        vertex_ids: Labels for vertices corresponding to matrix rows
+        edge_ids: Labels for edges corresponding to matrix columns
+
+    Returns:
+        Graph instance constructed from incidence matrix
+
+    Raises:
+        ValueError: If dimensions of inputs don't match
+    """
+    g = Graph()
+    if len(vertex_ids) != A.shape[0]:
+        raise ValueError(
+            """The number of rows in A matrix is different from
+            the number of vertex ids"""
+        )
+    if len(edge_ids) != A.shape[1]:
+        raise ValueError(
+            """The number of columns in A matrix is different from
+            the number of edge ids"""
+        )
+    for v in vertex_ids:
+        g.add_vertex(v)
+    for j, v in enumerate(edge_ids):
+        values = A[:, j]
+        idx = np.flatnonzero(values)
+        coeffs = values[idx]
+        v_names = [vertex_ids[i] for i in idx]
+        s = {n: val for n, val in zip(v_names, coeffs) if val < 0}
+        t = {n: val for n, val in zip(v_names, coeffs) if val > 0}
+        g.add_edge(s, t, id=v)
+    return g
+
+
+def import_cobra_model(
+    path: str | os.PathLike | BinaryIO,
+    quiet: bool = True,
+    *,
+    compression: str | None = "auto",
+    timeout: float = 30.0,
+) -> Graph:
     """Import a COBRA model from an SBML file and convert it to a CORNETO graph.
 
     Args:
-        path: Path to SBML file
+        path: SBML path, HTTP(S) URL, or binary readable stream
         quiet: Suppress output from the COBRApy reader.
+        compression: ``"auto"`` detects and decompresses gzip, bz2, or xz by
+            magic bytes; ``None`` disables decompression, and an explicit codec
+            forces it. ZIP archives are passed to COBRApy's SBML reader, which
+            reads only the first member of a multi-file archive.
+        timeout: HTTP request timeout in seconds.
+
+    Paths, URLs, and streams are materialized in a temporary file for COBRApy;
+    caller-owned sources are not modified or closed.
 
     Returns:
         Graph: A CORNETO graph representing the metabolic network
@@ -34,31 +93,177 @@ def import_cobra_model(path: str, quiet: bool = True) -> Graph:
         from cobra.io import read_sbml_model
     except ImportError as e:
         raise ImportError("COBRApy not installed.", e)
-    if quiet:
-        with suppress_output(suppress_stdout=True):
-            model = read_sbml_model(str(path))
-    else:
-        model = read_sbml_model(str(path))
+    with _as_local_path(path, compression=compression, timeout=timeout, suffix=".xml") as local_path:
+        reader_path = local_path
+        if zipfile.is_zipfile(local_path):
+            # COBRApy selects its SBML reader partly from the filename suffix.
+            # Only rename our temporary materialization; the caller's source is untouched.
+            reader_path = local_path.with_suffix(".zip")
+            local_path.rename(reader_path)
+        if quiet:
+            with suppress_output(suppress_stdout=True):
+                model = read_sbml_model(str(reader_path))
+        else:
+            model = read_sbml_model(str(reader_path))
     return cobra_model_to_graph(model)
 
 
-def _load_compressed_gem(url_or_filepath):
-    # https://github.com/MetExplore/miom
-    import pathlib
+def sbml_model_to_graph(model: MetabolicModel) -> Graph:
+    """Convert parsed SBML records to a CORNETO metabolic hypergraph.
 
-    file = url_or_filepath
-    if _is_url(url_or_filepath):
-        file = _download(url_or_filepath)
-    ext = pathlib.Path(file).suffix
-    if ext == ".xz" or ext == ".miom":
-        import lzma
-        from io import BytesIO
+    Raw SBML species and reaction identifiers are preserved. Boundary and
+    constant species are kept in the graph's ``sbml_excluded_species``
+    metadata and excluded from mass-balance vertices. The active FBC objective,
+    when present, is stored as ``fba_objective`` in the graph metadata. Pass
+    that mapping explicitly as ``objectives`` when building
+    :class:`corneto.methods.fba.MultiSampleFBA`.
 
-        with lzma.open(file, "rb") as f_in:
-            M = np.load(BytesIO(f_in.read()), allow_pickle=True)
-    else:
-        M = np.load(file)
-    return M["S"], M["reactions"], M["metabolites"]
+    Args:
+        model: Parsed records returned by :func:`read_sbml`.
+
+    Returns:
+        A graph with one hyperedge per SBML reaction.
+    """
+    active_objective = model.objectives.get(model.active_objective)
+    fba_objective = None
+    if active_objective is not None:
+        sign = -1.0 if active_objective["sense"] == "maximize" else 1.0
+        fba_objective = {
+            reaction_id: sign * coefficient for reaction_id, coefficient in active_objective["coefficients"].items()
+        }
+
+    excluded_species = {
+        identifier: species
+        for identifier, species in model.species.items()
+        if species["boundary_condition"] or species["constant"]
+    }
+    graph = Graph(
+        sbml_model=model.model_info,
+        sbml_compartments=model.compartments,
+        sbml_unit_definitions=model.unit_definitions,
+        sbml_excluded_species=excluded_species,
+        sbml_parameters=model.parameters,
+        sbml_gene_products=model.gene_products,
+        sbml_objectives=model.objectives,
+        sbml_groups=model.groups,
+        sbml_active_objective=model.active_objective,
+        fba_objective=fba_objective,
+    )
+
+    for species_id, species in model.species.items():
+        if species_id in excluded_species:
+            continue
+        vertex = {
+            "name": species["name"],
+            "compartment": species["compartment"],
+            "boundaryCondition": species["boundary_condition"],
+            "constant": species["constant"],
+            "hasOnlySubstanceUnits": species["has_only_substance_units"],
+            "initialAmount": species["initial_amount"],
+            "initialConcentration": species["initial_concentration"],
+            "substanceUnits": species["substance_units"],
+            "formula": species["formula"],
+            "charge": species["charge"],
+            "meta_id": species["meta_id"],
+            "sbo_term": species["sbo_term"],
+        }
+        if "annotations" in species:
+            vertex["annotations"] = species["annotations"]
+        graph.add_vertex(species_id, **vertex)
+
+    for reaction_id, reaction in model.reactions.items():
+        net: dict[str, float] = {}
+        for species_id, coefficient in reaction["reactants"].items():
+            net[species_id] = net.get(species_id, 0.0) - coefficient
+        for species_id, coefficient in reaction["products"].items():
+            net[species_id] = net.get(species_id, 0.0) + coefficient
+        net = {species_id: coefficient for species_id, coefficient in net.items() if coefficient}
+
+        sources: dict[str, float] = {}
+        targets: dict[str, float] = {}
+        for species_id, coefficient in net.items():
+            species = model.species[species_id]
+            if species["boundary_condition"] or species["constant"]:
+                continue
+            (sources if coefficient < 0 else targets)[species_id] = abs(coefficient)
+
+        edge = {
+            "id": reaction_id,
+            "name": reaction["name"],
+            "default_lb": reaction["lower_bound"],
+            "default_ub": reaction["upper_bound"],
+            "GPR": reaction["gpr"],
+            "reversible": reaction["reversible"],
+            "fast": reaction["fast"],
+            "modifiers": reaction["modifiers"],
+            "stoichiometry": net,
+            "reactants": reaction["reactants"],
+            "products": reaction["products"],
+            "meta_id": reaction["meta_id"],
+            "sbo_term": reaction["sbo_term"],
+        }
+        if "annotations" in reaction:
+            edge["annotations"] = reaction["annotations"]
+        graph.add_edge(sources, targets, **edge)
+
+    return graph
+
+
+def import_sbml_model(
+    source: str | os.PathLike | BinaryIO,
+    *,
+    annotations: bool = False,
+    compression: str | None = "auto",
+    timeout: float = 30.0,
+) -> Graph:
+    """Read supported SBML and convert it to a CORNETO metabolic graph.
+
+    The native reader supports SBML Level 3 Version 1 Core and FBC Version 2,
+    with optional Groups Version 1. It uses only the standard library to parse
+    SBML and does not require COBRApy. Raw SBML identifiers are preserved;
+    boundary and constant species remain available in graph metadata but are
+    omitted from mass-balance vertices. If the document has an active FBC
+    objective, its minimization-convention coefficient map is stored as
+    ``graph.get_graph_attributes()["fba_objective"]``. Pass that mapping
+    explicitly to ``MultiSampleFBA.build(..., objectives=...)`` to use it.
+
+    Args:
+        source: SBML path, HTTP(S) URL, or binary readable stream. Caller-owned
+            streams are read from their current position and remain open.
+        annotations: Include embedded RDF resource URIs in record metadata.
+            Annotation URIs are not fetched.
+        compression: ``"auto"`` detects gzip, bz2, or xz by magic bytes;
+            ``None`` disables decompression, and an explicit codec forces it.
+        timeout: HTTP request timeout in seconds.
+
+    Returns:
+        A CORNETO graph containing the parsed metabolic network.
+
+    Raises:
+        ValueError: If the document uses unsupported dynamic semantics or
+            contains invalid or unresolved model references.
+    """
+    return sbml_model_to_graph(read_sbml(source, annotations=annotations, compression=compression, timeout=timeout))
+
+
+def _load_compressed_gem(
+    source,
+    *,
+    compression: str | None = "auto",
+    timeout: float = 30.0,
+):
+    """Load one MIOM archive while its source and archive remain open."""
+    with _open_binary(source, compression=compression, timeout=timeout, seekable=True) as stream:
+        archive = np.load(stream, allow_pickle=True)
+        try:
+            S = archive["S"]
+            R = archive["reactions"]
+            M = archive["metabolites"]
+        finally:
+            close = getattr(archive, "close", None)
+            if close is not None:
+                close()
+    return S, R, M
 
 
 def _get_reaction_species(reactions: Dict[str, Dict[str, int]]) -> Set[str]:
@@ -215,19 +420,27 @@ def cobra_model_to_graph(model: CobraModel) -> Graph:
     return G
 
 
-def import_miom_model(model_or_path: Union[str, np.ndarray]) -> Graph:
+def import_miom_model(
+    model_or_path: Union[str, os.PathLike, BinaryIO, np.ndarray],
+    *,
+    compression: str | None = "auto",
+    timeout: float = 30.0,
+) -> Graph:
     """Create graph from MIOM metabolic model.
 
     Args:
-        model_or_path: MIOM model instance or path to compressed model file
+        model_or_path: MIOM model, path, HTTP(S) URL, or binary readable stream
+        compression: ``"auto"`` detects gzip, bz2, or xz by magic bytes;
+            ``None`` disables decompression, and an explicit codec forces it.
+        timeout: HTTP request timeout in seconds.
 
     Returns:
         New Graph representing the metabolic network
     """
-    if isinstance(model_or_path, str):
-        S, R, M = _load_compressed_gem(model_or_path)
+    if isinstance(model_or_path, (str, os.PathLike)) or callable(getattr(model_or_path, "read", None)):
+        S, R, M = _load_compressed_gem(model_or_path, compression=compression, timeout=timeout)
     else:
-        S = model_or_path.S, M = model_or_path.M, R = model_or_path.R
+        S, R, M = model_or_path.S, model_or_path.R, model_or_path.M
     G = graph_from_vertex_incidence(S, M["id"], R["id"])
     # Add metadata to the graph, such as default lb/ub for reactions
     for i in range(G.num_edges):

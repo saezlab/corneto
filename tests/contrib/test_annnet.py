@@ -8,6 +8,16 @@ from corneto.graph import Attr, EdgeType, Graph
 annnet = pytest.importorskip("annnet")
 
 
+def _vertices(graph):
+    list_vertices = getattr(graph, "vertices", None) or graph.nodes
+    return list_vertices()
+
+
+def _vertex_attrs(graph, vertex):
+    get_attrs = getattr(graph.attrs, "get_vertex_attrs", None) or graph.attrs.get_node_attrs
+    return get_attrs(vertex)
+
+
 def test_directed_hypergraph_roundtrip():
     """Directed hyperedges and annotations survive a round-trip."""
     graph = Graph(name="example")
@@ -20,13 +30,13 @@ def test_directed_hypergraph_roundtrip():
 
     converted = to_annnet(graph)
 
-    assert converted.nodes() == ["A", "B", "C"]
+    assert _vertices(converted) == ["A", "B", "C"]
     assert converted.get_edge("corneto_edge_0") == (
         frozenset({"A", "B"}),
         frozenset({"C"}),
     )
     assert converted.get_edges_by_direction(True) == ["corneto_edge_0"]
-    assert converted.attrs.get_node_attrs("A")["kind"] == "gene"
+    assert _vertex_attrs(converted, "A")["kind"] == "gene"
     assert converted.attrs.get_edge_attrs("corneto_edge_0")["relation"] == "reaction"
     assert converted.uns["name"] == "example"
 
@@ -84,7 +94,47 @@ def test_non_string_node_ids_are_converted_to_strings():
 
     converted = to_annnet(graph)
 
-    assert converted.nodes() == ["1", "2"]
+    assert _vertices(converted) == ["1", "2"]
+
+
+def test_graph_attribute_roundtrips_without_wrapper_collision():
+    """The converter wrapper's ``graph`` parameter does not consume attributes."""
+    graph = Graph()
+    graph.add_vertex("A")
+    graph.get_attr_vertex("A").update(graph="graph value")
+
+    converted = to_annnet(graph)
+    assert _vertex_attrs(converted, "A")["graph"] == "graph value"
+
+    restored = from_annnet(converted)
+    assert restored.get_attr_vertex("A")["graph"] == "graph value"
+
+
+def test_vertex_attribute_and_reserved_vertices_handling():
+    """The wrapper preserves ``vertex`` while filtering AnnNet argument names."""
+    graph = Graph()
+    graph.add_vertex("A")
+    graph.get_attr_vertex("A").update(
+        vertex="vertex value",
+        vertices="vertices value",
+        node_id="legacy reserved name",
+    )
+    modern_api = hasattr(annnet.AnnNet(), "add_vertices")
+
+    if modern_api:
+        with pytest.warns(UserWarning, match="node_id.*vertices"):
+            converted = to_annnet(graph)
+    else:
+        with pytest.warns(UserWarning, match="node_id"):
+            converted = to_annnet(graph)
+
+    converted_attrs = _vertex_attrs(converted, "A")
+    assert converted_attrs["vertex"] == "vertex value"
+    assert "node_id" not in converted_attrs
+    if modern_api:
+        assert "vertices" not in converted_attrs
+    else:
+        assert converted_attrs["vertices"] == "vertices value"
 
 
 def test_string_conversion_rejects_node_id_collisions():

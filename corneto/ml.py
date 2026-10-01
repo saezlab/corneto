@@ -1,7 +1,6 @@
 """Machine-learning helpers for knowledge-primed neural networks."""
 
 import os
-from collections import deque
 
 import numpy as np
 
@@ -13,7 +12,6 @@ __all__ = [
     "kfold_nonzero_splits",
     "plot_model",
     "signed_dense",
-    "toposort",
 ]
 
 try:
@@ -101,34 +99,6 @@ def kfold_nonzero_splits(data, n_splits: int = 5, shuffle: bool = True, random_s
             val_copy = pd.DataFrame(val_copy, index=data.index, columns=data.columns)
 
         yield train_copy, val_copy
-
-
-def toposort(G):
-    """Return the vertices of an acyclic graph in topological order."""
-    # Topological sort using Kahn's algorithm
-    # See: https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.dag.topological_sort.html
-    in_degree = {v: len(set(G.predecessors(v))) for v in G._get_vertices()}
-
-    # Initialize queue with nodes having zero in-degrees
-    queue = deque([v for v in in_degree.keys() if in_degree[v] == 0])
-
-    result = []
-
-    while queue:
-        v = queue.popleft()
-        result.append(v)
-
-        # Decrease the in-degree of successor nodes by 1
-        for successor in G.successors(v):
-            in_degree[successor] -= 1
-            if in_degree[successor] == 0:
-                queue.append(successor)
-
-    # Check if topological sort is possible (i.e., graph has no cycles)
-    if len(result) == G.num_vertices:
-        return result
-    else:
-        raise ValueError("Graph contains a cycle, so topological sort is not possible.")
 
 
 def index_selector():

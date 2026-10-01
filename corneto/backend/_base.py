@@ -2,7 +2,7 @@ import abc
 import numbers
 from copy import copy as shallow_copy
 from numbers import Number
-from typing import Any, Callable, Dict, Iterable, List, Optional, Set, Tuple, Union
+from typing import Any, Callable, Dict, Iterable, List, Optional, Sequence, Set, Tuple, Union
 
 import numpy as np
 
@@ -838,6 +838,152 @@ class Backend(abc.ABC):
         value: Any = None,
     ) -> CSymbol:
         raise NotImplementedError()
+
+    def TotalVariation(
+        self,
+        X: CExpression,
+        *,
+        pairs: Iterable[Tuple[int, int]],
+        axis: int = -1,
+        weights: Optional[Union[Sequence[float], np.ndarray]] = None,
+        name: Optional[str] = None,
+    ) -> ProblemDef:
+        """Build an entrywise graph total-variation expression.
+
+        ``X`` must be a nonempty, real affine vector or matrix expression
+        created by this backend. Continuous, integer, and binary expressions
+        are supported, whether or not their variables have bounds. The
+        selected axis of ``X`` is connected by the directed ``pairs``. Each
+        pair contributes the destination-minus-source signed difference,
+        summed over the other axis; its magnitude contributes to variation.
+        Reversing a pair reverses the signed difference but leaves its
+        magnitude unchanged.
+
+        The returned problem contains a continuous absolute-value bound and
+        registered expressions for the signed differences, absolute bounds,
+        per-pair variation, and weighted total variation. Add its total
+        variation expression to an objective or constrain it explicitly; no
+        objective is added automatically. The total scales linearly with the
+        magnitude of ``X`` and the number of rows summed for each pair.
+
+        Args:
+            X: A nonempty real affine vector or matrix expression from this
+                backend.
+            pairs: Nonempty iterable of ``(source, destination)`` integer
+                index pairs along ``axis``. Self-pairs are rejected. Pair
+                order and duplicates are preserved.
+            axis: Axis of ``X`` connected by ``pairs``; defaults to ``-1``.
+                Negative axes follow NumPy conventions.
+            weights: Optional one-dimensional sequence or array with one
+                finite, nonnegative real weight per pair. Defaults to unit
+                weights. Scalars are rejected.
+            name: Optional stable expression-name prefix. If omitted, a
+                unique prefix is generated.
+
+        Returns:
+            ProblemDef: A problem with the linear absolute-value
+            formulation and registered expressions named
+            ``<prefix>_difference`` and ``<prefix>_abs_bound`` with shape
+            ``(R, E)``, ``<prefix>_variation_by_pair`` with shape ``(E,)``,
+            and scalar ``<prefix>_total_variation``. Here ``E`` is the number
+            of pairs and ``R`` is the size of the other axis (or one for a
+            vector).
+        """
+        if not isinstance(X, CExpression):
+            raise TypeError("X must be a CORNETO CExpression")
+        shape = X.shape
+        ndim = len(shape)
+        if ndim not in (1, 2) or any(dim <= 0 for dim in shape):
+            raise ValueError("X must be a nonempty vector or matrix expression")
+        if isinstance(axis, (bool, np.bool_)) or not isinstance(axis, numbers.Integral):
+            raise TypeError("axis must be an integer")
+        axis = int(axis)
+        if axis < -ndim or axis >= ndim:
+            raise ValueError(f"axis {axis} is out of bounds for an expression with {ndim} dimensions")
+        normalized_axis = axis % ndim
+
+        try:
+            edge_pairs = list(pairs)
+        except TypeError as exc:
+            raise ValueError("pairs must be a nonempty iterable of index pairs") from exc
+        if not edge_pairs:
+            raise ValueError("pairs must contain at least one index pair")
+
+        connected_size = shape[normalized_axis]
+        normalized_pairs = []
+        for edge in edge_pairs:
+            if isinstance(edge, (str, bytes, dict, set, frozenset)):
+                raise ValueError("each pair must contain exactly two integer indices")
+            try:
+                edge_values = tuple(edge)
+            except TypeError as exc:
+                raise ValueError("each pair must contain exactly two integer indices") from exc
+            if len(edge_values) != 2:
+                raise ValueError("each pair must contain exactly two integer indices")
+            if any(isinstance(i, (bool, np.bool_)) or not isinstance(i, numbers.Integral) for i in edge_values):
+                raise TypeError("pair indices must be integers")
+            source, destination = (int(i) for i in edge_values)
+            if source < 0 or destination < 0 or source >= connected_size or destination >= connected_size:
+                raise ValueError(f"pair indices must be in [0, {connected_size})")
+            if source == destination:
+                raise ValueError("self-pairs are not allowed")
+            normalized_pairs.append((source, destination))
+
+        n_pairs = len(normalized_pairs)
+        if weights is None:
+            weight_values = np.ones(n_pairs, dtype=float)
+        else:
+            if isinstance(weights, (str, bytes)):
+                raise ValueError("weights must be a one-dimensional sequence with one value per pair")
+            try:
+                raw_weights = np.asarray(weights)
+            except (TypeError, ValueError) as exc:
+                raise ValueError("weights must be a one-dimensional sequence with one value per pair") from exc
+            if raw_weights.ndim != 1:
+                raise ValueError("weights must be a one-dimensional sequence with one value per pair")
+            if raw_weights.size != n_pairs:
+                raise ValueError(f"weights must contain exactly {n_pairs} values")
+            if raw_weights.dtype.kind not in "iuf":
+                raise ValueError("weights must contain finite nonnegative real values")
+            weight_values = raw_weights.astype(float)
+            if not np.all(np.isfinite(weight_values)) or np.any(weight_values < 0):
+                raise ValueError("weights must contain finite nonnegative real values")
+
+        if name is None:
+            name = _get_unique_name("total_variation")
+        elif not isinstance(name, str) or not name:
+            raise ValueError("name must be a nonempty string")
+
+        if ndim == 1:
+            Z = X.reshape((1, shape[0]))
+        elif normalized_axis == 0:
+            Z = X.T
+        else:
+            Z = X
+        rows = Z.shape[0]
+
+        # B has one sparse incidence column per pair: -1 at its source and
+        # +1 at its destination. Pair order and duplicate edges are retained.
+        incidence_rows = np.asarray(normalized_pairs, dtype=int).reshape(-1)
+        incidence_columns = np.repeat(np.arange(n_pairs, dtype=int), 2)
+        incidence_data = np.tile(np.array([-1.0, 1.0]), n_pairs)
+        incidence = self._sparse(
+            (incidence_data, (incidence_rows, incidence_columns)),
+            shape=(connected_size, n_pairs),
+        )
+        difference = (Z @ self.Constant(incidence)).reshape((rows, n_pairs))
+        abs_bound = self.Variable(f"{name}_abs_bound", shape=(rows, n_pairs), lb=0)
+        variation_by_pair = abs_bound.sum(axis=0).reshape((n_pairs,))
+        weight_row = self.Constant(weight_values.reshape((1, n_pairs)))
+        total_variation = (weight_row @ variation_by_pair).reshape(())
+        expressions = {
+            f"{name}_difference": difference,
+            f"{name}_abs_bound": abs_bound,
+            f"{name}_variation_by_pair": variation_by_pair,
+            f"{name}_total_variation": total_variation,
+        }
+        constraints = [abs_bound >= difference, abs_bound >= -difference]
+        return self.Problem(constraints=constraints, expressions=expressions)
 
     def Problem(
         self,
