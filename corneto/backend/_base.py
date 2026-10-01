@@ -847,6 +847,7 @@ class Backend(abc.ABC):
         axis: int = -1,
         weights: Optional[Union[Sequence[float], np.ndarray]] = None,
         name: Optional[str] = None,
+        exact: bool = False,
     ) -> ProblemDef:
         """Build an entrywise graph total-variation expression.
 
@@ -865,6 +866,8 @@ class Backend(abc.ABC):
         variation expression to an objective or constrain it explicitly; no
         objective is added automatically. The total scales linearly with the
         magnitude of ``X`` and the number of rows summed for each pair.
+        With ``exact=True``, binary inputs use exact XOR magnitudes, including
+        when maximizing variation or when a pair has zero weight.
 
         Args:
             X: A nonempty real affine vector or matrix expression from this
@@ -879,6 +882,12 @@ class Backend(abc.ABC):
                 weights. Scalars are rejected.
             name: Optional stable expression-name prefix. If omitted, a
                 unique prefix is generated.
+            exact: If true, require binary inputs and enforce exact absolute
+                differences independently of the objective. Binary variables
+                are used directly; affine expressions are linked to auxiliary
+                binary selectors, constraining every entry of X to zero or
+                one. Nonbinary symbols are rejected. Defaults to false, which
+                retains the continuous absolute-value bound formulation.
 
         Returns:
             ProblemDef: A problem with the linear absolute-value
@@ -891,6 +900,10 @@ class Backend(abc.ABC):
         """
         if not isinstance(X, CExpression):
             raise TypeError("X must be a CORNETO CExpression")
+        if not isinstance(exact, (bool, np.bool_)):
+            raise TypeError("exact must be a boolean")
+        if exact and isinstance(X, CSymbol) and X._vartype != VarType.BINARY:
+            raise TypeError("exact=True requires binary inputs; nonbinary symbols are not supported")
         shape = X.shape
         ndim = len(shape)
         if ndim not in (1, 2) or any(dim <= 0 for dim in shape):
@@ -954,6 +967,12 @@ class Backend(abc.ABC):
         elif not isinstance(name, str) or not name:
             raise ValueError("name must be a nonempty string")
 
+        constraints = []
+        if exact and not isinstance(X, CSymbol):
+            selector = self.Variable(f"{name}_selector", shape, 0, 1, vartype=VarType.BINARY)
+            constraints.append(selector == X)
+            X = selector
+
         if ndim == 1:
             Z = X.reshape((1, shape[0]))
         elif normalized_axis == 0:
@@ -982,7 +1001,16 @@ class Backend(abc.ABC):
             f"{name}_variation_by_pair": variation_by_pair,
             f"{name}_total_variation": total_variation,
         }
-        constraints = [abs_bound >= difference, abs_bound >= -difference]
+        constraints += [abs_bound >= difference, abs_bound >= -difference]
+        if exact:
+            # For binary endpoints a and b, these upper bounds complete the
+            # XOR hull: |a-b| <= D <= min(a+b, 2-a-b).
+            endpoint_incidence = self._sparse(
+                (np.ones(2 * n_pairs), (incidence_rows, incidence_columns)),
+                shape=(connected_size, n_pairs),
+            )
+            endpoint_sum = (Z @ self.Constant(endpoint_incidence)).reshape((rows, n_pairs))
+            constraints += [abs_bound <= endpoint_sum, abs_bound <= 2 - endpoint_sum]
         return self.Problem(constraints=constraints, expressions=expressions)
 
     def Problem(

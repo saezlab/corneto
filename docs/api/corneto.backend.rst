@@ -32,7 +32,7 @@ size of the other axis, or one for a vector. When ``name`` is omitted, a
 unique prefix is generated. Explicit prefixes should be distinct in a
 composed problem. No objective is added automatically.
 
-The primitive adds continuous variables ``D`` and constraints
+By default (``exact=False``), the primitive adds continuous variables ``D`` and constraints
 ``D >= difference`` and ``D >= -difference`` with ``D >= 0``. Thus the
 registered total variation is an upper bound until an objective or another
 constraint tightens ``D``; ``X`` does not need variable bounds. A positive
@@ -48,6 +48,34 @@ to be piecewise constant. Its scale depends on the magnitude and units of
 ``X``, the number of entries summed across the other axis, and the chosen
 weights; multiplying ``X`` by a scalar multiplies the variation by its
 absolute value.
+
+For binary selections, ``exact=True`` makes every absolute difference equal
+to the pairwise XOR, independently of the objective and including zero-weight
+pairs. Binary variables are accepted directly. Affine expressions (including
+slices and sums of selection indicators) are linked to auxiliary binary
+selectors, explicitly restricting every input entry to zero or one. Nonbinary
+symbols are rejected; this mode does not compute exact absolute values for
+general continuous or integer inputs.
+
+For binary endpoints ``a`` and ``b``, exact mode adds ``D <= a + b`` and
+``D <= 2 - a - b`` to the usual lower bounds. These force
+``D = abs(a - b)`` while keeping ``D`` continuous. The registered names and
+shapes are unchanged. This permits maximizing switch counts or imposing a
+lower bound on switching. For example, after constraining the union size to
+its previously obtained optimum, use the following as the diagnostic's sole
+objective (CORNETO minimizes by default):
+
+.. code-block:: python
+
+    tv = backend.TotalVariation(
+        selected,
+        pairs=[(0, 1), (1, 2)],
+        axis=1,
+        exact=True,
+        name="switches",
+    )
+    problem += tv
+    problem.add_objective(-tv.expr.switches_total_variation)
 
 For a continuous expression whose rows represent signals over three ordered
 conditions, connect adjacent columns and add the variation penalty to any
