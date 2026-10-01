@@ -64,8 +64,10 @@ class MultiSampleFBA(FlowMethod):
 
     Note:
         The graph is expected to be a genome scale metabolic network.
-        It can also be imported in SBML format (XML) using the
-        :func:`corneto.io.import_cobra_model` function (requires cobrapy).
+        It can be imported from SBML with
+        :func:`corneto.io.import_sbml_model` using the native Level 3/FBC
+        reader, or with :func:`corneto.io.import_cobra_model` (requires
+        cobrapy).
 
     Flux Balance Analysis calculates metabolic fluxes by optimizing an objective
     such as biomass production subject to stoichiometric constraints.
@@ -93,6 +95,14 @@ class MultiSampleFBA(FlowMethod):
         ...     model,
         ...     objectives={"EX_biomass_e": -1},
         ... )
+        >>> P.solve()
+
+        Use the active objective stored by the native SBML reader explicitly:
+
+        >>> from corneto.io import import_sbml_model
+        >>> model = import_sbml_model("path/to/metabolic_model.xml")
+        >>> objective = model.get_graph_attributes()["fba_objective"]
+        >>> P = MultiSampleFBA().build(model, objectives=objective)
         >>> P.solve()
 
         Multi-condition analysis with a reaction knockout:

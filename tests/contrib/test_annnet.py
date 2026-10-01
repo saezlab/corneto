@@ -97,6 +97,46 @@ def test_non_string_node_ids_are_converted_to_strings():
     assert _vertices(converted) == ["1", "2"]
 
 
+def test_graph_attribute_roundtrips_without_wrapper_collision():
+    """The converter wrapper's ``graph`` parameter does not consume attributes."""
+    graph = Graph()
+    graph.add_vertex("A")
+    graph.get_attr_vertex("A").update(graph="graph value")
+
+    converted = to_annnet(graph)
+    assert _vertex_attrs(converted, "A")["graph"] == "graph value"
+
+    restored = from_annnet(converted)
+    assert restored.get_attr_vertex("A")["graph"] == "graph value"
+
+
+def test_vertex_attribute_and_reserved_vertices_handling():
+    """The wrapper preserves ``vertex`` while filtering AnnNet argument names."""
+    graph = Graph()
+    graph.add_vertex("A")
+    graph.get_attr_vertex("A").update(
+        vertex="vertex value",
+        vertices="vertices value",
+        node_id="legacy reserved name",
+    )
+    modern_api = hasattr(annnet.AnnNet(), "add_vertices")
+
+    if modern_api:
+        with pytest.warns(UserWarning, match="node_id.*vertices"):
+            converted = to_annnet(graph)
+    else:
+        with pytest.warns(UserWarning, match="node_id"):
+            converted = to_annnet(graph)
+
+    converted_attrs = _vertex_attrs(converted, "A")
+    assert converted_attrs["vertex"] == "vertex value"
+    assert "node_id" not in converted_attrs
+    if modern_api:
+        assert "vertices" not in converted_attrs
+    else:
+        assert converted_attrs["vertices"] == "vertices value"
+
+
 def test_string_conversion_rejects_node_id_collisions():
     """Stringification cannot silently merge distinct CORNETO vertices."""
     graph = Graph()

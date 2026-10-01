@@ -85,11 +85,23 @@ def test_optional_metadata_requires_a_reason_and_allows_extended_timeout(
         optional_reason_for_notebook(notebook)
 
 
-def test_extended_timeout_requires_optional_metadata(tmp_path: Path) -> None:
-    notebook = tmp_path / "too-long.ipynb"
-    write_notebook(notebook, metadata={"corneto": {"execution_timeout": 601}})
+def test_routine_notebook_can_override_timeout_without_becoming_optional(tmp_path: Path) -> None:
+    notebook = tmp_path / "routine-override.ipynb"
+    write_notebook(notebook, metadata={"corneto": {"execution_timeout": 1200}})
 
-    with pytest.raises(ValueError, match="require optional=true"):
+    assert execution_timeout_for_notebook(notebook) == 1200
+    assert optional_reason_for_notebook(notebook) is None
+
+    write_notebook(notebook)
+    assert execution_timeout_for_notebook(notebook) == 600
+
+
+@pytest.mark.parametrize("timeout", [0, -1, "1200", True, 1.5, None])
+def test_notebook_timeout_must_be_a_positive_integer(tmp_path: Path, timeout) -> None:
+    notebook = tmp_path / "invalid-timeout.ipynb"
+    write_notebook(notebook, metadata={"corneto": {"execution_timeout": timeout}})
+
+    with pytest.raises(ValueError, match="must be a positive integer"):
         execution_timeout_for_notebook(notebook)
 
 

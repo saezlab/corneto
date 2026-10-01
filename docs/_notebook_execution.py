@@ -49,8 +49,6 @@ def execution_timeout_for_notebook(path: Path, default: int = 600) -> int:
     timeout = metadata.get("execution_timeout", default)
     if type(timeout) is not int or timeout < 1:
         raise ValueError(f"{path}: metadata.corneto.execution_timeout must be a positive integer")
-    if timeout > default and optional_reason_for_notebook(path) is None:
-        raise ValueError(f"{path}: timeouts above {default} seconds require optional=true")
     return timeout
 
 

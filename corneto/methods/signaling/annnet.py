@@ -44,12 +44,12 @@ def _get_vertex_layer_attrs(layers, vertex, layer):
     return get_attrs(vertex, layer)
 
 
-def _set_vertex_layer_attrs(layers, vertex, layer, **attrs):
+def _set_vertex_layer_attrs(layers, vertex, layer, /, **attrs):
     set_attrs = getattr(layers, "set_vertex_layer_attrs", None) or layers.set_node_attrs
     return set_attrs(vertex, layer, **attrs)
 
 
-def _set_layer_attrs(layers, layer, **attrs):
+def _set_layer_attrs(layers, layer, /, **attrs):
     set_attrs = getattr(layers, "set_layer_attrs", None) or layers.set_attrs
     return set_attrs(layer, **attrs)
 

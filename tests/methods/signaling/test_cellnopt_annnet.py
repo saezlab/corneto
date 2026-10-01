@@ -20,6 +20,27 @@ def _layer_attrs(graph, layer):
     return get_attrs(layer)
 
 
+def test_condition_attribute_names_do_not_collide_with_helper_parameters():
+    graph = annnet.AnnNet()
+    add_vertices = getattr(graph, "add_vertices", None) or graph.add_nodes
+    add_vertices(["A", "B", "C"])
+
+    layers = add_cellnopt_conditions(
+        graph,
+        inputs={"on": {"A": 1}},
+        inhibitors={"on": {"B": 1}},
+        measurements={"on": {"C": 1}},
+        input_attr="layers",
+        inhibitor_attr="vertex",
+        measurement_attr="layer",
+    )
+
+    assert layers == {"on": ("on",)}
+    assert _vertex_layer_attrs(graph, "A", ("on",))["layers"] == 1
+    assert _vertex_layer_attrs(graph, "B", ("on",))["vertex"] == 1
+    assert _vertex_layer_attrs(graph, "C", ("on",))["layer"] == 1
+
+
 def test_cellnopt_reads_conditions_and_adds_results_to_annnet(backend):
     graph = annnet.AnnNet(directed=True)
     graph.history.enable(True)

@@ -9,6 +9,5 @@ systems.
 :maxdepth: 3
 
 scm-simulation.ipynb
-simulated-linear-dag.ipynb
 linear-dag-discovery.ipynb
 ```

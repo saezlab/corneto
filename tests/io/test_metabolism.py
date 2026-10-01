@@ -4,6 +4,11 @@ This module contains tests for loading and processing metabolic models,
 specifically testing the functionality in corneto.io._metabolism module.
 """
 
+import bz2
+import gzip
+import io
+import lzma
+import zipfile
 from pathlib import Path
 
 import pytest
@@ -80,3 +85,39 @@ def test_cobra_model_to_graph(xml_model_path):
     assert "default_lb" in edge_attr
     assert "default_ub" in edge_attr
     assert "GPR" in edge_attr
+
+
+@pytest.mark.parametrize(
+    ("encoding", "suffix"),
+    [("xml", ".xml"), ("gzip", ".gz"), ("bz2", ".bz2"), ("xz", ".xz"), ("zip", ".zip")],
+)
+@pytest.mark.parametrize("as_stream", [False, True], ids=["path", "stream"])
+def test_import_cobra_model_accepts_sbml_encodings(tmp_path, xml_model_path, encoding, suffix, as_stream):
+    xml_bytes = xml_model_path.read_bytes()
+    if encoding == "gzip":
+        payload = gzip.compress(xml_bytes)
+    elif encoding == "bz2":
+        payload = bz2.compress(xml_bytes)
+    elif encoding == "xz":
+        payload = lzma.compress(xml_bytes)
+    elif encoding == "zip":
+        archive_buffer = io.BytesIO()
+        with zipfile.ZipFile(archive_buffer, "w") as archive:
+            archive.writestr("model.xml", xml_bytes)
+        payload = archive_buffer.getvalue()
+    else:
+        payload = xml_bytes
+
+    path = tmp_path / f"model{suffix}"
+    path.write_bytes(payload)
+    source = io.BytesIO(payload) if as_stream else path
+
+    graph = import_cobra_model(source)
+
+    assert graph.num_vertices == 441
+    assert graph.num_edges == 555
+    if as_stream:
+        assert not source.closed
+        assert source.getvalue() == payload
+    else:
+        assert path.read_bytes() == payload

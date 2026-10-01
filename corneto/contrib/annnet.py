@@ -58,7 +58,7 @@ def _vertex_ids(graph):
     return list_vertices()
 
 
-def _add_vertex(graph, vertex, **attributes):
+def _add_vertex(graph, vertex, /, **attributes):
     add_vertex = getattr(graph, "add_vertices", None) or graph.add_nodes
     return add_vertex(vertex, **attributes)
 
@@ -129,6 +129,9 @@ def to_annnet(graph: BaseGraph, *, copy_attributes: bool = True) -> "AnnNet":
 
     node_ids = {}
     used_ids = set()
+    reserved_node_attributes = set(_ANNNET_NODE_RESERVED)
+    if hasattr(result, "add_vertices"):
+        reserved_node_attributes.add("vertices")
     for vertex in graph.V:
         node_id = str(vertex)
         if node_id in used_ids:
@@ -139,7 +142,7 @@ def to_annnet(graph: BaseGraph, *, copy_attributes: bool = True) -> "AnnNet":
         if copy_attributes:
             attributes = _copy_supported_attributes(
                 graph.get_attr_vertex(vertex),
-                _ANNNET_NODE_RESERVED,
+                reserved_node_attributes,
                 "node",
             )
         _add_vertex(result, node_id, **attributes)

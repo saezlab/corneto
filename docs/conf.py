@@ -157,6 +157,8 @@ exclude_patterns = [
     "**/build/**",
     "**/.venv/**",
     "tutorials/README.md",
+    "tutorials/contrib/**",
+    "guide/causal/simulated-linear-dag.ipynb",
 ]
 
 # Autosummary and autodoc settings.

@@ -87,8 +87,11 @@ installation should contain:
 }
 ```
 
-Mark a notebook as optional when its full execution exceeds the routine
-10-minute wall-clock budget. Give a short reason, for example:
+Mark a notebook optional when routine documentation builds should skip a
+costly run and users should include it explicitly with `--all`. This choice is
+independent of its timeout: set `execution_timeout` to the positive wall-clock
+limit appropriate for that notebook, including for routine notebooks. Give an
+optional notebook a short reason, for example:
 
 ```json
 {
@@ -113,16 +116,20 @@ Gurobi-dependent notebook. The check tests that the installed license can
 solve CORNETO's capability model. If it fails, only notebooks declaring that
 requirement are skipped; Sphinx renders their saved outputs and the build
 report records the reason at `docs/_build/notebook-report.json`. Other notebook
-execution errors fail the build. Each routine notebook has a 600-second total
-wall-clock limit; a larger timeout is allowed only for notebooks marked
-optional, and applies when they are selected with `--all`.
+execution errors fail the build. Each notebook defaults to a 600-second total
+wall-clock limit. Set a positive `metadata.corneto.execution_timeout` to
+override that limit for a specific notebook; this does not make the notebook
+optional. Use `optional: true` only when the notebook should be omitted from
+routine runs and selected with `--all`.
 
 Both Carnival network-sampler tutorials are optional because they run repeated
 mixed-integer sampling solves. The Scanpy/KPNN tutorial is also optional: its
 saved Papermill run took about 23 minutes and includes processing a large
-single-cell dataset and repeated model fits. The linear DAG guide's complete
-graph example has one HiGHS solve capped at 300 seconds, so it remains in the
-routine build budget.
+single-cell dataset and repeated model fits. The Sachs tutorial remains in
+routine builds with a 1,200-second override because it runs two Gurobi fits,
+each capped at 300 seconds, plus data loading and reporting. The separate
+linear DAG guide's complete-graph example has one HiGHS solve capped at 300
+seconds and uses the default timeout.
 
 ---
 
