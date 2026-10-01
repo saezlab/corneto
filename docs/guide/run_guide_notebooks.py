@@ -2,16 +2,20 @@
 """docs/guide/run_guide_notebooks.py"""
 
 import argparse
-import subprocess
+import hashlib
+import os
 import sys
+import tempfile
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-def run(cmd, cwd: Path, dry_run: bool = False):
-    """Run a command list in cwd, exiting on failure (or just print with --dry-run)."""
-    print(f"> {' '.join(cmd)}  (cwd={cwd.name})")
-    if not dry_run:
-        subprocess.run(cmd, cwd=str(cwd), check=True)
+from _notebook_execution import (
+    check_requirements,
+    execute_notebook,
+    execution_timeout_for_notebook,
+    requirements_for_notebook,
+)
 
 
 def discover_notebooks(guide_dir: Path) -> list[Path]:
@@ -65,17 +69,49 @@ def main() -> int:
         print("No guide notebooks found.", file=sys.stderr)
         return 1
 
-    for nb in notebooks:
-        if args.rewrite:
-            output = nb
-        else:
-            output = guide_dir / "build" / nb.relative_to(guide_dir)
-            output.parent.mkdir(parents=True, exist_ok=True)
-        run(
-            [sys.executable, "-m", "papermill", str(nb), str(output)],
-            cwd=guide_dir,
-            dry_run=args.dry_run,
-        )
+    notebook_requirements = {nb: requirements_for_notebook(nb) for nb in notebooks}
+    requirements = {item for items in notebook_requirements.values() for item in items}
+    if args.dry_run:
+        if requirements:
+            print(f"> check notebook requirements in the main environment: {', '.join(sorted(requirements))}")
+        for nb in notebooks:
+            output = nb if args.rewrite else (guide_dir / "build" / nb.relative_to(guide_dir))
+            print(f"> execute {nb.relative_to(guide_dir)} -> {output.relative_to(guide_dir)}")
+        return 0
+
+    environment = os.environ.copy()
+    requirement_results = (
+        check_requirements(requirements, sys.executable, guide_dir, environment=environment) if requirements else {}
+    )
+    kernel_name = "corneto-guide-" + hashlib.sha256(str(guide_dir).encode()).hexdigest()[:10]
+    with tempfile.TemporaryDirectory(prefix="corneto-guide-kernels-") as kernels:
+        for nb in notebooks:
+            unavailable = [
+                requirement
+                for requirement in notebook_requirements[nb]
+                if requirement_results.get(requirement) is not None
+            ]
+            if unavailable:
+                details = "; ".join(f"{name}: {requirement_results[name]}" for name in unavailable)
+                print(f"SKIPPED {nb.relative_to(guide_dir)}: {details}")
+                continue
+
+            if args.rewrite:
+                output = nb
+            else:
+                output = guide_dir / "build" / nb.relative_to(guide_dir)
+                output.parent.mkdir(parents=True, exist_ok=True)
+            execute_notebook(
+                nb,
+                output,
+                python=Path(sys.executable),
+                cwd=nb.parent,
+                kernel_root=Path(kernels),
+                kernel_name=kernel_name,
+                timeout=execution_timeout_for_notebook(nb),
+                environment=environment,
+            )
+            print(f"EXECUTED {nb.relative_to(guide_dir)}")
 
     print("\n✅ Done.")
     return 0

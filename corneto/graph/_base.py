@@ -1,7 +1,6 @@
 import abc
 import os
 import pickle
-from collections import deque
 from copy import deepcopy
 from enum import Enum
 from itertools import chain
@@ -26,6 +25,8 @@ import numpy as np
 from corneto._types import Edge
 from corneto._util import obj_canonicalized_hash, unique_iter
 from corneto.utils import Attr, Attributes
+
+from ._topology import topological_sort
 
 T = TypeVar("T")
 
@@ -1175,7 +1176,7 @@ class BaseGraph(abc.ABC):
             return pickle.load(f)
 
     def toposort(self):
-        """Perform topological sort on the graph using Kahn's algorithm.
+        """Perform a stable topological sort on the graph.
 
         Returns:
             List of vertices in topological order
@@ -1183,29 +1184,34 @@ class BaseGraph(abc.ABC):
         Raises:
             ValueError: If graph contains cycles
         """
-        # Topological sort using Kahn's algorithm
-        in_degree = {v: len(set(self.predecessors(v))) for v in self._get_vertices()}
+        vertices = tuple(self._get_vertices())
+        vertex_index = {vertex: index for index, vertex in enumerate(vertices)}
+        adjacency = {vertex: [] for vertex in vertices}
 
-        # Initialize queue with nodes having zero in-degree
-        queue = deque([v for v in in_degree.keys() if in_degree[v] == 0])
+        # Build successor lists directly from edges. Besides preserving
+        # hyperedge and undirected-edge behavior, this avoids treating a tuple
+        # vertex identifier as a tuple of requested vertices in query helpers.
+        for edge_index in range(self.num_edges):
+            source, target = self.get_edge(edge_index)
+            source_order = sorted(source, key=vertex_index.__getitem__)
+            target_order = sorted(target, key=vertex_index.__getitem__)
+            edge_type = self.get_attr_edge(edge_index).get_attr(Attr.EDGE_TYPE)
+            if edge_type == EdgeType.DIRECTED:
+                for vertex in source_order:
+                    adjacency[vertex].extend(target_order)
+            else:
+                for vertex in source_order:
+                    adjacency[vertex].extend(target_order)
+                for vertex in target_order:
+                    if vertex not in source:
+                        adjacency[vertex].extend(source_order)
 
-        result = []
-
-        while queue:
-            v = queue.popleft()
-            result.append(v)
-
-            # Decrease the in-degree of successor nodes by 1
-            for successor in self.successors(v):
-                in_degree[successor] -= 1
-                if in_degree[successor] == 0:
-                    queue.append(successor)
-
-        # Check if topological sort is possible (i.e., graph has no cycles)
-        if len(result) == self.num_vertices:
-            return result
-        else:
-            raise ValueError("Graph contains a cycle, so topological sort is not possible.")
+        # Graph topology treats repeated edges between the same vertices as
+        # one predecessor/successor relation, matching predecessors() and
+        # successors(). Keep first-seen order for deterministic tie handling.
+        for vertex, successors in adjacency.items():
+            adjacency[vertex] = list(dict.fromkeys(successors))
+        return topological_sort(vertices, adjacency)
 
     def reachability_analysis(
         self,

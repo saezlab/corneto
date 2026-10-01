@@ -77,6 +77,20 @@ def test_recovers_supported_linear_edge(backend):
     assert np.isclose(problem.expr.flow.value[0, 0], 1.0, atol=1e-7)
 
 
+def test_selected_order_preserves_parallel_edge_order_and_incoming_edges():
+    graph = Graph.from_tuples([("A", 1, "B"), ("A", 1, "C"), ("A", 1, "B")])
+    graph.add_vertex("isolate")
+    method = LinearDAGDiscovery()
+    method._original_graph = graph
+    method._edge_sources = np.array([0, 0, 0])
+    method._edge_targets = np.array([1, 2, 1])
+
+    order, incoming = method._selected_order(np.array([True, True, True]))
+
+    assert order == [0, 3, 2, 1]
+    assert incoming == [[], [0, 2], [1], []]
+
+
 def test_known_shift_keeps_soft_target_equation_and_flow_source(backend):
     """Known additive shifts retain the target mechanism and its flow source."""
     graph = Graph.from_tuples([("A", 1, "B"), ("B", 1, "C")])

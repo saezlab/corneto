@@ -4,12 +4,14 @@ from collections import OrderedDict
 from copy import deepcopy
 from typing import (
     Any,
+    BinaryIO,
     Callable,
     Dict,
     Iterable,
     List,
     Optional,
     Set,
+    TextIO,
     Tuple,
     Union,
 )
@@ -732,25 +734,33 @@ class Graph(BaseGraph):
 
     @staticmethod
     def from_sif(
-        sif_file: str,
+        sif_file: str | os.PathLike | BinaryIO | TextIO,
         delimiter: str = "\t",
         has_header: bool = False,
         discard_self_loops: Optional[bool] = True,
         column_order: Optional[Tuple[int, int, int]] = None,
+        *,
+        compression: str | None = "auto",
+        timeout: float = 30.0,
+        encoding: str = "utf-8",
     ):
-        """Create graph from Simple Interaction Format (SIF) file.
+        """Create a graph from a local, remote, or file-like SIF source.
 
         Args:
-            sif_file: Path to SIF file
+            sif_file: SIF path, HTTP(S) URL, binary stream, or text stream
             delimiter: Column delimiter in file
             has_header: Whether file has a header row
             discard_self_loops: Whether to ignore self-loops
             column_order: Order of source, interaction, target columns
+            compression: ``"auto"`` detects gzip, bz2, or xz by magic bytes;
+                ``None`` disables decompression, and an explicit codec forces it.
+            timeout: HTTP request timeout in seconds.
+            encoding: Encoding used for binary sources.
 
         Returns:
             New Graph loaded from SIF file
         """
-        from corneto.io._signaling import _read_sif_iter
+        from corneto.io._sif import _read_sif_iter
 
         if column_order is None:
             column_order = (0, 1, 2)
@@ -760,6 +770,9 @@ class Graph(BaseGraph):
             has_header=has_header,
             discard_self_loops=discard_self_loops,
             column_order=column_order,
+            compression=compression,
+            timeout=timeout,
+            encoding=encoding,
         )
         return Graph.from_sif_tuples(it)
 

@@ -2,9 +2,22 @@
 """docs/tutorials/run_notebooks.py"""
 
 import argparse
+import hashlib
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+from _notebook_execution import (
+    check_requirements,
+    execute_notebook,
+    execution_timeout_for_notebook,
+    pixi_environment,
+    python_for_pixi,
+    requirements_for_notebook,
+)
 
 
 def find_repo_root(start: Path) -> Path:
@@ -31,7 +44,7 @@ def process_tutorial(
     editable_corneto: bool = False,
     corneto_root: Path | None = None,
 ):
-    """Install env, bootstrap tools, and execute notebooks in proj."""
+    """Install the environment and execute notebooks in its Python kernel."""
     print(f"\n=== Processing tutorial: {proj.name} ===")
     # 1) Allow post-link scripts (Graphviz etc.)
     run(["pixi", "config", "set", "--local", "run-post-link-scripts", "insecure"], cwd=proj, dry_run=dry_run)
@@ -45,19 +58,56 @@ def process_tutorial(
             cwd=proj,
             dry_run=dry_run,
         )
-    # 3) Bootstrap kernel & notebook tools
-    run(
-        ["pixi", "run", "python", "-m", "pip", "install", "--upgrade", "ipykernel", "papermill", "nbclient"],
-        cwd=proj,
-        dry_run=dry_run,
+    notebooks = sorted(proj.glob("*.ipynb"))
+    notebook_requirements = {nb: requirements_for_notebook(nb) for nb in notebooks}
+    requirements = {item for items in notebook_requirements.values() for item in items}
+
+    if dry_run:
+        print(f"> pixi run python -c 'import sys; print(sys.executable)'  (cwd={proj.name})")
+        if requirements:
+            print(f"> check notebook requirements in {proj.name}: {', '.join(sorted(requirements))}")
+        for nb in notebooks:
+            out = nb if rewrite else (proj / "build" / nb.name)
+            print(f"> execute {nb.name} -> {out.name}  (cwd={nb.parent.name})")
+        return
+
+    # Use the project interpreter for dependency checks and as the Jupyter kernel.
+    python = python_for_pixi(proj)
+    activation_environment = pixi_environment(proj)
+    requirement_results = (
+        check_requirements(requirements, python, proj, environment=activation_environment) if requirements else {}
     )
-    # 4) Execute each notebook via papermill
+
+    # The runner lives in the docs environment; kernelspecs point directly at this
+    # tutorial's Pixi Python, so notebook imports match the tutorial manifest.
     build_dir = proj / "build"
-    if not dry_run and not rewrite:
+    if not rewrite:
         build_dir.mkdir(exist_ok=True)
-    for nb in sorted(proj.glob("*.ipynb")):
-        out = nb if rewrite else (build_dir / nb.name)
-        run(["pixi", "run", "python", "-m", "papermill", str(nb), str(out)], cwd=proj, dry_run=dry_run)
+    kernel_name = "corneto-" + hashlib.sha256(str(proj).encode()).hexdigest()[:12]
+    with tempfile.TemporaryDirectory(prefix="corneto-tutorial-kernels-") as kernels:
+        for nb in notebooks:
+            unavailable = [
+                requirement
+                for requirement in notebook_requirements[nb]
+                if requirement_results.get(requirement) is not None
+            ]
+            if unavailable:
+                details = "; ".join(f"{name}: {requirement_results[name]}" for name in unavailable)
+                print(f"SKIPPED {nb.name}: {details}")
+                continue
+
+            out = nb if rewrite else (build_dir / nb.name)
+            execute_notebook(
+                nb,
+                out,
+                python=python,
+                cwd=nb.parent,
+                kernel_root=Path(kernels),
+                kernel_name=kernel_name,
+                timeout=execution_timeout_for_notebook(nb),
+                environment=activation_environment,
+            )
+            print(f"EXECUTED {nb.name} -> {out.relative_to(proj)}")
 
 
 def discover_tutorials(tutorials_dir: Path):

@@ -24,6 +24,36 @@ class _CellNOptAnnNetContext:
     source_edges: dict[str, tuple[str, str, int]]
 
 
+def _vertex_ids(graph):
+    list_vertices = getattr(graph, "vertices", None) or graph.nodes
+    return list_vertices()
+
+
+def _add_vertices(graph, vertices, *, layer):
+    add_vertices = getattr(graph, "add_vertices", None) or graph.add_nodes
+    return add_vertices(vertices, layer=layer)
+
+
+def _layer_vertices(layers, layer):
+    list_vertices = getattr(layers, "layer_vertex_set", None) or layers.layer_node_set
+    return list_vertices(layer)
+
+
+def _get_vertex_layer_attrs(layers, vertex, layer):
+    get_attrs = getattr(layers, "get_vertex_layer_attrs", None) or layers.node_attrs
+    return get_attrs(vertex, layer)
+
+
+def _set_vertex_layer_attrs(layers, vertex, layer, /, **attrs):
+    set_attrs = getattr(layers, "set_vertex_layer_attrs", None) or layers.set_node_attrs
+    return set_attrs(vertex, layer, **attrs)
+
+
+def _set_layer_attrs(layers, layer, /, **attrs):
+    set_attrs = getattr(layers, "set_layer_attrs", None) or layers.set_attrs
+    return set_attrs(layer, **attrs)
+
+
 def _matching_condition_keys(**collections: Mapping[str, Any]) -> tuple[str, ...]:
     names: tuple[str, ...] | None = None
     for argument, values in collections.items():
@@ -106,11 +136,11 @@ def add_cellnopt_conditions(
                 {condition_aspect: list(condition_names)},
             )
 
-    known_nodes = set(graph.nodes())
-    base_nodes = list(graph.nodes())
+    known_nodes = set(_vertex_ids(graph))
+    base_nodes = list(_vertex_ids(graph))
     layers = {condition: (condition,) for condition in condition_names}
     for condition, layer in layers.items():
-        graph.add_nodes(base_nodes, layer=layer)
+        _add_vertices(graph, base_nodes, layer=layer)
         values_by_role = (
             (inputs[condition], input_attr),
             (inhibitors[condition], inhibitor_attr),
@@ -124,7 +154,7 @@ def add_cellnopt_conditions(
                 protein = sorted(unknown, key=str)[0]
                 raise ValueError(f"Unknown protein {protein!r} in condition {condition!r}.")
             for protein, value in values.items():
-                graph.layers.set_node_attrs(str(protein), layer, **{attribute: value})
+                _set_vertex_layer_attrs(graph.layers, str(protein), layer, **{attribute: value})
     return layers
 
 
@@ -201,9 +231,9 @@ def build_cellnopt_from_annnet(
         inputs[condition] = {}
         inhibitors[condition] = {}
         measurements[condition] = {}
-        for protein in graph.layers.layer_node_set(layer):
+        for protein in _layer_vertices(graph.layers, layer):
             protein_id = str(protein[0]) if isinstance(protein, tuple) else str(protein)
-            attributes = graph.layers.node_attrs(protein_id, layer)
+            attributes = _get_vertex_layer_attrs(graph.layers, protein_id, layer)
             if input_attr in attributes:
                 inputs[condition][protein_id] = attributes[input_attr]
             if attributes.get(inhibitor_attr):
@@ -292,17 +322,17 @@ def add_cellnopt_results(
     condition_errors = {}
     for condition_index, condition in enumerate(condition_names):
         layer = context.condition_layers[condition]
-        graph.add_nodes(vertices, layer=layer)
+        _add_vertices(graph, vertices, layer=layer)
         endpoint_error = 0.0
         for vertex_index, protein in enumerate(vertices):
             predicted = float(predictions[vertex_index, condition_index])
             attributes = {prediction_attr: predicted}
-            existing = graph.layers.node_attrs(protein, layer)
+            existing = _get_vertex_layer_attrs(graph.layers, protein, layer)
             if measurement_attr in existing:
                 error = abs(predicted - float(existing[measurement_attr]))
                 attributes[error_attr] = error
                 endpoint_error += error
-            graph.layers.set_node_attrs(protein, layer, **attributes)
+            _set_vertex_layer_attrs(graph.layers, protein, layer, **attributes)
 
         condition_edges = []
         for reaction_index in selected_indices:
@@ -344,7 +374,7 @@ def add_cellnopt_results(
         }
         if solution is not None and getattr(solution, "status", None) is not None:
             layer_attributes["solver_status"] = str(solution.status)
-        graph.layers.set_attrs(layer, **layer_attributes)
+        _set_layer_attrs(graph.layers, layer, **layer_attributes)
         condition_errors[condition] = endpoint_error
 
     graph.history.snapshot("cellnopt_results_added")
