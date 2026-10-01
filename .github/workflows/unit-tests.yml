@@ -43,7 +43,7 @@ jobs:
       run: |
         pip install "poetry==${POETRY_VERSION}"
         poetry self add "poetry-dynamic-versioning[plugin]==${POETRY_DYNAMIC_VERSIONING_VERSION}"
-        poetry install
+        poetry install --extras docs
     - name: Validate pinned wasm-graphviz checksum
       run: |
         poetry run python scripts/check_wasm_graphviz_checksum.py
