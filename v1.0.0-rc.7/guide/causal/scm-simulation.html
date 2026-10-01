@@ -1,0 +1,1456 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Introduction to structural equation models in CORNETO &#8212; CORNETO  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=64cc4de3f052d77215f0" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=64cc4de3f052d77215f0" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=53e23fa6" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../_static/scripts/fontawesome.js?digest=64cc4de3f052d77215f0"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0" />
+
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('consent', 'default', {
+                    'ad_storage': 'denied',
+                    'ad_user_data': 'denied',
+                    'ad_personalization': 'denied',
+                    'analytics_storage': 'denied'
+                });
+            </script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-Z263GN2PKK"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', 'G-Z263GN2PKK');
+            </script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'guide/causal/scm-simulation';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.22.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1790874032';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v1.0.0-rc.7';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://saezlab.github.io/corneto/guide/causal/scm-simulation.html" />
+    <link rel="icon" href="../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Discovering a linear causal signaling network from perturbation data" href="linear-dag-discovery.html" />
+    <link rel="prev" title="Causal and structural modeling" href="index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="light">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="../../_static/logo.png" class="logo__image only-light" alt="CORNETO  documentation - Home"/>
+    <img src="../../_static/logo.png" class="logo__image only-dark pst-js-only" alt="CORNETO  documentation - Home"/>
+  
+  
+</a></div>
+    
+      <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install.html">
+    Install
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api/index.html">
+    Reference
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../releases/index.html">
+    Release Notes
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-external" href="https://github.com/saezlab/corneto">
+    GitHub
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install.html">
+    Install
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api/index.html">
+    Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../releases/index.html">
+    Release Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/saezlab/corneto">
+    GitHub
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../intro/index.html">Getting started</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../intro/prior-knowledge.html">Prior Knowledge and Graphs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/data.html">Working with data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/plotting.html">Plotting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/constrained-optimization.html">Constrained Optimization</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../networks/index.html">Network methods</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../networks/shortest-paths.html">Shortest paths</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../networks/multi-sample-shortest-paths.html">Multi-sample shortest paths</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../networks/multi-commodity-network-flows.html">Multi-commodity Network Flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../networks/acyclic-flows.html">Acyclic Flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../networks/steiner-trees.html">Steiner trees</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../networks/pcst.html">Prize-Collecting Steiner Trees (PCST)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../networks/multi-pcst-grb.html">Multi-sample PCST</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Causal and structural modeling</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active"><a aria-current="page" class="current reference internal" href="#">Introduction to structural equation models in CORNETO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="linear-dag-discovery.html">Discovering a linear causal signaling network from perturbation data</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../metabolism/index.html">Metabolism</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../metabolism/flux-balance-analysis.html">Flux balance analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metabolism/multicondition-sfba.html">Multi-condition FBA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metabolism/imat.html">Integrating gene expression into metabolic models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metabolism/multicondition-imat.html">Multi-condition gene expression integration</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../signaling/index.html">Signaling</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../signaling/carnival.html">CARNIVAL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../signaling/multisample-carnival.html">Multi-sample CARNIVAL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../signaling/phonemes.html">PHONEMeS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../signaling/bidirectional-phonemes.html">Global upstream and downstream PHONEMeS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../signaling/cellnopt_dag.html">Inferring intracellular signaling models with CellNOptDAG</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../interoperability/index.html">Interoperability</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../interoperability/cobrapy.html">COBRApy: Constraint-based metabolic modeling in Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../interoperability/liana.html">LIANA+: An all-in-one cell-cell communication framework</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../interoperability/decoupler.html">Decoupler: Ensemble of methods to infer biological activities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../interoperability/omnipath.html">Omnipath: intra- &amp; intercellular signaling knowledge</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../interoperability/networkx.html">NetworkX: Network Analysis in Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../interoperability/annnet.html">AnnNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../interoperability/cvxpy.html">CVXPY: Convex optimization, for everyone</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../interoperability/picos.html">PICOS: A Python interface to conic optimization solvers</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Guide</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Causal and structural modeling</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Introduction to structural equation models in CORNETO</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="introduction-to-structural-equation-models-in-corneto">
+<h1>Introduction to structural equation models in CORNETO<a class="headerlink" href="#introduction-to-structural-equation-models-in-corneto" title="Link to this heading">#</a></h1>
+<p>A <strong>structural equation model (SEM)</strong> describes a system through one equation for each variable. Each equation expresses that variable as a function of its parent variables and a noise term representing variation not explained by those parents. For example,</p>
+<div class="math notranslate nohighlight">
+\[
+B = 2A + \varepsilon_B
+\]</div>
+<p>describes a linear relationship between <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span>, with additional variation captured by <span class="math notranslate nohighlight">\(\varepsilon_B\)</span>. A directed graph records which variables appear as parents in each equation; the equations specify how those inputs determine the resulting values.</p>
+<p>A <strong>structural causal model (SCM)</strong> gives these equations a causal interpretation: they describe mechanisms through which variables influence one another. This interpretation allows us to represent interventions by changing a mechanism—for example, replacing the equation for <span class="math notranslate nohighlight">\(A\)</span> with a fixed value—and simulate the consequences for downstream variables. A SEM does not automatically have this causal meaning; it depends on the assumptions behind the model.</p>
+<p>CORNETO combines data with a <strong>prior knowledge network</strong> to fit structural equation models. <code class="docutils literal notranslate"><span class="pre">LinearDAGDiscovery</span></code> performs causal discovery by fitting a linear, acyclic structural causal model constrained by that network. It combines measurements with hard or shift intervention annotations to select relationships and estimate their coefficients. As with other causal discovery methods, recovering the underlying causal structure depends on the modeling assumptions and the information available in the data.</p>
+<p>This guide introduces these modeling concepts using CORNETO’s simple SCM simulator. We specify the graph, equations, and noise distributions ourselves, then generate synthetic observations and intervention data. Because the generating model is known, these data can be used to test fitting methods and compare their results with the underlying model.</p>
+<p>We begin with a small three-variable system, explore linear and nonlinear equations, and show how to package the simulated measurements and intervention information as CORNETO <code class="docutils literal notranslate"><span class="pre">Data</span></code>. Fitting a model is covered in the companion guide on <a class="reference internal" href="linear-dag-discovery.html"><span class="std std-doc">linear DAG discovery</span></a>.</p>
+<p>In the example, <code class="docutils literal notranslate"><span class="pre">A</span></code> is an upstream variable, <code class="docutils literal notranslate"><span class="pre">B</span></code> depends on <code class="docutils literal notranslate"><span class="pre">A</span></code>, and <code class="docutils literal notranslate"><span class="pre">C</span></code> depends on both. The equations and coefficients are chosen to illustrate the simulator rather than represent a particular biological system.</p>
+<section id="set-up-the-notebook">
+<h2>Set up the notebook<a class="headerlink" href="#set-up-the-notebook" title="Link to this heading">#</a></h2>
+<p>We will use CORNETO’s <code class="docutils literal notranslate"><span class="pre">Graph.plot</span></code> to draw the pathway, pandas to organize the measurements, and Matplotlib to plot the simulated values. The imported Jupyter <code class="docutils literal notranslate"><span class="pre">display()</span></code> function shows a table with notebook formatting, including when a cell needs to show more than one result. The CORNETO Pixi environment includes these packages. If you are using another Python environment, install CORNETO’s plotting extra, pandas, and Matplotlib, and make sure the Graphviz program is installed.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">display</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">corneto.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">Data</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">corneto.graph</span><span class="w"> </span><span class="kn">import</span> <span class="n">Graph</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">corneto.methods.causal.simulation</span><span class="w"> </span><span class="kn">import</span> <span class="n">Additive</span><span class="p">,</span> <span class="n">Linear</span><span class="p">,</span> <span class="n">Node</span><span class="p">,</span> <span class="n">Normal</span><span class="p">,</span> <span class="n">SCM</span><span class="p">,</span> <span class="n">linear_scm</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+    <span class="s2">"figure.dpi"</span><span class="p">:</span> <span class="mi">120</span><span class="p">,</span>
+    <span class="s2">"axes.spines.top"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">"axes.spines.right"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">"font.size"</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+<span class="p">})</span>
+
+<span class="n">POSITIVE</span> <span class="o">=</span> <span class="s2">"#16856b"</span>
+<span class="n">NEGATIVE</span> <span class="o">=</span> <span class="s2">"#dc7448"</span>
+<span class="n">NEUTRAL</span> <span class="o">=</span> <span class="s2">"#62748a"</span>
+<span class="n">node_style</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">"shape"</span><span class="p">:</span> <span class="s2">"box"</span><span class="p">,</span>
+    <span class="s2">"style"</span><span class="p">:</span> <span class="s2">"rounded,filled"</span><span class="p">,</span>
+    <span class="s2">"fillcolor"</span><span class="p">:</span> <span class="s2">"#edf3f8"</span><span class="p">,</span>
+    <span class="s2">"color"</span><span class="p">:</span> <span class="s2">"#43566b"</span><span class="p">,</span>
+    <span class="s2">"fontcolor"</span><span class="p">:</span> <span class="s2">"#213247"</span><span class="p">,</span>
+    <span class="s2">"fontname"</span><span class="p">:</span> <span class="s2">"Helvetica"</span><span class="p">,</span>
+    <span class="s2">"fontsize"</span><span class="p">:</span> <span class="s2">"11"</span><span class="p">,</span>
+    <span class="s2">"margin"</span><span class="p">:</span> <span class="s2">"0.16,0.09"</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="n">graph_style</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">"rankdir"</span><span class="p">:</span> <span class="s2">"LR"</span><span class="p">,</span>
+    <span class="s2">"ranksep"</span><span class="p">:</span> <span class="s2">"0.8"</span><span class="p">,</span>
+    <span class="s2">"nodesep"</span><span class="p">:</span> <span class="s2">"0.45"</span><span class="p">,</span>
+    <span class="s2">"splines"</span><span class="p">:</span> <span class="s2">"spline"</span><span class="p">,</span>
+    <span class="s2">"pad"</span><span class="p">:</span> <span class="s2">"0.2"</span><span class="p">,</span>
+    <span class="s2">"bgcolor"</span><span class="p">:</span> <span class="s2">"transparent"</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="define-the-structural-equations">
+<h2>Define the structural equations<a class="headerlink" href="#define-the-structural-equations" title="Link to this heading">#</a></h2>
+<p>For each simulated sample, the model draws a random noise value for each variable. Think of these noise values as background variation between samples that the simple model does not describe. The three equations are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">=</span> <span class="pre">noise_A</span></code>: nothing else in this example causes <code class="docutils literal notranslate"><span class="pre">A</span></code>, so each sample’s value is just random variation.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">B</span> <span class="pre">=</span> <span class="pre">2</span> <span class="pre">×</span> <span class="pre">A</span> <span class="pre">+</span> <span class="pre">noise_B</span></code>: if <code class="docutils literal notranslate"><span class="pre">A</span></code> is one unit higher, <code class="docutils literal notranslate"><span class="pre">B</span></code> is expected to be two units higher. <code class="docutils literal notranslate"><span class="pre">noise_B</span></code> allows samples with the same <code class="docutils literal notranslate"><span class="pre">A</span></code> to have different <code class="docutils literal notranslate"><span class="pre">B</span></code> values.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">C</span> <span class="pre">=</span> <span class="pre">tanh(A</span> <span class="pre">×</span> <span class="pre">B)</span> <span class="pre">+</span> <span class="pre">noise_C</span></code>: <code class="docutils literal notranslate"><span class="pre">C</span></code> depends on both <code class="docutils literal notranslate"><span class="pre">A</span></code> and <code class="docutils literal notranslate"><span class="pre">B</span></code>. The <code class="docutils literal notranslate"><span class="pre">tanh</span></code> function keeps their combined effect within a limited range, and <code class="docutils literal notranslate"><span class="pre">noise_C</span></code> adds more sample-to-sample variation.</p></li>
+</ul>
+<p>A <code class="docutils literal notranslate"><span class="pre">Node</span></code> stores an equation, the names of the variables used by that equation, and a rule for drawing its noise. Those input variables are called the node’s <strong>parents</strong>. For <code class="docutils literal notranslate"><span class="pre">C</span></code>, the parent order is <code class="docutils literal notranslate"><span class="pre">A</span></code> then <code class="docutils literal notranslate"><span class="pre">B</span></code>, so the first parent column is <code class="docutils literal notranslate"><span class="pre">A</span></code> and the second is <code class="docutils literal notranslate"><span class="pre">B</span></code>. <code class="docutils literal notranslate"><span class="pre">Additive</span></code> means “evaluate this function, then add the noise.”</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">parent_graph</span> <span class="o">=</span> <span class="n">Graph</span><span class="o">.</span><span class="n">from_tuples</span><span class="p">([</span>
+    <span class="p">(</span><span class="s2">"A"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"B"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"A"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"C"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"B"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"C"</span><span class="p">),</span>
+<span class="p">])</span>
+
+<span class="n">scm</span> <span class="o">=</span> <span class="n">SCM</span><span class="p">({</span>
+    <span class="s2">"A"</span><span class="p">:</span> <span class="n">Node</span><span class="p">((),</span> <span class="k">lambda</span> <span class="n">parents</span><span class="p">,</span> <span class="n">noise</span><span class="p">:</span> <span class="n">noise</span><span class="p">,</span> <span class="n">Normal</span><span class="p">()),</span>
+    <span class="s2">"B"</span><span class="p">:</span> <span class="n">Node</span><span class="p">((</span><span class="s2">"A"</span><span class="p">,),</span> <span class="n">Linear</span><span class="p">((</span><span class="mf">2.0</span><span class="p">,)),</span> <span class="n">Normal</span><span class="p">(</span><span class="n">std</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)),</span>
+    <span class="s2">"C"</span><span class="p">:</span> <span class="n">Node</span><span class="p">(</span>
+        <span class="p">(</span><span class="s2">"A"</span><span class="p">,</span> <span class="s2">"B"</span><span class="p">),</span>
+        <span class="n">Additive</span><span class="p">(</span><span class="k">lambda</span> <span class="n">parents</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">parents</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">parents</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])),</span>
+        <span class="n">Normal</span><span class="p">(</span><span class="n">std</span><span class="o">=</span><span class="mf">0.2</span><span class="p">),</span>
+    <span class="p">),</span>
+<span class="p">})</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>This diagram is a map of the equations: an arrow into <code class="docutils literal notranslate"><span class="pre">B</span></code> means that the rule for <code class="docutils literal notranslate"><span class="pre">B</span></code> uses <code class="docutils literal notranslate"><span class="pre">A</span></code>. An arrow into <code class="docutils literal notranslate"><span class="pre">C</span></code> means that its rule uses that parent too. The arrows show which values feed into each equation; the equations in the code say how large those effects are.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">parent_graph</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">renderer</span><span class="o">=</span><span class="s2">"graphviz"</span><span class="p">,</span>
+    <span class="n">graph_attr</span><span class="o">=</span><span class="n">graph_style</span><span class="p">,</span>
+    <span class="n">node_attr</span><span class="o">=</span><span class="n">node_style</span><span class="p">,</span>
+    <span class="n">custom_edge_attr</span><span class="o">=</span><span class="p">{</span>
+        <span class="n">index</span><span class="p">:</span> <span class="p">{</span><span class="s2">"label"</span><span class="p">:</span> <span class="s2">"parent"</span><span class="p">,</span> <span class="s2">"color"</span><span class="p">:</span> <span class="n">NEUTRAL</span><span class="p">,</span> <span class="s2">"fontcolor"</span><span class="p">:</span> <span class="n">NEUTRAL</span><span class="p">}</span>
+        <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">parent_graph</span><span class="o">.</span><span class="n">num_edges</span><span class="p">)</span>
+    <span class="p">},</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/d09e6f613e60a60f59fdb11202103e3c675934d8209f4aa85c8c3909218273b6.svg" src="../../_images/d09e6f613e60a60f59fdb11202103e3c675934d8209f4aa85c8c3909218273b6.svg" />
+</div>
+</div>
+</section>
+<section id="generate-observations">
+<h2>Generate observations<a class="headerlink" href="#generate-observations" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">sample(1_000)</span></code> creates 1,000 synthetic samples. It returns a NumPy table: each row is one sample, and each column is a variable. The columns are in the order listed by <code class="docutils literal notranslate"><span class="pre">scm.variables</span></code>. We put those names on the columns so the first few records are easy to read.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">observations</span> <span class="o">=</span> <span class="n">scm</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="mi">1_000</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span>
+<span class="n">observation_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">observations</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">scm</span><span class="o">.</span><span class="n">variables</span><span class="p">)</span>
+<span class="n">observation_df</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">"regime"</span><span class="p">,</span> <span class="s2">"observation"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">observation_df</span><span class="p">)</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2"> simulated observations"</span><span class="p">)</span>
+<span class="n">display</span><span class="p">(</span><span class="n">observation_df</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1,000 simulated observations
+</pre></div>
+</div>
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>regime</th>
+      <th>A</th>
+      <th>B</th>
+      <th>C</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>observation</td>
+      <td>0.001230</td>
+      <td>0.181862</td>
+      <td>-0.072903</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>observation</td>
+      <td>0.298746</td>
+      <td>0.793288</td>
+      <td>0.301014</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>observation</td>
+      <td>-0.274138</td>
+      <td>-0.758616</td>
+      <td>0.171950</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>observation</td>
+      <td>-0.890592</td>
+      <td>-0.770739</td>
+      <td>0.417827</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>observation</td>
+      <td>-0.454671</td>
+      <td>-0.723822</td>
+      <td>0.475249</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">observation_df</span><span class="p">[</span><span class="s2">"A"</span><span class="p">],</span> <span class="n">observation_df</span><span class="p">[</span><span class="s2">"B"</span><span class="p">],</span> <span class="n">s</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.55</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">POSITIVE</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">"A"</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">"B"</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">"B = 2A + noise"</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span>
+    <span class="n">observation_df</span><span class="p">[</span><span class="s2">"B"</span><span class="p">],</span> <span class="n">observation_df</span><span class="p">[</span><span class="s2">"C"</span><span class="p">],</span>
+    <span class="n">c</span><span class="o">=</span><span class="n">observation_df</span><span class="p">[</span><span class="s2">"A"</span><span class="p">],</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">"viridis"</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.65</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">"B"</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">"C"</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">"C depends on both A and B"</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/8a45614a94d71cbf3329eafd12f2f96dccf69a8fa90794a37c23b1709991268c.png" src="../../_images/8a45614a94d71cbf3329eafd12f2f96dccf69a8fa90794a37c23b1709991268c.png" />
+</div>
+</div>
+</section>
+<section id="edit-the-baseline-model">
+<h2>Edit the baseline model<a class="headerlink" href="#edit-the-baseline-model" title="Link to this heading">#</a></h2>
+<p>Suppose we decide to try a different rule for the outcome <code class="docutils literal notranslate"><span class="pre">C</span></code>: instead of the curved <code class="docutils literal notranslate"><span class="pre">tanh</span></code> relationship, let <code class="docutils literal notranslate"><span class="pre">C</span></code> be a weighted sum of <code class="docutils literal notranslate"><span class="pre">A</span></code> and <code class="docutils literal notranslate"><span class="pre">B</span></code>. <code class="docutils literal notranslate"><span class="pre">Node.replace()</span></code> lets us change that equation while keeping the same parents. <code class="docutils literal notranslate"><span class="pre">SCM.replace()</span></code> makes a new model containing the edited node.</p>
+<p>The original <code class="docutils literal notranslate"><span class="pre">scm</span></code> is left as it was. This edit defines a new usual model for generating data. It does not represent an experiment in which we deliberately set a variable’s value, so it is not labeled as an intervention.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">custom_c</span> <span class="o">=</span> <span class="n">scm</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="s2">"C"</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+    <span class="n">mechanism</span><span class="o">=</span><span class="n">Linear</span><span class="p">((</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">)),</span>
+    <span class="n">noise</span><span class="o">=</span><span class="n">Normal</span><span class="p">(</span><span class="n">std</span><span class="o">=</span><span class="mf">0.1</span><span class="p">),</span>
+<span class="p">)</span>
+<span class="n">custom_baseline</span> <span class="o">=</span> <span class="n">scm</span><span class="o">.</span><span class="n">replace</span><span class="p">({</span><span class="s2">"C"</span><span class="p">:</span> <span class="n">custom_c</span><span class="p">})</span>
+<span class="n">custom_values</span> <span class="o">=</span> <span class="n">custom_baseline</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="mi">1_000</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+<span class="n">custom_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">custom_values</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">custom_baseline</span><span class="o">.</span><span class="n">variables</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">observation_df</span><span class="p">[</span><span class="s2">"C"</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="mi">35</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">NEUTRAL</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"Original nonlinear C"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">custom_df</span><span class="p">[</span><span class="s2">"C"</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="mi">35</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">POSITIVE</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"Replaced linear C"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">"C"</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">"Density"</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">"Changing the baseline equation changes the outcome distribution"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="n">custom_data</span> <span class="o">=</span> <span class="n">custom_baseline</span><span class="o">.</span><span class="n">sample_data</span><span class="p">(</span>
+    <span class="mi">3</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">sample_ids</span><span class="o">=</span><span class="p">[</span><span class="s2">"edited_0"</span><span class="p">,</span> <span class="s2">"edited_1"</span><span class="p">,</span> <span class="s2">"edited_2"</span><span class="p">]</span>
+<span class="p">)</span>
+<span class="n">custom_data</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="s2">"edited_0"</span><span class="p">]</span><span class="o">.</span><span class="n">features</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/fe6e7bfbf4c6c9fb12d6ed9436929705849f673c3f879cc68e685449d80126ff.png" src="../../_images/fe6e7bfbf4c6c9fb12d6ed9436929705849f673c3f879cc68e685449d80126ff.png" />
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{'id': 'C', 'value': -1.8779414627163178, 'mapping': 'vertex'}
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="define-parent-relationships-with-a-corneto-graph">
+<h2>Define parent relationships with a CORNETO graph<a class="headerlink" href="#define-parent-relationships-with-a-corneto-graph" title="Link to this heading">#</a></h2>
+<p>The graph can provide the list of parent relationships, while we provide the equation for each variable. <code class="docutils literal notranslate"><span class="pre">SCM.from_graph()</span></code> reads the incoming arrows to decide which parent values each equation receives. We still need to give it one mechanism for every graph vertex. A vertex with no incoming arrows, such as <code class="docutils literal notranslate"><span class="pre">A</span></code>, is a root: its equation gets no parent values, but it can still have random noise.</p>
+<p>The order of a vertex’s incoming arrows determines the order of its parent columns. In the following example, this graph-based model uses the same equations as the earlier <code class="docutils literal notranslate"><span class="pre">SCM</span></code> built from <code class="docutils literal notranslate"><span class="pre">Node</span></code> objects.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">graph_scm</span> <span class="o">=</span> <span class="n">SCM</span><span class="o">.</span><span class="n">from_graph</span><span class="p">(</span>
+    <span class="n">parent_graph</span><span class="p">,</span>
+    <span class="n">mechanisms</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">"A"</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">parents</span><span class="p">,</span> <span class="n">noise</span><span class="p">:</span> <span class="n">noise</span><span class="p">,</span>
+        <span class="s2">"B"</span><span class="p">:</span> <span class="n">Linear</span><span class="p">((</span><span class="mf">2.0</span><span class="p">,)),</span>
+        <span class="s2">"C"</span><span class="p">:</span> <span class="n">Additive</span><span class="p">(</span><span class="k">lambda</span> <span class="n">parents</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">parents</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">parents</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])),</span>
+    <span class="p">},</span>
+    <span class="n">noises</span><span class="o">=</span><span class="n">Normal</span><span class="p">(</span><span class="n">std</span><span class="o">=</span><span class="mf">0.2</span><span class="p">),</span>
+<span class="p">)</span>
+
+<span class="n">from_graph_values</span> <span class="o">=</span> <span class="n">graph_scm</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="mi">9</span><span class="p">)</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">from_graph_values</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">graph_scm</span><span class="o">.</span><span class="n">variables</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>A</th>
+      <th>B</th>
+      <th>C</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>-0.160567</td>
+      <td>-0.411657</td>
+      <td>-0.340508</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0.048570</td>
+      <td>0.183237</td>
+      <td>0.290984</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>-0.331269</td>
+      <td>-0.612352</td>
+      <td>0.190589</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0.131221</td>
+      <td>0.183572</td>
+      <td>0.528549</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>0.228691</td>
+      <td>0.284900</td>
+      <td>0.230306</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="build-a-linear-model">
+<h2>Build a linear model<a class="headerlink" href="#build-a-linear-model" title="Link to this heading">#</a></h2>
+<p>When every equation is a weighted sum of its parents plus noise, <code class="docutils literal notranslate"><span class="pre">linear_scm()</span></code> can build the model for us. For example, <code class="docutils literal notranslate"><span class="pre">(&quot;A&quot;,</span> <span class="pre">&quot;B&quot;):</span> <span class="pre">1.5</span></code> means that the equation for <code class="docutils literal notranslate"><span class="pre">B</span></code> includes <code class="docutils literal notranslate"><span class="pre">1.5</span> <span class="pre">×</span> <span class="pre">A</span></code>. The <code class="docutils literal notranslate"><span class="pre">weights</span></code> dictionary gives the exact coefficients used in the equations.</p>
+<p>The graph’s edge sign and the coefficient are different things. A sign says whether the relationship is positive or negative. The coefficient also gives its size. The simulator reads coefficient values from <code class="docutils literal notranslate"><span class="pre">weights</span></code>; it does not treat a graph sign as a coefficient magnitude.</p>
+<p>If we leave out <code class="docutils literal notranslate"><span class="pre">weights</span></code>, <code class="docutils literal notranslate"><span class="pre">linear_scm()</span></code> chooses positive and negative coefficients at random. By default, their sizes are between 0.5 and 2 so they are not almost zero. The <code class="docutils literal notranslate"><span class="pre">rng=12</span></code> in the code fixes those coefficient choices. It is separate from the random seed used later to generate samples.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">linear_graph</span> <span class="o">=</span> <span class="n">Graph</span><span class="o">.</span><span class="n">from_tuples</span><span class="p">([</span>
+    <span class="p">(</span><span class="s2">"A"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"B"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"A"</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">"C"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"B"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"C"</span><span class="p">),</span>
+<span class="p">])</span>
+<span class="n">weights</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="p">(</span><span class="s2">"A"</span><span class="p">,</span> <span class="s2">"B"</span><span class="p">):</span> <span class="mf">1.5</span><span class="p">,</span>
+    <span class="p">(</span><span class="s2">"A"</span><span class="p">,</span> <span class="s2">"C"</span><span class="p">):</span> <span class="o">-</span><span class="mf">0.4</span><span class="p">,</span>
+    <span class="p">(</span><span class="s2">"B"</span><span class="p">,</span> <span class="s2">"C"</span><span class="p">):</span> <span class="mf">0.8</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="n">truth</span> <span class="o">=</span> <span class="n">linear_scm</span><span class="p">(</span>
+    <span class="n">linear_graph</span><span class="p">,</span>
+    <span class="n">weights</span><span class="o">=</span><span class="n">weights</span><span class="p">,</span>
+    <span class="n">biases</span><span class="o">=</span><span class="p">{</span><span class="s2">"C"</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">},</span>
+    <span class="n">noise</span><span class="o">=</span><span class="n">Normal</span><span class="p">(</span><span class="n">std</span><span class="o">=</span><span class="mf">0.15</span><span class="p">),</span>
+<span class="p">)</span>
+
+<span class="n">random_model</span> <span class="o">=</span> <span class="n">linear_scm</span><span class="p">(</span><span class="n">linear_graph</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">noise</span><span class="o">=</span><span class="n">Normal</span><span class="p">(</span><span class="n">std</span><span class="o">=</span><span class="mf">0.15</span><span class="p">))</span>
+<span class="n">random_weights</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">child</span><span class="p">):</span> <span class="n">coefficient</span>
+    <span class="k">for</span> <span class="n">child</span><span class="p">,</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">random_model</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">parent</span><span class="p">,</span> <span class="n">coefficient</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">parents</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">mechanism</span><span class="o">.</span><span class="n">weights</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="n">display</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span>
+    <span class="p">{</span><span class="s2">"parent"</span><span class="p">:</span> <span class="n">parent</span><span class="p">,</span> <span class="s2">"child"</span><span class="p">:</span> <span class="n">child</span><span class="p">,</span> <span class="s2">"random coefficient"</span><span class="p">:</span> <span class="n">coefficient</span><span class="p">}</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">child</span><span class="p">),</span> <span class="n">coefficient</span> <span class="ow">in</span> <span class="n">random_weights</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+<span class="p">]))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>parent</th>
+      <th>child</th>
+      <th>random coefficient</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>A</td>
+      <td>B</td>
+      <td>-0.876237</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>A</td>
+      <td>C</td>
+      <td>-1.920129</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>B</td>
+      <td>C</td>
+      <td>0.783981</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>Each arrow label in this diagram is one of the numbers in <code class="docutils literal notranslate"><span class="pre">weights</span></code>. Green arrows increase the child variable when the parent increases; orange arrows decrease it. For example, the <code class="docutils literal notranslate"><span class="pre">-0.4</span></code> arrow from <code class="docutils literal notranslate"><span class="pre">A</span></code> to <code class="docutils literal notranslate"><span class="pre">C</span></code> means that, with other inputs held fixed, increasing <code class="docutils literal notranslate"><span class="pre">A</span></code> by one lowers <code class="docutils literal notranslate"><span class="pre">C</span></code> by <code class="docutils literal notranslate"><span class="pre">0.4</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">edge_order</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">source</span><span class="p">)),</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">target</span><span class="p">)))</span>
+    <span class="k">for</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">linear_graph</span><span class="o">.</span><span class="n">E</span>
+<span class="p">]</span>
+<span class="n">edge_styles</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">index</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"label"</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">weights</span><span class="p">[</span><span class="n">edge</span><span class="p">]</span><span class="si">:</span><span class="s2">+.1f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+        <span class="s2">"color"</span><span class="p">:</span> <span class="n">POSITIVE</span> <span class="k">if</span> <span class="n">weights</span><span class="p">[</span><span class="n">edge</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">NEGATIVE</span><span class="p">,</span>
+        <span class="s2">"fontcolor"</span><span class="p">:</span> <span class="n">POSITIVE</span> <span class="k">if</span> <span class="n">weights</span><span class="p">[</span><span class="n">edge</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">NEGATIVE</span><span class="p">,</span>
+        <span class="s2">"penwidth"</span><span class="p">:</span> <span class="s2">"2.4"</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">edge</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">edge_order</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="n">linear_graph</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">renderer</span><span class="o">=</span><span class="s2">"graphviz"</span><span class="p">,</span>
+    <span class="n">graph_attr</span><span class="o">=</span><span class="n">graph_style</span><span class="p">,</span>
+    <span class="n">node_attr</span><span class="o">=</span><span class="n">node_style</span><span class="p">,</span>
+    <span class="n">custom_edge_attr</span><span class="o">=</span><span class="n">edge_styles</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/9eaae64730eb3855c0b78e335d6490fdfd5f3227cd83fe6aac6250b43c25d1f8.svg" src="../../_images/9eaae64730eb3855c0b78e335d6490fdfd5f3227cd83fe6aac6250b43c25d1f8.svg" />
+</div>
+</div>
+</section>
+<section id="simulate-hard-and-shift-interventions">
+<h2>Simulate hard and shift interventions<a class="headerlink" href="#simulate-hard-and-shift-interventions" title="Link to this heading">#</a></h2>
+<p>The ordinary equation for <code class="docutils literal notranslate"><span class="pre">A</span></code> is <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">=</span> <span class="pre">noise_A</span></code>. With <code class="docutils literal notranslate"><span class="pre">truth.do({&quot;A&quot;:</span> <span class="pre">2.0})</span></code>, we replace that equation with <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">=</span> <span class="pre">2.0</span></code>. Every sample now has <code class="docutils literal notranslate"><span class="pre">A</span></code> exactly equal to 2. The usual random value for <code class="docutils literal notranslate"><span class="pre">A</span></code> is ignored. This is a <strong>hard intervention</strong>: we deliberately set the variable itself to one fixed value.</p>
+<p>With <code class="docutils literal notranslate"><span class="pre">truth.shift({&quot;A&quot;:</span> <span class="pre">1.0})</span></code>, we keep the ordinary equation and add one to its result. The equation becomes <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">=</span> <span class="pre">noise_A</span> <span class="pre">+</span> <span class="pre">1</span></code>. A sample whose ordinary <code class="docutils literal notranslate"><span class="pre">A</span></code> would have been <code class="docutils literal notranslate"><span class="pre">-0.2</span></code> now has <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">=</span> <span class="pre">0.8</span></code>; a sample whose ordinary value would have been <code class="docutils literal notranslate"><span class="pre">0.5</span></code> now has <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">=</span> <span class="pre">1.5</span></code>. All values increase by one, but variation between samples is preserved. This is a <strong>shift intervention</strong>.</p>
+<p>Both operations create a new SCM; neither changes <code class="docutils literal notranslate"><span class="pre">truth</span></code>. The next cell compares the usual model, the fixed-value model, and the shifted model using the same random noise values. That means we are comparing paired samples with the same background variation. If we drew new noise for each intervention, a difference in <code class="docutils literal notranslate"><span class="pre">C</span></code> could come from either the intervention or the new noise draws. Reusing the noise holds those background differences steady, so the change in each sample’s outcome comes from the intervention.</p>
+<p>In this example, a one-unit increase in <code class="docutils literal notranslate"><span class="pre">A</span></code> changes <code class="docutils literal notranslate"><span class="pre">C</span></code> along two routes. The direct arrow <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">→</span> <span class="pre">C</span></code> contributes <code class="docutils literal notranslate"><span class="pre">-0.4</span></code>. The route <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">→</span> <span class="pre">B</span> <span class="pre">→</span> <span class="pre">C</span></code> contributes <code class="docutils literal notranslate"><span class="pre">1.5</span> <span class="pre">×</span> <span class="pre">0.8</span> <span class="pre">=</span> <span class="pre">1.2</span></code>. Adding the routes gives <code class="docutils literal notranslate"><span class="pre">-0.4</span> <span class="pre">+</span> <span class="pre">1.2</span> <span class="pre">=</span> <span class="pre">0.8</span></code>. The code checks that every paired simulation has exactly this change.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">noise</span> <span class="o">=</span> <span class="n">truth</span><span class="o">.</span><span class="n">draw_noise</span><span class="p">(</span><span class="mi">500</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="mi">31</span><span class="p">)</span>
+<span class="n">usual</span> <span class="o">=</span> <span class="n">truth</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">noise</span><span class="p">)</span>
+<span class="n">hard_clamp</span> <span class="o">=</span> <span class="n">truth</span><span class="o">.</span><span class="n">do</span><span class="p">({</span><span class="s2">"A"</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">})</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">noise</span><span class="p">)</span>
+<span class="n">shifted</span> <span class="o">=</span> <span class="n">truth</span><span class="o">.</span><span class="n">shift</span><span class="p">({</span><span class="s2">"A"</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">})</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">noise</span><span class="p">)</span>
+
+<span class="n">column_c</span> <span class="o">=</span> <span class="n">truth</span><span class="o">.</span><span class="n">variables</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s2">"C"</span><span class="p">)</span>
+<span class="n">shift_effect</span> <span class="o">=</span> <span class="n">shifted</span><span class="p">[:,</span> <span class="n">column_c</span><span class="p">]</span> <span class="o">-</span> <span class="n">usual</span><span class="p">[:,</span> <span class="n">column_c</span><span class="p">]</span>
+<span class="n">expected_shift_effect</span> <span class="o">=</span> <span class="n">weights</span><span class="p">[(</span><span class="s2">"A"</span><span class="p">,</span> <span class="s2">"C"</span><span class="p">)]</span> <span class="o">+</span> <span class="n">weights</span><span class="p">[(</span><span class="s2">"A"</span><span class="p">,</span> <span class="s2">"B"</span><span class="p">)]</span> <span class="o">*</span> <span class="n">weights</span><span class="p">[(</span><span class="s2">"B"</span><span class="p">,</span> <span class="s2">"C"</span><span class="p">)]</span>
+<span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span><span class="n">shift_effect</span><span class="p">,</span> <span class="n">expected_shift_effect</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Exact paired effect of shift(A=+1) on C: </span><span class="si">{</span><span class="n">shift_effect</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">+.2f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Exact paired effect of shift(A=+1) on C: +0.80
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mf">4.2</span><span class="p">))</span>
+<span class="n">regime_values</span> <span class="o">=</span> <span class="p">[</span><span class="n">usual</span><span class="p">[:,</span> <span class="n">column_c</span><span class="p">],</span> <span class="n">hard_clamp</span><span class="p">[:,</span> <span class="n">column_c</span><span class="p">],</span> <span class="n">shifted</span><span class="p">[:,</span> <span class="n">column_c</span><span class="p">]]</span>
+<span class="n">regime_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"Usual"</span><span class="p">,</span> <span class="s2">"do(A = 2)"</span><span class="p">,</span> <span class="s2">"shift(A, +1)"</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">45</span><span class="p">):</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="p">[</span><span class="n">values</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="k">for</span> <span class="n">values</span> <span class="ow">in</span> <span class="n">regime_values</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">"#94a3b8"</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.28</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">position</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">color</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="n">regime_values</span><span class="p">,</span> <span class="p">[</span><span class="n">NEUTRAL</span><span class="p">,</span> <span class="n">NEGATIVE</span><span class="p">,</span> <span class="n">POSITIVE</span><span class="p">],</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">([</span><span class="n">position</span><span class="p">]</span> <span class="o">*</span> <span class="mi">45</span><span class="p">,</span> <span class="n">values</span><span class="p">[:</span><span class="mi">45</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="n">regime_names</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">"C for the same noise draws"</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Paired simulated patients"</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s2">"left"</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s2">"bold"</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.03</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">,</span> <span class="s2">"Lines connect one patient's outcomes"</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">transAxes</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"#475569"</span><span class="p">)</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">boxplot</span><span class="p">(</span><span class="n">regime_values</span><span class="p">,</span> <span class="n">tick_labels</span><span class="o">=</span><span class="n">regime_names</span><span class="p">,</span> <span class="n">patch_artist</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">showfliers</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">boxprops</span><span class="o">=</span><span class="p">{</span><span class="s2">"facecolor"</span><span class="p">:</span> <span class="s2">"#e7eef4"</span><span class="p">,</span> <span class="s2">"edgecolor"</span><span class="p">:</span> <span class="s2">"#62748a"</span><span class="p">},</span>
+                <span class="n">medianprops</span><span class="o">=</span><span class="p">{</span><span class="s2">"color"</span><span class="p">:</span> <span class="n">POSITIVE</span><span class="p">,</span> <span class="s2">"linewidth"</span><span class="p">:</span> <span class="mi">2</span><span class="p">})</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">"C across 500 shared noise draws"</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Outcome distributions by policy"</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s2">"left"</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s2">"bold"</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/49ebf32c02a52ff02ddf0e4189cf107847f17562213a9ec838b8d5345a2e02f4.png" src="../../_images/49ebf32c02a52ff02ddf0e4189cf107847f17562213a9ec838b8d5345a2e02f4.png" />
+</div>
+</div>
+</section>
+<section id="store-simulated-data-in-corneto-data">
+<h2>Store simulated data in CORNETO Data<a class="headerlink" href="#store-simulated-data-in-corneto-data" title="Link to this heading">#</a></h2>
+<p>A NumPy array is convenient for calculations, but it does not say which rows were observations and which rows came from an experiment. CORNETO <code class="docutils literal notranslate"><span class="pre">Data</span></code> stores samples together with information about their features.</p>
+<p>Here we make six samples under each of three conditions: ordinary observations, setting <code class="docutils literal notranslate"><span class="pre">A</span></code> to 2, and adding 1 to the usual <code class="docutils literal notranslate"><span class="pre">A</span></code>. <code class="docutils literal notranslate"><span class="pre">sample_data()</span></code> records whether the changed feature was set to a fixed value or shifted, along with the group name we provide. Ordinary observations have no intervention label because we did not change their equations.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">observed_data</span> <span class="o">=</span> <span class="n">truth</span><span class="o">.</span><span class="n">sample_data</span><span class="p">(</span>
+    <span class="mi">6</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="mi">41</span><span class="p">,</span> <span class="n">sample_ids</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s2">"obs_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">)]</span>
+<span class="p">)</span>
+<span class="n">hard_data</span> <span class="o">=</span> <span class="n">truth</span><span class="o">.</span><span class="n">do</span><span class="p">({</span><span class="s2">"A"</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">})</span><span class="o">.</span><span class="n">sample_data</span><span class="p">(</span>
+    <span class="mi">6</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span>
+    <span class="n">sample_ids</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s2">"hard_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">)],</span>
+    <span class="n">intervention_group</span><span class="o">=</span><span class="s2">"do_A_2"</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">shift_data</span> <span class="o">=</span> <span class="n">truth</span><span class="o">.</span><span class="n">shift</span><span class="p">({</span><span class="s2">"A"</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">})</span><span class="o">.</span><span class="n">sample_data</span><span class="p">(</span>
+    <span class="mi">6</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="mi">43</span><span class="p">,</span>
+    <span class="n">sample_ids</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s2">"shift_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">)],</span>
+    <span class="n">intervention_group</span><span class="o">=</span><span class="s2">"shift_A_plus_1"</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">Data</span><span class="o">.</span><span class="n">from_dict</span><span class="p">({</span>
+    <span class="o">**</span><span class="n">observed_data</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span>
+    <span class="o">**</span><span class="n">hard_data</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span>
+    <span class="o">**</span><span class="n">shift_data</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span>
+<span class="p">})</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">data_to_frame</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">variables</span><span class="p">):</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">sample_id</span><span class="p">,</span> <span class="n">sample</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">samples</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">features</span> <span class="o">=</span> <span class="p">{</span><span class="n">feature</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="n">feature</span> <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">sample</span><span class="o">.</span><span class="n">features</span><span class="p">}</span>
+        <span class="n">intervention_features</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">feature</span> <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">sample</span><span class="o">.</span><span class="n">features</span>
+            <span class="k">if</span> <span class="n">feature</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"intervention"</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="p">]</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="n">intervention_features</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">intervention_features</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">target</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">regime</span> <span class="o">=</span> <span class="s2">"observation"</span>
+            <span class="n">group</span> <span class="o">=</span> <span class="s2">"observational"</span>
+            <span class="n">target_name</span> <span class="o">=</span> <span class="s2">"—"</span>
+            <span class="n">shift_amount</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">kind</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">"intervention"</span><span class="p">]</span>
+            <span class="n">regime</span> <span class="o">=</span> <span class="s2">"hard intervention"</span> <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">"hard"</span> <span class="k">else</span> <span class="s2">"known shift"</span>
+            <span class="n">group</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"intervention_group"</span><span class="p">,</span> <span class="n">regime</span><span class="p">)</span>
+            <span class="n">target_name</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">id</span>
+            <span class="n">shift_amount</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"shift"</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">"sample_id"</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">,</span>
+            <span class="s2">"regime"</span><span class="p">:</span> <span class="n">regime</span><span class="p">,</span>
+            <span class="s2">"intervention_group"</span><span class="p">:</span> <span class="n">group</span><span class="p">,</span>
+            <span class="s2">"target"</span><span class="p">:</span> <span class="n">target_name</span><span class="p">,</span>
+            <span class="s2">"shift"</span><span class="p">:</span> <span class="n">shift_amount</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">row</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">variable</span><span class="p">:</span> <span class="n">features</span><span class="p">[</span><span class="n">variable</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">variable</span> <span class="ow">in</span> <span class="n">variables</span><span class="p">})</span>
+        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_records</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span>
+
+<span class="n">data_df</span> <span class="o">=</span> <span class="n">data_to_frame</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">truth</span><span class="o">.</span><span class="n">variables</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"CORNETO Data: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">data_df</span><span class="p">)</span><span class="si">}</span><span class="s2"> samples; </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">truth</span><span class="o">.</span><span class="n">variables</span><span class="p">)</span><span class="si">}</span><span class="s2"> measured variables"</span><span class="p">)</span>
+<span class="n">display</span><span class="p">(</span><span class="n">data_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s2">"regime"</span><span class="p">,</span> <span class="s2">"intervention_group"</span><span class="p">],</span> <span class="n">sort</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="s2">"samples"</span><span class="p">)</span><span class="o">.</span><span class="n">to_frame</span><span class="p">())</span>
+<span class="n">display</span><span class="p">(</span><span class="n">data_df</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">"sample_id"</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CORNETO Data: 18 samples; 3 measured variables
+</pre></div>
+</div>
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th></th>
+      <th>samples</th>
+    </tr>
+    <tr>
+      <th>regime</th>
+      <th>intervention_group</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>observation</th>
+      <th>observational</th>
+      <td>6</td>
+    </tr>
+    <tr>
+      <th>hard intervention</th>
+      <th>do_A_2</th>
+      <td>6</td>
+    </tr>
+    <tr>
+      <th>known shift</th>
+      <th>shift_A_plus_1</th>
+      <td>6</td>
+    </tr>
+  </tbody>
+</table>
+</div></div><div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>regime</th>
+      <th>intervention_group</th>
+      <th>target</th>
+      <th>shift</th>
+      <th>A</th>
+      <th>B</th>
+      <th>C</th>
+    </tr>
+    <tr>
+      <th>sample_id</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>obs_0</th>
+      <td>observation</td>
+      <td>observational</td>
+      <td>—</td>
+      <td>NaN</td>
+      <td>-0.184750</td>
+      <td>-0.263061</td>
+      <td>0.097631</td>
+    </tr>
+    <tr>
+      <th>obs_1</th>
+      <td>observation</td>
+      <td>observational</td>
+      <td>—</td>
+      <td>NaN</td>
+      <td>0.040068</td>
+      <td>-0.115521</td>
+      <td>-0.090051</td>
+    </tr>
+    <tr>
+      <th>obs_2</th>
+      <td>observation</td>
+      <td>observational</td>
+      <td>—</td>
+      <td>NaN</td>
+      <td>-0.001039</td>
+      <td>-0.205294</td>
+      <td>-0.145808</td>
+    </tr>
+    <tr>
+      <th>obs_3</th>
+      <td>observation</td>
+      <td>observational</td>
+      <td>—</td>
+      <td>NaN</td>
+      <td>0.075230</td>
+      <td>-0.083139</td>
+      <td>0.292835</td>
+    </tr>
+    <tr>
+      <th>obs_4</th>
+      <td>observation</td>
+      <td>observational</td>
+      <td>—</td>
+      <td>NaN</td>
+      <td>-0.199009</td>
+      <td>-0.406156</td>
+      <td>-0.009903</td>
+    </tr>
+    <tr>
+      <th>obs_5</th>
+      <td>observation</td>
+      <td>observational</td>
+      <td>—</td>
+      <td>NaN</td>
+      <td>0.166165</td>
+      <td>0.427091</td>
+      <td>0.254698</td>
+    </tr>
+    <tr>
+      <th>hard_0</th>
+      <td>hard intervention</td>
+      <td>do_A_2</td>
+      <td>A</td>
+      <td>NaN</td>
+      <td>2.000000</td>
+      <td>3.045708</td>
+      <td>1.755742</td>
+    </tr>
+    <tr>
+      <th>hard_1</th>
+      <td>hard intervention</td>
+      <td>do_A_2</td>
+      <td>A</td>
+      <td>NaN</td>
+      <td>2.000000</td>
+      <td>2.844002</td>
+      <td>1.527766</td>
+    </tr>
+    <tr>
+      <th>hard_2</th>
+      <td>hard intervention</td>
+      <td>do_A_2</td>
+      <td>A</td>
+      <td>NaN</td>
+      <td>2.000000</td>
+      <td>3.112568</td>
+      <td>1.787534</td>
+    </tr>
+    <tr>
+      <th>hard_3</th>
+      <td>hard intervention</td>
+      <td>do_A_2</td>
+      <td>A</td>
+      <td>NaN</td>
+      <td>2.000000</td>
+      <td>3.141085</td>
+      <td>1.684911</td>
+    </tr>
+    <tr>
+      <th>hard_4</th>
+      <td>hard intervention</td>
+      <td>do_A_2</td>
+      <td>A</td>
+      <td>NaN</td>
+      <td>2.000000</td>
+      <td>2.707345</td>
+      <td>1.597785</td>
+    </tr>
+    <tr>
+      <th>hard_5</th>
+      <td>hard intervention</td>
+      <td>do_A_2</td>
+      <td>A</td>
+      <td>NaN</td>
+      <td>2.000000</td>
+      <td>2.804673</td>
+      <td>1.660407</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>The pandas table is a readable view of the same CORNETO <code class="docutils literal notranslate"><span class="pre">data</span></code> object. The first columns explain how each row was generated; the remaining columns contain the measured values of <code class="docutils literal notranslate"><span class="pre">A</span></code>, <code class="docutils literal notranslate"><span class="pre">B</span></code>, and <code class="docutils literal notranslate"><span class="pre">C</span></code>. A downstream CORNETO method should receive <code class="docutils literal notranslate"><span class="pre">data</span></code>, not this display-only table.</p>
+<p>In a shift sample, the <code class="docutils literal notranslate"><span class="pre">A</span></code> feature stores the intervention kind, the amount added, and the group name. The next cell shows those fields for one sample.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">shifted_a</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">feature</span> <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="s2">"shift_0"</span><span class="p">]</span> <span class="k">if</span> <span class="n">feature</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="s2">"A"</span><span class="p">)</span>
+<span class="n">shifted_a</span><span class="o">.</span><span class="n">data</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{'id': 'A',
+ 'value': 1.036634426000764,
+ 'mapping': 'vertex',
+ 'intervention': 'shift',
+ 'shift': 1.0,
+ 'intervention_group': 'shift_A_plus_1'}
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="simulate-a-custom-mechanism-intervention">
+<h2>Simulate a custom mechanism intervention<a class="headerlink" href="#simulate-a-custom-mechanism-intervention" title="Link to this heading">#</a></h2>
+<p>Sometimes an experiment changes a variable in a way that cannot be described by fixing it to one number or adding a known amount. For example, we can replace the equation for <code class="docutils literal notranslate"><span class="pre">C</span></code> with the alternative rule we made earlier. <code class="docutils literal notranslate"><span class="pre">intervene()</span></code> creates a model for this custom experiment, and the simulator can generate values from it.</p>
+<p>The intervention labels understood by <code class="docutils literal notranslate"><span class="pre">LinearDAGDiscovery</span></code> currently cover the two cases from the previous section: a fixed value and a known shift. They do not describe every possible equation change. For that reason, converting this custom experiment with <code class="docutils literal notranslate"><span class="pre">sample_data()</span></code> raises an error. This prevents the data from being mislabeled as a fixed-value or shift intervention.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mechanism_intervention</span> <span class="o">=</span> <span class="n">scm</span><span class="o">.</span><span class="n">intervene</span><span class="p">({</span><span class="s2">"C"</span><span class="p">:</span> <span class="n">custom_c</span><span class="p">})</span>
+<span class="n">experimental_values</span> <span class="o">=</span> <span class="n">mechanism_intervention</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="mi">9</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Experimental simulation shape:"</span><span class="p">,</span> <span class="n">experimental_values</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">mechanism_intervention</span><span class="o">.</span><span class="n">sample_data</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="mi">9</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Experimental simulation shape: (100, 3)
+Cannot convert arbitrary node interventions to LinearDAGDiscovery data; intervention metadata is unsupported for ('C',).
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="from-simulation-to-fitting">
+<h2>From simulation to fitting<a class="headerlink" href="#from-simulation-to-fitting" title="Link to this heading">#</a></h2>
+<p>The simulator generates data from a model whose parent relationships, mechanisms, and noise distributions we specify. A CORNETO graph records the parent relationships, while each mechanism supplies the calculation for one variable.</p>
+<p><code class="docutils literal notranslate"><span class="pre">do()</span></code> replaces a variable’s equation with a fixed value, <code class="docutils literal notranslate"><span class="pre">shift()</span></code> adds a known amount to its usual value, and <code class="docutils literal notranslate"><span class="pre">intervene()</span></code> substitutes a custom mechanism. <code class="docutils literal notranslate"><span class="pre">replace()</span></code> edits the baseline model. Reusing noise across simulations lets us compare interventions while holding background variation fixed. CORNETO <code class="docutils literal notranslate"><span class="pre">Data</span></code> stores the generated measurements together with the supported intervention labels.</p>
+<p>When testing a fitting method, keep the known generating graph separate from the candidate prior knowledge network supplied to the method. The generating graph provides a reference for evaluating the result; the candidate network defines which relationships the method may select.</p>
+<p>Continue with <a class="reference internal" href="linear-dag-discovery.html"><span class="std std-doc">linear DAG discovery</span></a> to fit a linear SEM from data and a prior knowledge network.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="index.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Causal and structural modeling</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="linear-dag-discovery.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Discovering a linear causal signaling network from perturbation data</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#set-up-the-notebook">Set up the notebook</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#define-the-structural-equations">Define the structural equations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#generate-observations">Generate observations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#edit-the-baseline-model">Edit the baseline model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#define-parent-relationships-with-a-corneto-graph">Define parent relationships with a CORNETO graph</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#build-a-linear-model">Build a linear model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#simulate-hard-and-shift-interventions">Simulate hard and shift interventions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#store-simulated-data-in-corneto-data">Store simulated data in CORNETO Data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#simulate-a-custom-mechanism-intervention">Simulate a custom mechanism intervention</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#from-simulation-to-fitting">From simulation to fitting</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2023-2026, Saez-Rodriguez lab. (EMBL-EBI, Heidelberg University).
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.22.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
