@@ -13,4 +13,3 @@ Public helpers for knowledge-primed neural networks.
     kfold_nonzero_splits
     plot_model
     signed_dense
-    toposort
