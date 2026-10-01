@@ -94,8 +94,8 @@ def test_ml_api_replaces_private_module():
         "kfold_nonzero_splits",
         "plot_model",
         "signed_dense",
-        "toposort",
     ]
+    assert not hasattr(ml, "toposort")
     assert importlib.util.find_spec("corneto._ml") is None
 
 
