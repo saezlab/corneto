@@ -847,6 +847,7 @@ class Backend(abc.ABC):
         axis: int = -1,
         weights: Optional[Union[Sequence[float], np.ndarray]] = None,
         name: Optional[str] = None,
+        exact: bool = False,
     ) -> ProblemDef:
         """Build an entrywise graph total-variation expression.
 
@@ -865,6 +866,8 @@ class Backend(abc.ABC):
         variation expression to an objective or constrain it explicitly; no
         objective is added automatically. The total scales linearly with the
         magnitude of ``X`` and the number of rows summed for each pair.
+        With ``exact=True``, binary inputs use exact XOR magnitudes, including
+        when maximizing variation or when a pair has zero weight.
 
         Args:
             X: A nonempty real affine vector or matrix expression from this
@@ -879,6 +882,12 @@ class Backend(abc.ABC):
                 weights. Scalars are rejected.
             name: Optional stable expression-name prefix. If omitted, a
                 unique prefix is generated.
+            exact: If true, require binary inputs and enforce exact absolute
+                differences independently of the objective. Binary variables
+                are used directly; affine expressions are linked to auxiliary
+                binary selectors, constraining every entry of X to zero or
+                one. Nonbinary symbols are rejected. Defaults to false, which
+                retains the continuous absolute-value bound formulation.
 
         Returns:
             ProblemDef: A problem with the linear absolute-value
@@ -891,6 +900,10 @@ class Backend(abc.ABC):
         """
         if not isinstance(X, CExpression):
             raise TypeError("X must be a CORNETO CExpression")
+        if not isinstance(exact, (bool, np.bool_)):
+            raise TypeError("exact must be a boolean")
+        if exact and isinstance(X, CSymbol) and X._vartype != VarType.BINARY:
+            raise TypeError("exact=True requires binary inputs; nonbinary symbols are not supported")
         shape = X.shape
         ndim = len(shape)
         if ndim not in (1, 2) or any(dim <= 0 for dim in shape):
@@ -954,6 +967,12 @@ class Backend(abc.ABC):
         elif not isinstance(name, str) or not name:
             raise ValueError("name must be a nonempty string")
 
+        constraints = []
+        if exact and not isinstance(X, CSymbol):
+            selector = self.Variable(f"{name}_selector", shape, 0, 1, vartype=VarType.BINARY)
+            constraints.append(selector == X)
+            X = selector
+
         if ndim == 1:
             Z = X.reshape((1, shape[0]))
         elif normalized_axis == 0:
@@ -982,7 +1001,16 @@ class Backend(abc.ABC):
             f"{name}_variation_by_pair": variation_by_pair,
             f"{name}_total_variation": total_variation,
         }
-        constraints = [abs_bound >= difference, abs_bound >= -difference]
+        constraints += [abs_bound >= difference, abs_bound >= -difference]
+        if exact:
+            # For binary endpoints a and b, these upper bounds complete the
+            # XOR hull: |a-b| <= D <= min(a+b, 2-a-b).
+            endpoint_incidence = self._sparse(
+                (np.ones(2 * n_pairs), (incidence_rows, incidence_columns)),
+                shape=(connected_size, n_pairs),
+            )
+            endpoint_sum = (Z @ self.Constant(endpoint_incidence)).reshape((rows, n_pairs))
+            constraints += [abs_bound <= endpoint_sum, abs_bound <= 2 - endpoint_sum]
         return self.Problem(constraints=constraints, expressions=expressions)
 
     def Problem(
@@ -1559,7 +1587,7 @@ class Backend(abc.ABC):
         S = V
         ub = V.ub
         lb = V.lb
-        if indexes:
+        if indexes is not None:
             S = V[indexes]
             ub = V.ub[indexes]
             lb = V.lb[indexes]
@@ -1587,6 +1615,66 @@ class Backend(abc.ABC):
             raise ValueError(f"The continuous variable {V.name} is unbounded, indicators cannot be created.")
         c += [S >= indicator.multiply(lb), S <= indicator.multiply(ub)]
         return self.Problem(c)
+
+    def ThresholdIndicator(
+        self,
+        V: CSymbol,
+        *,
+        indexes: Optional[Union[int, slice, Tuple, List, np.ndarray]] = None,
+        epsilon: Union[float, List[float], np.ndarray] = 1.0,
+        name: Optional[str] = None,
+        positive_name: Optional[str] = None,
+        negative_name: Optional[str] = None,
+    ) -> ProblemDef:
+        """Create optional positive and negative threshold implications.
+
+        A positive binary equal to one requires the bounded value to be at
+        least ``epsilon``. A negative binary equal to one requires it to be
+        at most ``-epsilon``. When both binaries are zero, the original bounds
+        remain available, including values between the thresholds. Reaching
+        a threshold does not require its binary to be one.
+
+        ``epsilon`` must be finite and positive, and may be an array
+        broadcastable to the selected value shape. A vector of thresholds
+        also accepts a backend's single-column representation of a vector.
+        The returned problem registers the sum of the mutually exclusive binaries under ``name``
+        (default ``<variable>_threshold``), with directional symbols named
+        ``<name>_positive`` and ``<name>_negative`` unless explicitly supplied.
+        Implications use linear constraints derived from the finite bounds.
+        """
+        if V._provided_lb is None or V._provided_ub is None:
+            raise ValueError("ThresholdIndicator requires finite lower and upper bounds.")
+        S = V if indexes is None else V[indexes]
+        lb = np.asarray(V.lb if indexes is None else V.lb[indexes], dtype=float).reshape(S.shape)
+        ub = np.asarray(V.ub if indexes is None else V.ub[indexes], dtype=float).reshape(S.shape)
+        if not np.all(np.isfinite(lb)) or not np.all(np.isfinite(ub)) or np.any(lb > ub):
+            raise ValueError("ThresholdIndicator requires finite ordered bounds.")
+        raw_epsilon = np.asarray(epsilon)
+        if raw_epsilon.dtype.kind not in {"i", "u", "f"}:
+            raise TypeError("epsilon must be a finite positive number or array.")
+        threshold_input = np.asarray(epsilon, dtype=float)
+        if len(S.shape) == 2 and S.shape[1] == 1 and threshold_input.shape == (S.shape[0],):
+            threshold_input = threshold_input.reshape(S.shape)
+        try:
+            threshold = np.broadcast_to(threshold_input, S.shape)
+        except ValueError as error:
+            raise ValueError("epsilon must be broadcastable to the selected value shape.") from error
+        if not np.all(np.isfinite(threshold)) or np.any(threshold <= 0):
+            raise ValueError("epsilon must be finite and positive.")
+        name = name or f"{V.name}_threshold"
+        positive = self.Variable(positive_name or f"{name}_positive", S.shape, 0, 1, vartype=VarType.BINARY)
+        negative = self.Variable(negative_name or f"{name}_negative", S.shape, 0, 1, vartype=VarType.BINARY)
+        problem = self.Problem(
+            [
+                positive + negative <= 1,
+                S >= lb + positive.multiply(threshold - lb),
+                S <= ub - negative.multiply(ub + threshold),
+                positive.multiply(np.asarray(ub < threshold, dtype=float)) == 0,
+                negative.multiply(np.asarray(lb > -threshold, dtype=float)) == 0,
+            ]
+        )
+        problem.register(name, positive + negative)
+        return problem
 
     def ExactSupport(
         self,

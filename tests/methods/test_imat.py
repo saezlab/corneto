@@ -5,7 +5,8 @@ import os
 import numpy as np
 import pytest
 
-from corneto.backend import PicosBackend
+from corneto import Graph
+from corneto.backend import CvxpyBackend, PicosBackend, VarType
 from corneto.data import Data
 from corneto.io import import_miom_model
 from corneto.methods.fba import MultiSampleFBA
@@ -13,6 +14,85 @@ from corneto.methods.imat import MultiSampleIMAT
 
 # Use HiGHS solver for fast execution
 SOLVER = "highs"
+
+
+@pytest.mark.parametrize("score", [1.0, -1.0])
+@pytest.mark.parametrize("required_flux", [0.005, -0.005])
+@pytest.mark.parametrize("n_conditions", [1, 2])
+@pytest.mark.parametrize("use_bigm_constraints", [True, False])
+def test_imat_required_subthreshold_flux_accepts_expression_mismatch(
+    score, required_flux, n_conditions, use_bigm_constraints
+):
+    """Expression agreement is optional when mass balance requires small flux."""
+    graph = Graph()
+    graph.add_edge((), "A", id="Supply", default_lb=-1, default_ub=1)
+    graph.add_edge("A", (), id="Demand", default_lb=-1, default_ub=1)
+    bounds = {
+        f"s{i}": {
+            "Supply": (min(0, required_flux), max(0, required_flux)),
+            "Demand": (required_flux, required_flux),
+        }
+        for i in range(n_conditions)
+    }
+
+    fba_problem = MultiSampleFBA(backend=CvxpyBackend()).build_many(graph, reaction_bounds=bounds)
+    assert fba_problem.solve(solver="SCIPY").status == "optimal"
+
+    problem = MultiSampleIMAT(backend=CvxpyBackend(), eps=0.01, use_bigm_constraints=use_bigm_constraints).build_many(
+        graph,
+        reaction_scores={f"s{i}": {"Supply": score} for i in range(n_conditions)},
+        reaction_bounds=bounds,
+    )
+    result = problem.solve(solver="SCIPY")
+
+    assert result.status == "optimal"
+    np.testing.assert_allclose(problem.expr.flow.value, required_flux, atol=1e-8)
+    # High expression misses the activity threshold. In exact-zero mode,
+    # low expression also incurs a mismatch because the reaction carries flux.
+    if score > 0 or use_bigm_constraints:
+        assert result.value == pytest.approx(n_conditions)
+    else:
+        assert result.value == pytest.approx(0)
+
+
+@pytest.mark.parametrize("n_reactions,n_conditions", [(1, 2), (1, 3), (1, 1), (3, 1), (3, 2)])
+def test_imat_union_regularizes_each_reaction_once(n_reactions, n_conditions):
+    graph = Graph()
+    for reaction in range(n_reactions):
+        # Self-loops allow fixed nonzero flux while satisfying mass balance.
+        graph.add_edge(f"A{reaction}", f"A{reaction}", id=f"R{reaction}", default_lb=1, default_ub=1)
+
+    problem = MultiSampleIMAT(lambda_reg=1, beta_reg=0, backend=CvxpyBackend()).build_many(
+        graph,
+        reaction_scores={
+            f"s{condition}": {f"R{reaction}": 1 for reaction in range(n_reactions)} for condition in range(n_conditions)
+        },
+    )
+    result = problem.solve(solver="SCIPY")
+
+    assert result.status == "optimal"
+    expected_shape = (n_reactions,) if n_conditions == 1 else (n_reactions, n_conditions)
+    np.testing.assert_allclose(problem.expr.edge_has_flux.value, np.ones(expected_shape))
+    # Every positive score is satisfied, leaving only the reaction union cost.
+    assert result.value == pytest.approx(n_reactions)
+
+
+@pytest.mark.parametrize("lambda_reg,beta_reg,expected_binaries", [(0, 0, 6), (1, 0, 13), (0, 1, 10)])
+def test_imat_reuses_selection_binaries_only_when_regularizing(lambda_reg, beta_reg, expected_binaries):
+    graph = Graph()
+    for reaction in ("high", "low", "unscored"):
+        graph.add_edge("A", "A", id=reaction, default_lb=-1, default_ub=1)
+    problem = MultiSampleIMAT(backend=CvxpyBackend(), lambda_reg=lambda_reg, beta_reg=beta_reg).build_many(
+        graph, reaction_scores={"s0": {"high": 1, "low": -1}, "s1": {"high": 1, "low": -1}}
+    )
+    binaries = sum(
+        int(np.prod(symbol.shape)) for symbol in problem.symbols.values() if symbol._vartype == VarType.BINARY
+    )
+    assert binaries == expected_binaries
+    assert ("edge_has_flux" in problem.expr) == (lambda_reg > 0 or beta_reg > 0)
+    assert ("edge_has_flux_OR" in problem.expr) == (lambda_reg > 0)
+    assert ("imat_unblocked_s0" in problem.expr) == (lambda_reg == 0 and beta_reg == 0)
+    assert problem.solve(solver="SCIPY").status == "optimal"
 
 
 @pytest.fixture
@@ -249,7 +329,7 @@ def test_multi_sample_imat_different_expression(metabolic_network, backend):
 
 
 def test_imat_multisample_support_vars_sparse_per_sample(metabolic_network, backend):
-    """IMAT should create nonzero support vars only for non-zero scored reactions."""
+    """Plain iMAT creates only the agreement binaries required by its scores."""
     imat = MultiSampleIMAT(backend=backend, lambda_reg=0.0)
     data = Data.from_cdict(
         {
@@ -269,19 +349,18 @@ def test_imat_multisample_support_vars_sparse_per_sample(metabolic_network, back
 
     problem = imat.build(metabolic_network, data)
 
-    # Full-size regularization indicator should remain available for cross-sample OR.
-    assert problem.expr.edge_has_flux.shape[0] == metabolic_network.num_edges
-    assert problem.expr.edge_has_flux.shape[1] == 2
+    # Plain iMAT needs no full-network selection or condition-union binaries.
+    assert "edge_has_flux" not in problem.expr
+    assert "edge_has_flux_OR" not in problem.expr
 
-    # Sparse per-sample support vars: sample1 has 2 non-zero scores, sample2 has 1.
-    n_s1 = int(np.prod(problem.expr._flow_ipos_s0.shape))
-    n_s2 = int(np.prod(problem.expr._flow_ipos_s1.shape))
-    assert n_s1 == 2
-    assert n_s2 == 1
-    assert int(np.prod(problem.expr._flow_ineg_s0.shape)) == 2
-    assert int(np.prod(problem.expr._flow_ineg_s1.shape)) == 1
-
-    # Legacy full-size iMAT support vars should not be created anymore.
+    # Only the high-expression reaction gets directional threshold binaries.
+    assert int(np.prod(problem.expr._flow_ipos_s0.shape)) == 1
+    assert int(np.prod(problem.expr._flow_ineg_s0.shape)) == 1
+    assert "_flow_ipos_s1" not in problem.expr
+    assert "_flow_ineg_s1" not in problem.expr
+    # Low-expression reactions each use one blocking binary.
+    assert int(np.prod(problem.expr.imat_unblocked_s0.shape)) == 1
+    assert int(np.prod(problem.expr.imat_unblocked_s1.shape)) == 1
     assert "_flow_ipos" not in problem.expr
     assert "_flow_ineg" not in problem.expr
 

@@ -189,6 +189,67 @@ def test_total_variation_named_and_automatic_primitives_compose(backend):
     assert {f"{prefix}_abs_bound" for prefix in auto_prefixes}.issubset(combined.symbols)
 
 
+@pytest.mark.parametrize("objective_weight", [1, -1, 0])
+@pytest.mark.parametrize("axis", [0, 1, -1])
+def test_total_variation_exact_binary_truth_table(backend, objective_weight, axis):
+    values = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
+    fixed = values.T if axis == 0 else values
+    x = backend.Variable("x", fixed.shape, vartype=VarType.BINARY)
+    tv = backend.TotalVariation(
+        x, pairs=[(0, 1), (1, 0), (0, 1)], axis=axis, weights=[2, 3, 0], name="exact", exact=True
+    )
+    problem = backend.Problem(x == fixed) + tv
+    if objective_weight:
+        problem.add_objective(problem.expr.exact_total_variation, weight=objective_weight)
+    result = _solve(problem)
+
+    assert str(result.status).lower() == "optimal"
+    np.testing.assert_allclose(problem.expr.exact_abs_bound.value, [[0, 0, 0], [1, 1, 1], [1, 1, 1], [0, 0, 0]])
+    np.testing.assert_allclose(problem.expr.exact_difference.value, [[0, 0, 0], [1, -1, 1], [-1, 1, -1], [0, 0, 0]])
+    assert np.isclose(float(problem.expr.exact_total_variation.value), 10)
+
+
+@pytest.mark.parametrize("shape", [(3,), (1, 3)])
+def test_total_variation_exact_binary_single_reaction(backend, shape):
+    x = backend.Variable("x", shape, vartype=VarType.BINARY)
+    tv = backend.TotalVariation(x, pairs=[(0, 1), (1, 2)], name="single", exact=True)
+    problem = backend.Problem(x == np.array([1, 1, 0]).reshape(shape)) + tv
+    problem.add_objective(-problem.expr.single_total_variation)
+    _solve(problem)
+    np.testing.assert_allclose(problem.expr.single_abs_bound.value, [[0, 1]])
+    assert np.isclose(float(problem.expr.single_total_variation.value), 1)
+
+
+def test_total_variation_exact_maximizes_switches_at_fixed_union(backend):
+    x = backend.Variable("x", (2, 3), vartype=VarType.BINARY)
+    problem = backend.linear_or(x, axis=1, varname="union")
+    problem += problem.expr.union.sum() == 1
+    problem += backend.TotalVariation(x, pairs=[(0, 1), (1, 2)], name="switches", exact=True)
+    problem.add_objective(-problem.expr.switches_total_variation)
+    _solve(problem)
+    actual = np.abs(np.diff(np.asarray(x.value), axis=1)).sum()
+    assert np.isclose(actual, 2)
+    assert np.isclose(float(problem.expr.switches_total_variation.value), actual)
+
+
+def test_total_variation_exact_affine_selection_enforces_binary_values(backend):
+    x = backend.Variable("x", (2, 3), vartype=VarType.BINARY)
+    # A sum of binary indicators need not itself be binary without constraints.
+    selected = x[0, :] + x[1, :]
+    problem = backend.TotalVariation(selected, pairs=[(0, 1), (1, 2)], name="selection", exact=True)
+    problem.add_objective(-selected.sum())
+    _solve(problem)
+    np.testing.assert_allclose(np.asarray(selected.value).ravel(), [1, 1, 1])
+    np.testing.assert_allclose(problem.expr.selection_abs_bound.value, [[0, 0]])
+
+
+@pytest.mark.parametrize("vartype", [VarType.CONTINUOUS, VarType.INTEGER])
+def test_total_variation_exact_rejects_nonbinary_symbols(backend, vartype):
+    x = backend.Variable("x", (2,), lb=0, ub=1, vartype=vartype)
+    with pytest.raises(TypeError, match="binary inputs"):
+        backend.TotalVariation(x, pairs=[(0, 1)], exact=True)
+
+
 @pytest.mark.parametrize(
     "shape, kwargs, error",
     [
@@ -209,6 +270,7 @@ def test_total_variation_named_and_automatic_primitives_compose(backend):
         ((3,), {"pairs": [(0, 1)], "weights": [np.inf]}, ValueError),
         ((3,), {"pairs": [(0, 1)], "weights": [np.nan]}, ValueError),
         ((3,), {"pairs": [(0, 1)], "weights": [1j]}, ValueError),
+        ((3,), {"pairs": [(0, 1)], "exact": "yes"}, TypeError),
     ],
 )
 def test_total_variation_rejects_invalid_inputs(backend, shape, kwargs, error):
