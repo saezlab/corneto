@@ -16,6 +16,43 @@ from corneto.methods.imat import MultiSampleIMAT
 SOLVER = "highs"
 
 
+@pytest.mark.parametrize("score", [1.0, -1.0])
+@pytest.mark.parametrize("required_flux", [0.005, -0.005])
+@pytest.mark.parametrize("n_conditions", [1, 2])
+@pytest.mark.parametrize("use_bigm_constraints", [True, False])
+def test_imat_required_subthreshold_flux_accepts_expression_mismatch(
+    score, required_flux, n_conditions, use_bigm_constraints
+):
+    """Expression agreement is optional when mass balance requires small flux."""
+    graph = Graph()
+    graph.add_edge((), "A", id="Supply", default_lb=-1, default_ub=1)
+    graph.add_edge("A", (), id="Demand", default_lb=-1, default_ub=1)
+    bounds = {
+        f"s{i}": {
+            "Supply": (min(0, required_flux), max(0, required_flux)),
+            "Demand": (required_flux, required_flux),
+        }
+        for i in range(n_conditions)
+    }
+
+    fba_problem = MultiSampleFBA(backend=CvxpyBackend()).build_many(graph, reaction_bounds=bounds)
+    assert fba_problem.solve(solver="SCIPY").status == "optimal"
+
+    problem = MultiSampleIMAT(backend=CvxpyBackend(), eps=0.01, use_bigm_constraints=use_bigm_constraints).build_many(
+        graph,
+        reaction_scores={f"s{i}": {"Supply": score} for i in range(n_conditions)},
+        reaction_bounds=bounds,
+    )
+    result = problem.solve(solver="SCIPY")
+
+    assert result.status == "optimal"
+    np.testing.assert_allclose(problem.expr.flow.value, required_flux, atol=1e-8)
+    # High expression misses the activity threshold. In exact-zero mode,
+    # low expression also incurs a mismatch because the reaction carries flux.
+    if score > 0 or use_bigm_constraints:
+        assert result.value == pytest.approx(n_conditions)
+
+
 @pytest.mark.parametrize("n_reactions,n_conditions", [(1, 2), (1, 3), (1, 1), (3, 1), (3, 2)])
 def test_imat_union_regularizes_each_reaction_once(n_reactions, n_conditions):
     graph = Graph()
