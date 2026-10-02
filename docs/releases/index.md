@@ -7,6 +7,7 @@ This section contains detailed release notes for CORNETO versions, documenting n
 ```{toctree}
 :maxdepth: 1
 
+v1.0.0-rc.8
 v1.0.0-rc.7
 v1.0.0-rc.6
 v1.0.0-rc.5
