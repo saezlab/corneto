@@ -9,7 +9,7 @@ from typing import Optional, Tuple
 
 import numpy as np
 
-from corneto.backend._base import Backend
+from corneto.backend._base import Backend, VarType
 from corneto.data import Data, Feature
 from corneto.graph import BaseGraph
 from corneto.methods._input_utils import (
@@ -38,7 +38,8 @@ class MultiSampleIMAT(MultiSampleFBA):
             Higher values encourage fewer active reactions. Defaults to 1e-3.
         beta_reg (float, optional): Secondary regularization parameter for sparsity.
             Used when both types of regularization are needed. Defaults to 0.0.
-        eps (float, optional): Tolerance for considering a flux as non-zero.
+        eps (float, optional): Minimum flux magnitude earning a high-expression
+            agreement reward; smaller flux remains feasible without that reward.
             Defaults to 1e-2.
         scale (bool, optional): If True, normalize the nonzero iMAT score
             weights independently for each condition so their absolute values
@@ -320,6 +321,9 @@ class MultiSampleIMAT(MultiSampleFBA):
 
         return result_data
 
+    def _requires_flux_indicators(self):
+        return self.lambda_reg_param.value > 0 or self.beta_reg.value > 0
+
     def create_flow_based_problem(self, flow_problem, graph: BaseGraph, data: Data):
         """Create the iMAT optimization problem.
 
@@ -343,10 +347,7 @@ class MultiSampleIMAT(MultiSampleFBA):
         # Get the flow variables created by parent class
         F = flow_problem.expr.flow
 
-        # Keep the full-size edge_has_flux indicator from the parent class for
-        # structured regularization across samples. iMAT-specific nonzero
-        # support vars are added only for scored reactions per sample below.
-        unblocked = flow_problem.expr.edge_has_flux if self.use_bigm_constraints else None
+        unblocked = flow_problem.expr.edge_has_flux if self._requires_flux_indicators() else None
 
         # Process weights for each sample
         n_samples = len(data.samples)
@@ -377,7 +378,7 @@ class MultiSampleIMAT(MultiSampleFBA):
                 if denom > 0:
                     weights = (weights / denom) * 100
 
-            # Only non-zero scored reactions contribute to iMAT support vars/objectives.
+            # Only non-zero scored reactions contribute to iMAT agreement vars/objectives.
             nonzero_mask = ~np.isclose(weights, 0.0)
             if not np.any(nonzero_mask):
                 continue
@@ -385,60 +386,57 @@ class MultiSampleIMAT(MultiSampleFBA):
             scored_indices = rxn_indices[nonzero_mask]
             scored_weights = weights[nonzero_mask]
 
-            # Add sparse support vars only for this sample's scored reactions.
-            suffix_pos = f"_ipos_s{i}"
-            suffix_neg = f"_ineg_s{i}"
-            if n_samples > 1 and len(F.shape) > 1:
-                indicator_indexes = (scored_indices, i)
-            else:
-                indicator_indexes = scored_indices
-
-            flow_problem += self.backend.NonZeroIndicator(
-                F,
-                indexes=indicator_indexes,
-                tolerance=self.eps,
-                suffix_pos=suffix_pos,
-                suffix_neg=suffix_neg,
-            )
-
-            sample_active = flow_problem.expr[f"{F.name}{suffix_neg}"] + flow_problem.expr[f"{F.name}{suffix_pos}"]
-
-            # Split into highly and lowly expressed reactions
+            # Agreement binaries are separate from network selection.
+            sample_indexes = (scored_indices, i) if n_samples > 1 and len(F.shape) > 1 else scored_indices
+            sample_flux = F[sample_indexes]
+            lower = F.lb[sample_indexes]
+            upper = F.ub[sample_indexes]
             idx_pos = np.where(scored_weights > 0)[0]
             idx_neg = np.where(scored_weights < 0)[0]
-            if self.use_bigm_constraints:
-                if n_samples > 1 and len(unblocked.shape) > 1:
-                    unblocked_sample = unblocked[scored_indices, i]
-                else:
-                    unblocked_sample = unblocked[scored_indices]
-                flow_problem += sample_active <= unblocked_sample
-            else:
-                unblocked_sample = sample_active
-
-            # Add objectives for highly expressed reactions
             sample_name_str = str(sample_name).replace(" ", "_")
 
             if len(idx_pos) > 0:
-                pos_weights = scored_weights[idx_pos]
+                positive_indices = scored_indices[idx_pos]
+                indexes = (positive_indices, i) if n_samples > 1 and len(F.shape) > 1 else positive_indices
+                agreement_name = f"imat_agreement_s{i}"
+                flow_problem += self.backend.ThresholdIndicator(
+                    F,
+                    indexes=indexes,
+                    epsilon=self.eps,
+                    name=agreement_name,
+                    positive_name=f"{F.name}_ipos_s{i}",
+                    negative_name=f"{F.name}_ineg_s{i}",
+                )
+                agreement = flow_problem.expr[agreement_name]
+                if unblocked is not None:
+                    flow_problem += agreement <= unblocked[indexes]
                 flow_problem.add_objective(
-                    pos_weights @ (1 - sample_active[idx_pos]),
+                    scored_weights[idx_pos] @ (1 - agreement),
                     name=f"imat_fit_pos_{sample_name_str}_{i}",
                 )
 
-            # Add objectives for lowly expressed reactions
             if len(idx_neg) > 0:
-                neg_weights = scored_weights[idx_neg]
+                negative_indices = scored_indices[idx_neg]
+                indexes = (negative_indices, i) if n_samples > 1 and len(F.shape) > 1 else negative_indices
                 if self.use_bigm_constraints:
-                    # 1 if the reactions is unblocked (can have positive/negative flux)
-                    flow_problem.add_objective(
-                        np.abs(neg_weights) @ unblocked_sample[idx_neg],
-                        name=f"imat_fit_neg_{sample_name_str}_{i}",
-                    )
+                    if unblocked is not None:
+                        mismatch = unblocked[indexes]
+                    else:
+                        indicator_name = f"imat_unblocked_s{i}"
+                        flow_problem += self.backend.Indicator(F, indexes=indexes, name=indicator_name)
+                        mismatch = flow_problem.expr[indicator_name]
                 else:
-                    flow_problem.add_objective(
-                        np.abs(neg_weights) @ sample_active[idx_neg],
-                        name=f"imat_fit_neg_{sample_name_str}_{i}",
+                    # Preserve the approximate-zero option: declining inactivity
+                    # permits the original range, earning it permits |v| <= eps.
+                    mismatch = self.backend.Variable(
+                        f"imat_mismatch_s{i}", (len(idx_neg),), 0, 1, vartype=VarType.BINARY
                     )
+                    flow_problem += sample_flux[idx_neg] >= -self.eps + mismatch.multiply(lower[idx_neg] + self.eps)
+                    flow_problem += sample_flux[idx_neg] <= self.eps + mismatch.multiply(upper[idx_neg] - self.eps)
+                flow_problem.add_objective(
+                    np.abs(scored_weights[idx_neg]) @ mismatch,
+                    name=f"imat_fit_neg_{sample_name_str}_{i}",
+                )
 
         return flow_problem
 

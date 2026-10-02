@@ -183,7 +183,7 @@ class Method(ABC):
         self.problem = self.create_problem(self.processed_graph, self.processed_data)
 
         # Add structured sparsity regularization if needed.
-        if not self.disable_structured_sparsity:
+        if not self.disable_structured_sparsity and self.lambda_reg_param.value > 0:
             if self._reg_varname is not None:
                 reg_var = self.problem.expr[self._reg_varname]
                 newvar_name = self._reg_varname + self._reg_varname_suffix

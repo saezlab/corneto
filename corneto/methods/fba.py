@@ -264,7 +264,8 @@ class MultiSampleFBA(FlowMethod):
         """
         # The flow_problem is already created in the parent class
         F = flow_problem.expr.flow
-        flow_problem += self.backend.Indicator(F, name=self.flux_indicator_name)
+        if self._requires_flux_indicators():
+            flow_problem += self.backend.Indicator(F, name=self.flux_indicator_name)
 
         for i, (sample_name, sample_data) in enumerate(data.samples.items()):
             rxn_objectives = []
@@ -304,6 +305,9 @@ class MultiSampleFBA(FlowMethod):
                 )
 
         return flow_problem
+
+    def _requires_flux_indicators(self):
+        return True
 
     @staticmethod
     def references():
