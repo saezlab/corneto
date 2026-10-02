@@ -64,7 +64,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'api/generated/corneto.methods.MultiSampleIMAT';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.22.0';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1790873221';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1790947616';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'stable';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
@@ -544,7 +544,8 @@ flux while minimizing the number of lowly expressed reactions carrying flux.</p>
 Higher values encourage fewer active reactions. Defaults to 1e-3.</p></li>
 <li><p><strong>beta_reg</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Secondary regularization parameter for sparsity.
 Used when both types of regularization are needed. Defaults to 0.0.</p></li>
-<li><p><strong>eps</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Tolerance for considering a flux as non-zero.
+<li><p><strong>eps</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Minimum flux magnitude earning a high-expression
+agreement reward; smaller flux remains feasible without that reward.
 Defaults to 1e-2.</p></li>
 <li><p><strong>scale</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) – If True, normalize the nonzero iMAT score
 weights independently for each condition so their absolute values

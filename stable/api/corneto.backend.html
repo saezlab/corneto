@@ -64,7 +64,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'api/corneto.backend';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.22.0';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1790873221';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://corneto.org/switcher.json?ts=1790947616';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'stable';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
@@ -644,7 +644,7 @@ Defaults to VarType.CONTINUOUS.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="corneto.backend.Backend.TotalVariation">
-<span class="sig-name descname"><span class="pre">TotalVariation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">pairs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.backend.Backend.TotalVariation" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">TotalVariation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">pairs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exact</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.backend.Backend.TotalVariation" title="Link to this definition">#</a></dt>
 <dd><p>Build an entrywise graph total-variation expression.</p>
 <p><code class="docutils literal notranslate"><span class="pre">X</span></code> must be a nonempty, real affine vector or matrix expression
 created by this backend. Continuous, integer, and binary expressions
@@ -659,7 +659,9 @@ registered expressions for the signed differences, absolute bounds,
 per-pair variation, and weighted total variation. Add its total
 variation expression to an objective or constrain it explicitly; no
 objective is added automatically. The total scales linearly with the
-magnitude of <code class="docutils literal notranslate"><span class="pre">X</span></code> and the number of rows summed for each pair.</p>
+magnitude of <code class="docutils literal notranslate"><span class="pre">X</span></code> and the number of rows summed for each pair.
+With <code class="docutils literal notranslate"><span class="pre">exact=True</span></code>, binary inputs use exact XOR magnitudes, including
+when maximizing variation or when a pair has zero weight.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -675,6 +677,12 @@ finite, nonnegative real weight per pair. Defaults to unit
 weights. Scalars are rejected.</p></li>
 <li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – Optional stable expression-name prefix. If omitted, a
 unique prefix is generated.</p></li>
+<li><p><strong>exact</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If true, require binary inputs and enforce exact absolute
+differences independently of the objective. Binary variables
+are used directly; affine expressions are linked to auxiliary
+binary selectors, constraining every entry of X to zero or
+one. Nonbinary symbols are rejected. Defaults to false, which
+retains the continuous absolute-value bound formulation.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -882,6 +890,39 @@ maximum number of parents can be different for each node. Default is None.</p></
 <li><p><strong>indexes</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.14)"><em>Tuple</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><em>List</em></a><em> | </em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><em>ndarray</em></a><em> | </em><em>None</em>)</p></li>
 <li><p><strong>suffix</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>)</p></li>
 <li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>ProblemDef</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="corneto.backend.Backend.ThresholdIndicator">
+<span class="sig-name descname"><span class="pre">ThresholdIndicator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">V</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">indexes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positive_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">negative_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#corneto.backend.Backend.ThresholdIndicator" title="Link to this definition">#</a></dt>
+<dd><p>Create optional positive and negative threshold implications.</p>
+<p>A positive binary equal to one requires the bounded value to be at
+least <code class="docutils literal notranslate"><span class="pre">epsilon</span></code>. A negative binary equal to one requires it to be
+at most <code class="docutils literal notranslate"><span class="pre">-epsilon</span></code>. When both binaries are zero, the original bounds
+remain available, including values between the thresholds. Reaching
+a threshold does not require its binary to be one.</p>
+<p><code class="docutils literal notranslate"><span class="pre">epsilon</span></code> must be finite and positive, and may be an array
+broadcastable to the selected value shape. A vector of thresholds
+also accepts a backend’s single-column representation of a vector.
+The returned problem registers the sum of the mutually exclusive binaries under <code class="docutils literal notranslate"><span class="pre">name</span></code>
+(default <code class="docutils literal notranslate"><span class="pre">&lt;variable&gt;_threshold</span></code>), with directional symbols named
+<code class="docutils literal notranslate"><span class="pre">&lt;name&gt;_positive</span></code> and <code class="docutils literal notranslate"><span class="pre">&lt;name&gt;_negative</span></code> unless explicitly supplied.
+Implications use linear constraints derived from the finite bounds.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>V</strong> (<em>CSymbol</em>)</p></li>
+<li><p><strong>indexes</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#slice" title="(in Python v3.14)"><em>slice</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.14)"><em>Tuple</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><em>List</em></a><em> | </em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><em>ndarray</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>epsilon</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><em>List</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>] </em><em>| </em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><em>ndarray</em></a>)</p></li>
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>positive_name</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>negative_name</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -1329,7 +1370,7 @@ shape <code class="docutils literal notranslate"><span class="pre">(R,</span> <s
 size of the other axis, or one for a vector. When <code class="docutils literal notranslate"><span class="pre">name</span></code> is omitted, a
 unique prefix is generated. Explicit prefixes should be distinct in a
 composed problem. No objective is added automatically.</p>
-<p>The primitive adds continuous variables <code class="docutils literal notranslate"><span class="pre">D</span></code> and constraints
+<p>By default (<code class="docutils literal notranslate"><span class="pre">exact=False</span></code>), the primitive adds continuous variables <code class="docutils literal notranslate"><span class="pre">D</span></code> and constraints
 <code class="docutils literal notranslate"><span class="pre">D</span> <span class="pre">&gt;=</span> <span class="pre">difference</span></code> and <code class="docutils literal notranslate"><span class="pre">D</span> <span class="pre">&gt;=</span> <span class="pre">-difference</span></code> with <code class="docutils literal notranslate"><span class="pre">D</span> <span class="pre">&gt;=</span> <span class="pre">0</span></code>. Thus the
 registered total variation is an upper bound until an objective or another
 constraint tightens <code class="docutils literal notranslate"><span class="pre">D</span></code>; <code class="docutils literal notranslate"><span class="pre">X</span></code> does not need variable bounds. A positive
@@ -1345,6 +1386,31 @@ to be piecewise constant. Its scale depends on the magnitude and units of
 <code class="docutils literal notranslate"><span class="pre">X</span></code>, the number of entries summed across the other axis, and the chosen
 weights; multiplying <code class="docutils literal notranslate"><span class="pre">X</span></code> by a scalar multiplies the variation by its
 absolute value.</p>
+<p>For binary selections, <code class="docutils literal notranslate"><span class="pre">exact=True</span></code> makes every absolute difference equal
+to the pairwise XOR, independently of the objective and including zero-weight
+pairs. Binary variables are accepted directly. Affine expressions (including
+slices and sums of selection indicators) are linked to auxiliary binary
+selectors, explicitly restricting every input entry to zero or one. Nonbinary
+symbols are rejected; this mode does not compute exact absolute values for
+general continuous or integer inputs.</p>
+<p>For binary endpoints <code class="docutils literal notranslate"><span class="pre">a</span></code> and <code class="docutils literal notranslate"><span class="pre">b</span></code>, exact mode adds <code class="docutils literal notranslate"><span class="pre">D</span> <span class="pre">&lt;=</span> <span class="pre">a</span> <span class="pre">+</span> <span class="pre">b</span></code> and
+<code class="docutils literal notranslate"><span class="pre">D</span> <span class="pre">&lt;=</span> <span class="pre">2</span> <span class="pre">-</span> <span class="pre">a</span> <span class="pre">-</span> <span class="pre">b</span></code> to the usual lower bounds. These force
+<code class="docutils literal notranslate"><span class="pre">D</span> <span class="pre">=</span> <span class="pre">abs(a</span> <span class="pre">-</span> <span class="pre">b)</span></code> while keeping <code class="docutils literal notranslate"><span class="pre">D</span></code> continuous. The registered names and
+shapes are unchanged. This permits maximizing switch counts or imposing a
+lower bound on switching. For example, after constraining the union size to
+its previously obtained optimum, use the following as the diagnostic’s sole
+objective (CORNETO minimizes by default):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">tv</span> <span class="o">=</span> <span class="n">backend</span><span class="o">.</span><span class="n">TotalVariation</span><span class="p">(</span>
+    <span class="n">selected</span><span class="p">,</span>
+    <span class="n">pairs</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)],</span>
+    <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">exact</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"switches"</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">problem</span> <span class="o">+=</span> <span class="n">tv</span>
+<span class="n">problem</span><span class="o">.</span><span class="n">add_objective</span><span class="p">(</span><span class="o">-</span><span class="n">tv</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">switches_total_variation</span><span class="p">)</span>
+</pre></div>
+</div>
 <p>For a continuous expression whose rows represent signals over three ordered
 conditions, connect adjacent columns and add the variation penalty to any
 existing model objective:</p>
@@ -1439,6 +1505,7 @@ and add a budget instead of adding an objective:</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.Backend.Acyclic"><code class="docutils literal notranslate"><span class="pre">Backend.Acyclic</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.Backend.AcyclicFlow"><code class="docutils literal notranslate"><span class="pre">Backend.AcyclicFlow</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.Backend.Indicator"><code class="docutils literal notranslate"><span class="pre">Backend.Indicator</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.Backend.ThresholdIndicator"><code class="docutils literal notranslate"><span class="pre">Backend.ThresholdIndicator</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.Backend.ExactSupport"><code class="docutils literal notranslate"><span class="pre">Backend.ExactSupport</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.Backend.SelectedFlow"><code class="docutils literal notranslate"><span class="pre">Backend.SelectedFlow</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corneto.backend.Backend.NonZeroIndicator"><code class="docutils literal notranslate"><span class="pre">Backend.NonZeroIndicator</span></code></a></li>
