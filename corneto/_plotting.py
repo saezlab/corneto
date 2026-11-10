@@ -7,6 +7,7 @@ import numpy as np
 
 from corneto.backend._base import EXPR_NAME_FLOW
 from corneto.graph import Attr, BaseGraph, EdgeType
+from corneto.plotting.signaling import BIOLOGY_THEME, biology_signaling_style
 
 Theme = Dict[str, Any]
 ProcessorOutput = Tuple[Dict[int, Dict[str, str]], Dict[Union[int, str], Dict[str, str]]]
@@ -21,6 +22,7 @@ ProcessorArg = Optional[
 ]
 
 _THEMES: Dict[str, Theme] = {
+    "signaling_biology": BIOLOGY_THEME,
     "default": {
         "positive_color": "firebrick4",
         "negative_color": "dodgerblue4",
@@ -38,14 +40,14 @@ _THEMES: Dict[str, Theme] = {
 }
 
 
-def _resolve_theme(theme: Optional[Union[str, Theme]]) -> Theme:
+def _resolve_theme(theme: Optional[Union[str, Theme]], default: str = "default") -> Theme:
     if theme is None:
-        return dict(_THEMES["default"])
+        return dict(_THEMES[default])
     if isinstance(theme, str):
         if theme not in _THEMES:
             raise ValueError(f"Unknown theme '{theme}'. Available themes: {list(_THEMES.keys())}")
         return dict(_THEMES[theme])
-    out = dict(_THEMES["default"])
+    out = dict(_THEMES[default])
     out.update(theme)
     return out
 
@@ -203,12 +205,27 @@ def _processor_vertex_attribute_style(graph: BaseGraph, data: Dict[str, Any], th
 
 
 _PROCESSORS: Dict[str, ProcessorFn] = {
+    "signaling_biology": biology_signaling_style,
     "sign_magnitude": _processor_sign_magnitude,
     "metabolism_flux": _processor_metabolism_flux,
     "vertex_attribute_style": _processor_vertex_attribute_style,
 }
 
-_PRESETS: Dict[str, Dict[str, str]] = {
+_PRESETS: Dict[str, Dict[str, Any]] = {
+    "signaling_biology": {
+        "theme": "signaling_biology",
+        "processor": "signaling_biology",
+        "graph_attr": {"rankdir": "TB", "bgcolor": "white", "nodesep": "0.3", "ranksep": "0.5"},
+        "node_attr": {
+            "fixedsize": "false",
+            "fontname": "Helvetica",
+            "fontsize": "10",
+            "fontcolor": "#222222",
+            "margin": "0.10,0.06",
+            "height": "0.35",
+        },
+        "edge_attr": {"fontname": "Helvetica", "fontsize": "9"},
+    },
     # Preferred names
     "default": {"theme": "default", "processor": "sign_magnitude"},
     "signaling": {"theme": "default", "processor": "sign_magnitude"},
@@ -502,6 +519,7 @@ def _plot_with_networkx(graph: BaseGraph, **kwargs) -> Any:
         "rectangle": "s",
         "square": "s",
         "diamond": "D",
+        "hexagon": "h",
         "triangle": "^",
         "point": ".",
         "circle": "o",
@@ -601,6 +619,7 @@ def plot_graph(graph: BaseGraph, renderer: str = "auto", **kwargs) -> Any:
     sample = kwargs.pop("sample", None)
     role_key = kwargs.pop("role_key", "role")
 
+    preset_cfg = {}
     if preset is not None:
         if preset not in _PRESETS:
             raise ValueError(f"Unknown preset '{preset}'. Available presets: {list(_PRESETS.keys())}")
@@ -609,9 +628,12 @@ def plot_graph(graph: BaseGraph, renderer: str = "auto", **kwargs) -> Any:
             theme_arg = preset_cfg["theme"]
         if processor_arg is None:
             processor_arg = preset_cfg["processor"]
+        for attr_name in ("graph_attr", "node_attr", "edge_attr"):
+            if attr_name in preset_cfg:
+                kwargs[attr_name] = {**preset_cfg[attr_name], **(kwargs.get(attr_name) or {})}
 
     preset_solution_map = None
-    if preset in ("simple", "default", "signaling"):
+    if preset in ("simple", "default", "signaling", "signaling_biology"):
         preset_solution_map = {"vertex": "vertex_value", "edge": "edge_value"}
     elif preset in ("metabolism_flux", "metabolism"):
         preset_solution_map = {"flux": EXPR_NAME_FLOW}
@@ -630,7 +652,7 @@ def plot_graph(graph: BaseGraph, renderer: str = "auto", **kwargs) -> Any:
 
     processors = _resolve_processors(processor_arg)
     if processors:
-        theme = _resolve_theme(theme_arg)
+        theme = _resolve_theme(theme_arg, default=preset_cfg.get("theme", "default"))
         for processor in processors:
             proc_edge_attr, proc_vertex_attr = processor(graph, data, theme)
             kwargs["custom_edge_attr"] = _merge_attrs(proc_edge_attr, kwargs.get("custom_edge_attr"))

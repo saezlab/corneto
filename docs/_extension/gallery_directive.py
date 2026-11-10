@@ -10,13 +10,14 @@ but might be abstracted into a standalone package if it proves useful.
 """
 
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, ClassVar, Dict, List
 
 from docutils import nodes
 from docutils.parsers.rst import directives
 from sphinx.application import Sphinx
 from sphinx.util import logging
 from sphinx.util.docutils import SphinxDirective
+from sphinx_design import cards
 from yaml import safe_load
 
 logger = logging.getLogger(__name__)
@@ -48,7 +49,7 @@ class GalleryDirective(SphinxDirective):
     required_arguments = 0
     optional_arguments = 1
     final_argument_whitespace = True
-    option_spec = {
+    option_spec: ClassVar[Dict[str, Any]] = {
         # A class to be added to the resulting container
         "grid-columns": directives.unchanged,
         "class-container": directives.unchanged,
@@ -56,6 +57,7 @@ class GalleryDirective(SphinxDirective):
     }
 
     def run(self) -> List[nodes.Node]:
+        """Build a gallery grid from YAML content."""
         if self.arguments:
             # If an argument is given, assume it's a path to a YAML file
             # Parse it and load it into the directive content
@@ -98,7 +100,10 @@ class GalleryDirective(SphinxDirective):
             # Grid card content
             content_str = ""
             if "header" in item:
-                content_str += f"{item['header']}\n\n^^^\n\n"
+                if hasattr(cards, "CardHeaderDirective"):
+                    content_str += f"```{{card-header}}\n{item['header']}\n```\n\n"
+                else:
+                    content_str += f"{item['header']}\n\n^^^\n\n"
 
             if "image" in item:
                 content_str += f"![Gallery image]({item['image']})\n\n"
@@ -107,7 +112,10 @@ class GalleryDirective(SphinxDirective):
                 content_str += f"{item['content']}\n\n"
 
             if "footer" in item:
-                content_str += f"+++\n\n{item['footer']}\n\n"
+                if hasattr(cards, "CardFooterDirective"):
+                    content_str += f"```{{card-footer}}\n{item['footer']}\n```\n\n"
+                else:
+                    content_str += f"+++\n\n{item['footer']}\n\n"
 
             title = item.get("title", "")
             content_str += "\n"
