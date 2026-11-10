@@ -11,35 +11,13 @@ from corneto.methods.shortest_path import (
     solve_shortest_path,
 )
 
-REVERSE_FLOW_BUG = pytest.mark.xfail(
-    strict=True,
-    reason="Shortest-path builders impose nonnegative flow on undirected edges.",
-)
-
 EDGE_CASES = [
     pytest.param(EdgeType.DIRECTED, False, id="directed"),
     pytest.param(EdgeType.UNDIRECTED, False, id="undirected-forward"),
-    pytest.param(EdgeType.UNDIRECTED, True, marks=REVERSE_FLOW_BUG, id="undirected-reverse"),
+    pytest.param(EdgeType.UNDIRECTED, True, id="undirected-reverse"),
     pytest.param(None, False, id="mixed-forward"),
-    pytest.param(None, True, marks=REVERSE_FLOW_BUG, id="mixed-reverse"),
+    pytest.param(None, True, id="mixed-reverse"),
 ]
-
-
-def _mark_picos_single_path_bug(backend, request):
-    if str(backend) == "PICOS":
-        request.applymarker(
-            pytest.mark.xfail(
-                strict=True,
-                raises=TypeError,
-                reason="Single-path objective uses a vector matmul unsupported by PICOS.",
-            )
-        )
-
-
-@pytest.fixture
-def single_path_backend(backend, request):
-    _mark_picos_single_path_bug(backend, request)
-    return backend
 
 
 def _weighted_graph(edge_type, reverse):
@@ -74,10 +52,10 @@ def _assert_cost(problem, graph, expected, weights=None):
 
 @pytest.mark.parametrize(("edge_type", "reverse"), EDGE_CASES)
 @pytest.mark.parametrize("integral_path", [False, True], ids=["lp", "integral"])
-def test_shortest_path_weighted_edge_types(single_path_backend, edge_type, reverse, integral_path):
+def test_shortest_path_weighted_edge_types(backend, edge_type, reverse, integral_path):
     graph = _weighted_graph(edge_type, reverse)
     original = graph.to_dict()
-    problem, flow_graph = shortest_path(graph, "A", "D", integral_path=integral_path, backend=single_path_backend)
+    problem, flow_graph = shortest_path(graph, "A", "D", integral_path=integral_path, backend=backend)
     problem.solve()
 
     _assert_cost(problem, flow_graph, [3])
@@ -87,9 +65,9 @@ def test_shortest_path_weighted_edge_types(single_path_backend, edge_type, rever
 
 
 @pytest.mark.parametrize(("edge_type", "reverse"), EDGE_CASES)
-def test_solve_shortest_path_selects_original_edges(single_path_backend, edge_type, reverse):
+def test_solve_shortest_path_selects_original_edges(backend, edge_type, reverse):
     graph = _weighted_graph(edge_type, reverse)
-    edges, problem, flow_graph = solve_shortest_path(graph, "A", "D", backend=single_path_backend)
+    edges, problem, flow_graph = solve_shortest_path(graph, "A", "D", backend=backend)
 
     _assert_cost(problem, flow_graph, [3])
     assert set(edges[edges < graph.num_edges]) == {1, 2, 3}
@@ -109,9 +87,7 @@ def test_multisample_shortest_path_weighted_edge_types(backend, edge_type, rever
 
 
 @pytest.mark.parametrize("method", ["builder", "solve", "multisample"])
-def test_shortest_path_custom_weights_override_attributes(backend, method, request):
-    if method != "multisample":
-        _mark_picos_single_path_bug(backend, request)
+def test_shortest_path_custom_weights_override_attributes(backend, method):
     graph = _weighted_graph(EdgeType.DIRECTED, False)
     # Attribute weights favor A-C-B-D; explicit weights favor A-B-D.
     weights = np.array([1, 8, 8, 1, 9])
@@ -151,15 +127,7 @@ def test_multisample_shortest_path_uses_condition_specific_weights(backend):
     assert set(np.flatnonzero(np.abs(flow[: graph.num_edges, 1]) > 0.5)) == {0, 3}
 
 
-def test_multisample_shortest_path_accepts_one_condition(backend, request):
-    if str(backend) == "CVXPY":
-        request.applymarker(
-            pytest.mark.xfail(
-                strict=True,
-                raises=IndexError,
-                reason="One condition creates a vector flow but the multisample builder indexes it as a matrix.",
-            )
-        )
+def test_multisample_shortest_path_accepts_one_condition(backend):
     graph = _weighted_graph(EdgeType.DIRECTED, False)
     problem, flow_graph = create_multisample_shortest_path(graph, [("A", "D")], backend=backend)
     problem.solve()
@@ -181,7 +149,7 @@ def _reported_graph(reverse_middle):
         pytest.param("A", "B", 1, False, id="FD-A-B"),
         pytest.param("A", "F", 3, False, id="FD-A-F"),
         pytest.param("A", "D", 2, False, id="FD-A-D"),
-        pytest.param("B", "F", 2, False, marks=REVERSE_FLOW_BUG, id="FD-B-F"),
+        pytest.param("B", "F", 2, False, id="FD-B-F"),
         pytest.param("B", "D", 1, False, id="FD-B-D"),
         pytest.param("F", "D", 1, False, id="FD-F-D"),
         pytest.param("A", "B", 1, True, id="DF-A-B"),
@@ -189,19 +157,18 @@ def _reported_graph(reverse_middle):
         pytest.param("A", "D", 2, True, id="DF-A-D"),
         pytest.param("B", "F", 2, True, id="DF-B-F"),
         pytest.param("B", "D", 1, True, id="DF-B-D"),
-        pytest.param("F", "D", 1, True, marks=REVERSE_FLOW_BUG, id="DF-F-D"),
+        pytest.param("F", "D", 1, True, id="DF-F-D"),
     ],
 )
-def test_solve_shortest_path_reported_endpoint_ordering(single_path_backend, source, target, expected, reverse_middle):
+def test_solve_shortest_path_reported_endpoint_ordering(backend, source, target, expected, reverse_middle):
     graph = _reported_graph(reverse_middle)
-    edges, problem, flow_graph = solve_shortest_path(graph, source, target, backend=single_path_backend)
+    edges, problem, flow_graph = solve_shortest_path(graph, source, target, backend=backend)
 
     _assert_cost(problem, flow_graph, [expected])
     # Both equally short A-F paths are valid; do not depend on the solver's tie breaking.
     assert len(edges[edges < graph.num_edges]) == expected
 
 
-@REVERSE_FLOW_BUG
 @pytest.mark.parametrize("reverse_middle", [False, True], ids=["FD", "DF"])
 def test_multisample_shortest_path_opposite_traversals(backend, reverse_middle):
     graph = _reported_graph(reverse_middle)
@@ -213,30 +180,114 @@ def test_multisample_shortest_path_opposite_traversals(backend, reverse_middle):
     assert np.allclose(flow[5, :], [1, -1] if reverse_middle else [-1, 1])
 
 
-@pytest.mark.xfail(
-    strict=True,
-    raises=TypeError,
-    reason="The solve wrapper converts None to an array before checking whether a solution exists.",
-)
-def test_solve_shortest_path_unreachable_target(single_path_backend):
+def test_solve_shortest_path_unreachable_target(backend):
     graph = Graph()
     graph.add_edge("A", "B", weight=1)
     graph.add_vertex("C")
 
     with pytest.raises(ValueError, match="No solution"):
-        solve_shortest_path(graph, "A", "C", backend=single_path_backend)
+        solve_shortest_path(graph, "A", "C", backend=backend)
 
 
-@pytest.mark.parametrize("method", ["single", "multisample"])
-def test_unregularized_shortest_path_has_no_integer_variables(backend, method, request):
+def test_solve_shortest_path_missing_solver_values(backend, monkeypatch):
+    graph = Graph()
+    graph.add_edge("A", "B", weight=1)
+    # An interrupted solve can leave values unset even on a connected graph.
+    monkeypatch.setattr(backend, "_solve", lambda *args, **kwargs: None)
+    with pytest.raises(ValueError, match="No solution"):
+        solve_shortest_path(graph, "A", "B", backend=backend)
+
+
+def test_solve_shortest_path_identical_terminals(backend):
+    graph = Graph()
+    graph.add_vertex("A")
+    edges, problem, flow_graph = solve_shortest_path(graph, "A", "A", backend=backend)
+
+    assert set(edges) == {0, 1}  # Only the two boundary edges; the biological path is empty.
+    _assert_cost(problem, flow_graph, [0])
+
+
+@pytest.mark.parametrize("method", ["single", "single-default", "multisample"])
+def test_unregularized_shortest_path_has_no_integer_variables(backend, method):
     graph = _weighted_graph(EdgeType.DIRECTED, False)
     if method == "single":
-        _mark_picos_single_path_bug(backend, request)
         problem, _ = shortest_path(graph, "A", "D", integral_path=False, backend=backend)
+    elif method == "single-default":
+        problem, _ = shortest_path(graph, "A", "D", backend=backend)
     else:
         problem, _ = create_multisample_shortest_path(graph, [("A", "D"), ("C", "D")], backend=backend)
 
     assert all(symbol._vartype == VarType.CONTINUOUS for symbol in problem.symbols.values())
+
+
+@pytest.mark.parametrize("zero_cost", [False, True], ids=["weighted-tie", "zero-cost-tie"])
+def test_solve_shortest_path_extracts_fractional_tie_without_integer_solve(backend, monkeypatch, zero_cost):
+    graph = Graph()
+    for source, target in [("C", "A"), ("C", "D"), ("A", "B"), ("B", "D")]:
+        graph.add_edge(source, target, type=EdgeType.UNDIRECTED, weight=10)
+    weights = np.zeros(4) if zero_cost else np.array([2, 1, 1, 2])
+    solve = backend._solve
+    calls = []
+
+    def solve_fractional_optimum(problem, **kwargs):
+        calls.append(problem)
+        assert all(symbol._vartype == VarType.CONTINUOUS for symbol in problem.symbols.values())
+        # Force a feasible mixture of the two optimal paths rather than relying
+        # on a particular solver algorithm or its tie breaking.
+        problem += problem.expr.flow[:4] == np.array([-0.5, 0.5, 0.5, 0.5])
+        return solve(problem, **kwargs)
+
+    monkeypatch.setattr(backend, "_solve", solve_fractional_optimum)
+    edges, problem, flow_graph = solve_shortest_path(graph, "A", "D", edge_weights=weights, backend=backend)
+
+    assert len(calls) == 1
+    assert set(edges[edges < graph.num_edges]) in ({0, 1}, {2, 3})
+    assert np.allclose(np.asarray(problem.expr.flow.value).reshape(-1)[:4], [-0.5, 0.5, 0.5, 0.5])
+    assert np.isclose(weights[edges[edges < graph.num_edges]].sum(), 0 if zero_cost else 3)
+    assert flow_graph.num_edges == graph.num_edges + 2
+
+
+def test_solve_shortest_path_discards_zero_cost_circulation(backend, monkeypatch):
+    graph = Graph()
+    for source, target, weight in [("A", "B", 1), ("B", "D", 1), ("B", "C", 0), ("C", "B", 0)]:
+        graph.add_edge(source, target, weight=weight)
+    solve = backend._solve
+
+    def solve_with_circulation(problem, **kwargs):
+        problem += problem.expr.flow[:4] == np.array([1, 1, 0.5, 0.5])
+        return solve(problem, **kwargs)
+
+    monkeypatch.setattr(backend, "_solve", solve_with_circulation)
+    edges, problem, flow_graph = solve_shortest_path(graph, "A", "D", backend=backend)
+
+    assert set(edges[edges < graph.num_edges]) == {0, 1}
+    _assert_cost(problem, flow_graph, [2])
+
+
+def test_shortest_path_reuses_augmented_graph_with_custom_weights(backend):
+    graph = _weighted_graph(None, True)
+    _, flow_graph = shortest_path(graph, "A", "D", backend=backend)
+    # Select the path that requires reverse traversal, overriding attributes.
+    weights = np.array([8, 1, 1, 1, 9, 0.1, 0, 0])
+    problem, reused = shortest_path(
+        flow_graph, "A", "D", edge_weights=weights, create_flow_graph=False, backend=backend
+    )
+    problem.solve()
+
+    assert reused is flow_graph
+    _assert_cost(problem, flow_graph, [3], weights)
+
+
+@pytest.mark.parametrize("method", ["single", "multisample"])
+@pytest.mark.parametrize("weight", [-1, np.inf, np.nan])
+def test_shortest_path_rejects_invalid_costs(backend, method, weight):
+    graph = Graph()
+    graph.add_edge("A", "B", weight=weight)
+    with pytest.raises(ValueError, match="finite, nonnegative"):
+        if method == "single":
+            shortest_path(graph, "A", "B", backend=backend)
+        else:
+            create_multisample_shortest_path(graph, [("A", "B")], backend=backend)
 
 
 def test_multisample_shortest_path_l0_penalty_shares_edges(backend):
@@ -266,7 +317,6 @@ def test_multisample_shortest_path_l0_penalty_shares_edges(backend):
     assert np.isclose((np.abs(shared_flow) * weights[:, None]).sum(), 4.5)
 
 
-@REVERSE_FLOW_BUG
 def test_multisample_shortest_path_l0_counts_opposite_traversals_once(backend):
     graph = Graph()
     graph.add_edge("A", "B", type=EdgeType.UNDIRECTED, weight=1)
