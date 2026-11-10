@@ -1,0 +1,229 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "working-with-data",
+   "metadata": {},
+   "source": [
+    "(guide-working-with-data)=\n",
+    "# Working with data\n",
+    "\n",
+    "A CORNETO analysis brings together a biological network and experimental observations. The network describes what can interact; the observations describe what was measured in one or more samples or experimental conditions.\n",
+    "\n",
+    "CORNETO represents these observations with the `Data` class. A `Data` object keeps related measurements together, records which sample they belong to, and provides a common data model for CORNETO methods."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "import-corneto",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import corneto as cn"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "data-model",
+   "metadata": {},
+   "source": [
+    "## Samples and features\n",
+    "\n",
+    "A `Data` object contains named samples. Each sample contains features, such as measured proteins, genes, metabolites, or phenotypes. Every feature has three common fields:\n",
+    "\n",
+    "- `id` identifies the measured entity.\n",
+    "- `value` stores its observed value.\n",
+    "- `mapping` says whether the feature corresponds to a network `vertex`, a network `edge`, or is currently mapped to `none`.\n",
+    "\n",
+    "Features can also carry information such as the assay, units, or a biological role. These additional fields are kept with the feature. Their meaning depends on the method that uses the data, so each method documents the fields it requires."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "create-data",
+   "metadata": {},
+   "source": [
+    "## Creating a dataset\n",
+    "\n",
+    "Here we record measurements from untreated cells and cells stimulated with EGF. Protein measurements map to vertices in a network. Cell viability is retained as part of the experiment but is not mapped to the network."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "create-data-code",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "observations = {\n",
+    "    \"untreated\": {\n",
+    "        \"EGFR\": {\"value\": 0.18, \"mapping\": \"vertex\"},\n",
+    "        \"MAPK1\": {\"value\": 0.22, \"mapping\": \"vertex\"},\n",
+    "        \"cell_viability\": {\n",
+    "            \"value\": 0.96, \"mapping\": \"none\", \"assay\": \"phenotype\"\n",
+    "        },\n",
+    "    },\n",
+    "    \"EGF\": {\n",
+    "        \"EGFR\": {\"value\": 0.91, \"mapping\": \"vertex\"},\n",
+    "        \"MAPK1\": {\"value\": 0.84, \"mapping\": \"vertex\"},\n",
+    "        \"cell_viability\": {\n",
+    "            \"value\": 0.94, \"mapping\": \"none\", \"assay\": \"phenotype\"\n",
+    "        },\n",
+    "    },\n",
+    "}\n",
+    "\n",
+    "data = cn.Data.from_cdict(observations)\n",
+    "data"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "inspect-data",
+   "metadata": {},
+   "source": [
+    "The sample names are preserved, and each sample contains its own feature values."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "inspect-samples",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "list(data.samples)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "inspect-features",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "data.samples[\"EGF\"].features"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "query-data",
+   "metadata": {},
+   "source": [
+    "## Querying measurements\n",
+    "\n",
+    "Queries make it possible to select features without changing the original dataset. For example, we can retain only measurements that map to network vertices."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "query-vertices",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "network_measurements = (\n",
+    "    data.query.filter_features(\n",
+    "        lambda feature: feature.mapping == \"vertex\"\n",
+    "    ).collect()\n",
+    ")\n",
+    "network_measurements"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "copy-data",
+   "metadata": {},
+   "source": [
+    "## Copying and extending data\n",
+    "\n",
+    "Use `copy()` when you want to modify a dataset while keeping the original unchanged. Features can then be added to an individual sample."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "copy-data-code",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "extended_data = data.copy()\n",
+    "extended_data.samples[\"EGF\"].add(\n",
+    "    cn.Feature(\n",
+    "        id=\"AKT1\",\n",
+    "        value=0.73,\n",
+    "        mapping=\"vertex\",\n",
+    "        assay=\"phosphoproteomics\",\n",
+    "    )\n",
+    ")\n",
+    "\n",
+    "len(data.samples[\"EGF\"].features), len(extended_data.samples[\"EGF\"].features)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "save-data",
+   "metadata": {},
+   "source": [
+    "## Saving and loading data\n",
+    "\n",
+    "A `Data` object can be saved and loaded without losing sample names, feature values, mappings, or additional annotations."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "save-data-code",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from pathlib import Path\n",
+    "from tempfile import TemporaryDirectory\n",
+    "\n",
+    "with TemporaryDirectory() as directory:\n",
+    "    data_path = Path(directory) / \"experiment.json.xz\"\n",
+    "    data.save(data_path)\n",
+    "    restored_data = cn.Data.load(data_path)\n",
+    "\n",
+    "restored_data.to_dict() == data.to_dict()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "using-data-with-methods",
+   "metadata": {},
+   "source": [
+    "(guide-data-methods)=\n",
+    "## Using data with methods\n",
+    "\n",
+    "`Data` is the general representation used by CORNETO methods. If your observations are already stored as a `Data` object, pass them to the method through `build_from_data`: \n",
+    "\n",
+    "```python\n",
+    "problem = method.build_from_data(network, data)\n",
+    "```\n",
+    "\n",
+    "For common analyses, methods also provide shorter interfaces. `build` accepts the scientific inputs for one condition, while `build_many` accepts inputs for several named conditions:\n",
+    "\n",
+    "```python\n",
+    "problem = method.build(network, ...)\n",
+    "problem = method.build_many(network, ...)\n",
+    "```\n",
+    "\n",
+    "These convenience methods validate their inputs, create the corresponding `Data` object, and then build the optimization problem. The biological meaning and names of the inputs differ between methods, so they are explained in each method's guide."
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "name": "python",
+   "version": "3.12"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

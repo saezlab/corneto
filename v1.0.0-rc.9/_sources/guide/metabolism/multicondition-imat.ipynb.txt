@@ -1,0 +1,620 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "introduction",
+   "metadata": {},
+   "source": [
+    "# Multi-condition gene expression integration\n",
+    "\n",
+    "The [single-condition expression guide](imat.ipynb) showed how iMAT converts expression evidence into reaction-level preferences, while the [Multi-condition FBA guide](multicondition-sfba.ipynb) explained why reaction selection should be performed jointly when shared and context-specific metabolism are the biological quantities of interest.\n",
+    "\n",
+    "This guide combines those ideas without repeating their derivations. Each condition receives its own reaction scores, medium bounds, phenotype constraints, and flux vector. CORNETO then fits the condition-specific expression evidence while selecting one compact reaction union across the complete experiment."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "what-changes",
+   "metadata": {},
+   "source": [
+    "## What changes in the multi-condition formulation?\n",
+    "\n",
+    "`MultiSampleIMAT.build_many` accepts mappings whose first level contains condition names:\n",
+    "\n",
+    "| Input | Condition-specific information |\n",
+    "|---|---|\n",
+    "| `reaction_scores` | Reactions favored active (`+1`), favored inactive (`−1`), or unscored |\n",
+    "| `reaction_bounds` | Medium, perturbations, and required phenotypes |\n",
+    "| `objectives` | Optional reaction objectives |\n",
+    "\n",
+    "Every condition keeps a separate flux vector and a separate expression-fit objective. With `lambda_reg > 0`, a reaction active in one or several conditions contributes once to the union penalty. Reuse is therefore encouraged, but conflicting or condition-specific expression evidence can still select different pathways.\n",
+    "\n",
+    "This is the same union-level coupling introduced in Multi-condition FBA, now applied while every condition also fits its own expression evidence. The joint model does not average expression profiles and does not force equal fluxes. Reaction-level agreement must therefore be inspected alongside the inferred network: an unmatched score can reveal tension between expression, network feasibility, phenotype constraints, and shared regularization."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "load-model",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from contextlib import redirect_stdout\n",
+    "from io import StringIO\n",
+    "\n",
+    "import numpy as np\n",
+    "import pandas as pd\n",
+    "from cobra.io import load_model\n",
+    "\n",
+    "from corneto.io import cobra_model_to_graph\n",
+    "from corneto.methods import MultiSampleIMAT\n",
+    "\n",
+    "with redirect_stdout(StringIO()):\n",
+    "    model = load_model(\"textbook\")\n",
+    "\n",
+    "G = cobra_model_to_graph(model)\n",
+    "reaction_ids = list(G.get_attr_from_edges(\"id\"))\n",
+    "reaction_index = {reaction_id: i for i, reaction_id in enumerate(reaction_ids)}\n",
+    "biomass_id = \"Biomass_Ecoli_core\""
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "biological-question",
+   "metadata": {},
+   "source": [
+    "## Example: aerobic respiration and anaerobic fermentation\n",
+    "\n",
+    "We ask:\n",
+    "\n",
+    "> Which reactions form a shared expression-consistent program for growth on glucose, and which distinguish aerobic respiration from anaerobic ethanol fermentation?\n",
+    "\n",
+    "The example uses two synthetic expression contexts in the *E. coli* core model. Both grow on glucose. Oxygen is available only in the aerobic condition, and biomass is fixed at approximately 60% of the maximum supported by each environment. The fixed phenotypes keep the independent and joint comparisons biologically equivalent.\n",
+    "\n",
+    "We start from reaction scores, the advanced interface introduced at the end of the single-condition guide. In a real workflow these scores could be produced from expression measurements and GPR rules with `evaluate_gpr_expression` or supplied by another curated mapping procedure."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "define-evidence",
+   "metadata": {},
+   "source": [
+    "### Define condition-specific reaction evidence\n",
+    "\n",
+    "The aerobic profile supports respiration and pyruvate oxidation while arguing against fermentation. The anaerobic profile supports ethanol formation while arguing against oxygen-dependent respiration and lactate production.\n",
+    "\n",
+    "To make model–data disagreement visible, the synthetic anaerobic profile deliberately classifies `PFL` as low even though pyruvate-formate lyase provides the route from pyruvate to acetyl-CoA and formate in the selected fermentative state. This controlled conflict lets us distinguish a reaction that is fitted from one that remains active despite low-expression evidence."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "reaction-scores",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "condition_names = [\"glucose aerobic\", \"glucose anaerobic\"]\n",
+    "\n",
+    "reaction_scores = {\n",
+    "    \"glucose aerobic\": {\n",
+    "        \"CYTBD\": 1.0,\n",
+    "        \"NADH16\": 1.0,\n",
+    "        \"PDH\": 1.0,\n",
+    "        \"CS\": 1.0,\n",
+    "        \"ATPS4r\": 1.0,\n",
+    "        \"PFL\": -1.0,\n",
+    "        \"LDH_D\": -1.0,\n",
+    "        \"ACALD\": -1.0,\n",
+    "        \"ALCD2x\": -1.0,\n",
+    "    },\n",
+    "    \"glucose anaerobic\": {\n",
+    "        \"PFL\": -1.0,\n",
+    "        \"ACALD\": 1.0,\n",
+    "        \"ALCD2x\": 1.0,\n",
+    "        \"CYTBD\": -1.0,\n",
+    "        \"NADH16\": -1.0,\n",
+    "        \"PDH\": -1.0,\n",
+    "        \"LDH_D\": -1.0,\n",
+    "    },\n",
+    "}\n",
+    "\n",
+    "score_table = pd.DataFrame(reaction_scores).fillna(0.0)\n",
+    "score_table.index.name = \"reaction\"\n",
+    "score_table"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "define-phenotypes",
+   "metadata": {},
+   "source": [
+    "### Define the media and required phenotypes\n",
+    "\n",
+    "A negative exchange lower bound allows uptake. Biomass is fixed rather than maximized because expression agreement and shared reaction selection are the objectives of this analysis."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "reaction-bounds",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "biomass_targets = {\n",
+    "    \"glucose aerobic\": 0.50,\n",
+    "    \"glucose anaerobic\": 0.12,\n",
+    "}\n",
+    "\n",
+    "reaction_bounds = {\n",
+    "    \"glucose aerobic\": {\n",
+    "        \"EX_glc__D_e\": (-10.0, 1000.0),\n",
+    "        \"EX_o2_e\": (-20.0, 1000.0),\n",
+    "        biomass_id: (biomass_targets[\"glucose aerobic\"], biomass_targets[\"glucose aerobic\"]),\n",
+    "    },\n",
+    "    \"glucose anaerobic\": {\n",
+    "        \"EX_glc__D_e\": (-10.0, 1000.0),\n",
+    "        \"EX_o2_e\": (0.0, 1000.0),\n",
+    "        biomass_id: (biomass_targets[\"glucose anaerobic\"], biomass_targets[\"glucose anaerobic\"]),\n",
+    "    },\n",
+    "}\n",
+    "\n",
+    "pd.DataFrame(\n",
+    "    {\n",
+    "        \"glucose lower bound\": {condition: bounds[\"EX_glc__D_e\"][0] for condition, bounds in reaction_bounds.items()},\n",
+    "        \"oxygen lower bound\": {condition: bounds[\"EX_o2_e\"][0] for condition, bounds in reaction_bounds.items()},\n",
+    "        \"fixed biomass\": biomass_targets,\n",
+    "    }\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "scale-condition-scores",
+   "metadata": {},
+   "source": [
+    "## Balance expression evidence across conditions\n",
+    "\n",
+    "Before coupling conditions, compare their total evidence weight. Without scaling, a condition with more scored reactions or larger score magnitudes contributes more to the joint objective. The shared sparsity penalty can then overwhelm a weakly weighted condition, especially when zero flux is feasible.\n",
+    "\n",
+    "`MultiSampleIMAT(scale=True)` applies L1 normalization independently within each condition:\n",
+    "\n",
+    "$$\n",
+    "\\widetilde{w}_{r,c} = 100\\,\\frac{w_{r,c}}{\\sum_j |w_{j,c}|}.\n",
+    "$$\n",
+    "\n",
+    "The signs and relative weights within a condition are preserved, while the absolute weights sum to `100`. Each condition therefore has the same maximum expression-mismatch budget.\n",
+    "\n",
+    "The value `100` is not mathematically special: normalizing to `1` and dividing `lambda_reg` by `100` would define the same trade-off. A budget of `100` usually keeps individual objective coefficients closer to order one when tens or hundreds of reactions are scored, avoiding unnecessarily tiny coefficients in the MILP.\n",
+    "\n",
+    "Scaling and phenotype constraints solve different problems:\n",
+    "\n",
+    "- **scaling** balances the influence of expression evidence across conditions;\n",
+    "- **phenotype constraints** prevent biologically required conditions from collapsing to a zero or otherwise trivial flux state.\n",
+    "\n",
+    "Use scaling when score ranges or expression coverage differ for technical reasons. Leave scores unscaled when their absolute magnitudes are already comparable and intentionally encode confidence across conditions.\n",
+    "\n",
+    "After scaling, compare the objective scales explicitly. For $R$ model reactions, the expression-mismatch term is bounded by `100` per condition, while the union penalty is bounded by $\\lambda R$. If $\\lambda R$ approaches `100`, sparsity can compete with an entire condition's evidence budget. Collapse can occur earlier because an all-zero condition mismatches only its positive evidence; low-expression evidence already favors zero flux.\n",
+    "\n",
+    "Objective scaling does not correct loose big-M constraints. iMAT activity indicators depend on reaction flux bounds, so finite, biologically meaningful bounds are also important for MILP numerical stability and performance."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "score-weight-comparison",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "eps = 1e-3\n",
+    "lambda_reg = 0.01\n",
+    "activity_tolerance = eps * (1 - eps)\n",
+    "\n",
+    "score_weight_comparison = pd.DataFrame(\n",
+    "    {\n",
+    "        \"unscaled absolute score sum\": score_table.abs().sum(),\n",
+    "        \"absolute score sum with scale=True\": 100.0,\n",
+    "    }\n",
+    ")\n",
+    "score_weight_comparison"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "objective-scale",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "pd.Series(\n",
+    "    {\n",
+    "        \"expression-mismatch budget per condition\": 100.0,\n",
+    "        \"regularization cost per union reaction\": lambda_reg,\n",
+    "        \"maximum union penalty in this model\": lambda_reg * len(reaction_ids),\n",
+    "    },\n",
+    "    name=\"objective scale\",\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "independent-reference",
+   "metadata": {},
+   "source": [
+    "## Independent iMAT as a reference\n",
+    "\n",
+    "We first solve each condition separately with the same small reaction-count penalty used below. These runs fit each expression profile independently and provide the post-hoc union against which the joint analysis will be compared."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "solve-independent",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "independent_fluxes = {}\n",
+    "\n",
+    "for condition in condition_names:\n",
+    "    problem = MultiSampleIMAT(eps=eps, lambda_reg=lambda_reg, scale=True).build(\n",
+    "        G,\n",
+    "        reaction_scores=reaction_scores[condition],\n",
+    "        reaction_bounds=reaction_bounds[condition],\n",
+    "    )\n",
+    "    problem.solve(solver=\"highs\")\n",
+    "    independent_fluxes[condition] = np.asarray(problem.expr.flow.value)\n",
+    "\n",
+    "independent_fluxes = pd.DataFrame(independent_fluxes, index=reaction_ids)\n",
+    "independent_activity = independent_fluxes.abs() > activity_tolerance\n",
+    "\n",
+    "pd.DataFrame(\n",
+    "    {\n",
+    "        \"biomass\": independent_fluxes.loc[biomass_id],\n",
+    "        \"active reactions\": independent_activity.sum(),\n",
+    "    }\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "joint-analysis",
+   "metadata": {},
+   "source": [
+    "## Solve both expression contexts jointly\n",
+    "\n",
+    "The scientific inputs have the same readable structure as the independent calls. `build_many` creates one flux column per named condition, and `lambda_reg` now penalizes their reaction union."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "solve-joint",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "joint_problem = MultiSampleIMAT(\n",
+    "    eps=eps,\n",
+    "    lambda_reg=lambda_reg,\n",
+    "    scale=True,\n",
+    ").build_many(\n",
+    "    G,\n",
+    "    reaction_scores=reaction_scores,\n",
+    "    reaction_bounds=reaction_bounds,\n",
+    ")\n",
+    "joint_problem.solve(solver=\"highs\")\n",
+    "\n",
+    "joint_fluxes = pd.DataFrame(\n",
+    "    np.asarray(joint_problem.expr.flow.value),\n",
+    "    index=reaction_ids,\n",
+    "    columns=condition_names,\n",
+    ")\n",
+    "joint_activity = joint_fluxes.abs() > activity_tolerance\n",
+    "\n",
+    "assert joint_problem.expr.flow.value.shape == (G.num_edges, len(condition_names))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "fit-expression",
+   "metadata": {},
+   "source": [
+    "### Inspect reaction-level expression agreement\n",
+    "\n",
+    "Each condition must reach its fixed biomass. A positive reaction score is fitted when the reaction is active; a negative score is fitted when it is inactive. In the [original iMAT formulation](https://www.nature.com/articles/nbt.1487), these agreements contribute to a discrete consistency score. They are better described as **fits and mismatches** than as continuous residuals."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "fit-summary",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "fit_rows = []\n",
+    "fit_details = []\n",
+    "\n",
+    "for condition in condition_names:\n",
+    "    scores = pd.Series(reaction_scores[condition])\n",
+    "    joint_scored_activity = joint_activity.loc[scores.index, condition]\n",
+    "    independent_scored_activity = independent_activity.loc[scores.index, condition]\n",
+    "    joint_fitted = ((scores > 0) & joint_scored_activity) | ((scores < 0) & ~joint_scored_activity)\n",
+    "    independent_fitted = ((scores > 0) & independent_scored_activity) | (\n",
+    "        (scores < 0) & ~independent_scored_activity\n",
+    "    )\n",
+    "\n",
+    "    for reaction_id in scores.index:\n",
+    "        fit_details.append(\n",
+    "            {\n",
+    "                \"condition\": condition,\n",
+    "                \"reaction\": reaction_id,\n",
+    "                \"reaction score\": scores[reaction_id],\n",
+    "                \"expected\": \"active\" if scores[reaction_id] > 0 else \"inactive\",\n",
+    "                \"joint flux\": joint_fluxes.loc[reaction_id, condition],\n",
+    "                \"joint state\": \"active\" if joint_scored_activity[reaction_id] else \"inactive\",\n",
+    "                \"fitted independently\": bool(independent_fitted[reaction_id]),\n",
+    "                \"fitted jointly\": bool(joint_fitted[reaction_id]),\n",
+    "            }\n",
+    "        )\n",
+    "\n",
+    "    fit_rows.append(\n",
+    "        {\n",
+    "            \"condition\": condition,\n",
+    "            \"biomass\": joint_fluxes.loc[biomass_id, condition],\n",
+    "            \"active reactions\": int(joint_activity[condition].sum()),\n",
+    "            \"evidence fitted\": f\"{int(joint_fitted.sum())}/{len(scores)}\",\n",
+    "            \"not fitted\": int((~joint_fitted).sum()),\n",
+    "        }\n",
+    "    )\n",
+    "\n",
+    "    assert np.isclose(joint_fluxes.loc[biomass_id, condition], biomass_targets[condition])\n",
+    "\n",
+    "fit_summary = pd.DataFrame(fit_rows).set_index(\"condition\")\n",
+    "fit_details = pd.DataFrame(fit_details).set_index([\"reaction\", \"condition\"])\n",
+    "fit_summary"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "fit-matrix-intro",
+   "metadata": {},
+   "source": [
+    "A condition-by-reaction agreement matrix is especially useful in multi-condition analyses. It separates reactions that were not scored from scored reactions that the network could or could not fit."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "fit-matrix",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "all_scored_reactions = score_table.index\n",
+    "fit_matrix = pd.DataFrame(\"not scored\", index=all_scored_reactions, columns=condition_names)\n",
+    "\n",
+    "for (reaction_id, condition), row in fit_details.iterrows():\n",
+    "    fit_matrix.loc[reaction_id, condition] = \"fitted\" if row[\"fitted jointly\"] else \"not fitted\"\n",
+    "\n",
+    "fit_matrix"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "mismatch-interpretation",
+   "metadata": {},
+   "source": [
+    "The mismatch table should be examined before interpreting shared and condition-specific pathways. A reaction mismatched both independently and jointly points to expression–feasibility tension within that condition. A reaction fitted independently but mismatched only in the joint model instead points to a trade-off introduced by shared regularization.\n",
+    "\n",
+    "Expression is evidence about the likelihood of reaction activity, not a measurement of activity or flux. The [original iMAT paper](https://www.nature.com/articles/nbt.1487) reports a central role for post-transcriptional regulation and uses disagreements between expression and predicted activity to generate hypotheses about regulation beyond transcript abundance. Possible mechanisms include protein translation or degradation, phosphorylation and other post-translational effects, and metabolite-level control such as substrate availability and allosteric regulation. A disagreement can also arise from expression thresholds, GPR mapping, missing or incorrect model reactions, medium composition, or an imposed phenotype. iMAT alone cannot distinguish these explanations."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "mismatched-reactions",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "mismatches = fit_details[~fit_details[\"fitted jointly\"]].copy()\n",
+    "\n",
+    "assert list(mismatches.index) == [(\"PFL\", \"glucose anaerobic\")]\n",
+    "assert not mismatches.iloc[0][\"fitted independently\"]\n",
+    "mismatches"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "pfl-mismatch",
+   "metadata": {},
+   "source": [
+    "`PFL` is the only unmatched reaction. It is classified as low but remains active in both the independent and joint anaerobic solutions. This is not caused by cross-condition coupling: under the imposed anaerobic growth phenotype and high ethanol evidence, the selected network uses `PFL` to supply acetyl-CoA and formate.\n",
+    "\n",
+    "In real data, this would be a hypothesis-generating result—not proof that `PFL` is active despite low expression, and not proof of post-translational regulation. The first checks should separate two broad possibilities:\n",
+    "\n",
+    "- **biology not captured by transcript abundance**, including enzyme abundance or modification and metabolite-level regulation;\n",
+    "- **data or model assumptions**, including thresholds, GPR rules, network completeness, medium bounds, and the required phenotype.\n",
+    "\n",
+    "Proteomics, enzyme-activity, metabolomics, or flux measurements are needed to discriminate among these explanations."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "joint-versus-independent",
+   "metadata": {},
+   "source": [
+    "### What did joint inference change?\n",
+    "\n",
+    "The independent solutions are compared only after both optimizations have finished. The joint solution considers reuse while selecting the flux states, producing a smaller union and a larger internally consistent shared set."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "union-comparison",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "independent_union = independent_activity.any(axis=1)\n",
+    "independent_shared = independent_activity.all(axis=1)\n",
+    "joint_union = joint_activity.any(axis=1)\n",
+    "joint_shared = joint_activity.all(axis=1)\n",
+    "\n",
+    "selection_comparison = pd.DataFrame(\n",
+    "    {\n",
+    "        \"shared reactions\": {\n",
+    "            \"independent inference, compared afterward\": int(independent_shared.sum()),\n",
+    "            \"one joint inference\": int(joint_shared.sum()),\n",
+    "        },\n",
+    "        \"reaction union\": {\n",
+    "            \"independent inference, compared afterward\": int(independent_union.sum()),\n",
+    "            \"one joint inference\": int(joint_union.sum()),\n",
+    "        },\n",
+    "    }\n",
+    ")\n",
+    "\n",
+    "assert joint_union.sum() < independent_union.sum()\n",
+    "assert joint_shared.sum() > independent_shared.sum()\n",
+    "selection_comparison"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "usage-patterns",
+   "metadata": {},
+   "source": [
+    "## Shared and condition-specific metabolism\n",
+    "\n",
+    "As in Multi-condition FBA, categories are derived from the joint activity matrix. With two conditions, every reaction in the union is either shared, aerobic-specific, or anaerobic-specific."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "categorize-reactions",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "reaction_groups = pd.Series(\"inactive\", index=reaction_ids, name=\"usage group\")\n",
+    "reaction_groups.loc[joint_shared] = \"shared\"\n",
+    "reaction_groups.loc[joint_activity[\"glucose aerobic\"] & ~joint_activity[\"glucose anaerobic\"]] = (\n",
+    "    \"glucose aerobic only\"\n",
+    ")\n",
+    "reaction_groups.loc[~joint_activity[\"glucose aerobic\"] & joint_activity[\"glucose anaerobic\"]] = (\n",
+    "    \"glucose anaerobic only\"\n",
+    ")\n",
+    "\n",
+    "group_table = (\n",
+    "    reaction_groups[joint_union]\n",
+    "    .groupby(reaction_groups[joint_union], sort=False)\n",
+    "    .agg(\n",
+    "        reactions=\"size\",\n",
+    "        reaction_ids=lambda values: \", \".join(values.index),\n",
+    "    )\n",
+    ")\n",
+    "\n",
+    "assert int(group_table[\"reactions\"].sum()) == int(joint_union.sum())\n",
+    "group_table"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "biological-interpretation",
+   "metadata": {},
+   "source": [
+    "### Biological interpretation\n",
+    "\n",
+    "| Usage group | Characteristic reactions | Interpretation |\n",
+    "|---|---|---|\n",
+    "| Shared | `GLCpts`, `PFK`, `GAPD`, `ENO`, `PYK`, biomass | Central glucose utilization and precursor production required in both states |\n",
+    "| Glucose aerobic only | `EX_o2_e`, `O2t`, `CYTBD`, `NADH16`, `PDH` | Oxygen uptake, respiratory electron transfer, and oxidative pyruvate metabolism |\n",
+    "| Glucose anaerobic only | `PFL`, `FORti`, `EX_for_e`, `ACALD`, `ALCD2x`, `ETOHt2r`, `EX_etoh_e` | Pyruvate-formate cleavage followed by formate and ethanol secretion |\n",
+    "\n",
+    "Most condition-specific reactions agree with the supplied evidence; `PFL` is the explicit exception identified by the mismatch analysis. The inferred sets also include the transport and exchange reactions required to complete each biological route. That is an advantage of network inference over listing high-expression reactions alone: the output is a stoichiometrically connected hypothesis that makes conflicting evidence visible.\n",
+    "\n",
+    "As noted in the Multi-condition FBA guide, shared activity does not imply equal magnitude or direction. For example, `ATPS4r` is active in both selected states but carries flux in opposite directions in this solution."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "network-visualization",
+   "metadata": {},
+   "source": [
+    "### Visualize the jointly inferred network\n",
+    "\n",
+    "The plot shows the complete joint union. Shared reactions are gray, aerobic-specific reactions are blue, and anaerobic-specific reactions are red.\n",
+    "\n",
+    "| Usage group | Color |\n",
+    "|---|---|\n",
+    "| Shared | Gray |\n",
+    "| Glucose aerobic only | Blue |\n",
+    "| Glucose anaerobic only | Red |"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "plot-joint-network",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "group_colors = {\n",
+    "    \"shared\": \"#b0b0b0\",\n",
+    "    \"glucose aerobic only\": \"#277da1\",\n",
+    "    \"glucose anaerobic only\": \"#e63946\",\n",
+    "}\n",
+    "\n",
+    "selected_reactions = np.flatnonzero(joint_union.to_numpy())\n",
+    "joint_network = G.edge_subgraph(selected_reactions)\n",
+    "edge_style = {}\n",
+    "\n",
+    "for displayed_index, original_index in enumerate(selected_reactions):\n",
+    "    reaction_id = reaction_ids[original_index]\n",
+    "    group = reaction_groups[reaction_id]\n",
+    "    edge_style[displayed_index] = {\n",
+    "        \"color\": group_colors[group],\n",
+    "        \"penwidth\": \"1.5\" if group == \"shared\" else \"4\",\n",
+    "    }\n",
+    "\n",
+    "joint_network.plot(\n",
+    "    graph_attr={\"rankdir\": \"LR\"},\n",
+    "    node_attr={\n",
+    "        \"fixedsize\": \"false\",\n",
+    "        \"shape\": \"box\",\n",
+    "        \"style\": \"rounded\",\n",
+    "        \"margin\": \"0.05,0.03\",\n",
+    "    },\n",
+    "    custom_edge_attr=edge_style,\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "interpretation-limitations",
+   "metadata": {},
+   "source": [
+    "## Interpretation and limitations\n",
+    "\n",
+    "By fitting the conditions together, we can compare them against the same metabolic solution. The model reuses reactions when it can, but still keeps the respiratory pathway in the aerobic condition and fermentation in the anaerobic condition. This is different from averaging the expression profiles or comparing networks inferred in separate runs.\n",
+    "\n",
+    "The fit table is an important part of the biological interpretation. It shows where the expression data support the selected network and where the model cannot satisfy both the expression evidence and the metabolic constraints. Comparing the independent and joint fits also reveals whether a mismatch was already present in one condition or appeared when the conditions were analyzed together.\n",
+    "\n",
+    "Keep in mind that RNA abundance does not directly measure enzyme activity or flux. Protein abundance, post-translational regulation, and metabolite-level control can all separate expression from metabolic activity. A mismatch is therefore something to investigate, not evidence for a particular regulatory mechanism.\n",
+    "\n",
+    "In practice, it is worth checking different expression thresholds and comparing the joint result with the independently inferred networks. Shared reactions may still carry different fluxes—or even operate in opposite directions—and alternative solutions may exist. The choice of `lambda_reg` also matters: larger values favor more reaction reuse, but can eventually outweigh weaker expression evidence.\n",
+    "\n",
+    "The synthetic profiles isolate the multi-condition formulation. For a workflow using measured expression data, continue with the [context-specific metabolic omics tutorial](../../tutorials/fba/context-specific-metabolic-omics.ipynb)."
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "name": "python",
+   "version": "3.11"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
