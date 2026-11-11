@@ -105,6 +105,7 @@ Methods for extracting optimal subnetworks.
 
     PrizeCollectingSteinerTree
     SteinerTreeFlow
+    solve_steiner_tree
     create_multisample_shortest_path
     shortest_path
     solve_shortest_path
