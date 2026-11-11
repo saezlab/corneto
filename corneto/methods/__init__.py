@@ -27,7 +27,7 @@ from corneto.methods.shortest_path import (
     shortest_path,
     solve_shortest_path,
 )
-from corneto.methods.steiner import SteinerTreeFlow
+from corneto.methods.steiner import SteinerTreeFlow, solve_steiner_tree
 
 __all__ = [
     "BidirectionalPHONEMeS",
@@ -44,4 +44,5 @@ __all__ = [
     "milp_carnival",
     "shortest_path",
     "solve_shortest_path",
+    "solve_steiner_tree",
 ]

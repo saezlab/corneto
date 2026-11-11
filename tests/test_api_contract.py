@@ -69,6 +69,7 @@ def test_methods_api_surface_and_identity():
         "milp_carnival",
         "shortest_path",
         "solve_shortest_path",
+        "solve_steiner_tree",
     ]
 
     from corneto.methods.bidirectional_phonemes import BidirectionalPHONEMeS
